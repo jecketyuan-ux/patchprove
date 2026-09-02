@@ -3,6 +3,8 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const SKILL_REL = path.join("examples", "skills", "patchprove", "SKILL.md");
+const CURSOR_RULE_REL = path.join("examples", "cursor", "rules", "patchprove.mdc");
+const CURSOR_HOOKS_REL = path.join("examples", "hooks", "cursor.hooks.json");
 
 export function findPackageRoot(from = fileURLToPath(new URL(".", import.meta.url))): string {
   let dir = from;
@@ -19,4 +21,12 @@ export function findPackageRoot(from = fileURLToPath(new URL(".", import.meta.ur
 
 export function skillTemplatePath(root = findPackageRoot()): string {
   return path.join(root, SKILL_REL);
+}
+
+export function cursorRuleTemplatePath(root = findPackageRoot()): string {
+  return path.join(root, CURSOR_RULE_REL);
+}
+
+export function cursorHooksTemplatePath(root = findPackageRoot()): string {
+  return path.join(root, CURSOR_HOOKS_REL);
 }

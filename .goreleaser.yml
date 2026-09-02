@@ -1,0 +1,16 @@
+# yaml-language-server: $schema=https://json.schemastore.org/goreleaser.json
+# Optional. The Go binary is a thin Node launcher, not a rewrite.
+version: 2
+project_name: patchprove
+builds:
+  - id: patchprove
+    main: ./go
+    binary: patchprove
+    env:
+      - CGO_ENABLED=0
+    goos: [linux, darwin]
+    goarch: [amd64, arm64]
+archives:
+  - formats: [tar.gz]
+checksum:
+  name_template: checksums.txt

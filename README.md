@@ -32,7 +32,7 @@ CI is the merge contract for *your* repo: the jobs you already pay to run on eve
 
 **AI-on-AI reviewers** (another model summarizing or “approving” the diff) add a second opinion in the same uncertain medium. patchprove stays on the other axis: *what did a deterministic tool actually run, and what did it never see?* Use it beside CI and beside a human/LLM review — not instead of them.
 
-A later single-binary (Rust/Go) may ship for air-gapped hosts. v0.3 is TypeScript + Node ESM so it can land now.
+A later single-binary (Rust/Go) may ship for air-gapped hosts. v1.0 is TypeScript + Node ESM, with an **experimental Go thin launcher** that execs the Node CLI. Docs: [docs/](docs/index.md).
 
 ## Install
 
@@ -68,11 +68,19 @@ patchprove run --json --out evidence.json
 # fail a script or CI job when residual risk is high or worse
 patchprove run --fail-on high
 
+# evaluate SPEC.md / .patchprove/spec.yml (contract failure also exits 1)
+patchprove run --spec .patchprove/spec.yml --fail-on high
+
+# compare open gaps against a saved baseline (new high gaps can fail)
+patchprove run --baseline .patchprove/baseline.json --fail-on-new-gaps high
+patchprove baseline save
+
 # accept a known gap (still listed; does not raise risk / fail-on)
 patchprove run --accept src/generated/** --fail-on high
 
-# install skill + Claude Code hook + optional MCP snippet (idempotent)
+# install skill + Claude Code hook + Cursor rule pack + optional MCP snippet (idempotent)
 patchprove init-agent
+patchprove init-agent --cursor
 ```
 
 Flags:
@@ -85,15 +93,18 @@ Flags:
 | `--format human\|json\|markdown` | Stdout format (markdown is what the Action posts) |
 | `--out <file>` | Write `evidence.json` (default `evidence.json`) |
 | `--fail-on high\|critical\|none` | Exit `1` when summary risk meets the threshold. `none` disables a config `failOn`. CLI overrides config. |
+| `--fail-on-new-gaps high\|critical\|none` | Exit `1` when a **new** open gap vs baseline meets the threshold. |
+| `--baseline <file>` | Compare against this evidence JSON (else config `baseline` or `.patchprove/baseline.json`). |
+| `--spec <file>` | Explicit `SPEC.md` or `.patchprove/spec.yml`. |
 | `--base <ref>` / `--head <ref>` | Analyze `base...head` instead of the working tree |
 | `--accept <path-or-id>` | Accept a gap id or path pattern (repeatable). CLI adds to config `acceptGaps`. |
 | `--ignore <glob>` | Exclude a path glob from impact / gaps / findings (repeatable). CLI adds to config `ignorePaths`. |
 | `--disable-gate typecheck\|lint\|tests\|secrets` | Turn a gate off (repeatable). CLI overrides config `gates`. |
 | `--sarif <file>` | Write SARIF 2.1 generated from findings and gaps |
 
-Other commands: `patchprove init-agent`, `patchprove hook stop|post`, `patchprove mcp` (see below).
+Other commands: `patchprove init-agent`, `patchprove hook stop|post|session|subagent-stop`, `patchprove baseline save`, `patchprove mcp` (see below).
 
-Exit codes: `0` ok (or below threshold), `1` fail-on met, `2` usage/runtime error.
+Exit codes: `0` ok (or below threshold), `1` fail-on / **contract failure** / new-gap threshold met, `2` usage/runtime error.
 
 ## Config file
 
@@ -113,6 +124,9 @@ gates:
   lint: true
   tests: true
   secrets: true
+baseline: .patchprove/baseline.json
+failOnNewGaps: high
+spec: .patchprove/spec.yml
 acceptGaps:
   - src/generated/**
   - id: gap-unmapped-src/legacy/hash.ts
@@ -126,9 +140,44 @@ acceptGaps:
 | `failOn` | `high` \| `critical` \| `null` | Same as `--fail-on`. `null` / omit = never fail the process. |
 | `ignorePaths` | glob list | Drop matching paths from impact, gaps, and findings. |
 | `gates` | booleans | Enable or disable `typecheck`, `lint`, `tests`, `secrets`. Disabled gates are skipped (`Disabled by config`) and do not create tool-missing gaps. |
+| `baseline` | path | Evidence JSON to compare (overridden by `--baseline`). |
+| `failOnNewGaps` | `high` \| `critical` \| `null` | Fail when a new open gap vs baseline meets this risk. |
+| `spec` | path | Contract file (overridden by `--spec`). |
 | `acceptGaps` | strings or `{ id?, path?, reason? }` | Known-accepted gaps. A string starting with `gap-` is an id; otherwise it is a path pattern. |
 
 A path pattern without glob metacharacters matches that path or anything under it (`src/generated` ≡ `src/generated` and `src/generated/**`).
+
+## Contract (SPEC)
+
+Primary: **`.patchprove/spec.yml`**. `SPEC.md` may embed a fenced yaml block or link to that file. See [docs/contract.md](docs/contract.md).
+
+```yaml
+# .patchprove/spec.yml
+schemaVersion: "1.0"
+requiredGates: [tests, secrets]
+maxResidualRisk: medium
+requiredMappedTests:
+  - glob: src/auth/**
+forbiddenUnproven:
+  - glob: src/crypto/**
+acceptedResidualRisk:
+  policy: listed-only
+```
+
+`evidence.contract` records pass/fail per clause. A loaded contract that fails exits `1`.
+
+## Baseline
+
+```bash
+patchprove baseline save                          # writes .patchprove/baseline.json
+patchprove run --baseline .patchprove/baseline.json --fail-on-new-gaps high
+```
+
+New open gaps versus the baseline are regressions (`evidence.baselineComparison`). See [docs/baseline.md](docs/baseline.md).
+
+## Language plugins
+
+Built-in: JS/TS, Python, **Go**, **Rust**, **Java**. Add another plugin under `src/plugins/` and register it in `src/plugins/index.ts`. See [docs/plugins.md](docs/plugins.md).
 
 ## Known-accepted gaps
 
@@ -139,24 +188,27 @@ Gaps matching `acceptGaps` or `--accept`:
 - Do **not** raise `summary.risk` or trip `--fail-on`
 - `summary.gapCount` counts **open** gaps only; `summary.acceptedGapCount` is separate
 
-## What it does (v0.3)
+## What it does (v1.0)
 
 1. **Detect changed files** via `git diff` (working tree vs `HEAD`, or `--base`/`--head`), minus `ignorePaths`.
-2. **Map nearby tests** (deterministic, no LLM):
-   - Prefer a coverage map when present, in this order: `coverage/coverage-final.json` (Istanbul/V8 or a `{ source: [tests] }` map), then `coverage.xml` / `coverage/coverage.xml` / `coverage/cobertura-coverage.xml`
-   - Coverage pairing: explicit source→tests if the JSON has them; otherwise naming candidates **plus** test files that appear in the coverage set and share a basename (`hash.ts` → `test/unit/hash.spec.ts`)
-   - Else fall back to v0.1 naming heuristics (`foo.ts` → `foo.test.ts` / `foo.spec.ts` / `__tests__/foo.ts`; `foo.py` → `test_foo.py` / `foo_test.py`)
-   - Evidence records `impact.mappingStrategy`: `coverage` \| `naming`
-3. **Run gates when enabled and the target repo actually has the tools** (detected from `package.json`, lockfiles, `tsconfig`, `pyproject.toml`, config files, local `node_modules/.bin`):
-   - typecheck: `tsc --noEmit`, or `pyright` / `mypy` if configured
+2. **Map nearby tests** (deterministic, no LLM), in order:
+   - **coverage** when a map is present (`coverage/coverage-final.json`, then Cobertura XML)
+   - **graph** — parse imports from tests (JS/TS relative `import`/`require`/`import()`; Python `from`/`import` heuristics; Go same-package `*_test.go`) and reverse-map to changed modules
+   - **naming** — `foo.ts` → `foo.test.ts` / `foo.spec.ts`; `foo.py` → `test_foo.py`; `foo.go` → `foo_test.go`; Rust `tests/`; Java `*Test.java`
+   - Evidence records `impact.mappingStrategy` and per-source `via`: `coverage` \| `graph` \| `naming`
+3. **Run gates when enabled and the target repo actually has the tools**, including language plugins:
+   - typecheck: `tsc --noEmit`, or `pyright` / `mypy`
    - lint: `eslint` or `ruff`
-   - affected tests: `vitest` / `jest` / `pytest` on the mapped subset — if nothing maps, that is a **gap**, not a silent skip
-   - secret scan: `gitleaks` if installed, otherwise regex for known key patterns + high-entropy tokens on **added** lines (lockfiles and `integrity` hashes are skipped)
-4. **Highlight high-risk paths**: lockfiles, `.github/workflows/**`, auth/crypto-ish names (`auth`, `jwt`, `oauth`, `crypto`, `secret`, `session`, …).
-5. **Write** a human report, `evidence.json` (`schemaVersion: "0.2.0"`), and optionally SARIF.
-6. **Optional agent surface** — MCP tools, Stop/stop hooks, and `init-agent` so the same pipeline runs before an agent claims done.
+   - affected tests: `vitest` / `jest` / `pytest` / `go test` / `cargo test` / `mvn test` / `gradle test` on the mapped subset
+   - secret scan: `gitleaks` if installed, otherwise regex on **added** lines
+4. **Evaluate the contract** if `.patchprove/spec.yml` or `SPEC.md` is present (required gates, max residual risk, mapped-test globs, forbidden unproven paths).
+5. **Compare a baseline** if `--baseline`, config `baseline`, or `.patchprove/baseline.json` exists. New open gaps are regressions.
+6. **Highlight high-risk paths**: lockfiles, `.github/workflows/**`, auth/crypto-ish names.
+7. **Write** a human report, `evidence.json` (`schemaVersion: "1.0.0"`), and optionally SARIF.
 
 No telemetry. No Anthropic/OpenAI account. Not a CI replacement and not an LLM reviewer.
+
+See **[docs/](docs/index.md)** for the contract, mapping, plugins, baseline, and [case study](docs/case-study.md).
 
 ## Sample: almost-right agent patch
 
@@ -165,7 +217,7 @@ An agent “fixes login lockout.” Types are clean. Lint is clean. It even upda
 What patchprove sees:
 
 ```
-patchprove  v0.3.0  ·  impact → checks → gaps → risk
+patchprove  v1.0.0  ·  impact → checks → gaps → risk
 model-free evidence pack  ·  not a CI replacement
 
 range     working tree vs HEAD
@@ -207,14 +259,16 @@ That is the product: **almost-right is not proven.** Merge when a human accepts 
 
 JSON Schema: [`schema/evidence.schema.json`](schema/evidence.schema.json)
 
-Top-level shape (`schemaVersion` **0.2.0**, additive vs 0.1):
+Top-level shape (`schemaVersion` **1.0.0**):
 
-- `schemaVersion` — `0.2.0`
-- `impact` — changed files, mapped tests, unmapped sources, languages, **`mappingStrategy`**
-- `impact.mappedTests[].via` — optional `naming` \| `coverage` for that source
+- `schemaVersion` — `1.0.0`
+- `impact` — changed files, mapped tests, unmapped sources, languages, **`mappingStrategy`**, optional **`mappingFallbacks`**
+- `impact.mappedTests[].via` — optional `naming` \| `coverage` \| `graph`
 - `checks[]` — `typecheck` \| `lint` \| `tests` \| `secrets` with `passed` / `failed` / `skipped`
 - `gaps[]` — unmapped tests, missing tools, unsupported languages; each has a `risk`; accepted gaps add `accepted` + `acceptedReason`
 - `findings[]` — high-risk paths, secrets, failed checks; each has a `risk`
+- `contract` — loaded/passed + clause results when a SPEC is present
+- `baselineComparison` — new/resolved gaps vs a previous pack (or `null`)
 - `summary.risk` — `none` \| `low` \| `medium` \| `high` \| `critical` (max of findings + **open** gaps)
 - `summary.gapCount` — open gaps; `summary.acceptedGapCount` — accepted gaps
 
@@ -235,7 +289,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: jecketyuan-ux/patchprove/action@v0.3.0
+      - uses: jecketyuan-ux/patchprove/action@v1.0.0
         with:
           fail-on: high   # or critical / none; omit to use config or comment only
           upload-sarif: true
@@ -322,6 +376,10 @@ npx patchprove hook stop --adapter claude-code --fail-on high
 # Claude Code PostToolUse — surface gaps after Edit/Write
 npx patchprove hook post --adapter claude-code --fail-on high
 
+# Claude Code SessionStart / SubagentStop
+npx patchprove hook session --adapter claude-code --fail-on high
+npx patchprove hook subagent-stop --adapter claude-code --fail-on high
+
 # Cursor stop — follow-up message (Cursor cannot hard-block a turn)
 npx patchprove hook stop --adapter cursor --fail-on high
 ```
@@ -339,14 +397,16 @@ Install the skill + Claude Code hook + optional MCP snippet into a repo:
 npx patchprove init-agent
 npx patchprove init-agent --dry-run
 npx patchprove init-agent --force
+npx patchprove init-agent --no-cursor
 npx patchprove init-agent --no-mcp --cli "node /path/to/patchprove/dist/cli.js"
 ```
 
 Writes (idempotent; `--force` overwrites a diverged skill or the patchprove hook / MCP snippet):
 
 - `.claude/skills/patchprove/SKILL.md`
-- merge into `.claude/settings.json`
+- merge into `.claude/settings.json` (Stop, PostToolUse, SessionStart, SubagentStop)
 - `.mcp.json` (`mcpServers.patchprove`) unless `--no-mcp`
+- `.cursor/rules/patchprove.mdc` and `.cursor/hooks.json` unless `--no-cursor`
 
 The same skill lives at [`examples/skills/patchprove/`](examples/skills/patchprove/) so [cc-kit](https://github.com/jecketyuan-ux/cc-kit) can install it from git **without** an npm publish:
 
@@ -362,7 +422,7 @@ npx cc-kit doctor
 
 patchprove 是给 **Agent / PR 补丁** 用的证据包：影响面 → 实际跑过的检查 → 缺口 → 风险。它不是 CI 替代品，也不是「再用一个模型审一次」的 AI-on-AI。默认不调大模型、不采集遥测。人类和 Agent 都能在合并前看到：**哪些事仍然没被证明。**
 
-v0.3 增加 stdio MCP（`prove_patch` / `list_gaps`）、Claude Code / Cursor hooks 示例、`patchprove init-agent`，以及可被 [cc-kit](https://github.com/jecketyuan-ux/cc-kit) 从 git 路径安装的 skill。**有未接受的缺口时，Agent 不得声称做完。**
+v1.0 增加仓库契约（`SPEC.md` / `.patchprove/spec.yml`）、导入图测试映射、Go/Rust/Java 插件、基线对比、Cursor 规则包，以及文档站。有未接受的缺口、契约失败、或相对基线的新高风险缺口时，进程以 `1` 退出。**Agent 不得声称做完。**
 
 ```bash
 npx patchprove run --base origin/main --fail-on high

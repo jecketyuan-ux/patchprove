@@ -1,0 +1,15 @@
+# Example contract (copy to .patchprove/spec.yml or embed in SPEC.md)
+
+schemaVersion: "1.0"
+requiredGates:
+  - tests
+  - secrets
+maxResidualRisk: high
+requiredMappedTests:
+  - glob: src/auth/**
+    reason: auth paths must have a mapped test
+forbiddenUnproven:
+  - glob: src/crypto/**
+    reason: crypto changes cannot ship unmapped
+acceptedResidualRisk:
+  policy: listed-only

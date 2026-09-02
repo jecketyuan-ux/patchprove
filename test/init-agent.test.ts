@@ -23,6 +23,9 @@ describe("mergeClaudeSettings", () => {
     expect(JSON.stringify(hooks.Stop)).toContain("patchprove hook stop");
     expect(JSON.stringify(hooks.PostToolUse)).toContain("patchprove hook post");
     expect(JSON.stringify(hooks.PostToolUse)).toContain("Edit|Write|MultiEdit");
+    expect(JSON.stringify((next.hooks as { SubagentStop: unknown[] }).SubagentStop)).toContain(
+      "hook subagent-stop",
+    );
   });
 
   it("is idempotent when hooks already exist", () => {
@@ -79,6 +82,8 @@ describe("executeInitAgent", () => {
         path.join(".claude", "skills", "patchprove", "SKILL.md"),
         path.join(".claude", "settings.json"),
         ".mcp.json",
+        path.join(".cursor", "rules", "patchprove.mdc"),
+        path.join(".cursor", "hooks.json"),
       ]),
     );
     expect(existsSync(path.join(dir, ".claude"))).toBe(false);
@@ -110,11 +115,16 @@ describe("executeInitAgent", () => {
     };
     expect(JSON.stringify(settings)).toContain("echo keep-me");
     expect(JSON.stringify(settings)).toContain("node /opt/patchprove/dist/cli.js hook stop");
+    expect(JSON.stringify(settings)).toContain("hook subagent-stop");
 
     const mcp = JSON.parse(readFileSync(path.join(dir, ".mcp.json"), "utf8")) as {
       mcpServers: { patchprove: { command: string } };
     };
     expect(mcp.mcpServers.patchprove.command).toBe("npx");
+    expect(existsSync(path.join(dir, ".cursor", "rules", "patchprove.mdc"))).toBe(true);
+    expect(JSON.parse(readFileSync(path.join(dir, ".cursor", "hooks.json"), "utf8"))).toMatchObject({
+      version: 1,
+    });
 
     const again = executeInitAgent({ cwd: dir, cli: "node /opt/patchprove/dist/cli.js" });
     expect(again.written).toEqual([]);

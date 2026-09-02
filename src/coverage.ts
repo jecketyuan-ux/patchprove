@@ -1,6 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import type { ImportGraph } from "./graph.js";
+import { mapTestsFromGraph } from "./graph.js";
 import { isTestFile, mapTestsForFile, testBasenameKey } from "./mapping.js";
 import { normalizeRel, toPosix } from "./paths.js";
 import type { MappingStrategy } from "./types.js";
@@ -232,17 +234,21 @@ export function mapTestsForSource(
   filePath: string,
   existingFiles: ReadonlySet<string>,
   coverage: CoverageIndex | null,
+  graph?: ImportGraph | null,
 ): { tests: string[]; via: MappingStrategy } {
-  if (!coverage) {
-    return { tests: mapTestsForFile(filePath, existingFiles), via: "naming" };
+  if (coverage) {
+    const tests = mapTestsFromCoverage(filePath, existingFiles, coverage);
+    if (tests.length > 0) {
+      const naming = new Set(mapTestsForFile(filePath, existingFiles));
+      const usedCoverage =
+        coverage.sourceToTests.has(normalizeRel(filePath)) ||
+        tests.some((t) => !naming.has(t));
+      return { tests, via: usedCoverage ? "coverage" : "naming" };
+    }
   }
-  const tests = mapTestsFromCoverage(filePath, existingFiles, coverage);
-  if (tests.length > 0) {
-    const naming = new Set(mapTestsForFile(filePath, existingFiles));
-    const usedCoverage =
-      coverage.sourceToTests.has(normalizeRel(filePath)) ||
-      tests.some((t) => !naming.has(t));
-    return { tests, via: usedCoverage ? "coverage" : "naming" };
+  const fromGraph = mapTestsFromGraph(filePath, existingFiles, graph);
+  if (fromGraph.length > 0) {
+    return { tests: fromGraph, via: "graph" };
   }
   return { tests: mapTestsForFile(filePath, existingFiles), via: "naming" };
 }

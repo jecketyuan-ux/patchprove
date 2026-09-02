@@ -12,7 +12,7 @@ import {
   pathFindings,
 } from "../src/evidence.js";
 import type { DiffFile } from "../src/git.js";
-import type { CheckResult, DetectedTools } from "../src/types.js";
+import { emptyDetectedTools } from "../src/types.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const schema = JSON.parse(
@@ -23,27 +23,7 @@ const ajv = new Ajv({ allErrors: true, strict: false });
 addFormats(ajv);
 const validate = ajv.compile(schema);
 
-const emptyTools: DetectedTools = {
-  typescript: false,
-  tscBin: null,
-  eslint: false,
-  eslintBin: null,
-  vitest: false,
-  vitestBin: null,
-  jest: false,
-  jestBin: null,
-  python: false,
-  pyright: false,
-  pyrightBin: null,
-  mypy: false,
-  mypyBin: null,
-  ruff: false,
-  ruffBin: null,
-  pytest: false,
-  pytestBin: null,
-  gitleaks: false,
-  gitleaksBin: null,
-};
+const emptyTools = emptyDetectedTools();
 
 function file(partial: Partial<DiffFile> & { path: string }): DiffFile {
   return {
@@ -56,7 +36,7 @@ function file(partial: Partial<DiffFile> & { path: string }): DiffFile {
 }
 
 describe("evidence JSON shape", () => {
-  it("matches the published 0.2 schema", () => {
+  it("matches the published 1.0 schema", () => {
     const files = [
       file({ path: "src/auth/session.ts" }),
       file({ path: "src/utils/hash.ts" }),
@@ -126,7 +106,7 @@ describe("evidence JSON shape", () => {
     const ok = validate(evidence);
     expect(validate.errors).toBeNull();
     expect(ok).toBe(true);
-    expect(evidence.schemaVersion).toBe("0.2.0");
+    expect(evidence.schemaVersion).toBe("1.0.0");
     expect(evidence.impact.mappingStrategy).toBe("naming");
     expect(evidence.summary.acceptedGapCount).toBe(0);
     expect(evidence.impact.mappedTests).toEqual([

@@ -28,13 +28,24 @@ patchprove stays an **evidence pack + gap driver**: impact → checks → gaps �
 - Skill at `examples/skills/patchprove/` installable with [cc-kit](https://github.com/jecketyuan-ux/cc-kit) from a git path (no npm publish required)
 - Pack-ready `0.3.0`
 
-## Next: v1.0
+### v1.0 — merge/agent gate
 
-Still deterministic and model-free:
+- **SPEC.md / `.patchprove/spec.yml` contract** — required gates, max residual risk, required mapped tests, forbidden unproven globs, accepted residual-risk policy. Evaluated on `run`; fail-on / exit `1` on contract failure
+- **Import/module-graph mapping** (JS/TS + Python heuristics) beside coverage and naming. `mappingStrategy`: `naming` | `coverage` | `graph`
+- **Language plugins** — Go, Rust, Java (plus JS/TS/Python) without a CLI rewrite
+- **Baseline evidence comparison** — `--baseline`, `.patchprove/baseline.json`, `patchprove baseline save`, new gaps = regression
+- **Tighter host integration** — Claude Code SessionStart / SubagentStop; Cursor rule pack; `init-agent --cursor`
+- **Docs site** (`docs/`) + case study
+- **Experimental Go thin launcher** (`go/`) that execs the Node CLI — not a rewrite
 
-- **SPEC.md / contract file** — declare required gates and accepted residual risk in-repo
-- **Richer test selection** — import/module-graph mapping beside coverage (still no LLM)
-- **Language plugins** beyond JS/TS/Python (Go, Rust mapping) without a rewrite
-- **Tighter host integration** — more hook events / first-class Cursor rule pack if the hosts add blocking stop semantics
+## Post-1.0 ideas
 
-Out of scope until a later track: Rust/Go single binary, telemetry, LLM-as-primary review.
+Still deterministic and model-free unless explicitly re-scoped:
+
+- Richer Java/Gradle test filtering and Go module-path import resolution
+- Signed / hashed evidence receipts
+- Optional SARIF for contract clauses
+- First-class blocking stop semantics if Cursor adds them
+- A real single-binary port only if the Node CLI becomes a liability for air-gapped hosts
+
+Out of scope: telemetry, LLM-as-primary review, vendor API keys, rewriting the entire CLI in Rust.

@@ -34,7 +34,7 @@ Out of scope unless discussed first:
 - LLM-as-primary review
 - Telemetry
 - Vendor API coupling
-- Single-binary rewrite (Rust/Go is a later track)
+- Single-binary rewrite as the default (the Go launcher is experimental and still execs Node)
 
 ## Tests
 
@@ -49,7 +49,10 @@ Please add or extend tests when you touch:
 - `src/accept.ts` — accepted gaps must not raise summary risk
 - `src/mcp-tools.ts` — `prove_patch` / `list_gaps` handlers (fixtures; no live MCP client)
 - `src/init-agent.ts` — temp-dir writes, idempotent merge, `--force` / `--dry-run`
-- `src/hook.ts` — Claude Code / Cursor payload shape
+- `src/spec.ts` — contract parse + evaluation fixtures
+- `src/graph.ts` — import reverse-map
+- `src/plugins/` — language plugins
+- `src/baseline.ts` — regression vs saved evidence
 
 ```bash
 npm test
@@ -58,7 +61,7 @@ npm run build
 
 ## Schema changes
 
-Evidence `schemaVersion` is `0.2.0` (unchanged in v0.3). Additive optional fields are fine. Breaking field or enum changes require a schema version bump and a CHANGELOG entry. Keep `schema/evidence.schema.json` in lockstep with `src/types.ts`. Package / `toolVersion` is `0.3.0`.
+Evidence `schemaVersion` is `1.0.0`. Additive optional fields are fine. Breaking field or enum changes require a schema version bump and a CHANGELOG entry. Keep `schema/evidence.schema.json` in lockstep with `src/types.ts`. Package / `toolVersion` is `1.0.0`.
 
 ## Pull requests
 

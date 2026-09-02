@@ -11,12 +11,32 @@
         ]
       }
     ],
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx patchprove hook session --adapter claude-code --fail-on high"
+          }
+        ]
+      }
+    ],
     "Stop": [
       {
         "hooks": [
           {
             "type": "command",
             "command": "npx patchprove hook stop --adapter claude-code --fail-on high"
+          }
+        ]
+      }
+    ],
+    "SubagentStop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx patchprove hook subagent-stop --adapter claude-code --fail-on high"
           }
         ]
       }

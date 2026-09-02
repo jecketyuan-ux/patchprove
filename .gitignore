@@ -1,6 +1,7 @@
 node_modules/
 dist/
 coverage/
+bin/
 *.tgz
 .DS_Store
 evidence.json

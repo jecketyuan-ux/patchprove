@@ -54,8 +54,8 @@ describe("analyze integration", () => {
       out: path.join(dir, "evidence.json"),
     });
 
-    expect(evidence.schemaVersion).toBe("0.2.0");
-    expect(evidence.impact.mappingStrategy).toBe("naming");
+    expect(evidence.schemaVersion).toBe("1.0.0");
+    expect(evidence.impact.mappingStrategy).toBe("graph");
     expect(evidence.range.mode).toBe("working-tree");
     const paths = evidence.impact.changedFiles.map((f) => f.path);
     expect(paths).not.toContain(".");
@@ -176,5 +176,43 @@ describe("analyze integration", () => {
     expect(evidence.gaps.filter((g) => g.accepted).every((g) => g.acceptedReason)).toBe(true);
     expect(authGap === undefined || authGap.accepted === true).toBe(true);
     expect(meetsFailOn(evidence.summary.risk, "high")).toBe(true);
+  });
+
+  it("evaluates SPEC.md and compares a baseline", async () => {
+    const dir = seedRepo();
+    mkdirSync(path.join(dir, ".patchprove"), { recursive: true });
+    writeFileSync(
+      path.join(dir, "SPEC.md"),
+      ["# Contract", "", "```yaml", "requiredGates: []", "maxResidualRisk: critical", "forbiddenUnproven:", "  - glob: src/utils/**", "acceptedResidualRisk:", "  policy: allow", "```", ""].join("\n"),
+    );
+    git(dir, ["add", "."]);
+    git(dir, ["commit", "-m", "spec"]);
+    writeFileSync(path.join(dir, "src", "utils", "hash.ts"), "export const hash = (s: string) => s + 'x';\n");
+
+    const first = await analyze({
+      cwd: dir,
+      json: true,
+      format: "json",
+      out: path.join(dir, "evidence.json"),
+    });
+    expect(first.contract.loaded).toBe(true);
+    expect(first.contract.passed).toBe(false);
+    expect(first.contract.clauses.some((c) => c.kind === "forbidden-unproven" && !c.passed)).toBe(
+      true,
+    );
+
+    writeFileSync(
+      path.join(dir, ".patchprove", "baseline.json"),
+      JSON.stringify(first, null, 2),
+    );
+    const second = await analyze({
+      cwd: dir,
+      json: true,
+      format: "json",
+      out: path.join(dir, "evidence2.json"),
+      failOnNewGaps: "high",
+    });
+    expect(second.baselineComparison?.regression).toBe(false);
+    expect(second.baselineComparison?.newGaps).toEqual([]);
   });
 });

@@ -1,6 +1,6 @@
 {
   "name": "patchprove",
-  "version": "0.3.0",
+  "version": "1.0.0",
   "description": "Evidence pack for AI/agent patches: impact → checks → gaps → risk.",
   "keywords": [
     "evidence",
@@ -31,6 +31,7 @@
     "schema",
     "action",
     "examples",
+    "docs",
     "README.md",
     "LICENSE"
   ],

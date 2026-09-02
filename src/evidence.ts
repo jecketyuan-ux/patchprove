@@ -2,6 +2,7 @@ import { applyAcceptedGaps, isOpenGap } from "./accept.js";
 import { matchAnyGlob } from "./glob.js";
 import type { CoverageIndex } from "./coverage.js";
 import { mapTestsForSource } from "./coverage.js";
+import type { ImportGraph } from "./graph.js";
 import { classifyPath, maxRisk, riskForPathKind } from "./risk.js";
 import {
   collectLanguages,
@@ -12,15 +13,18 @@ import {
 import type { DiffFile } from "./git.js";
 import type {
   AcceptGapRule,
+  BaselineComparison,
   ChangedFile,
   CheckResult,
+  ContractResult,
   DetectedTools,
   Evidence,
   Finding,
   Gap,
   MappedTest,
+  MappingStrategy,
 } from "./types.js";
-import { SCHEMA_VERSION, TOOL_VERSION } from "./types.js";
+import { emptyContractResult, SCHEMA_VERSION, TOOL_VERSION } from "./types.js";
 
 export function toChangedFile(file: DiffFile): ChangedFile {
   const riskKind = classifyPath(file.path);
@@ -42,12 +46,27 @@ export function filterIgnored<T extends { path: string }>(
   return items.filter((item) => !matchAnyGlob(item.path, ignorePaths));
 }
 
+function pickMappingStrategy(
+  coverage: CoverageIndex | null,
+  graph: ImportGraph | null | undefined,
+  vias: Iterable<MappingStrategy>,
+): { mappingStrategy: MappingStrategy; mappingFallbacks?: MappingStrategy[] } {
+  const used = new Set<MappingStrategy>(vias);
+  let mappingStrategy: MappingStrategy = "naming";
+  if (coverage) mappingStrategy = "coverage";
+  else if (graph && (graph.edgeCount > 0 || used.has("graph"))) mappingStrategy = "graph";
+  else if (used.has("graph")) mappingStrategy = "graph";
+  const mappingFallbacks = [...used].filter((s) => s !== mappingStrategy);
+  return mappingFallbacks.length > 0 ? { mappingStrategy, mappingFallbacks } : { mappingStrategy };
+}
+
 export function buildImpact(
   files: DiffFile[],
   existingFiles: ReadonlySet<string>,
   options?: {
     ignorePaths?: readonly string[];
     coverage?: CoverageIndex | null;
+    graph?: ImportGraph | null;
   },
 ): Evidence["impact"] {
   const ignorePaths = options?.ignorePaths ?? [];
@@ -56,18 +75,22 @@ export function buildImpact(
   const mappedTests: MappedTest[] = [];
   const unmappedSources: string[] = [];
   const coverage = options?.coverage ?? null;
-  const mappingStrategy = coverage ? "coverage" : "naming";
+  const graph = options?.graph ?? null;
+  const vias: MappingStrategy[] = [];
 
   for (const file of visible) {
     if (file.status === "deleted") continue;
     if (!isMappableSource(file.path)) continue;
-    const { tests, via } = mapTestsForSource(file.path, existingFiles, coverage);
+    const { tests, via } = mapTestsForSource(file.path, existingFiles, coverage, graph);
     if (tests.length > 0) {
       mappedTests.push({ source: file.path, tests, via });
+      if (via) vias.push(via);
     } else {
       unmappedSources.push(file.path);
     }
   }
+
+  const { mappingStrategy, mappingFallbacks } = pickMappingStrategy(coverage, graph, vias);
 
   return {
     changedFiles,
@@ -75,6 +98,7 @@ export function buildImpact(
     unmappedSources,
     languages: collectLanguages(visible.map((f) => f.path)),
     mappingStrategy,
+    ...(mappingFallbacks ? { mappingFallbacks } : {}),
   };
 }
 
@@ -132,7 +156,8 @@ export function collectGaps(
     const missing =
       (check.id === "typecheck" && (tools.typescript || tools.pyright || tools.mypy)) ||
       (check.id === "lint" && (tools.eslint || tools.ruff)) ||
-      (check.id === "tests" && (tools.vitest || tools.jest || tools.pytest));
+      (check.id === "tests" &&
+        (tools.vitest || tools.jest || tools.pytest || tools.go || tools.cargo || tools.maven || tools.gradle));
     if (missing || /not found|configured but/i.test(check.reason ?? "")) {
       gaps.push({
         id: `gap-tool-${check.id}`,
@@ -149,7 +174,7 @@ export function collectGaps(
     .filter((f) => !f.highRisk)
     .filter((f) => {
       const lang = languageOf(f.path);
-      return lang === "other" && /\.(go|rs|java|rb|php|cs|kt|swift)$/i.test(f.path);
+      return lang === "other" && /\.(rb|php|cs|kt|swift)$/i.test(f.path);
     })
     .map((f) => f.path);
 
@@ -157,7 +182,7 @@ export function collectGaps(
     gaps.push({
       id: "gap-unsupported-language",
       kind: "unsupported-language",
-      message: "Changed sources are outside JS/TS/Python mapping heuristics",
+      message: "Changed sources are outside built-in language plugins (js/ts, python, go, rust, java)",
       risk: "low",
       files: unsupported,
     });
@@ -187,6 +212,8 @@ export function buildEvidence(input: {
   findings: Finding[];
   acceptGaps?: readonly AcceptGapRule[];
   generatedAt?: string;
+  contract?: ContractResult;
+  baselineComparison?: BaselineComparison | null;
 }): Evidence {
   const gaps = applyAcceptedGaps(input.gaps, input.acceptGaps ?? []);
   const openGaps = gaps.filter(isOpenGap);
@@ -218,5 +245,7 @@ export function buildEvidence(input: {
       acceptedGapCount: acceptedGaps.length,
       findingCount: input.findings.length,
     },
+    contract: input.contract ?? emptyContractResult(),
+    baselineComparison: input.baselineComparison ?? null,
   };
 }

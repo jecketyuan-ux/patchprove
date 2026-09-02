@@ -1,5 +1,6 @@
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
+import { compareToBaseline, findBaselinePath, loadBaselineEvidence, newGapsMeetFailOn } from "./baseline.js";
 import { resolveConfig } from "./config.js";
 import { loadCoverageMap } from "./coverage.js";
 import { detectTools } from "./detect.js";
@@ -13,10 +14,12 @@ import {
 } from "./evidence.js";
 import { runAffectedTests, runLint, runSecretScan, runTypecheck } from "./gates.js";
 import { collectGitSnapshot, type DiffFile } from "./git.js";
+import { buildImportGraph } from "./graph.js";
 import { formatHumanReport, formatMarkdownReport } from "./report.js";
 import { meetsFailOn } from "./risk.js";
 import { writeSarif } from "./sarif.js";
-import type { Evidence, RunOptions } from "./types.js";
+import { evaluateContract, loadContract } from "./spec.js";
+import type { Evidence, ResolvedConfig, RunOptions } from "./types.js";
 
 export function hydrateUntrackedPatches(root: string, files: DiffFile[]): DiffFile[] {
   return files.map((file) => {
@@ -39,6 +42,12 @@ export function hydrateUntrackedPatches(root: string, files: DiffFile[]): DiffFi
   });
 }
 
+export function shouldFailRun(evidence: Evidence, config: ResolvedConfig): boolean {
+  if (evidence.contract.loaded && !evidence.contract.passed) return true;
+  if (newGapsMeetFailOn(evidence.baselineComparison, config.failOnNewGaps)) return true;
+  return meetsFailOn(evidence.summary.risk, config.failOn);
+}
+
 export async function analyze(options: RunOptions): Promise<Evidence> {
   const cwd = path.resolve(options.cwd);
   const snapshot = await collectGitSnapshot(cwd, {
@@ -52,9 +61,11 @@ export async function analyze(options: RunOptions): Promise<Evidence> {
   );
   const existing = new Set(snapshot.trackedFiles);
   const coverage = loadCoverageMap(snapshot.root);
+  const graph = buildImportGraph(snapshot.root, existing);
   const impact = buildImpact(files, existing, {
     ignorePaths: config.ignorePaths,
     coverage,
+    graph,
   });
   const tools = detectTools(snapshot.root);
 
@@ -75,7 +86,7 @@ export async function analyze(options: RunOptions): Promise<Evidence> {
     ...failedCheckFindings(checks),
   ];
 
-  return buildEvidence({
+  let evidence = buildEvidence({
     cwd,
     root: snapshot.root,
     range: snapshot.range,
@@ -85,6 +96,26 @@ export async function analyze(options: RunOptions): Promise<Evidence> {
     findings,
     acceptGaps: config.acceptGaps,
   });
+
+  const contract = loadContract(snapshot.root, options.spec ?? config.spec ?? undefined);
+  evidence = {
+    ...evidence,
+    contract: evaluateContract(contract, evidence),
+  };
+
+  const baselinePath = findBaselinePath(snapshot.root, {
+    explicit: options.baseline,
+    fromConfig: config.baseline,
+  });
+  if (baselinePath) {
+    const baseline = loadBaselineEvidence(baselinePath);
+    evidence = {
+      ...evidence,
+      baselineComparison: compareToBaseline(evidence, baseline, baselinePath, config.failOnNewGaps),
+    };
+  }
+
+  return evidence;
 }
 
 export function writeEvidence(outPath: string, evidence: Evidence): string {
@@ -117,7 +148,7 @@ export async function executeRun(options: RunOptions): Promise<number> {
     if (format !== "json") {
       process.stderr.write(`wrote ${outFile}\n`);
     }
-    return meetsFailOn(evidence.summary.risk, config.failOn) ? 1 : 0;
+    return shouldFailRun(evidence, config) ? 1 : 0;
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     process.stderr.write(`patchprove: ${message}\n`);

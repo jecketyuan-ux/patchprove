@@ -42,10 +42,12 @@ If MCP is not configured, use the CLI. Do not invent evidence.
 
 ## How to read the result
 
-1. **Impact** — what moved; which tests mapped (`naming` or `coverage`)
+1. **Impact** — what moved; which tests mapped (`naming`, `coverage`, or `graph`)
 2. **Checks** — typecheck / lint / affected tests / secrets: passed, failed, or skipped
 3. **Gaps** — unmapped sources, missing tools, unsupported languages
 4. **Risk** — max of findings + **open** gaps (`none` … `critical`)
+
+If the repo has `SPEC.md` or `.patchprove/spec.yml`, contract failures mean the patch is not done. If a baseline exists, new gaps are regressions — do not claim done.
 
 If `list_gaps.claimDone` is false or `summary.gapCount > 0`, keep working or get an explicit human accept (`--accept` / `acceptGaps` in `.patchprove.yml`).
 

@@ -10,9 +10,10 @@ Hooks call the local CLI (`patchprove hook …` → `patchprove run` pipeline). 
 
 | Host | Gate | What happens |
 | --- | --- | --- |
-| Claude Code | `Stop` | `patchprove hook stop --adapter claude-code --fail-on high` returns `{ "decision": "block", "reason": "…" }` when open gaps exist or fail-on is met |
+| Claude Code | `Stop` / `SubagentStop` | `patchprove hook stop` / `subagent-stop` returns `{ "decision": "block", "reason": "…" }` when open gaps exist, fail-on is met, or a loaded contract fails |
 | Claude Code | `PostToolUse` (`Edit\|Write\|MultiEdit`) | `patchprove hook post` injects gap context after edits (does not undo the write) |
-| Cursor | `stop` in `.cursor/hooks.json` | `patchprove hook stop --adapter cursor --fail-on high` returns `{ "followup_message": "…" }` so the agent continues; Cursor cannot hard-block the turn |
+| Claude Code | `SessionStart` | `patchprove hook session` injects a reminder / current gaps at session start |
+| Cursor | `stop` in `.cursor/hooks.json` | `patchprove hook stop --adapter cursor --fail-on high` returns `{ "followup_message": "…" }` so the agent continues; Cursor cannot hard-block the turn. Pair with [`examples/cursor/`](../cursor/) rule pack. |
 
 Accepted gaps do not trip the gate. Use `.patchprove.yml` `acceptGaps` or `--accept` for known leftovers.
 

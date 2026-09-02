@@ -1,10 +1,10 @@
-export const SCHEMA_VERSION = "0.2.0" as const;
-export const TOOL_VERSION = "0.3.0";
+export const SCHEMA_VERSION = "1.0.0" as const;
+export const TOOL_VERSION = "1.0.0";
 
 export type RiskLevel = "low" | "medium" | "high" | "critical";
 export type SummaryRisk = "none" | RiskLevel;
 export type FailOnLevel = "high" | "critical";
-export type MappingStrategy = "naming" | "coverage";
+export type MappingStrategy = "naming" | "coverage" | "graph";
 
 export type FileStatus =
   | "added"
@@ -13,7 +13,14 @@ export type FileStatus =
   | "renamed"
   | "untracked";
 
-export type Language = "javascript" | "typescript" | "python" | "other";
+export type Language =
+  | "javascript"
+  | "typescript"
+  | "python"
+  | "go"
+  | "rust"
+  | "java"
+  | "other";
 
 export type HighRiskKind = "lockfile" | "workflow" | "auth-crypto";
 
@@ -24,7 +31,9 @@ export type GapKind =
   | "unmapped-test"
   | "no-tests-mapped"
   | "tool-missing"
-  | "unsupported-language";
+  | "unsupported-language"
+  | "contract"
+  | "regression";
 
 export type FindingKind =
   | "high-risk-path"
@@ -32,7 +41,17 @@ export type FindingKind =
   | "workflow"
   | "auth-crypto"
   | "secret"
-  | "check-failed";
+  | "check-failed"
+  | "regression";
+
+export type ContractClauseKind =
+  | "required-gate"
+  | "max-residual-risk"
+  | "required-mapped-tests"
+  | "forbidden-unproven"
+  | "accepted-residual-risk";
+
+export type AcceptedResidualRiskPolicy = "none" | "listed-only" | "allow";
 
 export interface ChangedFile {
   path: string;
@@ -79,6 +98,41 @@ export interface Finding {
   line?: number;
 }
 
+export interface ContractClauseResult {
+  id: string;
+  kind: ContractClauseKind;
+  passed: boolean;
+  message: string;
+  files?: string[];
+}
+
+export interface ContractResult {
+  loaded: boolean;
+  passed: boolean;
+  source: string | null;
+  format: "yaml" | "markdown" | null;
+  clauses: ContractClauseResult[];
+}
+
+export interface BaselineItemRef {
+  id: string;
+  kind: string;
+  message: string;
+  risk: RiskLevel;
+  files?: string[];
+  path?: string;
+}
+
+export interface BaselineComparison {
+  baselinePath: string;
+  newGaps: BaselineItemRef[];
+  resolvedGaps: BaselineItemRef[];
+  newFindings: BaselineItemRef[];
+  resolvedFindings: BaselineItemRef[];
+  regression: boolean;
+  failOnNewGaps?: FailOnLevel;
+}
+
 export interface Evidence {
   schemaVersion: typeof SCHEMA_VERSION;
   generatedAt: string;
@@ -98,6 +152,7 @@ export interface Evidence {
     unmappedSources: string[];
     languages: Language[];
     mappingStrategy: MappingStrategy;
+    mappingFallbacks?: MappingStrategy[];
   };
   checks: CheckResult[];
   gaps: Gap[];
@@ -111,6 +166,8 @@ export interface Evidence {
     acceptedGapCount: number;
     findingCount: number;
   };
+  contract: ContractResult;
+  baselineComparison: BaselineComparison | null;
 }
 
 export interface DetectedTools {
@@ -133,6 +190,14 @@ export interface DetectedTools {
   pytestBin: string | null;
   gitleaks: boolean;
   gitleaksBin: string | null;
+  go: boolean;
+  goBin: string | null;
+  cargo: boolean;
+  cargoBin: string | null;
+  maven: boolean;
+  mavenBin: string | null;
+  gradle: boolean;
+  gradleBin: string | null;
 }
 
 export interface AcceptGapRule {
@@ -148,12 +213,33 @@ export interface PatchproveGates {
   secrets: boolean;
 }
 
+export interface GlobClause {
+  glob: string;
+  reason?: string;
+}
+
+export interface PatchproveContract {
+  schemaVersion: string;
+  requiredGates: CheckId[];
+  maxResidualRisk?: SummaryRisk;
+  requiredMappedTests: GlobClause[];
+  forbiddenUnproven: GlobClause[];
+  acceptedResidualRisk: {
+    policy: AcceptedResidualRiskPolicy;
+  };
+  sourcePath: string | null;
+  format: "yaml" | "markdown";
+}
+
 export interface ResolvedConfig {
   failOn: FailOnLevel | undefined;
   ignorePaths: string[];
   gates: PatchproveGates;
   acceptGaps: AcceptGapRule[];
   sourcePath: string | null;
+  baseline: string | null;
+  failOnNewGaps: FailOnLevel | undefined;
+  spec: string | null;
 }
 
 export interface RunOptions {
@@ -169,4 +255,49 @@ export interface RunOptions {
   disableGate?: CheckId[];
   sarif?: string;
   config?: string;
+  baseline?: string;
+  failOnNewGaps?: FailOnLevel | "none";
+  spec?: string;
+}
+
+export function emptyContractResult(): ContractResult {
+  return {
+    loaded: false,
+    passed: true,
+    source: null,
+    format: null,
+    clauses: [],
+  };
+}
+
+export function emptyDetectedTools(): DetectedTools {
+  return {
+    typescript: false,
+    tscBin: null,
+    eslint: false,
+    eslintBin: null,
+    vitest: false,
+    vitestBin: null,
+    jest: false,
+    jestBin: null,
+    python: false,
+    pyright: false,
+    pyrightBin: null,
+    mypy: false,
+    mypyBin: null,
+    ruff: false,
+    ruffBin: null,
+    pytest: false,
+    pytestBin: null,
+    gitleaks: false,
+    gitleaksBin: null,
+    go: false,
+    goBin: null,
+    cargo: false,
+    cargoBin: null,
+    maven: false,
+    mavenBin: null,
+    gradle: false,
+    gradleBin: null,
+  };
 }
