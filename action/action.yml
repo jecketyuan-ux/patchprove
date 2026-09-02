@@ -6,7 +6,7 @@ branding:
   color: purple
 inputs:
   fail-on:
-    description: Exit non-zero when summary risk meets this threshold (high or critical). Leave empty to never fail the job.
+    description: Exit non-zero when summary risk meets this threshold (high, critical, or none). Leave empty to use .patchprove.yml.
     required: false
     default: ""
   cwd:
@@ -21,6 +21,22 @@ inputs:
     description: Evidence JSON output path.
     required: false
     default: evidence.json
+  accept:
+    description: Comma-separated gap ids or path patterns to accept (in addition to acceptGaps in config).
+    required: false
+    default: ""
+  ignore:
+    description: Comma-separated path globs to exclude from impact/gaps/findings.
+    required: false
+    default: ""
+  upload-sarif:
+    description: Generate SARIF from findings/gaps and upload with github/codeql-action/upload-sarif. Requires security-events: write.
+    required: false
+    default: "false"
+  sarif-file:
+    description: SARIF output path (used when upload-sarif is true).
+    required: false
+    default: patchprove.sarif
 runs:
   using: composite
   steps:
@@ -52,6 +68,10 @@ runs:
         INPUT_FAIL_ON: ${{ inputs.fail-on }}
         INPUT_CWD: ${{ inputs.cwd }}
         INPUT_OUT: ${{ inputs.out }}
+        INPUT_ACCEPT: ${{ inputs.accept }}
+        INPUT_IGNORE: ${{ inputs.ignore }}
+        INPUT_UPLOAD_SARIF: ${{ inputs.upload-sarif }}
+        INPUT_SARIF_FILE: ${{ inputs.sarif-file }}
         EVENT_NAME: ${{ github.event_name }}
         PR_BASE: ${{ github.event.pull_request.base.sha }}
         PR_HEAD: ${{ github.event.pull_request.head.sha }}
@@ -61,6 +81,27 @@ runs:
         ARGS=(run --cwd "$TARGET" --out "$INPUT_OUT" --format markdown)
         if [ -n "$INPUT_FAIL_ON" ]; then
           ARGS+=(--fail-on "$INPUT_FAIL_ON")
+        fi
+        if [ -n "$INPUT_ACCEPT" ]; then
+          IFS=',' read -ra ACCEPTS <<< "$INPUT_ACCEPT"
+          for item in "${ACCEPTS[@]}"; do
+            item="$(echo "$item" | xargs)"
+            if [ -n "$item" ]; then
+              ARGS+=(--accept "$item")
+            fi
+          done
+        fi
+        if [ -n "$INPUT_IGNORE" ]; then
+          IFS=',' read -ra IGNORES <<< "$INPUT_IGNORE"
+          for item in "${IGNORES[@]}"; do
+            item="$(echo "$item" | xargs)"
+            if [ -n "$item" ]; then
+              ARGS+=(--ignore "$item")
+            fi
+          done
+        fi
+        if [ "$INPUT_UPLOAD_SARIF" = "true" ]; then
+          ARGS+=(--sarif "$INPUT_SARIF_FILE")
         fi
         if [ "$EVENT_NAME" = "pull_request" ] || [ "$EVENT_NAME" = "pull_request_target" ]; then
           ARGS+=(--base "$PR_BASE" --head "$PR_HEAD")
@@ -85,6 +126,13 @@ runs:
         COMMENT_FILE: ${{ steps.run.outputs.comment }}
         GH_EVENT_PATH: ${{ github.event_path }}
       run: node "${{ github.action_path }}/post-comment.mjs"
+
+    - name: Upload SARIF
+      if: inputs.upload-sarif == 'true'
+      uses: github/codeql-action/upload-sarif@v3
+      with:
+        sarif_file: ${{ inputs.sarif-file }}
+        category: patchprove
 
     - name: Honor fail-on
       shell: bash

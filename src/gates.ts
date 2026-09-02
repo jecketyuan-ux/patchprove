@@ -36,10 +36,16 @@ function fromProcess(
   };
 }
 
+function disabled(id: CheckResult["id"], name: string): CheckResult {
+  return skip(id, name, `Disabled by config (gates.${id}: false)`);
+}
+
 export async function runTypecheck(
   cwd: string,
   tools: DetectedTools,
+  enabled = true,
 ): Promise<CheckResult> {
+  if (!enabled) return disabled("typecheck", "typecheck");
   if (tools.tscBin) {
     const result = await runCommand(tools.tscBin, ["--noEmit"], {
       cwd,
@@ -73,7 +79,12 @@ export async function runTypecheck(
   return skip("typecheck", "typecheck", "No typechecker configured (tsc / pyright / mypy)");
 }
 
-export async function runLint(cwd: string, tools: DetectedTools): Promise<CheckResult> {
+export async function runLint(
+  cwd: string,
+  tools: DetectedTools,
+  enabled = true,
+): Promise<CheckResult> {
+  if (!enabled) return disabled("lint", "lint");
   if (tools.eslintBin) {
     const result = await runCommand(tools.eslintBin, ["."], {
       cwd,
@@ -101,7 +112,9 @@ export async function runAffectedTests(
   cwd: string,
   tools: DetectedTools,
   mappedTests: string[],
+  enabled = true,
 ): Promise<CheckResult> {
+  if (!enabled) return disabled("tests", "affected tests");
   if (mappedTests.length === 0) {
     return skip("tests", "affected tests", "No mapped tests for this diff");
   }
@@ -139,7 +152,11 @@ export async function runSecretScan(
   tools: DetectedTools,
   files: DiffFile[],
   range: { mode: string; base: string | null; head: string | null },
+  enabled = true,
 ): Promise<{ check: CheckResult; findings: Finding[] }> {
+  if (!enabled) {
+    return { check: disabled("secrets", "secret scan"), findings: [] };
+  }
   if (tools.gitleaksBin) {
     const args =
       range.mode === "range" && range.base && range.head

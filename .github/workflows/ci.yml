@@ -23,7 +23,11 @@ jobs:
       - run: npm run build
       - name: CLI help
         run: node dist/cli.js run --help
+      - name: bin shebang
+        run: head -n1 dist/cli.js | grep -q '^#!/usr/bin/env node'
       - run: npm test
+      - name: npm pack dry-run
+        run: npm pack --dry-run
 
   dogfood:
     name: dogfood patchprove on this PR
@@ -44,9 +48,12 @@ jobs:
           node dist/cli.js run \
             --base "${{ github.event.pull_request.base.sha }}" \
             --head "${{ github.event.pull_request.head.sha }}" \
-            --out evidence.json
+            --out evidence.json \
+            --sarif patchprove.sarif
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: patchprove-evidence
-          path: evidence.json
+          path: |
+            evidence.json
+            patchprove.sarif

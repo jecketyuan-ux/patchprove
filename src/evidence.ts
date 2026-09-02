@@ -1,13 +1,17 @@
+import { applyAcceptedGaps, isOpenGap } from "./accept.js";
+import { matchAnyGlob } from "./glob.js";
+import type { CoverageIndex } from "./coverage.js";
+import { mapTestsForSource } from "./coverage.js";
 import { classifyPath, maxRisk, riskForPathKind } from "./risk.js";
 import {
   collectLanguages,
   isMappableSource,
   isSourceFile,
   languageOf,
-  mapTestsForFile,
 } from "./mapping.js";
 import type { DiffFile } from "./git.js";
 import type {
+  AcceptGapRule,
   ChangedFile,
   CheckResult,
   DetectedTools,
@@ -30,20 +34,36 @@ export function toChangedFile(file: DiffFile): ChangedFile {
   };
 }
 
+export function filterIgnored<T extends { path: string }>(
+  items: T[],
+  ignorePaths: readonly string[],
+): T[] {
+  if (ignorePaths.length === 0) return items;
+  return items.filter((item) => !matchAnyGlob(item.path, ignorePaths));
+}
+
 export function buildImpact(
   files: DiffFile[],
   existingFiles: ReadonlySet<string>,
+  options?: {
+    ignorePaths?: readonly string[];
+    coverage?: CoverageIndex | null;
+  },
 ): Evidence["impact"] {
-  const changedFiles = files.map(toChangedFile);
+  const ignorePaths = options?.ignorePaths ?? [];
+  const visible = filterIgnored(files, ignorePaths);
+  const changedFiles = visible.map(toChangedFile);
   const mappedTests: MappedTest[] = [];
   const unmappedSources: string[] = [];
+  const coverage = options?.coverage ?? null;
+  const mappingStrategy = coverage ? "coverage" : "naming";
 
-  for (const file of files) {
+  for (const file of visible) {
     if (file.status === "deleted") continue;
     if (!isMappableSource(file.path)) continue;
-    const tests = mapTestsForFile(file.path, existingFiles);
+    const { tests, via } = mapTestsForSource(file.path, existingFiles, coverage);
     if (tests.length > 0) {
-      mappedTests.push({ source: file.path, tests });
+      mappedTests.push({ source: file.path, tests, via });
     } else {
       unmappedSources.push(file.path);
     }
@@ -53,7 +73,8 @@ export function buildImpact(
     changedFiles,
     mappedTests,
     unmappedSources,
-    languages: collectLanguages(files.map((f) => f.path)),
+    languages: collectLanguages(visible.map((f) => f.path)),
+    mappingStrategy,
   };
 }
 
@@ -106,6 +127,7 @@ export function collectGaps(
 
   for (const check of checks) {
     if (check.status !== "skipped") continue;
+    if (check.reason?.startsWith("Disabled by config")) continue;
     if (check.id === "tests" && impact.mappedTests.length === 0) continue;
     const missing =
       (check.id === "typecheck" && (tools.typescript || tools.pyright || tools.mypy)) ||
@@ -163,14 +185,18 @@ export function buildEvidence(input: {
   checks: CheckResult[];
   gaps: Gap[];
   findings: Finding[];
+  acceptGaps?: readonly AcceptGapRule[];
   generatedAt?: string;
 }): Evidence {
+  const gaps = applyAcceptedGaps(input.gaps, input.acceptGaps ?? []);
+  const openGaps = gaps.filter(isOpenGap);
+  const acceptedGaps = gaps.filter((g) => !isOpenGap(g));
   const checksPassed = input.checks.filter((c) => c.status === "passed").length;
   const checksFailed = input.checks.filter((c) => c.status === "failed").length;
   const checksSkipped = input.checks.filter((c) => c.status === "skipped").length;
   const summaryRisk = maxRisk([
     ...input.findings.map((f) => f.risk),
-    ...input.gaps.map((g) => g.risk),
+    ...openGaps.map((g) => g.risk),
   ]);
 
   return {
@@ -181,14 +207,15 @@ export function buildEvidence(input: {
     range: input.range,
     impact: input.impact,
     checks: input.checks,
-    gaps: input.gaps,
+    gaps,
     findings: input.findings,
     summary: {
       risk: summaryRisk,
       checksPassed,
       checksFailed,
       checksSkipped,
-      gapCount: input.gaps.length,
+      gapCount: openGaps.length,
+      acceptedGapCount: acceptedGaps.length,
       findingCount: input.findings.length,
     },
   };

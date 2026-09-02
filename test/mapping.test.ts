@@ -4,6 +4,7 @@ import {
   isTestFile,
   languageOf,
   mapTestsForFile,
+  testBasenameKey,
   testCandidatesFor,
 } from "../src/mapping.js";
 
@@ -70,5 +71,15 @@ describe("test mapping heuristics", () => {
   it("does not map lockfiles or markdown", () => {
     expect(testCandidatesFor("package-lock.json")).toEqual([]);
     expect(testCandidatesFor("README.md")).toEqual([]);
+  });
+});
+
+describe("testBasenameKey", () => {
+  it("strips test wrappers for coverage pairing", () => {
+    expect(testBasenameKey("src/utils/hash.ts")).toBe("hash");
+    expect(testBasenameKey("test/unit/hash.spec.ts")).toBe("hash");
+    expect(testBasenameKey("src/foo.test.ts")).toBe("foo");
+    expect(testBasenameKey("tests/test_util.py")).toBe("util");
+    expect(testBasenameKey("pkg/util_test.py")).toBe("util");
   });
 });

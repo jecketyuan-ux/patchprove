@@ -1,5 +1,6 @@
+import { isOpenGap } from "./accept.js";
 import { color } from "./color.js";
-import type { Evidence, RiskLevel, SummaryRisk } from "./types.js";
+import type { Evidence, Gap, RiskLevel, SummaryRisk } from "./types.js";
 
 function riskColor(level: SummaryRisk): (s: string) => string {
   switch (level) {
@@ -26,9 +27,17 @@ function pad(s: string, n: number): string {
   return s.length >= n ? s : `${s}${" ".repeat(n - s.length)}`;
 }
 
+function splitGaps(evidence: Evidence): { open: Gap[]; accepted: Gap[] } {
+  return {
+    open: evidence.gaps.filter(isOpenGap),
+    accepted: evidence.gaps.filter((g) => !isOpenGap(g)),
+  };
+}
+
 export function formatHumanReport(evidence: Evidence): string {
   const lines: string[] = [];
   const paint = riskColor(evidence.summary.risk);
+  const { open, accepted } = splitGaps(evidence);
   lines.push("");
   lines.push(color.bold("patchprove") + color.dim(`  v${evidence.toolVersion}`) + "  ·  impact → checks → gaps → risk");
   lines.push(color.dim("model-free evidence pack  ·  not a CI replacement"));
@@ -42,7 +51,8 @@ export function formatHumanReport(evidence: Evidence): string {
     `${color.dim("files")}     ${evidence.impact.changedFiles.length} changed` +
       (evidence.impact.languages.length
         ? `  ·  ${evidence.impact.languages.join(", ")}`
-        : ""),
+        : "") +
+      color.dim(`  ·  mapping ${evidence.impact.mappingStrategy}`),
   );
   lines.push(`${color.dim("risk")}      ${paint(evidence.summary.risk.toUpperCase())}`);
   lines.push("");
@@ -52,11 +62,14 @@ export function formatHumanReport(evidence: Evidence): string {
     lines.push(color.dim("  (no changes)"));
   }
   const testMap = new Map(evidence.impact.mappedTests.map((m) => [m.source, m.tests]));
+  const viaMap = new Map(evidence.impact.mappedTests.map((m) => [m.source, m.via]));
   for (const file of evidence.impact.changedFiles) {
     const tests = testMap.get(file.path);
     const tag = file.highRisk ? `  ${color.red("⚠ " + (file.riskKind ?? "high-risk"))}` : "";
+    const via = viaMap.get(file.path);
+    const viaTag = tests?.length && via ? color.dim(` (${via})`) : "";
     const mapping = tests?.length
-      ? color.dim(` → ${tests.join(", ")}`)
+      ? color.dim(` → ${tests.join(", ")}`) + viaTag
       : file.status === "deleted"
         ? color.dim(" (deleted)")
         : color.yellow(" → no mapped test");
@@ -78,11 +91,22 @@ export function formatHumanReport(evidence: Evidence): string {
   lines.push("");
 
   lines.push(color.bold("GAPS"));
-  if (evidence.gaps.length === 0) {
+  if (open.length === 0) {
     lines.push(color.dim("  (none — mapped tests and configured gates are present)"));
   } else {
-    for (const gap of evidence.gaps) {
+    for (const gap of open) {
       lines.push(`  • ${gap.message}  ${riskColor(gap.risk)(`[${gap.risk}]`)}`);
+    }
+  }
+  lines.push("");
+
+  lines.push(color.bold("ACCEPTED GAPS"));
+  if (accepted.length === 0) {
+    lines.push(color.dim("  (none)"));
+  } else {
+    for (const gap of accepted) {
+      const reason = gap.acceptedReason ? color.dim(`  accepted: ${gap.acceptedReason}`) : color.dim("  accepted");
+      lines.push(`  • ${gap.message}  ${riskColor(gap.risk)(`[${gap.risk}]`)}${reason}`);
     }
   }
   lines.push("");
@@ -102,7 +126,7 @@ export function formatHumanReport(evidence: Evidence): string {
     color.bold("SUMMARY") +
       `  ${paint(s.risk.toUpperCase())}` +
       color.dim(
-        `   ${s.checksPassed} passed · ${s.checksFailed} failed · ${s.checksSkipped} skipped · ${s.gapCount} gaps · ${s.findingCount} findings`,
+        `   ${s.checksPassed} passed · ${s.checksFailed} failed · ${s.checksSkipped} skipped · ${s.gapCount} open gaps · ${s.acceptedGapCount} accepted · ${s.findingCount} findings`,
       ),
   );
   lines.push("");
@@ -118,22 +142,35 @@ export function formatMarkdownReport(evidence: Evidence): string {
     evidence.range.mode === "range"
       ? `\`${evidence.range.base}...${evidence.range.head}\``
       : "working tree vs HEAD";
+  const { open, accepted } = splitGaps(evidence);
   const testMap = new Map(evidence.impact.mappedTests.map((m) => [m.source, m.tests]));
+  const viaMap = new Map(evidence.impact.mappedTests.map((m) => [m.source, m.via]));
   const impactLines = evidence.impact.changedFiles.map((file) => {
     const tests = testMap.get(file.path);
     const mapped = tests?.length ? tests.map((t) => `\`${t}\``).join(", ") : "_no mapped test_";
     const risk = file.highRisk ? ` (${file.riskKind})` : "";
-    return `- \`${file.path}\`${risk} → ${mapped}`;
+    const via = viaMap.get(file.path);
+    const viaTag = tests?.length && via ? ` · _${via}_` : "";
+    return `- \`${file.path}\`${risk} → ${mapped}${viaTag}`;
   });
 
   const checkRows = evidence.checks
     .map((c) => `| ${c.name} | ${c.status} | ${c.reason ?? ""} |`)
     .join("\n");
 
-  const gaps =
-    evidence.gaps.length === 0
+  const openGaps =
+    open.length === 0
       ? "_None._"
-      : evidence.gaps.map((g) => `- ${g.message} ${riskBadge(g.risk)}`).join("\n");
+      : open.map((g) => `- ${g.message} ${riskBadge(g.risk)}`).join("\n");
+  const acceptedGaps =
+    accepted.length === 0
+      ? "_None._"
+      : accepted
+          .map((g) => {
+            const reason = g.acceptedReason ? ` — ${g.acceptedReason}` : "";
+            return `- ${g.message} ${riskBadge(g.risk)} \`accepted\`${reason}`;
+          })
+          .join("\n");
   const findings =
     evidence.findings.length === 0
       ? "_None._"
@@ -143,26 +180,33 @@ export function formatMarkdownReport(evidence: Evidence): string {
     "<!-- patchprove-sticky -->",
     "## patchprove evidence pack",
     "",
-    `**Summary risk:** ${riskBadge(evidence.summary.risk)} · range ${range}`,
+    `**Summary risk:** ${riskBadge(evidence.summary.risk)} · range ${range} · mapping \`${evidence.impact.mappingStrategy}\``,
     "",
-    "| Passed | Failed | Skipped | Gaps | Findings |",
-    "| ---: | ---: | ---: | ---: | ---: |",
-    `| ${evidence.summary.checksPassed} | ${evidence.summary.checksFailed} | ${evidence.summary.checksSkipped} | ${evidence.summary.gapCount} | ${evidence.summary.findingCount} |`,
+    "| Passed | Failed | Skipped | Open gaps | Accepted | Findings |",
+    "| ---: | ---: | ---: | ---: | ---: | ---: |",
+    `| ${evidence.summary.checksPassed} | ${evidence.summary.checksFailed} | ${evidence.summary.checksSkipped} | ${evidence.summary.gapCount} | ${evidence.summary.acceptedGapCount} | ${evidence.summary.findingCount} |`,
     "",
     "### Impact",
     impactLines.length ? impactLines.join("\n") : "_No changes._",
     "",
-    "### Gaps",
-    gaps,
+    "### Checks",
+    "",
+    "| Check | Status | Reason |",
+    "| --- | --- | --- |",
+    checkRows || "| — | — | — |",
+    "",
+    "### Open gaps",
+    openGaps,
+    "",
+    "### Accepted gaps",
+    acceptedGaps,
     "",
     "### Findings",
     findings,
     "",
-    "<details><summary>Checks</summary>",
+    "<details><summary>Raw check detail</summary>",
     "",
-    "| Check | Status | Reason |",
-    "| --- | --- | --- |",
-    checkRows,
+    "Accepted gaps remain in the evidence pack for audit. They do not raise summary risk or trip `--fail-on`.",
     "",
     "</details>",
     "",

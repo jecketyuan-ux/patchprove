@@ -20,7 +20,7 @@
   "properties": {
     "schemaVersion": {
       "type": "string",
-      "const": "0.1.0",
+      "const": "0.2.0",
       "description": "Evidence JSON schema version (semver)."
     },
     "generatedAt": {
@@ -53,7 +53,7 @@
     "impact": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["changedFiles", "mappedTests", "unmappedSources", "languages"],
+      "required": ["changedFiles", "mappedTests", "unmappedSources", "languages", "mappingStrategy"],
       "properties": {
         "changedFiles": {
           "type": "array",
@@ -70,6 +70,11 @@
         "languages": {
           "type": "array",
           "items": { "type": "string", "enum": ["javascript", "typescript", "python", "other"] }
+        },
+        "mappingStrategy": {
+          "type": "string",
+          "enum": ["naming", "coverage"],
+          "description": "How changed sources were mapped to tests. coverage when a coverage map was loaded; otherwise naming heuristics."
         }
       }
     },
@@ -94,6 +99,7 @@
         "checksFailed",
         "checksSkipped",
         "gapCount",
+        "acceptedGapCount",
         "findingCount"
       ],
       "properties": {
@@ -101,7 +107,12 @@
         "checksPassed": { "type": "integer", "minimum": 0 },
         "checksFailed": { "type": "integer", "minimum": 0 },
         "checksSkipped": { "type": "integer", "minimum": 0 },
-        "gapCount": { "type": "integer", "minimum": 0 },
+        "gapCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Open (non-accepted) gaps. Accepted gaps are counted separately and do not raise risk."
+        },
+        "acceptedGapCount": { "type": "integer", "minimum": 0 },
         "findingCount": { "type": "integer", "minimum": 0 }
       }
     }
@@ -143,6 +154,11 @@
         "tests": {
           "type": "array",
           "items": { "type": "string" }
+        },
+        "via": {
+          "type": "string",
+          "enum": ["naming", "coverage"],
+          "description": "How this source was mapped. Present when a coverage map or naming heuristic produced the list."
         }
       }
     },
@@ -187,7 +203,12 @@
         "files": {
           "type": "array",
           "items": { "type": "string" }
-        }
+        },
+        "accepted": {
+          "type": "boolean",
+          "description": "True when this gap matches acceptGaps or --accept. Visible for audit; excluded from summary risk / fail-on."
+        },
+        "acceptedReason": { "type": "string" }
       }
     },
     "finding": {
