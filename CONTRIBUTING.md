@@ -44,6 +44,9 @@ Please add or extend tests when you touch:
 - `src/risk.ts` — path classification and fail-on
 - `src/evidence.ts` / schema — keep `schema/evidence.schema.json` in lockstep
 - CLI flags — help text and exit codes
+- `src/config.ts` — `.patchprove.yml` load + CLI override
+- `src/coverage.ts` — coverage map parse + naming fallback
+- `src/accept.ts` — accepted gaps must not raise summary risk
 
 ```bash
 npm test
@@ -52,7 +55,7 @@ npm run build
 
 ## Schema changes
 
-`schemaVersion` is `0.1.0`. Additive optional fields are fine. Breaking field or enum changes require a schema version bump and a CHANGELOG entry.
+`schemaVersion` is `0.2.0`. Additive optional fields are fine. Breaking field or enum changes require a schema version bump and a CHANGELOG entry. Keep `schema/evidence.schema.json` in lockstep with `src/types.ts`.
 
 ## Pull requests
 

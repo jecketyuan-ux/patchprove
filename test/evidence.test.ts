@@ -56,7 +56,7 @@ function file(partial: Partial<DiffFile> & { path: string }): DiffFile {
 }
 
 describe("evidence JSON shape", () => {
-  it("matches the published 0.1 schema", () => {
+  it("matches the published 0.2 schema", () => {
     const files = [
       file({ path: "src/auth/session.ts" }),
       file({ path: "src/utils/hash.ts" }),
@@ -126,9 +126,11 @@ describe("evidence JSON shape", () => {
     const ok = validate(evidence);
     expect(validate.errors).toBeNull();
     expect(ok).toBe(true);
-    expect(evidence.schemaVersion).toBe("0.1.0");
+    expect(evidence.schemaVersion).toBe("0.2.0");
+    expect(evidence.impact.mappingStrategy).toBe("naming");
+    expect(evidence.summary.acceptedGapCount).toBe(0);
     expect(evidence.impact.mappedTests).toEqual([
-      { source: "src/auth/session.ts", tests: ["src/auth/session.test.ts"] },
+      { source: "src/auth/session.ts", tests: ["src/auth/session.test.ts"], via: "naming" },
     ]);
     expect(evidence.impact.unmappedSources).toContain("src/utils/hash.ts");
     expect(evidence.summary.risk).toBe("high");

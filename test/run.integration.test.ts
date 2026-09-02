@@ -54,7 +54,8 @@ describe("analyze integration", () => {
       out: path.join(dir, "evidence.json"),
     });
 
-    expect(evidence.schemaVersion).toBe("0.1.0");
+    expect(evidence.schemaVersion).toBe("0.2.0");
+    expect(evidence.impact.mappingStrategy).toBe("naming");
     expect(evidence.range.mode).toBe("working-tree");
     const paths = evidence.impact.changedFiles.map((f) => f.path);
     expect(paths).not.toContain(".");
@@ -109,5 +110,71 @@ describe("analyze integration", () => {
     expect(evidence.findings.some((f) => f.kind === "secret")).toBe(true);
     expect(evidence.summary.risk).toBe("critical");
     expect(meetsFailOn(evidence.summary.risk, "critical")).toBe(true);
+  });
+
+  it("loads .patchprove.yml, accepts gaps, and prefers coverage mapping", async () => {
+    const dir = seedRepo();
+    mkdirSync(path.join(dir, "test", "unit"), { recursive: true });
+    mkdirSync(path.join(dir, "coverage"), { recursive: true });
+    writeFileSync(path.join(dir, "test", "unit", "hash.spec.ts"), "export const ok = 1;\n");
+    writeFileSync(
+      path.join(dir, "coverage", "coverage-final.json"),
+      JSON.stringify({
+        [`${dir}/src/utils/hash.ts`]: { path: `${dir}/src/utils/hash.ts`, s: { "0": 1 } },
+        [`${dir}/test/unit/hash.spec.ts`]: {
+          path: `${dir}/test/unit/hash.spec.ts`,
+          s: { "0": 1 },
+        },
+      }),
+    );
+    writeFileSync(
+      path.join(dir, ".patchprove.yml"),
+      [
+        "failOn: high",
+        "ignorePaths:",
+        "  - .github/**",
+        "acceptGaps:",
+        "  - path: src/auth/**",
+        "    reason: session tests are colocated but we accept residual lockout gap",
+        "",
+      ].join("\n"),
+    );
+    git(dir, ["add", "."]);
+    git(dir, ["commit", "-m", "fixtures"]);
+
+    writeFileSync(
+      path.join(dir, "src", "utils", "hash.ts"),
+      "export const hash = (s: string) => s + s;\n",
+    );
+    writeFileSync(
+      path.join(dir, "src", "auth", "session.ts"),
+      "export const ttl = 15;\n",
+    );
+    writeFileSync(
+      path.join(dir, ".github", "workflows", "ci.yml"),
+      "name: ci\non: [push, pull_request]\n",
+    );
+
+    const evidence = await analyze({
+      cwd: dir,
+      json: false,
+      format: "human",
+      out: path.join(dir, "evidence.json"),
+    });
+
+    expect(evidence.impact.mappingStrategy).toBe("coverage");
+    expect(evidence.impact.changedFiles.map((f) => f.path)).not.toContain(
+      ".github/workflows/ci.yml",
+    );
+    expect(
+      evidence.impact.mappedTests.some(
+        (m) => m.source === "src/utils/hash.ts" && m.tests.includes("test/unit/hash.spec.ts"),
+      ),
+    ).toBe(true);
+    const authGap = evidence.gaps.find((g) => g.files?.includes("src/auth/session.ts"));
+    // session.ts has a colocated test, so it should be mapped; acceptGaps still applies to any leftover
+    expect(evidence.gaps.filter((g) => g.accepted).every((g) => g.acceptedReason)).toBe(true);
+    expect(authGap === undefined || authGap.accepted === true).toBe(true);
+    expect(meetsFailOn(evidence.summary.risk, "high")).toBe(true);
   });
 });

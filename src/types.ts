@@ -1,9 +1,10 @@
-export const SCHEMA_VERSION = "0.1.0" as const;
-export const TOOL_VERSION = "0.1.0";
+export const SCHEMA_VERSION = "0.2.0" as const;
+export const TOOL_VERSION = "0.2.0";
 
 export type RiskLevel = "low" | "medium" | "high" | "critical";
 export type SummaryRisk = "none" | RiskLevel;
 export type FailOnLevel = "high" | "critical";
+export type MappingStrategy = "naming" | "coverage";
 
 export type FileStatus =
   | "added"
@@ -45,6 +46,7 @@ export interface ChangedFile {
 export interface MappedTest {
   source: string;
   tests: string[];
+  via?: MappingStrategy;
 }
 
 export interface CheckResult {
@@ -64,6 +66,8 @@ export interface Gap {
   message: string;
   risk: RiskLevel;
   files?: string[];
+  accepted?: boolean;
+  acceptedReason?: string;
 }
 
 export interface Finding {
@@ -93,6 +97,7 @@ export interface Evidence {
     mappedTests: MappedTest[];
     unmappedSources: string[];
     languages: Language[];
+    mappingStrategy: MappingStrategy;
   };
   checks: CheckResult[];
   gaps: Gap[];
@@ -103,6 +108,7 @@ export interface Evidence {
     checksFailed: number;
     checksSkipped: number;
     gapCount: number;
+    acceptedGapCount: number;
     findingCount: number;
   };
 }
@@ -129,12 +135,38 @@ export interface DetectedTools {
   gitleaksBin: string | null;
 }
 
+export interface AcceptGapRule {
+  id?: string;
+  path?: string;
+  reason?: string;
+}
+
+export interface PatchproveGates {
+  typecheck: boolean;
+  lint: boolean;
+  tests: boolean;
+  secrets: boolean;
+}
+
+export interface ResolvedConfig {
+  failOn: FailOnLevel | undefined;
+  ignorePaths: string[];
+  gates: PatchproveGates;
+  acceptGaps: AcceptGapRule[];
+  sourcePath: string | null;
+}
+
 export interface RunOptions {
   cwd: string;
   json: boolean;
   format: "human" | "json" | "markdown";
   out: string;
-  failOn?: FailOnLevel;
+  failOn?: FailOnLevel | "none";
   base?: string;
   head?: string;
+  accept?: string[];
+  ignore?: string[];
+  disableGate?: CheckId[];
+  sarif?: string;
+  config?: string;
 }

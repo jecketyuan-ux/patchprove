@@ -129,3 +129,20 @@ export function collectLanguages(paths: string[]): Language[] {
   }
   return [...set].sort();
 }
+
+/**
+ * Strip test_ / _test / .test / .spec wrappers so coverage can pair
+ * `src/utils/hash.ts` with `test/unit/hash.spec.ts`.
+ */
+export function testBasenameKey(filePath: string): string {
+  const rel = normalizeRel(filePath);
+  const ext = extname(rel);
+  let name = basenameNoExt(rel);
+  if (PY_EXTS.has(ext)) {
+    if (name.startsWith("test_")) name = name.slice(5);
+    else if (name.endsWith("_test")) name = name.slice(0, -5);
+    return name.toLowerCase();
+  }
+  name = name.replace(/\.(test|spec)$/i, "");
+  return name.toLowerCase();
+}
