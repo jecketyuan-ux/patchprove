@@ -26,6 +26,7 @@ jobs:
           node dist/cli.js run --help
           node dist/cli.js init-agent --help
           node dist/cli.js hook --help
+          node dist/cli.js baseline save --help
       - name: bin shebang
         run: |
           head -n1 dist/cli.js | grep -q '^#!/usr/bin/env node'
@@ -33,6 +34,24 @@ jobs:
       - run: npm test
       - name: npm pack dry-run
         run: npm pack --dry-run
+
+  go-launcher:
+    name: go thin launcher
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-go@v5
+        with:
+          go-version: "1.22"
+      - run: npm ci
+      - run: npm run build
+      - run: go build -o bin/patchprove ./go
+      - run: ./bin/patchprove --version
+      - run: ./bin/patchprove run --help
 
   dogfood:
     name: dogfood patchprove on this PR

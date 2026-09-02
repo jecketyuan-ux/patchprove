@@ -1,0 +1,62 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/jecketyuan-ux/patchprove/schema/spec.schema.json",
+  "title": "PatchproveContract",
+  "description": "In-repo merge/agent contract loaded from .patchprove/spec.yml or a SPEC.md yaml fence.",
+  "type": "object",
+  "additionalProperties": true,
+  "properties": {
+    "schemaVersion": { "type": "string" },
+    "requiredGates": {
+      "type": "array",
+      "items": { "type": "string", "enum": ["typecheck", "lint", "tests", "secrets"] }
+    },
+    "maxResidualRisk": {
+      "type": "string",
+      "enum": ["none", "low", "medium", "high", "critical"]
+    },
+    "requiredMappedTests": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "string" },
+          {
+            "type": "object",
+            "required": ["glob"],
+            "properties": {
+              "glob": { "type": "string" },
+              "reason": { "type": "string" }
+            }
+          }
+        ]
+      }
+    },
+    "forbiddenUnproven": {
+      "type": "array",
+      "items": {
+        "oneOf": [
+          { "type": "string" },
+          {
+            "type": "object",
+            "required": ["glob"],
+            "properties": {
+              "glob": { "type": "string" },
+              "reason": { "type": "string" }
+            }
+          }
+        ]
+      }
+    },
+    "acceptedResidualRisk": {
+      "oneOf": [
+        { "type": "string", "enum": ["none", "listed-only", "allow"] },
+        {
+          "type": "object",
+          "properties": {
+            "policy": { "type": "string", "enum": ["none", "listed-only", "allow"] }
+          }
+        }
+      ]
+    }
+  }
+}

@@ -43,6 +43,12 @@ function parseStringList(value: unknown, source: string): string[] {
   return value.map((item) => item.trim()).filter(Boolean);
 }
 
+function parseOptionalPath(value: unknown, source: string): string | null {
+  if (value === undefined || value === null || value === "") return null;
+  if (typeof value !== "string") throw new Error(`${source}: must be a string path`);
+  return value.trim() || null;
+}
+
 function parseGates(value: unknown, source: string): Partial<PatchproveGates> {
   if (value === undefined || value === null) return {};
   const rec = asRecord(value);
@@ -107,11 +113,22 @@ export interface FileConfig {
   gates: Partial<PatchproveGates>;
   acceptGaps: AcceptGapRule[];
   sourcePath: string;
+  baseline: string | null;
+  failOnNewGaps: FailOnLevel | undefined;
+  spec: string | null;
 }
 
 export function parseConfigObject(raw: unknown, source: string): Omit<FileConfig, "sourcePath"> {
   if (raw === undefined || raw === null) {
-    return { failOn: undefined, ignorePaths: [], gates: {}, acceptGaps: [] };
+    return {
+      failOn: undefined,
+      ignorePaths: [],
+      gates: {},
+      acceptGaps: [],
+      baseline: null,
+      failOnNewGaps: undefined,
+      spec: null,
+    };
   }
   const rec = asRecord(raw);
   if (!rec) throw new Error(`${source}: config root must be a mapping`);
@@ -120,6 +137,9 @@ export function parseConfigObject(raw: unknown, source: string): Omit<FileConfig
     ignorePaths: parseStringList(rec.ignorePaths, `${source}: ignorePaths`),
     gates: parseGates(rec.gates, `${source}: gates`),
     acceptGaps: parseAcceptGapRules(rec.acceptGaps, `${source}: acceptGaps`),
+    baseline: parseOptionalPath(rec.baseline, `${source}: baseline`),
+    failOnNewGaps: parseFailOn(rec.failOnNewGaps, `${source}: failOnNewGaps`),
+    spec: parseOptionalPath(rec.spec, `${source}: spec`),
   };
 }
 
@@ -158,7 +178,7 @@ export function loadConfigFile(root: string, explicit?: string): FileConfig | nu
 
 export function mergeConfig(
   file: FileConfig | null,
-  options: Pick<RunOptions, "failOn" | "accept" | "ignore" | "disableGate">,
+  options: Pick<RunOptions, "failOn" | "accept" | "ignore" | "disableGate" | "baseline" | "failOnNewGaps" | "spec">,
 ): ResolvedConfig {
   const gates: PatchproveGates = { ...DEFAULT_GATES, ...(file?.gates ?? {}) };
   for (const id of options.disableGate ?? []) {
@@ -175,6 +195,13 @@ export function mergeConfig(
     failOn = options.failOn;
   }
 
+  let failOnNewGaps: FailOnLevel | undefined = file?.failOnNewGaps;
+  if (options.failOnNewGaps === "none") {
+    failOnNewGaps = undefined;
+  } else if (options.failOnNewGaps === "high" || options.failOnNewGaps === "critical") {
+    failOnNewGaps = options.failOnNewGaps;
+  }
+
   const acceptGaps: AcceptGapRule[] = [...(file?.acceptGaps ?? [])];
   for (const token of options.accept ?? []) {
     acceptGaps.push(acceptRuleFromToken(token, "accepted via CLI --accept"));
@@ -188,6 +215,9 @@ export function mergeConfig(
     gates,
     acceptGaps,
     sourcePath: file?.sourcePath ?? null,
+    baseline: options.baseline ?? file?.baseline ?? null,
+    failOnNewGaps,
+    spec: options.spec ?? file?.spec ?? null,
   };
 }
 

@@ -1,0 +1,13 @@
+# patchprove docs (GitHub Pages / Jekyll)
+title: patchprove
+description: Model-free evidence pack for AI/agent patches — impact → checks → gaps → risk.
+theme: minima
+markdown: kramdown
+plugins: []
+header_pages:
+  - contract.md
+  - mapping.md
+  - plugins.md
+  - baseline.md
+  - case-study.md
+  - standalone.md

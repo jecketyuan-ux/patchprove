@@ -120,6 +120,22 @@ export function detectTools(cwd: string): DetectedTools {
   const pytestBin = resolveBin(cwd, ["pytest"], pytestConfigured);
   const gitleaksBin = whichSync("gitleaks") ?? localBin(cwd, "gitleaks");
 
+  const goPresent = anyExists(cwd, ["go.mod", "go.sum"]);
+  const cargoPresent = anyExists(cwd, ["Cargo.toml", "Cargo.lock"]);
+  const mavenPresent = anyExists(cwd, ["pom.xml"]);
+  const gradlePresent = anyExists(cwd, ["build.gradle", "build.gradle.kts", "settings.gradle", "settings.gradle.kts"]);
+
+  const goBin = goPresent ? whichSync("go") : null;
+  const cargoBin = cargoPresent ? whichSync("cargo") : null;
+  const mavenBin = mavenPresent ? whichSync("mvn") : null;
+  const gradleBin = gradlePresent
+    ? (existsSync(path.join(cwd, "gradlew"))
+      ? path.join(cwd, "gradlew")
+      : existsSync(path.join(cwd, "gradlew.bat"))
+        ? path.join(cwd, "gradlew.bat")
+        : whichSync("gradle"))
+    : null;
+
   return {
     typescript,
     tscBin,
@@ -140,5 +156,13 @@ export function detectTools(cwd: string): DetectedTools {
     pytestBin,
     gitleaks: Boolean(gitleaksBin),
     gitleaksBin,
+    go: goPresent,
+    goBin,
+    cargo: cargoPresent,
+    cargoBin,
+    maven: mavenPresent,
+    mavenBin,
+    gradle: gradlePresent,
+    gradleBin,
   };
 }

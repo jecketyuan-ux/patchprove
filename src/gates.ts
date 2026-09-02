@@ -1,5 +1,6 @@
 import { clip, runCommand } from "./exec.js";
 import type { DiffFile } from "./git.js";
+import { builtinPlugins } from "./plugins/index.js";
 import { scanSecrets } from "./secrets.js";
 import type { CheckResult, DetectedTools, Finding } from "./types.js";
 
@@ -119,32 +120,63 @@ export async function runAffectedTests(
     return skip("tests", "affected tests", "No mapped tests for this diff");
   }
 
-  if (tools.vitestBin) {
-    const result = await runCommand(tools.vitestBin, ["run", ...mappedTests], {
-      cwd,
-      timeoutMs: GATE_TIMEOUT_MS,
-    });
-    return fromProcess("tests", "affected tests (vitest)", result);
-  }
-  if (tools.jestBin) {
-    const result = await runCommand(tools.jestBin, ["--passWithNoTests", ...mappedTests], {
-      cwd,
-      timeoutMs: GATE_TIMEOUT_MS,
-    });
-    return fromProcess("tests", "affected tests (jest)", result);
-  }
-  if (tools.pytestBin) {
-    const result = await runCommand(tools.pytestBin, mappedTests, {
-      cwd,
-      timeoutMs: GATE_TIMEOUT_MS,
-    });
-    return fromProcess("tests", "affected tests (pytest)", result);
+  const commands = [];
+  const seen = new Set<string>();
+  for (const plugin of builtinPlugins) {
+    const cmd = plugin.testCommand?.(cwd, mappedTests, tools);
+    if (!cmd) continue;
+    const key = `${cmd.command} ${cmd.args.join(" ")}`;
+    if (seen.has(key)) continue;
+    seen.add(key);
+    commands.push(cmd);
   }
 
-  if (tools.vitest || tools.jest || tools.pytest) {
-    return skip("tests", "affected tests", "Test runner configured but binary not found");
+  if (commands.length === 0) {
+    const missing = builtinPlugins
+      .map((p) => p.missingTestRunnerReason?.(tools))
+      .find((reason): reason is string => Boolean(reason));
+    if (missing) return skip("tests", "affected tests", missing);
+    return skip(
+      "tests",
+      "affected tests",
+      "No test runner configured (vitest / jest / pytest / go test / cargo test / mvn|gradle)",
+    );
   }
-  return skip("tests", "affected tests", "No test runner configured (vitest / jest / pytest)");
+
+  const parts: CheckResult[] = [];
+  for (const cmd of commands) {
+    const result = await runCommand(cmd.command, cmd.args, {
+      cwd,
+      timeoutMs: GATE_TIMEOUT_MS,
+    });
+    parts.push(fromProcess("tests", cmd.name, result));
+  }
+
+  if (parts.length === 1) return parts[0] as CheckResult;
+  const failed = parts.filter((p) => p.status === "failed");
+  const durationMs = parts.reduce((sum, p) => sum + (p.durationMs ?? 0), 0);
+  const names = parts.map((p) => p.name.replace(/^affected tests \(|\)$/g, "")).join(" + ");
+  if (failed.length > 0) {
+    return {
+      id: "tests",
+      name: `affected tests (${names})`,
+      status: "failed",
+      reason: failed.map((p) => p.reason).join("; "),
+      command: parts.map((p) => p.command).filter(Boolean).join(" && "),
+      exitCode: failed[0]?.exitCode ?? 1,
+      durationMs,
+      detail: parts.map((p) => p.detail).filter(Boolean).join("\n"),
+    };
+  }
+  return {
+    id: "tests",
+    name: `affected tests (${names})`,
+    status: "passed",
+    reason: "ok",
+    command: parts.map((p) => p.command).filter(Boolean).join(" && "),
+    exitCode: 0,
+    durationMs,
+  };
 }
 
 export async function runSecretScan(

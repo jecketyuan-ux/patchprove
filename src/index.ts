@@ -1,9 +1,12 @@
 export { SCHEMA_VERSION, TOOL_VERSION } from "./types.js";
 export type {
   AcceptGapRule,
+  BaselineComparison,
   ChangedFile,
   CheckId,
   CheckResult,
+  ContractClauseResult,
+  ContractResult,
   Evidence,
   FailOnLevel,
   Finding,
@@ -11,12 +14,14 @@ export type {
   Language,
   MappedTest,
   MappingStrategy,
+  PatchproveContract,
   PatchproveGates,
   ResolvedConfig,
   RiskLevel,
   RunOptions,
   SummaryRisk,
 } from "./types.js";
+export { emptyContractResult, emptyDetectedTools } from "./types.js";
 export {
   classifyPath,
   isLockfilePath,
@@ -46,7 +51,7 @@ export {
   toChangedFile,
 } from "./evidence.js";
 export { formatHumanReport, formatMarkdownReport, formatShortSummary } from "./report.js";
-export { analyze, executeRun, render, writeEvidence } from "./run.js";
+export { analyze, executeRun, render, shouldFailRun, writeEvidence } from "./run.js";
 export {
   listGaps,
   provePatch,
@@ -64,10 +69,11 @@ export {
   executeInitAgent,
   isPatchproveHookCommand,
   mergeClaudeSettings,
+  mergeCursorHooks,
   mergeMcpConfig,
 } from "./init-agent.js";
 export type { InitAgentOptions, InitAgentResult } from "./init-agent.js";
-export { findPackageRoot, skillTemplatePath } from "./pkg.js";
+export { findPackageRoot, skillTemplatePath, cursorRuleTemplatePath } from "./pkg.js";
 export { detectTools } from "./detect.js";
 export {
   acceptRuleFromToken,
@@ -82,3 +88,18 @@ export { applyAcceptedGaps, findAcceptMatch, isOpenGap, matchAcceptRule } from "
 export { globToRegExp, matchAnyGlob, matchGlob } from "./glob.js";
 export { loadCoverageMap, mapTestsForSource, parseCoverageText } from "./coverage.js";
 export { toSarif, writeSarif } from "./sarif.js";
+export { builtinPlugins, pluginForPath } from "./plugins/index.js";
+export { buildImportGraph, mapTestsFromGraph } from "./graph.js";
+export {
+  evaluateContract,
+  extractYamlFromSpecMd,
+  loadContract,
+  parseContractObject,
+  parseContractText,
+} from "./spec.js";
+export {
+  compareToBaseline,
+  DEFAULT_BASELINE_REL,
+  findBaselinePath,
+  writeBaseline,
+} from "./baseline.js";

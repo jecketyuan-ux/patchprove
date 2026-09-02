@@ -1,7 +1,7 @@
 {
-  "schemaVersion": "0.2.0",
+  "schemaVersion": "1.0.0",
   "generatedAt": "2026-09-02T00:00:00.000Z",
-  "toolVersion": "0.3.0",
+  "toolVersion": "1.0.0",
   "repo": { "cwd": "/tmp/demo", "root": "/tmp/demo" },
   "range": { "mode": "working-tree", "base": "HEAD", "head": null },
   "impact": {
@@ -39,5 +39,13 @@
     "gapCount": 1,
     "acceptedGapCount": 1,
     "findingCount": 0
-  }
+  },
+  "contract": {
+    "loaded": false,
+    "passed": true,
+    "source": null,
+    "format": null,
+    "clauses": []
+  },
+  "baselineComparison": null
 }

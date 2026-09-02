@@ -15,12 +15,14 @@
     "checks",
     "gaps",
     "findings",
-    "summary"
+    "summary",
+    "contract",
+    "baselineComparison"
   ],
   "properties": {
     "schemaVersion": {
       "type": "string",
-      "const": "0.2.0",
+      "const": "1.0.0",
       "description": "Evidence JSON schema version (semver)."
     },
     "generatedAt": {
@@ -69,12 +71,17 @@
         },
         "languages": {
           "type": "array",
-          "items": { "type": "string", "enum": ["javascript", "typescript", "python", "other"] }
+          "items": { "type": "string", "enum": ["javascript", "typescript", "python", "go", "rust", "java", "other"] }
         },
         "mappingStrategy": {
           "type": "string",
-          "enum": ["naming", "coverage"],
-          "description": "How changed sources were mapped to tests. coverage when a coverage map was loaded; otherwise naming heuristics."
+          "enum": ["naming", "coverage", "graph"],
+          "description": "Primary mapping strategy that produced mappings (coverage if a coverage map was loaded; else graph if import reverse-map produced hits; else naming)."
+        },
+        "mappingFallbacks": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["naming", "coverage", "graph"] },
+          "description": "Other strategies that also produced at least one source→test mapping on this run."
         }
       }
     },
@@ -115,6 +122,13 @@
         "acceptedGapCount": { "type": "integer", "minimum": 0 },
         "findingCount": { "type": "integer", "minimum": 0 }
       }
+    },
+    "contract": { "$ref": "#/definitions/contract" },
+    "baselineComparison": {
+      "oneOf": [
+        { "type": "null" },
+        { "$ref": "#/definitions/baselineComparison" }
+      ]
     }
   },
   "definitions": {
@@ -157,7 +171,7 @@
         },
         "via": {
           "type": "string",
-          "enum": ["naming", "coverage"],
+          "enum": ["naming", "coverage", "graph"],
           "description": "How this source was mapped. Present when a coverage map or naming heuristic produced the list."
         }
       }
@@ -195,7 +209,9 @@
             "unmapped-test",
             "no-tests-mapped",
             "tool-missing",
-            "unsupported-language"
+            "unsupported-language",
+            "contract",
+            "regression"
           ]
         },
         "message": { "type": "string" },
@@ -225,13 +241,98 @@
             "workflow",
             "auth-crypto",
             "secret",
-            "check-failed"
+            "check-failed",
+            "regression"
           ]
         },
         "risk": { "$ref": "#/definitions/riskLevel" },
         "message": { "type": "string" },
         "path": { "type": "string" },
         "line": { "type": "integer", "minimum": 1 }
+      }
+    },
+    "contractClause": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "passed", "message"],
+      "properties": {
+        "id": { "type": "string" },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "required-gate",
+            "max-residual-risk",
+            "required-mapped-tests",
+            "forbidden-unproven",
+            "accepted-residual-risk"
+          ]
+        },
+        "passed": { "type": "boolean" },
+        "message": { "type": "string" },
+        "files": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "contract": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["loaded", "passed", "source", "format", "clauses"],
+      "properties": {
+        "loaded": { "type": "boolean" },
+        "passed": { "type": "boolean" },
+        "source": { "type": ["string", "null"] },
+        "format": { "type": ["string", "null"], "enum": ["yaml", "markdown", null] },
+        "clauses": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/contractClause" }
+        }
+      }
+    },
+    "baselineItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "message", "risk"],
+      "properties": {
+        "id": { "type": "string" },
+        "kind": { "type": "string" },
+        "message": { "type": "string" },
+        "risk": { "$ref": "#/definitions/riskLevel" },
+        "files": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "path": { "type": "string" }
+      }
+    },
+    "baselineComparison": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["baselinePath", "newGaps", "resolvedGaps", "newFindings", "resolvedFindings", "regression"],
+      "properties": {
+        "baselinePath": { "type": "string" },
+        "newGaps": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/baselineItem" }
+        },
+        "resolvedGaps": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/baselineItem" }
+        },
+        "newFindings": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/baselineItem" }
+        },
+        "resolvedFindings": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/baselineItem" }
+        },
+        "regression": { "type": "boolean" },
+        "failOnNewGaps": {
+          "type": "string",
+          "enum": ["high", "critical"]
+        }
       }
     }
   }

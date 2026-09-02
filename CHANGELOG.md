@@ -2,6 +2,23 @@
 
 All notable changes to this project are documented here.
 
+## 1.0.0 — 2026-09-02
+
+### Added
+
+- **Contract / SPEC** — primary `.patchprove/spec.yml` (or a `SPEC.md` yaml fence / link). Declares `requiredGates`, `maxResidualRisk`, `requiredMappedTests`, `forbiddenUnproven`, `acceptedResidualRisk.policy`. `patchprove run` records `evidence.contract` (pass/fail + clauses). A failed loaded contract exits `1`.
+- **Import-graph test mapping** for JS/TS (relative `import` / `require` / `import()`, reverse map from tests, one-hop BFS) and Python import heuristics. `mappingStrategy` / per-source `via`: `naming` | `coverage` | `graph`, plus `mappingFallbacks`.
+- **Language plugins** — Go, Rust, Java (plus existing JS/TS and Python): naming, optional graph, `go test` / `cargo test` / `mvn`/`gradle` detection. Documented in `docs/plugins.md`.
+- **Baseline comparison** — `--baseline`, auto-load `.patchprove/baseline.json` or config `baseline:`. New open gaps are regressions. `patchprove baseline save`. `--fail-on-new-gaps high|critical`.
+- **Host integration** — Claude Code `SessionStart` + `SubagentStop` examples; Cursor rule pack at `examples/cursor/`. `init-agent` installs Cursor files by default (`--no-cursor` to skip).
+- **Docs site** under `docs/` (GitHub Pages) including a [case study](docs/case-study.md).
+- **Experimental Go thin launcher** (`go/`, `make go-build`) that execs the Node CLI. See `docs/standalone.md`.
+
+### Changed
+
+- Package / `toolVersion` **1.0.0**. Evidence `schemaVersion` **1.0.0**.
+- Affected-test gate dispatches through language plugins (still vitest/jest/pytest for JS/Python).
+
 ## 0.3.0 — 2026-09-02
 
 ### Added

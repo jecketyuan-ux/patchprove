@@ -3,8 +3,7 @@ import path from "node:path";
 import { isOpenGap } from "./accept.js";
 import { resolveConfig } from "./config.js";
 import { formatShortSummary } from "./report.js";
-import { meetsFailOn } from "./risk.js";
-import { analyze, writeEvidence } from "./run.js";
+import { analyze, shouldFailRun, writeEvidence } from "./run.js";
 import type { CheckId, Evidence, FailOnLevel, Gap, RunOptions, SummaryRisk } from "./types.js";
 
 export interface ProvePatchInput {
@@ -17,6 +16,9 @@ export interface ProvePatchInput {
   out?: string;
   ignore?: string[];
   disableGate?: CheckId[];
+  baseline?: string;
+  spec?: string;
+  failOnNewGaps?: FailOnLevel | "none";
 }
 
 export interface ProvePatchResult {
@@ -62,6 +64,9 @@ export function runOptionsFromInput(input: ProvePatchInput): RunOptions {
     config: input.config,
     ignore: input.ignore,
     disableGate: input.disableGate,
+    baseline: input.baseline,
+    spec: input.spec,
+    failOnNewGaps: input.failOnNewGaps,
   };
 }
 
@@ -93,7 +98,7 @@ export async function provePatch(input: ProvePatchInput = {}): Promise<ProvePatc
     writeEvidence(input.out, evidence);
   }
   const config = resolveConfig(evidence.repo.root, options);
-  const failOnMet = meetsFailOn(evidence.summary.risk, config.failOn);
+  const failOnMet = shouldFailRun(evidence, config);
   return {
     failOnMet,
     failOn: config.failOn,

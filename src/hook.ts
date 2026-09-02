@@ -2,7 +2,7 @@ import { isOpenGap } from "./accept.js";
 import { provePatch, type ProvePatchInput, type ProvePatchResult } from "./mcp-tools.js";
 
 export type HookAdapter = "claude-code" | "cursor";
-export type HookEvent = "stop" | "post";
+export type HookEvent = "stop" | "post" | "session" | "subagent-stop";
 
 export interface HookOptions extends ProvePatchInput {
   adapter: HookAdapter;
@@ -21,12 +21,20 @@ export function isHookAdapter(value: string): value is HookAdapter {
 }
 
 export function isHookEvent(value: string): value is HookEvent {
-  return value === "stop" || value === "post";
+  return value === "stop" || value === "post" || value === "session" || value === "subagent-stop";
+}
+
+function claudeEventName(event: HookEvent): string {
+  if (event === "post") return "PostToolUse";
+  if (event === "session") return "SessionStart";
+  if (event === "subagent-stop") return "SubagentStop";
+  return "Stop";
 }
 
 export function buildHookResponse(result: ProvePatchResult, adapter: HookAdapter, event: HookEvent): HookResponse {
   const open = result.evidence.gaps.filter(isOpenGap);
-  const shouldGate = open.length > 0 || result.failOnMet;
+  const contractFailed = Boolean(result.evidence.contract?.loaded && !result.evidence.contract.passed);
+  const shouldGate = open.length > 0 || result.failOnMet || contractFailed;
   const reason =
     shouldGate && !result.summary.includes(DONE_REMINDER)
       ? `${result.summary}\n${DONE_REMINDER}`
@@ -37,13 +45,13 @@ export function buildHookResponse(result: ProvePatchResult, adapter: HookAdapter
     return { payload: { followup_message: reason }, blocked: true };
   }
 
-  if (event === "post") {
-    if (!shouldGate) return { payload: {}, blocked: false };
+  if (event === "post" || event === "session") {
+    if (!shouldGate && event === "post") return { payload: {}, blocked: false };
     return {
       payload: {
         hookSpecificOutput: {
-          hookEventName: "PostToolUse",
-          additionalContext: reason,
+          hookEventName: claudeEventName(event),
+          additionalContext: shouldGate ? reason : "patchprove: no open gaps. Still run before claiming done.",
         },
       },
       blocked: false,

@@ -18,7 +18,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: jecketyuan-ux/patchprove/action@v0.3.0
+      - uses: jecketyuan-ux/patchprove/action@v1.0.0
         with:
           fail-on: high
           upload-sarif: true

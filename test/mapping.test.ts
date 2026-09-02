@@ -9,11 +9,14 @@ import {
 } from "../src/mapping.js";
 
 describe("languageOf", () => {
-  it("classifies JS/TS/Python", () => {
+  it("classifies JS/TS/Python and plugin languages", () => {
     expect(languageOf("src/foo.ts")).toBe("typescript");
     expect(languageOf("src/foo.tsx")).toBe("typescript");
     expect(languageOf("lib/foo.js")).toBe("javascript");
     expect(languageOf("pkg/foo.py")).toBe("python");
+    expect(languageOf("pkg/foo.go")).toBe("go");
+    expect(languageOf("src/lib.rs")).toBe("rust");
+    expect(languageOf("Foo.java")).toBe("java");
     expect(languageOf("README.md")).toBe("other");
   });
 });

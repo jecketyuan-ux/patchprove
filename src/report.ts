@@ -55,6 +55,18 @@ export function formatHumanReport(evidence: Evidence): string {
       color.dim(`  ·  mapping ${evidence.impact.mappingStrategy}`),
   );
   lines.push(`${color.dim("risk")}      ${paint(evidence.summary.risk.toUpperCase())}`);
+  if (evidence.contract?.loaded) {
+    const tag = evidence.contract.passed ? color.green("pass") : color.red("fail");
+    lines.push(`${color.dim("contract")}  ${tag}${color.dim(`  ·  ${evidence.contract.clauses.length} clauses`)}`);
+  }
+  if (evidence.baselineComparison) {
+    const cmp = evidence.baselineComparison;
+    const tag = cmp.regression ? color.red("regression") : color.green("clean");
+    lines.push(
+      `${color.dim("baseline")}  ${tag}` +
+        color.dim(`  ·  ${cmp.newGaps.length} new · ${cmp.resolvedGaps.length} resolved`),
+    );
+  }
   lines.push("");
 
   lines.push(color.bold("IMPACT"));
@@ -89,6 +101,31 @@ export function formatHumanReport(evidence: Evidence): string {
     }
   }
   lines.push("");
+
+  if (evidence.contract?.loaded) {
+    lines.push(color.bold("CONTRACT"));
+    for (const clause of evidence.contract.clauses) {
+      const mark = clause.passed ? color.green("✓") : color.red("✗");
+      lines.push(`  ${mark} ${clause.message}`);
+    }
+    lines.push("");
+  }
+
+  if (evidence.baselineComparison) {
+    const cmp = evidence.baselineComparison;
+    lines.push(color.bold("BASELINE"));
+    if (cmp.newGaps.length === 0 && cmp.resolvedGaps.length === 0) {
+      lines.push(color.dim("  (no gap changes vs baseline)"));
+    } else {
+      for (const gap of cmp.newGaps) {
+        lines.push(`  ${color.red("+")} ${gap.message}  ${riskColor(gap.risk)(`[${gap.risk}]`)}`);
+      }
+      for (const gap of cmp.resolvedGaps) {
+        lines.push(`  ${color.green("−")} ${gap.message}  ${riskColor(gap.risk)(`[${gap.risk}]`)}`);
+      }
+    }
+    lines.push("");
+  }
 
   lines.push(color.bold("GAPS"));
   if (open.length === 0) {
@@ -176,11 +213,35 @@ export function formatMarkdownReport(evidence: Evidence): string {
       ? "_None._"
       : evidence.findings.map((f) => `- ${f.message} ${riskBadge(f.risk)}`).join("\n");
 
+  const contractBlock = evidence.contract?.loaded
+    ? [
+        "",
+        "### Contract",
+        evidence.contract.passed ? "_Passed._" : "_Failed._",
+        ...evidence.contract.clauses.map(
+          (c) => `- ${c.passed ? "pass" : "fail"} — ${c.message}`,
+        ),
+        "",
+      ]
+    : [];
+  const baselineBlock = evidence.baselineComparison
+    ? [
+        "### Baseline",
+        evidence.baselineComparison.regression
+          ? `Regression vs \`${evidence.baselineComparison.baselinePath}\`: ${evidence.baselineComparison.newGaps.length} new gap(s), ${evidence.baselineComparison.resolvedGaps.length} resolved.`
+          : `No new gaps vs \`${evidence.baselineComparison.baselinePath}\` (${evidence.baselineComparison.resolvedGaps.length} resolved).`,
+        evidence.baselineComparison.newGaps.length
+          ? evidence.baselineComparison.newGaps.map((g) => `- new: ${g.message} ${riskBadge(g.risk)}`).join("\n")
+          : "",
+        "",
+      ]
+    : [];
+
   return [
     "<!-- patchprove-sticky -->",
     "## patchprove evidence pack",
     "",
-    `**Summary risk:** ${riskBadge(evidence.summary.risk)} · range ${range} · mapping \`${evidence.impact.mappingStrategy}\``,
+    `**Summary risk:** ${riskBadge(evidence.summary.risk)} · range ${range} · mapping \`${evidence.impact.mappingStrategy}\`${evidence.impact.mappingFallbacks?.length ? ` (fallback ${evidence.impact.mappingFallbacks.join(", ")})` : ""}`,
     "",
     "| Passed | Failed | Skipped | Open gaps | Accepted | Findings |",
     "| ---: | ---: | ---: | ---: | ---: | ---: |",
@@ -194,7 +255,8 @@ export function formatMarkdownReport(evidence: Evidence): string {
     "| Check | Status | Reason |",
     "| --- | --- | --- |",
     checkRows || "| — | — | — |",
-    "",
+    ...contractBlock,
+    ...baselineBlock,
     "### Open gaps",
     openGaps,
     "",
@@ -206,7 +268,7 @@ export function formatMarkdownReport(evidence: Evidence): string {
     "",
     "<details><summary>Raw check detail</summary>",
     "",
-    "Accepted gaps remain in the evidence pack for audit. They do not raise summary risk or trip `--fail-on`.",
+    "Accepted gaps remain in the evidence pack for audit. They do not raise summary risk or trip `--fail-on`. Contract failures and new high baseline gaps still fail the process.",
     "",
     "</details>",
     "",
@@ -232,6 +294,15 @@ export function formatShortSummary(
   );
   if (extra?.failOn) {
     lines.push(`fail-on ${extra.failOn}${extra.failOnMet ? " met" : " not met"}`);
+  }
+  if (evidence.contract?.loaded) {
+    lines.push(`contract ${evidence.contract.passed ? "pass" : "fail"} (${evidence.contract.clauses.length} clauses)`);
+  }
+  if (evidence.baselineComparison) {
+    lines.push(
+      `baseline ${evidence.baselineComparison.regression ? "regression" : "clean"}` +
+        ` (${evidence.baselineComparison.newGaps.length} new gaps)`,
+    );
   }
   if (open.length === 0) {
     lines.push("No open gaps.");
