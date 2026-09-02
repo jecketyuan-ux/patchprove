@@ -47,6 +47,9 @@ Please add or extend tests when you touch:
 - `src/config.ts` — `.patchprove.yml` load + CLI override
 - `src/coverage.ts` — coverage map parse + naming fallback
 - `src/accept.ts` — accepted gaps must not raise summary risk
+- `src/mcp-tools.ts` — `prove_patch` / `list_gaps` handlers (fixtures; no live MCP client)
+- `src/init-agent.ts` — temp-dir writes, idempotent merge, `--force` / `--dry-run`
+- `src/hook.ts` — Claude Code / Cursor payload shape
 
 ```bash
 npm test
@@ -55,11 +58,11 @@ npm run build
 
 ## Schema changes
 
-`schemaVersion` is `0.2.0`. Additive optional fields are fine. Breaking field or enum changes require a schema version bump and a CHANGELOG entry. Keep `schema/evidence.schema.json` in lockstep with `src/types.ts`.
+Evidence `schemaVersion` is `0.2.0` (unchanged in v0.3). Additive optional fields are fine. Breaking field or enum changes require a schema version bump and a CHANGELOG entry. Keep `schema/evidence.schema.json` in lockstep with `src/types.ts`. Package / `toolVersion` is `0.3.0`.
 
 ## Pull requests
 
 1. Branch from `main`.
 2. Keep the PR focused.
 3. Update `CHANGELOG.md`.
-4. CI must stay green (`npm run build`, `npm test`, `patchprove run --help`).
+4. CI must stay green (`npm run build`, `npm test`, `patchprove run --help`, `patchprove init-agent --help`).

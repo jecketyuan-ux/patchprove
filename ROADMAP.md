@@ -20,14 +20,21 @@ patchprove stays an **evidence pack + gap driver**: impact → checks → gaps �
 - Action markdown sections for accepted gaps; optional SARIF upload
 - npm pack-ready `0.2.0`
 
-## Next: v0.3
+### v0.3 — MCP, agent hooks, init-agent, cc-kit skill
 
-Planned, still deterministic and model-free:
+- stdio MCP server (`prove_patch`, `list_gaps`) via `@modelcontextprotocol/sdk`
+- Claude Code + Cursor hook examples; `patchprove hook stop|post`
+- `patchprove init-agent` writes skill + hook merge + optional `.mcp.json`
+- Skill at `examples/skills/patchprove/` installable with [cc-kit](https://github.com/jecketyuan-ux/cc-kit) from a git path (no npm publish required)
+- Pack-ready `0.3.0`
 
-- **Hooks** — pre-commit / agent stop hooks that write or refresh an evidence pack
+## Next: v1.0
+
+Still deterministic and model-free:
+
 - **SPEC.md / contract file** — declare required gates and accepted residual risk in-repo
 - **Richer test selection** — import/module-graph mapping beside coverage (still no LLM)
 - **Language plugins** beyond JS/TS/Python (Go, Rust mapping) without a rewrite
-- **MCP** — optional server that exposes `evidence.json` to agents (explicitly deferred from v0.2)
+- **Tighter host integration** — more hook events / first-class Cursor rule pack if the hosts add blocking stop semantics
 
 Out of scope until a later track: Rust/Go single binary, telemetry, LLM-as-primary review.

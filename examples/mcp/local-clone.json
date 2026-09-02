@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "patchprove": {
+      "command": "node",
+      "args": ["/absolute/path/to/patchprove/dist/mcp.js"]
+    }
+  }
+}

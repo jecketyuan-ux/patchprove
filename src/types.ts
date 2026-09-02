@@ -1,5 +1,5 @@
 export const SCHEMA_VERSION = "0.2.0" as const;
-export const TOOL_VERSION = "0.2.0";
+export const TOOL_VERSION = "0.3.0";
 
 export type RiskLevel = "low" | "medium" | "high" | "critical";
 export type SummaryRisk = "none" | RiskLevel;
