@@ -22,9 +22,14 @@ jobs:
       - run: npm ci
       - run: npm run build
       - name: CLI help
-        run: node dist/cli.js run --help
+        run: |
+          node dist/cli.js run --help
+          node dist/cli.js init-agent --help
+          node dist/cli.js hook --help
       - name: bin shebang
-        run: head -n1 dist/cli.js | grep -q '^#!/usr/bin/env node'
+        run: |
+          head -n1 dist/cli.js | grep -q '^#!/usr/bin/env node'
+          head -n1 dist/mcp.js | grep -q '^#!/usr/bin/env node'
       - run: npm test
       - name: npm pack dry-run
         run: npm pack --dry-run

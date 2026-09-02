@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "0.2.0",
+  "generatedAt": "2026-09-02T00:00:00.000Z",
+  "toolVersion": "0.3.0",
+  "repo": { "cwd": "/tmp/demo", "root": "/tmp/demo" },
+  "range": { "mode": "working-tree", "base": "HEAD", "head": null },
+  "impact": {
+    "changedFiles": [],
+    "mappedTests": [],
+    "unmappedSources": ["src/utils/hash.ts"],
+    "languages": ["typescript"],
+    "mappingStrategy": "naming"
+  },
+  "checks": [],
+  "gaps": [
+    {
+      "id": "gap-unmapped-src/utils/hash.ts",
+      "kind": "unmapped-test",
+      "message": "No nearby test mapped for src/utils/hash.ts",
+      "risk": "medium",
+      "files": ["src/utils/hash.ts"]
+    },
+    {
+      "id": "gap-unmapped-src/generated/x.ts",
+      "kind": "unmapped-test",
+      "message": "No nearby test mapped for src/generated/x.ts",
+      "risk": "medium",
+      "files": ["src/generated/x.ts"],
+      "accepted": true,
+      "acceptedReason": "codegen"
+    }
+  ],
+  "findings": [],
+  "summary": {
+    "risk": "medium",
+    "checksPassed": 0,
+    "checksFailed": 0,
+    "checksSkipped": 0,
+    "gapCount": 1,
+    "acceptedGapCount": 1,
+    "findingCount": 0
+  }
+}

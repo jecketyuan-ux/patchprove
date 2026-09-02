@@ -1,0 +1,25 @@
+{
+  "hooks": {
+    "PostToolUse": [
+      {
+        "matcher": "Edit|Write|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx patchprove hook post --adapter claude-code --fail-on high"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "npx patchprove hook stop --adapter claude-code --fail-on high"
+          }
+        ]
+      }
+    ]
+  }
+}

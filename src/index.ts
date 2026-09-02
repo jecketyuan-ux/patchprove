@@ -45,8 +45,29 @@ export {
   pathFindings,
   toChangedFile,
 } from "./evidence.js";
-export { formatHumanReport, formatMarkdownReport } from "./report.js";
+export { formatHumanReport, formatMarkdownReport, formatShortSummary } from "./report.js";
 export { analyze, executeRun, render, writeEvidence } from "./run.js";
+export {
+  listGaps,
+  provePatch,
+  readEvidenceFile,
+  runOptionsFromInput,
+  LIST_GAPS_DESCRIPTION,
+  PROVE_PATCH_DESCRIPTION,
+} from "./mcp-tools.js";
+export type { ListGapsInput, ListGapsResult, ProvePatchInput, ProvePatchResult } from "./mcp-tools.js";
+export { MCP_TOOL_NAMES, createMcpServer, startMcpServer } from "./mcp.js";
+export { buildHookResponse, executeHook, hookFailurePayload, isHookAdapter, isHookEvent } from "./hook.js";
+export type { HookAdapter, HookEvent, HookOptions, HookResponse } from "./hook.js";
+export {
+  DEFAULT_CLI,
+  executeInitAgent,
+  isPatchproveHookCommand,
+  mergeClaudeSettings,
+  mergeMcpConfig,
+} from "./init-agent.js";
+export type { InitAgentOptions, InitAgentResult } from "./init-agent.js";
+export { findPackageRoot, skillTemplatePath } from "./pkg.js";
 export { detectTools } from "./detect.js";
 export {
   acceptRuleFromToken,

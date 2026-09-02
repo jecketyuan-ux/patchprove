@@ -1,14 +1,15 @@
 # Publishing patchprove
 
-The package is pack-ready at version **0.2.0**. CI runs `npm pack --dry-run`; nothing publishes automatically.
+The package is pack-ready at version **0.3.0**. CI runs `npm pack --dry-run`; nothing publishes automatically.
 
 ## What gets published
 
 `package.json` `files`:
 
-- `dist/` — compiled ESM (`bin` → `dist/cli.js`)
+- `dist/` — compiled ESM (`bin` → `dist/cli.js`, `patchprove-mcp` → `dist/mcp.js`)
 - `schema/` — `evidence.schema.json`
 - `action/` — composite GitHub Action
+- `examples/` — agent skill, hooks, MCP config snippets
 - `README.md`, `LICENSE`
 
 `npx patchprove` resolves the `bin` entry after `npm run build` (also the `prepack` script).
@@ -28,10 +29,10 @@ npm publish           # public; publishConfig.access is public
 Then tag the release:
 
 ```bash
-git tag v0.2.0
-git push origin v0.2.0
+git tag v0.3.0
+git push origin v0.3.0
 ```
 
-Pin the Action at `jecketyuan-ux/patchprove/action@v0.2.0` after the tag exists.
+Pin the Action at `jecketyuan-ux/patchprove/action@v0.3.0` after the tag exists.
 
 Do **not** publish from CI or from a cloud agent unless `NPM_TOKEN` is present and you intend to release.

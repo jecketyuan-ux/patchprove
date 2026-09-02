@@ -32,7 +32,7 @@ CI is the merge contract for *your* repo: the jobs you already pay to run on eve
 
 **AI-on-AI reviewers** (another model summarizing or “approving” the diff) add a second opinion in the same uncertain medium. patchprove stays on the other axis: *what did a deterministic tool actually run, and what did it never see?* Use it beside CI and beside a human/LLM review — not instead of them.
 
-A later single-binary (Rust/Go) may ship for air-gapped hosts. v0.2 is TypeScript + Node ESM so it can land now.
+A later single-binary (Rust/Go) may ship for air-gapped hosts. v0.3 is TypeScript + Node ESM so it can land now.
 
 ## Install
 
@@ -48,6 +48,7 @@ patchprove run
 npm install
 npm run build
 node dist/cli.js run --help
+node dist/cli.js init-agent --help
 ```
 
 Requires Node 20+. Maintainers: see [PUBLISH.md](PUBLISH.md) for `npm publish` (pack-ready; this repo does not auto-publish).
@@ -69,6 +70,9 @@ patchprove run --fail-on high
 
 # accept a known gap (still listed; does not raise risk / fail-on)
 patchprove run --accept src/generated/** --fail-on high
+
+# install skill + Claude Code hook + optional MCP snippet (idempotent)
+patchprove init-agent
 ```
 
 Flags:
@@ -86,6 +90,8 @@ Flags:
 | `--ignore <glob>` | Exclude a path glob from impact / gaps / findings (repeatable). CLI adds to config `ignorePaths`. |
 | `--disable-gate typecheck\|lint\|tests\|secrets` | Turn a gate off (repeatable). CLI overrides config `gates`. |
 | `--sarif <file>` | Write SARIF 2.1 generated from findings and gaps |
+
+Other commands: `patchprove init-agent`, `patchprove hook stop|post`, `patchprove mcp` (see below).
 
 Exit codes: `0` ok (or below threshold), `1` fail-on met, `2` usage/runtime error.
 
@@ -133,7 +139,7 @@ Gaps matching `acceptGaps` or `--accept`:
 - Do **not** raise `summary.risk` or trip `--fail-on`
 - `summary.gapCount` counts **open** gaps only; `summary.acceptedGapCount` is separate
 
-## What it does (v0.2)
+## What it does (v0.3)
 
 1. **Detect changed files** via `git diff` (working tree vs `HEAD`, or `--base`/`--head`), minus `ignorePaths`.
 2. **Map nearby tests** (deterministic, no LLM):
@@ -148,8 +154,9 @@ Gaps matching `acceptGaps` or `--accept`:
    - secret scan: `gitleaks` if installed, otherwise regex for known key patterns + high-entropy tokens on **added** lines (lockfiles and `integrity` hashes are skipped)
 4. **Highlight high-risk paths**: lockfiles, `.github/workflows/**`, auth/crypto-ish names (`auth`, `jwt`, `oauth`, `crypto`, `secret`, `session`, …).
 5. **Write** a human report, `evidence.json` (`schemaVersion: "0.2.0"`), and optionally SARIF.
+6. **Optional agent surface** — MCP tools, Stop/stop hooks, and `init-agent` so the same pipeline runs before an agent claims done.
 
-No telemetry. No Anthropic/OpenAI account. Not a coding agent, skills pack, MCP memory, or API proxy.
+No telemetry. No Anthropic/OpenAI account. Not a CI replacement and not an LLM reviewer.
 
 ## Sample: almost-right agent patch
 
@@ -158,7 +165,7 @@ An agent “fixes login lockout.” Types are clean. Lint is clean. It even upda
 What patchprove sees:
 
 ```
-patchprove  v0.2.0  ·  impact → checks → gaps → risk
+patchprove  v0.3.0  ·  impact → checks → gaps → risk
 model-free evidence pack  ·  not a CI replacement
 
 range     working tree vs HEAD
@@ -228,7 +235,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: jecketyuan-ux/patchprove/action@v0.2.0
+      - uses: jecketyuan-ux/patchprove/action@v0.3.0
         with:
           fail-on: high   # or critical / none; omit to use config or comment only
           upload-sarif: true
@@ -238,14 +245,128 @@ The action builds the CLI from this repo, analyzes `base...head`, writes `eviden
 
 Set `upload-sarif: true` to generate SARIF from findings/gaps and upload it with `github/codeql-action/upload-sarif`. That needs **`security-events: write`**. Accepted gaps are uploaded with SARIF suppressions (`status: accepted`). See [action/README.md](action/README.md).
 
+## MCP server
+
+stdio MCP server, same pipeline as `patchprove run`. Tools:
+
+| Tool | What it does |
+| --- | --- |
+| `prove_patch` | Run impact → checks → gaps → risk. Args: `cwd`, `base`, `head`, `failOn`, `accept`, `config`, `out`, `ignore`, `disableGate`. Returns structured evidence plus a short human summary. |
+| `list_gaps` | Open (non-accepted) gaps from a fresh run (same args) or from `evidencePath` pointing at an `evidence.json`. |
+
+Bins:
+
+```bash
+npx patchprove-mcp          # dist/mcp.js
+node dist/mcp.js
+npx patchprove mcp
+```
+
+Register the server (copy-paste snippets also live under [`examples/mcp/`](examples/mcp/)).
+
+**Claude Desktop** — merge into `claude_desktop_config.json` (`~/Library/Application Support/Claude/` on macOS, `%APPDATA%\Claude\` on Windows):
+
+```json
+{
+  "mcpServers": {
+    "patchprove": {
+      "command": "npx",
+      "args": ["-y", "patchprove-mcp"]
+    }
+  }
+}
+```
+
+**Claude Code** — project [`.mcp.json`](https://code.claude.com/docs/en/mcp) (or `~/.claude.json`):
+
+```json
+{
+  "mcpServers": {
+    "patchprove": {
+      "command": "npx",
+      "args": ["-y", "patchprove-mcp"]
+    }
+  }
+}
+```
+
+`patchprove init-agent` writes this file (idempotent merge of `mcpServers.patchprove`).
+
+**Cursor** — project `.cursor/mcp.json` or Cursor Settings → MCP, same `mcpServers.patchprove` object as above.
+
+From a local clone (no npm publish):
+
+```json
+{
+  "mcpServers": {
+    "patchprove": {
+      "command": "node",
+      "args": ["/absolute/path/to/patchprove/dist/mcp.js"]
+    }
+  }
+}
+```
+
+Log to stderr only; stdout is the MCP protocol.
+
+## Agent hooks
+
+**Pattern: the agent must not claim done while open gaps remain.**
+
+Ready-to-copy configs: [`examples/hooks/`](examples/hooks/). They call the **CLI** (deterministic, local), not another model.
+
+```bash
+# Claude Code Stop — block the turn when open gaps or fail-on
+npx patchprove hook stop --adapter claude-code --fail-on high
+
+# Claude Code PostToolUse — surface gaps after Edit/Write
+npx patchprove hook post --adapter claude-code --fail-on high
+
+# Cursor stop — follow-up message (Cursor cannot hard-block a turn)
+npx patchprove hook stop --adapter cursor --fail-on high
+```
+
+- Claude Code: merge [`examples/hooks/claude-code.settings.json`](examples/hooks/claude-code.settings.json) into `.claude/settings.json`
+- Cursor: copy [`examples/hooks/cursor.hooks.json`](examples/hooks/cursor.hooks.json) to `.cursor/hooks.json`
+
+`hook` prints **only** host JSON on stdout. Accepted gaps do not trip the gate.
+
+## init-agent and cc-kit
+
+Install the skill + Claude Code hook + optional MCP snippet into a repo:
+
+```bash
+npx patchprove init-agent
+npx patchprove init-agent --dry-run
+npx patchprove init-agent --force
+npx patchprove init-agent --no-mcp --cli "node /path/to/patchprove/dist/cli.js"
+```
+
+Writes (idempotent; `--force` overwrites a diverged skill or the patchprove hook / MCP snippet):
+
+- `.claude/skills/patchprove/SKILL.md`
+- merge into `.claude/settings.json`
+- `.mcp.json` (`mcpServers.patchprove`) unless `--no-mcp`
+
+The same skill lives at [`examples/skills/patchprove/`](examples/skills/patchprove/) so [cc-kit](https://github.com/jecketyuan-ux/cc-kit) can install it from git **without** an npm publish:
+
+```bash
+npx cc-kit skill add https://github.com/jecketyuan-ux/patchprove.git#examples/skills/patchprove
+npx cc-kit skill add ./examples/skills/patchprove
+npx cc-kit doctor
+```
+
+`init-agent` is the small install path that also drops the hook snippet. cc-kit `skill add` is skill-only; copy [`examples/hooks/`](examples/hooks/) or run `init-agent` for hooks.
+
 ## 中文
 
 patchprove 是给 **Agent / PR 补丁** 用的证据包：影响面 → 实际跑过的检查 → 缺口 → 风险。它不是 CI 替代品，也不是「再用一个模型审一次」的 AI-on-AI。默认不调大模型、不采集遥测。人类和 Agent 都能在合并前看到：**哪些事仍然没被证明。**
 
-v0.2 增加仓库配置（`.patchprove.yml`）、已知接受的缺口、覆盖率优先的测试映射，以及可选的 SARIF 上传。
+v0.3 增加 stdio MCP（`prove_patch` / `list_gaps`）、Claude Code / Cursor hooks 示例、`patchprove init-agent`，以及可被 [cc-kit](https://github.com/jecketyuan-ux/cc-kit) 从 git 路径安装的 skill。**有未接受的缺口时，Agent 不得声称做完。**
 
 ```bash
 npx patchprove run --base origin/main --fail-on high
+npx patchprove init-agent
 ```
 
 ## License

@@ -214,3 +214,37 @@ export function formatMarkdownReport(evidence: Evidence): string {
     "",
   ].join("\n");
 }
+
+/** Plain-text summary for MCP tools and agent hooks (no ANSI). */
+export function formatShortSummary(
+  evidence: Evidence,
+  extra?: { failOnMet?: boolean; failOn?: "high" | "critical" },
+): string {
+  const { open } = splitGaps(evidence);
+  const lines: string[] = [];
+  lines.push(
+    `patchprove v${evidence.toolVersion}  risk ${evidence.summary.risk.toUpperCase()}` +
+      `  ·  ${evidence.impact.changedFiles.length} files` +
+      `  ·  mapping ${evidence.impact.mappingStrategy}` +
+      `  ·  ${evidence.summary.gapCount} open gaps` +
+      `  ·  ${evidence.summary.acceptedGapCount} accepted` +
+      `  ·  ${evidence.summary.findingCount} findings`,
+  );
+  if (extra?.failOn) {
+    lines.push(`fail-on ${extra.failOn}${extra.failOnMet ? " met" : " not met"}`);
+  }
+  if (open.length === 0) {
+    lines.push("No open gaps.");
+    return lines.join("\n");
+  }
+  lines.push("Open gaps:");
+  const shown = open.slice(0, 8);
+  for (const gap of shown) {
+    lines.push(`- ${gap.message} [${gap.risk}]`);
+  }
+  if (open.length > 8) {
+    lines.push(`- … ${open.length - 8} more`);
+  }
+  lines.push("Do not claim done while open gaps remain.");
+  return lines.join("\n");
+}

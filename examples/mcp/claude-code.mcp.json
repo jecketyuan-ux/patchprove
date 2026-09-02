@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "patchprove": {
+      "command": "npx",
+      "args": ["-y", "patchprove-mcp"]
+    }
+  }
+}

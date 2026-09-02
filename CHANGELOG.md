@@ -2,6 +2,23 @@
 
 All notable changes to this project are documented here.
 
+## 0.3.0 — 2026-09-02
+
+### Added
+
+- **MCP server** (stdio) via `@modelcontextprotocol/sdk`:
+  - `prove_patch` — same pipeline as `patchprove run` (`cwd`, `base`/`head`, `failOn`, `accept`, `config`, …) and returns structured evidence plus a short human summary
+  - `list_gaps` — open (non-accepted) gaps from a fresh run or from `evidencePath`
+  - bins: `patchprove-mcp` and `patchprove mcp` (`node dist/mcp.js`)
+- **`patchprove hook stop|post`** — prints Claude Code or Cursor hook JSON after a local CLI run. Agents must not claim done while open gaps remain.
+- **`patchprove init-agent`** — idempotent install of `.claude/skills/patchprove/SKILL.md`, merge of hook snippets into `.claude/settings.json`, and optional `.mcp.json`. `--force` overwrites; `--dry-run` prints the plan.
+- Examples: `examples/hooks/` (Claude Code + Cursor), `examples/mcp/` config snippets, `examples/skills/patchprove/` for [cc-kit](https://github.com/jecketyuan-ux/cc-kit) (`npx cc-kit skill add <git-url>#examples/skills/patchprove`).
+- `formatShortSummary` for MCP / hook output.
+
+### Changed
+
+- Package / `toolVersion` **0.3.0**. Evidence `schemaVersion` stays **0.2.0** (no new evidence fields).
+
 ## 0.2.0 — 2026-09-02
 
 ### Added

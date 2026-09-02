@@ -1,0 +1,12 @@
+{
+  "version": 1,
+  "hooks": {
+    "stop": [
+      {
+        "command": "npx patchprove hook stop --adapter cursor --fail-on high",
+        "timeout": 180,
+        "loop_limit": 3
+      }
+    ]
+  }
+}
