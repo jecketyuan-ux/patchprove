@@ -21,8 +21,9 @@ function added(path: string, body: string): DiffFile {
 
 describe("secret scan", () => {
   it("flags a known AWS access key in added lines", () => {
+    const aws = `AKIA${"IOSFODNN7EXAMPLE"}`;
     const findings = scanSecrets([
-      added("src/config.ts", 'const key = "AKIAIOSFODNN7EXAMPLE";'),
+      added("src/config.ts", `const key = "${aws}";`),
     ]);
     expect(findings.some((f) => f.kind === "secret" && f.risk === "critical")).toBe(
       true,
@@ -30,10 +31,19 @@ describe("secret scan", () => {
   });
 
   it("flags private key headers", () => {
-    const findings = scanSecrets([
-      added("id_rsa", "-----BEGIN RSA PRIVATE KEY-----\nMIIE"),
-    ]);
+    const header = `-----BEGIN RSA ${"PRIVATE"} KEY-----`;
+    const findings = scanSecrets([added("id_rsa", `${header}\nMIIE`)]);
     expect(findings.some((f) => /Private key/i.test(f.message))).toBe(true);
+  });
+
+  it("does not treat lockfile integrity hashes as secrets", () => {
+    const findings = scanSecrets([
+      added(
+        "package-lock.json",
+        '    "integrity": "sha512-AbCdEfGhIjKlMnOpQrStUv/5avkp3xmgp2rkl7ddrJrS2J7qJ+QTBSuRXPWAWjvabjkPU+gss=",',
+      ),
+    ]);
+    expect(findings).toEqual([]);
   });
 
   it("ignores placeholders", () => {
@@ -54,7 +64,7 @@ describe("secret scan", () => {
         "--- a/old.ts",
         "+++ b/old.ts",
         "@@ -1,1 +1,0 @@",
-        '-const key = "AKIAIOSFODNN7EXAMPLE";',
+        `-const key = "AKIA${"IOSFODNN7EXAMPLE"}";`,
       ].join("\n"),
     };
     expect(scanSecrets([file])).toEqual([]);

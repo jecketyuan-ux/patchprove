@@ -57,6 +57,7 @@ describe("analyze integration", () => {
     expect(evidence.schemaVersion).toBe("0.1.0");
     expect(evidence.range.mode).toBe("working-tree");
     const paths = evidence.impact.changedFiles.map((f) => f.path);
+    expect(paths).not.toContain(".");
     expect(paths).toContain("src/auth/session.ts");
     expect(paths).toContain("src/utils/hash.ts");
     expect(paths).toContain(".github/workflows/ci.yml");
@@ -80,9 +81,10 @@ describe("analyze integration", () => {
   it("uses --base/--head range and flags a planted secret", async () => {
     const dir = seedRepo();
     git(dir, ["checkout", "-b", "feature"]);
+    const aws = `AKIA${"IOSFODNN7EXAMPLE"}`;
     writeFileSync(
       path.join(dir, "src", "auth", "session.ts"),
-      'export const ttl = 30;\nexport const leak = "AKIAIOSFODNN7EXAMPLE";\n',
+      `export const ttl = 30;\nexport const leak = "${aws}";\n`,
     );
     git(dir, ["add", "."]);
     git(dir, ["commit", "-m", "almost right"]);

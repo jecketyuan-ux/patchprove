@@ -91,7 +91,7 @@ Exit codes: `0` ok (or below threshold), `1` fail-on met, `2` usage/runtime erro
    - typecheck: `tsc --noEmit`, or `pyright` / `mypy` if configured
    - lint: `eslint` or `ruff`
    - affected tests: `vitest` / `jest` / `pytest` on the mapped subset — if nothing maps, that is a **gap**, not a silent skip
-   - secret scan: `gitleaks` if installed, otherwise regex for known key patterns + high-entropy tokens on **added** lines
+   - secret scan: `gitleaks` if installed, otherwise regex for known key patterns + high-entropy tokens on **added** lines (lockfiles and `integrity` hashes are skipped)
 4. **Highlight high-risk paths**: lockfiles, `.github/workflows/**`, auth/crypto-ish names (`auth`, `jwt`, `oauth`, `crypto`, `secret`, `session`, …).
 5. **Write** a human report and `evidence.json` (`schemaVersion: "0.1.0"`).
 

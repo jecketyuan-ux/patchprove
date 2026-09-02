@@ -5,7 +5,9 @@ export function toPosix(p: string): string {
 }
 
 export function normalizeRel(p: string): string {
-  return toPosix(path.normalize(p)).replace(/^\.\/+/, "");
+  if (!p) return "";
+  const normalized = toPosix(path.normalize(p)).replace(/^\.\/+/, "");
+  return normalized === "." ? "" : normalized;
 }
 
 export function basenameNoExt(filePath: string): string {

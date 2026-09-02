@@ -43,10 +43,15 @@ export function maxRisk(levels: Iterable<SummaryRisk>): SummaryRisk {
   return best;
 }
 
-export function classifyPath(filePath: string): HighRiskKind | null {
+export function isLockfilePath(filePath: string): boolean {
   const rel = normalizeRel(filePath);
   const base = rel.split("/").pop() ?? rel;
-  if (LOCKFILE_NAMES.has(base)) return "lockfile";
+  return LOCKFILE_NAMES.has(base);
+}
+
+export function classifyPath(filePath: string): HighRiskKind | null {
+  const rel = normalizeRel(filePath);
+  if (isLockfilePath(rel)) return "lockfile";
   if (WORKFLOW_RE.test(rel)) return "workflow";
   if (AUTH_CRYPTO_RE.test(rel)) return "auth-crypto";
   return null;

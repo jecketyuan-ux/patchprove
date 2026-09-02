@@ -1,4 +1,5 @@
 import type { DiffFile } from "./git.js";
+import { isLockfilePath } from "./risk.js";
 import type { Finding } from "./types.js";
 
 interface SecretPattern {
@@ -49,6 +50,19 @@ function looksLikePlaceholder(value: string): boolean {
   return /(example|changeme|placeholder|dummy|fake|xxx|your[_-]?key|todo)/i.test(value);
 }
 
+function skipSecretFile(filePath: string): boolean {
+  if (isLockfilePath(filePath)) return true;
+  return /(^|\/)(node_modules|dist|coverage|vendor)\//.test(filePath);
+}
+
+function looksLikeKnownHash(value: string, line: string): boolean {
+  if (/^sha[0-9]+-/i.test(value)) return true;
+  if (/"integrity"\s*:/.test(line)) return true;
+  if (/\bsha(1|256|512)-/.test(line)) return true;
+  if (/^[a-f0-9]{40,64}$/i.test(value)) return true;
+  return false;
+}
+
 function addedLines(patch: string): Array<{ line: number; text: string }> {
   const out: Array<{ line: number; text: string }> = [];
   let newLine = 0;
@@ -79,6 +93,7 @@ export function scanSecrets(files: DiffFile[]): Finding[] {
 
   for (const file of files) {
     if (file.status === "deleted") continue;
+    if (skipSecretFile(file.path)) continue;
     const lines = file.patch ? addedLines(file.patch) : [];
     if (lines.length === 0) continue;
 
@@ -111,6 +126,7 @@ export function scanSecrets(files: DiffFile[]): Finding[] {
       while ((tokenMatch = ENTROPY_TOKEN.exec(text))) {
         const token = tokenMatch[1] ?? "";
         if (token.length < 24 || looksLikePlaceholder(token)) continue;
+        if (looksLikeKnownHash(token, text)) continue;
         if (shannonEntropy(token) < 4.5) continue;
         if (findings.some((f) => f.path === file.path && f.line === line && f.kind === "secret")) {
           continue;
