@@ -1,0 +1,217 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/jecketyuan-ux/patchprove/schema/evidence.schema.json",
+  "title": "PatchproveEvidence",
+  "description": "Versioned evidence pack produced by patchprove run. Model-free: impact, checks, gaps, and risk.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "generatedAt",
+    "toolVersion",
+    "repo",
+    "range",
+    "impact",
+    "checks",
+    "gaps",
+    "findings",
+    "summary"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "0.1.0",
+      "description": "Evidence JSON schema version (semver)."
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "toolVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "repo": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cwd", "root"],
+      "properties": {
+        "cwd": { "type": "string" },
+        "root": { "type": "string" }
+      }
+    },
+    "range": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["mode", "base", "head"],
+      "properties": {
+        "mode": { "type": "string", "enum": ["working-tree", "range"] },
+        "base": { "type": ["string", "null"] },
+        "head": { "type": ["string", "null"] }
+      }
+    },
+    "impact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["changedFiles", "mappedTests", "unmappedSources", "languages"],
+      "properties": {
+        "changedFiles": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/changedFile" }
+        },
+        "mappedTests": {
+          "type": "array",
+          "items": { "$ref": "#/definitions/mappedTest" }
+        },
+        "unmappedSources": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "languages": {
+          "type": "array",
+          "items": { "type": "string", "enum": ["javascript", "typescript", "python", "other"] }
+        }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/check" }
+    },
+    "gaps": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/gap" }
+    },
+    "findings": {
+      "type": "array",
+      "items": { "$ref": "#/definitions/finding" }
+    },
+    "summary": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "risk",
+        "checksPassed",
+        "checksFailed",
+        "checksSkipped",
+        "gapCount",
+        "findingCount"
+      ],
+      "properties": {
+        "risk": { "$ref": "#/definitions/summaryRisk" },
+        "checksPassed": { "type": "integer", "minimum": 0 },
+        "checksFailed": { "type": "integer", "minimum": 0 },
+        "checksSkipped": { "type": "integer", "minimum": 0 },
+        "gapCount": { "type": "integer", "minimum": 0 },
+        "findingCount": { "type": "integer", "minimum": 0 }
+      }
+    }
+  },
+  "definitions": {
+    "riskLevel": {
+      "type": "string",
+      "enum": ["low", "medium", "high", "critical"]
+    },
+    "summaryRisk": {
+      "type": "string",
+      "enum": ["none", "low", "medium", "high", "critical"]
+    },
+    "changedFile": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["path", "status", "additions", "deletions", "highRisk"],
+      "properties": {
+        "path": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["added", "modified", "deleted", "renamed", "untracked"]
+        },
+        "additions": { "type": "integer", "minimum": 0 },
+        "deletions": { "type": "integer", "minimum": 0 },
+        "highRisk": { "type": "boolean" },
+        "riskKind": {
+          "type": ["string", "null"],
+          "enum": ["lockfile", "workflow", "auth-crypto", null]
+        }
+      }
+    },
+    "mappedTest": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["source", "tests"],
+      "properties": {
+        "source": { "type": "string" },
+        "tests": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "check": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "name", "status"],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": ["typecheck", "lint", "tests", "secrets"]
+        },
+        "name": { "type": "string" },
+        "status": {
+          "type": "string",
+          "enum": ["passed", "failed", "skipped"]
+        },
+        "reason": { "type": "string" },
+        "command": { "type": ["string", "null"] },
+        "exitCode": { "type": ["integer", "null"] },
+        "durationMs": { "type": "number", "minimum": 0 },
+        "detail": { "type": "string" }
+      }
+    },
+    "gap": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "message", "risk"],
+      "properties": {
+        "id": { "type": "string" },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "unmapped-test",
+            "no-tests-mapped",
+            "tool-missing",
+            "unsupported-language"
+          ]
+        },
+        "message": { "type": "string" },
+        "risk": { "$ref": "#/definitions/riskLevel" },
+        "files": {
+          "type": "array",
+          "items": { "type": "string" }
+        }
+      }
+    },
+    "finding": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["id", "kind", "risk", "message"],
+      "properties": {
+        "id": { "type": "string" },
+        "kind": {
+          "type": "string",
+          "enum": [
+            "high-risk-path",
+            "lockfile",
+            "workflow",
+            "auth-crypto",
+            "secret",
+            "check-failed"
+          ]
+        },
+        "risk": { "$ref": "#/definitions/riskLevel" },
+        "message": { "type": "string" },
+        "path": { "type": "string" },
+        "line": { "type": "integer", "minimum": 1 }
+      }
+    }
+  }
+}

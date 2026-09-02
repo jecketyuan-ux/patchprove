@@ -1,0 +1,96 @@
+name: patchprove
+description: Evidence pack for AI/agent patches — impact, checks, gaps, risk. Posts a sticky PR comment.
+author: patchprove
+branding:
+  icon: shield
+  color: purple
+inputs:
+  fail-on:
+    description: Exit non-zero when summary risk meets this threshold (high or critical). Leave empty to never fail the job.
+    required: false
+    default: ""
+  cwd:
+    description: Repository path to analyze (defaults to the consumer workspace).
+    required: false
+    default: ""
+  github-token:
+    description: Token used to create or update the sticky PR comment.
+    required: false
+    default: ${{ github.token }}
+  out:
+    description: Evidence JSON output path.
+    required: false
+    default: evidence.json
+runs:
+  using: composite
+  steps:
+    - name: Setup Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: "20"
+
+    - name: Build patchprove from action repo
+      shell: bash
+      env:
+        ACTION_PATH: ${{ github.action_path }}
+      run: |
+        set -euo pipefail
+        REPO_ROOT="$(cd "$ACTION_PATH/.." && pwd)"
+        if [ ! -f "$REPO_ROOT/package.json" ]; then
+          echo "patchprove: could not find package.json next to action/" >&2
+          exit 2
+        fi
+        cd "$REPO_ROOT"
+        npm ci
+        npm run build
+        echo "PATCHPROVE_BIN=$REPO_ROOT/dist/cli.js" >> "$GITHUB_ENV"
+
+    - name: Run patchprove
+      id: run
+      shell: bash
+      env:
+        INPUT_FAIL_ON: ${{ inputs.fail-on }}
+        INPUT_CWD: ${{ inputs.cwd }}
+        INPUT_OUT: ${{ inputs.out }}
+        EVENT_NAME: ${{ github.event_name }}
+        PR_BASE: ${{ github.event.pull_request.base.sha }}
+        PR_HEAD: ${{ github.event.pull_request.head.sha }}
+      run: |
+        set -euo pipefail
+        TARGET="${INPUT_CWD:-$GITHUB_WORKSPACE}"
+        ARGS=(run --cwd "$TARGET" --out "$INPUT_OUT" --format markdown)
+        if [ -n "$INPUT_FAIL_ON" ]; then
+          ARGS+=(--fail-on "$INPUT_FAIL_ON")
+        fi
+        if [ "$EVENT_NAME" = "pull_request" ] || [ "$EVENT_NAME" = "pull_request_target" ]; then
+          ARGS+=(--base "$PR_BASE" --head "$PR_HEAD")
+        fi
+        set +e
+        node "$PATCHPROVE_BIN" "${ARGS[@]}" > "$RUNNER_TEMP/patchprove-comment.md"
+        STATUS=$?
+        set -e
+        if [ "$STATUS" -eq 2 ]; then
+          echo "patchprove failed to run" >&2
+          cat "$RUNNER_TEMP/patchprove-comment.md" >&2 || true
+          exit 2
+        fi
+        echo "comment=$RUNNER_TEMP/patchprove-comment.md" >> "$GITHUB_OUTPUT"
+        echo "cli_status=$STATUS" >> "$GITHUB_OUTPUT"
+
+    - name: Sticky PR comment
+      if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
+      shell: bash
+      env:
+        GITHUB_TOKEN: ${{ inputs.github-token }}
+        COMMENT_FILE: ${{ steps.run.outputs.comment }}
+        GH_EVENT_PATH: ${{ github.event_path }}
+      run: node "${{ github.action_path }}/post-comment.mjs"
+
+    - name: Honor fail-on
+      shell: bash
+      run: |
+        STATUS="${{ steps.run.outputs.cli_status }}"
+        if [ "$STATUS" != "0" ]; then
+          echo "patchprove: fail-on threshold met (exit $STATUS)" >&2
+          exit "$STATUS"
+        fi
