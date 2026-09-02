@@ -1,0 +1,62 @@
+{
+  "name": "patchprove",
+  "version": "0.1.0",
+  "description": "Evidence pack for AI/agent patches: impact → checks → gaps → risk.",
+  "keywords": [
+    "evidence",
+    "agent",
+    "pr",
+    "verification",
+    "gap",
+    "risk",
+    "ci"
+  ],
+  "license": "MIT",
+  "type": "module",
+  "bin": {
+    "patchprove": "dist/cli.js"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./schema": "./schema/evidence.schema.json"
+  },
+  "files": [
+    "dist",
+    "schema",
+    "action",
+    "README.md",
+    "LICENSE"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "prepack": "npm run build"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jecketyuan-ux/patchprove.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jecketyuan-ux/patchprove/issues"
+  },
+  "homepage": "https://github.com/jecketyuan-ux/patchprove#readme",
+  "dependencies": {
+    "commander": "^13.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "ajv": "^8.17.1",
+    "ajv-formats": "^3.0.1",
+    "typescript": "^5.8.2",
+    "vitest": "^3.0.8"
+  }
+}
