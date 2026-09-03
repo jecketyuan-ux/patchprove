@@ -2,6 +2,21 @@
 
 All notable changes to this project are documented here.
 
+## 1.2.0 — 2026-09-03
+
+### Added
+
+- **Hashable evidence receipts** — `patchprove run` writes `<out>.receipt.json` by default (`--receipt [path]`, `--no-receipt` to skip). The receipt stores a canonical SHA-256 of the evidence (wall-clock `generatedAt`, `checks[].durationMs` / `detail`, and the receipt pointer are excluded), plus `toolVersion`, `schemaVersion`, argv / options, exit code / fail-on outcome, and check command digests.
+- **`patchprove receipt verify <evidence.json> [<receipt>]`** — recomputes the content hash and checks it against the receipt.
+- **Optional signing** — `--sign` with `PATCHPROVE_SIGNING_KEY` (`hmac:<secret>` or a raw secret → HMAC-SHA256; `ed25519:<base64 PKCS8>` or a PEM private key → Ed25519). Missing key skips signing; the hash is still written.
+- **Contract clauses in SARIF** — failed SPEC clauses appear as Code Scanning results alongside findings/gaps. Action `upload-sarif` documents `security-events: write`.
+- **Schema stability** — `docs/schema.md` commits to additive 1.x / breaking major. Fixture packs are validated against the published schema in CI/tests.
+- **Action artifacts + comment compare** — uploads `evidence.json` + receipt; sticky markdown shows the content hash and unchanged/changed vs the last comment or a baseline sibling receipt.
+
+### Changed
+
+- Package / `toolVersion` **1.2.0**. Evidence `schemaVersion` **1.2.0** (additive optional `receipt` pointer). The JSON Schema accepts any 1.x `schemaVersion`.
+
 ## 1.1.0 — 2026-09-03
 
 ### Added

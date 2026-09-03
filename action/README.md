@@ -18,13 +18,13 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: jecketyuan-ux/patchprove/action@v1.0.0
+      - uses: jecketyuan-ux/patchprove/action@v1.2.0
         with:
           fail-on: high
           upload-sarif: true
 ```
 
-The action still creates or updates a **sticky** PR comment (`<!-- patchprove-sticky -->`). The markdown now has separate **Open gaps** and **Accepted gaps** sections.
+The action still creates or updates a **sticky** PR comment (`<!-- patchprove-sticky -->`). The markdown has **Open gaps**, **Accepted gaps**, **Contract**, and a **Receipt** section (content hash). A later run on the same PR notes **unchanged** / **changed** versus the last comment. `evidence.json` and the receipt are uploaded as the `patchprove-evidence` artifact.
 
 ## Inputs
 
@@ -35,8 +35,10 @@ The action still creates or updates a **sticky** PR comment (`<!-- patchprove-st
 | `out` | `evidence.json` | Evidence JSON path |
 | `accept` | `""` | Comma-separated gap ids or path patterns to accept |
 | `ignore` | `""` | Comma-separated path globs to exclude |
-| `upload-sarif` | `false` | Generate SARIF and upload via `github/codeql-action/upload-sarif@v3` |
+| `upload-sarif` | `false` | Generate SARIF (findings, gaps, **failed contract clauses**) and upload via `github/codeql-action/upload-sarif@v3` |
 | `sarif-file` | `patchprove.sarif` | SARIF path when `upload-sarif` is true |
+| `receipt` | `""` | Receipt path. Empty writes `<out>.receipt.json`. Set to `false` to skip. |
+| `upload-artifacts` | `true` | Upload `evidence.json` and the receipt as workflow artifacts |
 | `github-token` | `${{ github.token }}` | Needed for the sticky comment |
 
 ## Permissions
@@ -47,6 +49,6 @@ The action still creates or updates a **sticky** PR comment (`<!-- patchprove-st
 | `pull-requests: write` | Sticky PR comment |
 | `security-events: write` | Required for `upload-sarif: true` |
 
-SARIF upload uses GitHub code scanning. On fork PRs the token may not be allowed to write security events — omit `upload-sarif` or run it only on same-repo PRs.
+SARIF upload uses GitHub code scanning. **`security-events: write` is required** when `upload-sarif: true` — without it `upload-sarif` fails. On fork PRs the token may not be allowed to write security events — omit `upload-sarif` or run it only on same-repo PRs.
 
-Accepted gaps are included in SARIF with `suppressions.status: accepted` so they stay visible without failing the scan the same way as open gaps.
+The SARIF run includes findings, gaps, and **failed contract clauses** (so Code Scanning shows a broken SPEC gate). Accepted gaps are included with `suppressions.status: accepted` so they stay visible without failing the scan the same way as open gaps.

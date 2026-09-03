@@ -1,7 +1,7 @@
 import { mkdirSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { isOpenGap } from "./accept.js";
-import type { Evidence, Finding, Gap, RiskLevel, SummaryRisk } from "./types.js";
+import type { ContractClauseResult, Evidence, Finding, Gap, RiskLevel, SummaryRisk } from "./types.js";
 
 type SarifLevel = "error" | "warning" | "note";
 
@@ -90,6 +90,21 @@ function findingResult(finding: Finding): SarifResult {
   };
 }
 
+function failedContractResult(clause: ContractClauseResult): SarifResult {
+  return {
+    ruleId: clause.kind,
+    level: "error",
+    kind: "fail",
+    message: { text: clause.message },
+    locations: location(clause.files?.[0]),
+    properties: {
+      clauseId: clause.id,
+      contractKind: clause.kind,
+      passed: false,
+    },
+  };
+}
+
 export function toSarif(evidence: Evidence): Record<string, unknown> {
   const rules = [
     { id: "unmapped-test", name: "Unmapped test", shortDescription: { text: "Changed source has no mapped test" } },
@@ -102,6 +117,11 @@ export function toSarif(evidence: Evidence): Record<string, unknown> {
     { id: "auth-crypto", name: "Auth/crypto path", shortDescription: { text: "Auth or crypto-related path changed" } },
     { id: "secret", name: "Potential secret", shortDescription: { text: "Potential secret in added lines" } },
     { id: "check-failed", name: "Check failed", shortDescription: { text: "A patchprove gate failed" } },
+    { id: "required-gate", name: "Contract: required gate", shortDescription: { text: "A required contract gate did not pass" } },
+    { id: "max-residual-risk", name: "Contract: max residual risk", shortDescription: { text: "Summary risk exceeds the contract maximum" } },
+    { id: "required-mapped-tests", name: "Contract: required mapped tests", shortDescription: { text: "A required path has no mapped test" } },
+    { id: "forbidden-unproven", name: "Contract: forbidden unproven", shortDescription: { text: "A forbidden path shipped unmapped" } },
+    { id: "accepted-residual-risk", name: "Contract: accepted residual risk", shortDescription: { text: "Residual risk violates the contract policy" } },
   ];
 
   return {
@@ -120,6 +140,9 @@ export function toSarif(evidence: Evidence): Record<string, unknown> {
         results: [
           ...evidence.gaps.map(gapResult),
           ...evidence.findings.map(findingResult),
+          ...(evidence.contract?.clauses ?? [])
+            .filter((clause) => !clause.passed)
+            .map(failedContractResult),
         ],
       },
     ],

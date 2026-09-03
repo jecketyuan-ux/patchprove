@@ -22,6 +22,7 @@ Exit `1` when residual risk meets `--fail-on`, when a loaded **contract** fails,
 - [Test mapping](mapping.md) — naming, coverage, import graph
 - [Language plugins](plugins.md) — v1.1 API, built-ins, external local load, `--fail-on high` on Go/Java repos
 - [Baseline comparison](baseline.md) — regression gaps
+- [Schema stability](schema.md) — 1.x additive rules, receipts, contract SARIF
 - [Case study](case-study.md) — an almost-right agent PR caught by patchprove
 - [Standalone launcher](standalone.md) — experimental Go thin wrapper around the Node CLI
 

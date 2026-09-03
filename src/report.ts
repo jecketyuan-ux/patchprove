@@ -67,6 +67,13 @@ export function formatHumanReport(evidence: Evidence): string {
         color.dim(`  ·  ${cmp.newGaps.length} new · ${cmp.resolvedGaps.length} resolved`),
     );
   }
+  if (evidence.receipt) {
+    const vs =
+      evidence.receipt.previousContentHash != null
+        ? color.dim(`  ·  vs baseline ${evidence.receipt.unchanged ? "unchanged" : "changed"}`)
+        : "";
+    lines.push(`${color.dim("receipt")}   ${evidence.receipt.contentHash}${vs}`);
+  }
   lines.push("");
 
   lines.push(color.bold("IMPACT"));
@@ -236,6 +243,21 @@ export function formatMarkdownReport(evidence: Evidence): string {
         "",
       ]
     : [];
+  const receiptBlock = evidence.receipt
+    ? [
+        "",
+        "### Receipt",
+        `<!-- patchprove-receipt ${evidence.receipt.contentHash} -->`,
+        "",
+        `**Content hash:** \`${evidence.receipt.contentHash}\``,
+        evidence.receipt.path ? `Written to \`${evidence.receipt.path}\`.` : "",
+        evidence.receipt.previousContentHash
+          ? `**Receipt vs baseline:** ${evidence.receipt.unchanged ? "unchanged" : "changed"} (\`${evidence.receipt.previousContentHash}\`)`
+          : "",
+        "Re-verify with `patchprove receipt verify <evidence.json>`. On GitHub Actions the evidence pack and receipt are uploaded as workflow artifacts.",
+        "",
+      ]
+    : [];
 
   return [
     "<!-- patchprove-sticky -->",
@@ -257,6 +279,7 @@ export function formatMarkdownReport(evidence: Evidence): string {
     checkRows || "| — | — | — |",
     ...contractBlock,
     ...baselineBlock,
+    ...receiptBlock,
     "### Open gaps",
     openGaps,
     "",

@@ -57,7 +57,7 @@ describe("analyze integration", () => {
       out: path.join(dir, "evidence.json"),
     });
 
-    expect(evidence.schemaVersion).toBe("1.0.0");
+    expect(evidence.schemaVersion).toBe("1.2.0");
     expect(evidence.impact.mappingStrategy).toBe("graph");
     expect(evidence.range.mode).toBe("working-tree");
     const paths = evidence.impact.changedFiles.map((f) => f.path);

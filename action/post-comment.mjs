@@ -5,6 +5,26 @@
 import { readFileSync } from "node:fs";
 
 const MARKER = "<!-- patchprove-sticky -->";
+const RECEIPT_MARK = /<!-- patchprove-receipt ([^\s]+) -->/;
+
+function receiptHash(text) {
+  const match = typeof text === "string" ? text.match(RECEIPT_MARK) : null;
+  return match?.[1] ?? null;
+}
+
+function withReceiptComparison(body, previousHash) {
+  const currentHash = receiptHash(body);
+  if (!currentHash || !previousHash) return body;
+  const status = currentHash === previousHash ? "unchanged" : "changed";
+  const line = `**Receipt vs last comment:** ${status}`;
+  if (body.includes("**Receipt vs last comment:**")) {
+    return body.replace(/\*\*Receipt vs last comment:\*\* \w+/, line);
+  }
+  if (body.includes("### Receipt")) {
+    return body.replace("### Receipt", `### Receipt\n\n${line}`);
+  }
+  return `${body.trimEnd()}\n\n${line}\n`;
+}
 
 function fail(message) {
   console.error(`patchprove comment: ${message}`);
@@ -51,11 +71,14 @@ const existing = Array.isArray(comments)
   ? comments.find((c) => typeof c.body === "string" && c.body.includes(MARKER))
   : null;
 
+const previousHash = existing ? receiptHash(existing.body) : null;
+const finalBody = withReceiptComparison(body, previousHash);
+
 if (existing) {
   const res = await fetch(existing.url, {
     method: "PATCH",
     headers: { ...headers, "Content-Type": "application/json" },
-    body: JSON.stringify({ body }),
+    body: JSON.stringify({ body: finalBody }),
   });
   if (!res.ok) fail(`update comment failed: ${res.status} ${await res.text()}`);
   console.log(`Updated sticky comment ${existing.id}`);
@@ -63,7 +86,7 @@ if (existing) {
   const res = await fetch(api, {
     method: "POST",
     headers: { ...headers, "Content-Type": "application/json" },
-    body: JSON.stringify({ body }),
+    body: JSON.stringify({ body: finalBody }),
   });
   if (!res.ok) fail(`create comment failed: ${res.status} ${await res.text()}`);
   const created = await res.json();

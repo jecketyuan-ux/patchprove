@@ -105,8 +105,8 @@ gates:
 ```
 
 ```bash
-npx patchprove@1.1.0 run --fail-on high
-npx patchprove@1.1.0 run --base origin/main --head HEAD --fail-on high --out evidence.json
+npx patchprove@1.2.0 run --fail-on high
+npx patchprove@1.2.0 run --base origin/main --head HEAD --fail-on high --out evidence.json
 ```
 
 What you get:

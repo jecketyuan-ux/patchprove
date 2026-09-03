@@ -53,6 +53,8 @@ Please add or extend tests when you touch:
 - `src/graph.ts` — import reverse-map
 - `src/plugins/` — language plugins
 - `src/baseline.ts` — regression vs saved evidence
+- `src/receipt.ts` — canonical hash, verify, optional HMAC/ed25519
+- `src/sarif.ts` — findings, gaps, and failed contract clauses
 
 ```bash
 npm test
@@ -61,7 +63,7 @@ npm run build
 
 ## Schema changes
 
-Evidence `schemaVersion` is `1.0.0`. Additive optional fields are fine. Breaking field or enum changes require a schema version bump and a CHANGELOG entry. Keep `schema/evidence.schema.json` in lockstep with `src/types.ts`. Package / `toolVersion` is `1.1.0`.
+Evidence `schemaVersion` is `1.2.0` (1.x is additive; see [docs/schema.md](docs/schema.md)). Breaking field or enum changes require a **major** schema version bump and a CHANGELOG entry. Keep `schema/evidence.schema.json` in lockstep with `src/types.ts`. Fixture JSON that looks like an evidence pack must validate against the published schema (`test/schema-fixtures.test.ts`). Package / `toolVersion` is `1.2.0`.
 
 ## Pull requests
 

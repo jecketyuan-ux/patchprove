@@ -47,7 +47,7 @@ If MCP is not configured, use the CLI. Do not invent evidence.
 3. **Gaps** — unmapped sources, missing tools, unsupported languages
 4. **Risk** — max of findings + **open** gaps (`none` … `critical`)
 
-If the repo has `SPEC.md` or `.patchprove/spec.yml`, contract failures mean the patch is not done. If a baseline exists, new gaps are regressions — do not claim done.
+If the repo has `SPEC.md` or `.patchprove/spec.yml`, contract failures mean the patch is not done. If a baseline exists, new gaps are regressions — do not claim done. A receipt (`evidence.receipt.json`) hashes the pack so the same diff verifies as the same `contentHash`; run `patchprove receipt verify evidence.json` when you need to re-check.
 
 If `list_gaps.claimDone` is false or `summary.gapCount > 0`, keep working or get an explicit human accept (`--accept` / `acceptGaps` in `.patchprove.yml`).
 
