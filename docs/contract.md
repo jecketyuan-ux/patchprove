@@ -63,3 +63,5 @@ acceptedResidualRisk:
 ```
 
 A loaded contract that fails **exits 1**, even if `--fail-on` is unset. That is the gate.
+
+Failed clauses are also emitted as SARIF results (`--sarif` / Action `upload-sarif: true`) so GitHub Code Scanning can show them. That path needs `security-events: write`.

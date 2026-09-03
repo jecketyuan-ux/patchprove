@@ -3,12 +3,16 @@ export type {
   AcceptGapRule,
   BaselineComparison,
   ChangedFile,
+  CheckDigest,
   CheckId,
   CheckResult,
   ContractClauseResult,
   ContractResult,
   Evidence,
+  EvidenceReceipt,
+  EvidenceReceiptRef,
   FailOnLevel,
+  FailOnOutcomeReason,
   Finding,
   Gap,
   Language,
@@ -16,12 +20,14 @@ export type {
   MappingStrategy,
   PatchproveContract,
   PatchproveGates,
+  ReceiptOptionsSummary,
+  ReceiptSignature,
   ResolvedConfig,
   RiskLevel,
   RunOptions,
   SummaryRisk,
 } from "./types.js";
-export { emptyContractResult, emptyDetectedTools } from "./types.js";
+export { emptyContractResult, emptyDetectedTools, RECEIPT_SCHEMA_VERSION } from "./types.js";
 export {
   classifyPath,
   isLockfilePath,
@@ -51,7 +57,7 @@ export {
   toChangedFile,
 } from "./evidence.js";
 export { formatHumanReport, formatMarkdownReport, formatShortSummary } from "./report.js";
-export { analyze, executeRun, render, shouldFailRun, writeEvidence } from "./run.js";
+export { analyze, executeRun, failOnOutcomeOf, render, resolveReceiptPath, shouldFailRun, writeEvidence } from "./run.js";
 export {
   listGaps,
   provePatch,
@@ -88,6 +94,26 @@ export { applyAcceptedGaps, findAcceptMatch, isOpenGap, matchAcceptRule } from "
 export { globToRegExp, matchAnyGlob, matchGlob } from "./glob.js";
 export { loadCoverageMap, mapTestsForSource, parseCoverageText } from "./coverage.js";
 export { toSarif, writeSarif } from "./sarif.js";
+export {
+  attachReceiptRef,
+  buildReceipt,
+  canonicalEvidence,
+  canonicalize,
+  checkDigests,
+  defaultReceiptPath,
+  findPreviousReceiptHash,
+  hashCanonical,
+  hashEvidence,
+  isReceiptShape,
+  parseSigningKey,
+  readReceiptFile,
+  readReceiptHash,
+  sortKeys,
+  verifyReceipt,
+  verifySignature,
+  writeReceipt,
+} from "./receipt.js";
+export type { BuildReceiptInput, SigningMaterial, VerifyReceiptResult } from "./receipt.js";
 export {
   builtinPlugins,
   pluginForPath,

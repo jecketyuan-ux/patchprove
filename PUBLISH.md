@@ -1,6 +1,6 @@
 # Publishing patchprove
 
-The package is pack-ready at version **1.1.0**. CI runs `npm pack --dry-run`; nothing publishes automatically.
+The package is pack-ready at version **1.2.0**. CI runs `npm pack --dry-run`; nothing publishes automatically.
 
 ## What gets published
 
@@ -29,10 +29,10 @@ npm publish           # public; publishConfig.access is public
 Then tag the release:
 
 ```bash
-git tag v1.1.0
-git push origin v1.1.0
+git tag v1.2.0
+git push origin v1.2.0
 ```
 
-Pin the Action at `jecketyuan-ux/patchprove/action@v1.1.0` after the tag exists.
+Pin the Action at `jecketyuan-ux/patchprove/action@v1.2.0` after the tag exists.
 
 Do **not** publish from CI or from a cloud agent unless `NPM_TOKEN` is present and you intend to release.

@@ -27,6 +27,7 @@ jobs:
           node dist/cli.js init-agent --help
           node dist/cli.js hook --help
           node dist/cli.js baseline save --help
+          node dist/cli.js receipt verify --help
       - name: bin shebang
         run: |
           head -n1 dist/cli.js | grep -q '^#!/usr/bin/env node'
@@ -73,11 +74,14 @@ jobs:
             --base "${{ github.event.pull_request.base.sha }}" \
             --head "${{ github.event.pull_request.head.sha }}" \
             --out evidence.json \
+            --receipt evidence.receipt.json \
             --sarif patchprove.sarif
+          node dist/cli.js receipt verify evidence.json evidence.receipt.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: patchprove-evidence
           path: |
             evidence.json
+            evidence.receipt.json
             patchprove.sarif

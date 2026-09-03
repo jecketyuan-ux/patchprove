@@ -30,13 +30,21 @@ inputs:
     required: false
     default: ""
   upload-sarif:
-    description: Generate SARIF from findings/gaps and upload with github/codeql-action/upload-sarif. Requires security-events: write.
+    description: Generate SARIF from findings, gaps, and failed contract clauses; upload with github/codeql-action/upload-sarif. Requires security-events: write.
     required: false
     default: "false"
   sarif-file:
     description: SARIF output path (used when upload-sarif is true).
     required: false
     default: patchprove.sarif
+  receipt:
+    description: Receipt JSON path. Empty writes <out>.receipt.json (default on). Set to "false" to skip.
+    required: false
+    default: ""
+  upload-artifacts:
+    description: Upload evidence.json and the receipt as workflow artifacts.
+    required: false
+    default: "true"
 runs:
   using: composite
   steps:
@@ -72,6 +80,7 @@ runs:
         INPUT_IGNORE: ${{ inputs.ignore }}
         INPUT_UPLOAD_SARIF: ${{ inputs.upload-sarif }}
         INPUT_SARIF_FILE: ${{ inputs.sarif-file }}
+        INPUT_RECEIPT: ${{ inputs.receipt }}
         EVENT_NAME: ${{ github.event_name }}
         PR_BASE: ${{ github.event.pull_request.base.sha }}
         PR_HEAD: ${{ github.event.pull_request.head.sha }}
@@ -103,6 +112,19 @@ runs:
         if [ "$INPUT_UPLOAD_SARIF" = "true" ]; then
           ARGS+=(--sarif "$INPUT_SARIF_FILE")
         fi
+        RECEIPT_PATH=""
+        if [ "$INPUT_RECEIPT" = "false" ]; then
+          ARGS+=(--no-receipt)
+        else
+          if [ -n "$INPUT_RECEIPT" ]; then
+            RECEIPT_PATH="$INPUT_RECEIPT"
+          elif [[ "$INPUT_OUT" == *.json ]]; then
+            RECEIPT_PATH="${INPUT_OUT%.json}.receipt.json"
+          else
+            RECEIPT_PATH="${INPUT_OUT}.receipt.json"
+          fi
+          ARGS+=(--receipt "$RECEIPT_PATH")
+        fi
         if [ "$EVENT_NAME" = "pull_request" ] || [ "$EVENT_NAME" = "pull_request_target" ]; then
           ARGS+=(--base "$PR_BASE" --head "$PR_HEAD")
         fi
@@ -117,6 +139,8 @@ runs:
         fi
         echo "comment=$RUNNER_TEMP/patchprove-comment.md" >> "$GITHUB_OUTPUT"
         echo "cli_status=$STATUS" >> "$GITHUB_OUTPUT"
+        echo "receipt=$RECEIPT_PATH" >> "$GITHUB_OUTPUT"
+        echo "evidence=$INPUT_OUT" >> "$GITHUB_OUTPUT"
 
     - name: Sticky PR comment
       if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
@@ -126,6 +150,16 @@ runs:
         COMMENT_FILE: ${{ steps.run.outputs.comment }}
         GH_EVENT_PATH: ${{ github.event_path }}
       run: node "${{ github.action_path }}/post-comment.mjs"
+
+    - name: Upload evidence artifacts
+      if: always() && inputs.upload-artifacts != 'false'
+      uses: actions/upload-artifact@v4
+      with:
+        name: patchprove-evidence
+        if-no-files-found: warn
+        path: |
+          ${{ inputs.out }}
+          ${{ steps.run.outputs.receipt }}
 
     - name: Upload SARIF
       if: inputs.upload-sarif == 'true'

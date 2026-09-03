@@ -9,6 +9,7 @@ import { startMcpServer } from "./mcp.js";
 import { readEvidenceFile } from "./mcp-tools.js";
 import { analyze, executeRun } from "./run.js";
 import { collectGitSnapshot } from "./git.js";
+import { defaultReceiptPath, readReceiptFile, verifyReceipt } from "./receipt.js";
 import { TOOL_VERSION, type CheckId, type FailOnLevel } from "./types.js";
 
 function collect(value: string, previous: string[]): string[] {
@@ -107,7 +108,17 @@ const run = program
   .description("Analyze git diff and write an evidence pack")
   .option("--json", "Print evidence JSON to stdout", false)
   .option("--format <fmt>", "Stdout format: human | json | markdown", "human")
-  .option("--sarif <file>", "Write SARIF 2.1 from findings and gaps");
+  .option("--sarif <file>", "Write SARIF 2.1 from findings, gaps, and failed contract clauses")
+  .option(
+    "--receipt [file]",
+    "Write a hashable receipt (default on: <out>.receipt.json). Use --no-receipt to skip.",
+  )
+  .option("--no-receipt", "Do not write an evidence receipt")
+  .option(
+    "--sign",
+    "Sign the receipt with PATCHPROVE_SIGNING_KEY (ed25519 or HMAC). Skips signing if the key is unset.",
+    false,
+  );
 
 addPipelineOptions(run).action(
   async (opts: {
@@ -126,6 +137,8 @@ addPipelineOptions(run).action(
     config?: string;
     spec?: string;
     baseline?: string;
+    receipt?: string | boolean;
+    sign?: boolean;
   }) => {
     const format = opts.json ? "json" : opts.format;
     if (format !== "human" && format !== "json" && format !== "markdown") {
@@ -144,6 +157,9 @@ addPipelineOptions(run).action(
       format,
       out: parsed.out ?? "evidence.json",
       sarif: opts.sarif,
+      receipt: opts.receipt,
+      sign: Boolean(opts.sign),
+      argv: process.argv.slice(2),
     });
   },
 );
@@ -286,6 +302,28 @@ baseline
       const written = writeBaseline(out, evidence);
       process.stdout.write(`wrote baseline ${written}\n`);
       process.exitCode = 0;
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err);
+      process.stderr.write(`patchprove: ${message}\n`);
+      process.exitCode = 2;
+    }
+  });
+
+const receipt = program.command("receipt").description("Verify or inspect an evidence receipt");
+
+receipt
+  .command("verify")
+  .description("Recompute the evidence content hash and check it against a receipt")
+  .argument("<evidence>", "Path to evidence.json")
+  .argument("[receipt]", "Receipt JSON (default: <evidence>.receipt.json)")
+  .action((evidencePath: string, receiptPath: string | undefined) => {
+    try {
+      const evidence = readEvidenceFile(evidencePath);
+      const resolvedReceipt = path.resolve(receiptPath ?? defaultReceiptPath(evidencePath));
+      const receiptDoc = readReceiptFile(resolvedReceipt);
+      const result = verifyReceipt(evidence, receiptDoc);
+      process.stdout.write(`${result.ok ? "ok" : "mismatch"}  ${result.message}\n`);
+      process.exitCode = result.ok ? 0 : 1;
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
       process.stderr.write(`patchprove: ${message}\n`);

@@ -1,5 +1,6 @@
-export const SCHEMA_VERSION = "1.0.0" as const;
-export const TOOL_VERSION = "1.1.0";
+export const SCHEMA_VERSION = "1.2.0" as const;
+export const TOOL_VERSION = "1.2.0";
+export const RECEIPT_SCHEMA_VERSION = "1.2.0" as const;
 
 export type RiskLevel = "low" | "medium" | "high" | "critical";
 export type SummaryRisk = "none" | RiskLevel;
@@ -133,8 +134,65 @@ export interface BaselineComparison {
   failOnNewGaps?: FailOnLevel;
 }
 
+export type ReceiptAlgorithm = "sha256";
+export type ReceiptSignatureAlg = "ed25519" | "hmac-sha256";
+export type FailOnOutcomeReason = "ok" | "fail-on" | "contract" | "new-gaps";
+
+export interface CheckDigest {
+  id: CheckId;
+  command: string | null;
+  exitCode: number | null;
+  status: CheckStatus;
+}
+
+export interface ReceiptSignature {
+  alg: ReceiptSignatureAlg;
+  value: string;
+  publicKey?: string;
+}
+
+export interface ReceiptOptionsSummary {
+  failOn?: FailOnLevel | "none" | null;
+  failOnNewGaps?: FailOnLevel | "none" | null;
+  base?: string | null;
+  head?: string | null;
+  out?: string | null;
+  sarif?: string | null;
+  spec?: string | null;
+  baseline?: string | null;
+  format?: "human" | "json" | "markdown" | null;
+  sign?: boolean;
+}
+
+export interface EvidenceReceipt {
+  schemaVersion: typeof RECEIPT_SCHEMA_VERSION;
+  algorithm: ReceiptAlgorithm;
+  contentHash: string;
+  toolVersion: string;
+  evidenceSchemaVersion: string;
+  argv: string[];
+  options: ReceiptOptionsSummary;
+  exitCode: number;
+  failOnOutcome: {
+    failed: boolean;
+    reason: FailOnOutcomeReason;
+  };
+  checks: CheckDigest[];
+  generatedAt: string;
+  signature?: ReceiptSignature;
+}
+
+/** Pointer written onto evidence after the content hash is computed (excluded from the hash). */
+export interface EvidenceReceiptRef {
+  algorithm: ReceiptAlgorithm;
+  contentHash: string;
+  path?: string;
+  previousContentHash?: string;
+  unchanged?: boolean;
+}
+
 export interface Evidence {
-  schemaVersion: typeof SCHEMA_VERSION;
+  schemaVersion: string;
   generatedAt: string;
   toolVersion: string;
   repo: {
@@ -168,6 +226,7 @@ export interface Evidence {
   };
   contract: ContractResult;
   baselineComparison: BaselineComparison | null;
+  receipt?: EvidenceReceiptRef;
 }
 
 export interface DetectedTools {
@@ -260,6 +319,10 @@ export interface RunOptions {
   baseline?: string;
   failOnNewGaps?: FailOnLevel | "none";
   spec?: string;
+  /** `false` skips the receipt; a string is an explicit path; omit/`true` writes `<out>.receipt.json`. */
+  receipt?: boolean | string;
+  sign?: boolean;
+  argv?: string[];
 }
 
 export function emptyContractResult(): ContractResult {

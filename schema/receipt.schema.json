@@ -1,0 +1,110 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/jecketyuan-ux/patchprove/schema/receipt.schema.json",
+  "title": "PatchproveEvidenceReceipt",
+  "description": "Hashable, optionally signable receipt for an evidence pack. The content hash covers a canonicalized evidence subset (no wall-clock fields).",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schemaVersion",
+    "algorithm",
+    "contentHash",
+    "toolVersion",
+    "evidenceSchemaVersion",
+    "argv",
+    "options",
+    "exitCode",
+    "failOnOutcome",
+    "checks",
+    "generatedAt"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string",
+      "const": "1.2.0"
+    },
+    "algorithm": {
+      "type": "string",
+      "const": "sha256"
+    },
+    "contentHash": {
+      "type": "string",
+      "pattern": "^sha256:[0-9a-f]{64}$"
+    },
+    "toolVersion": { "type": "string", "minLength": 1 },
+    "evidenceSchemaVersion": { "type": "string", "minLength": 1 },
+    "argv": {
+      "type": "array",
+      "items": { "type": "string" }
+    },
+    "options": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "failOn": { "type": ["string", "null"] },
+        "failOnNewGaps": { "type": ["string", "null"] },
+        "base": { "type": ["string", "null"] },
+        "head": { "type": ["string", "null"] },
+        "out": { "type": ["string", "null"] },
+        "sarif": { "type": ["string", "null"] },
+        "spec": { "type": ["string", "null"] },
+        "baseline": { "type": ["string", "null"] },
+        "format": { "type": ["string", "null"] },
+        "sign": { "type": "boolean" }
+      }
+    },
+    "exitCode": { "type": "integer" },
+    "failOnOutcome": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["failed", "reason"],
+      "properties": {
+        "failed": { "type": "boolean" },
+        "reason": {
+          "type": "string",
+          "enum": ["ok", "fail-on", "contract", "new-gaps"]
+        }
+      }
+    },
+    "checks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "command", "exitCode", "status"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "enum": ["typecheck", "lint", "tests", "secrets"]
+          },
+          "command": { "type": ["string", "null"] },
+          "exitCode": { "type": ["integer", "null"] },
+          "status": {
+            "type": "string",
+            "enum": ["passed", "failed", "skipped"]
+          }
+        }
+      }
+    },
+    "generatedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "signature": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["alg", "value"],
+      "properties": {
+        "alg": {
+          "type": "string",
+          "enum": ["ed25519", "hmac-sha256"]
+        },
+        "value": { "type": "string", "minLength": 1 },
+        "publicKey": {
+          "type": "string",
+          "description": "SPKI DER (base64) for ed25519, so verify does not need the private key."
+        }
+      }
+    }
+  }
+}

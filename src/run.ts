@@ -16,11 +16,18 @@ import { runAffectedTests, runLint, runSecretScan, runTypecheck } from "./gates.
 import { collectGitSnapshot, type DiffFile } from "./git.js";
 import { buildImportGraph } from "./graph.js";
 import { createPluginContext, resolveLanguagePlugins } from "./plugins/index.js";
+import {
+  attachReceiptRef,
+  buildReceipt,
+  defaultReceiptPath,
+  findPreviousReceiptHash,
+  writeReceipt,
+} from "./receipt.js";
 import { formatHumanReport, formatMarkdownReport } from "./report.js";
 import { meetsFailOn } from "./risk.js";
 import { writeSarif } from "./sarif.js";
 import { evaluateContract, loadContract } from "./spec.js";
-import type { Evidence, ResolvedConfig, RunOptions } from "./types.js";
+import type { Evidence, FailOnOutcomeReason, ResolvedConfig, RunOptions } from "./types.js";
 
 export function hydrateUntrackedPatches(root: string, files: DiffFile[]): DiffFile[] {
   return files.map((file) => {
@@ -43,10 +50,32 @@ export function hydrateUntrackedPatches(root: string, files: DiffFile[]): DiffFi
   });
 }
 
+export function failOnOutcomeOf(
+  evidence: Evidence,
+  config: ResolvedConfig,
+): { failed: boolean; reason: FailOnOutcomeReason } {
+  if (evidence.contract.loaded && !evidence.contract.passed) {
+    return { failed: true, reason: "contract" };
+  }
+  if (newGapsMeetFailOn(evidence.baselineComparison, config.failOnNewGaps)) {
+    return { failed: true, reason: "new-gaps" };
+  }
+  if (meetsFailOn(evidence.summary.risk, config.failOn)) {
+    return { failed: true, reason: "fail-on" };
+  }
+  return { failed: false, reason: "ok" };
+}
+
 export function shouldFailRun(evidence: Evidence, config: ResolvedConfig): boolean {
-  if (evidence.contract.loaded && !evidence.contract.passed) return true;
-  if (newGapsMeetFailOn(evidence.baselineComparison, config.failOnNewGaps)) return true;
-  return meetsFailOn(evidence.summary.risk, config.failOn);
+  return failOnOutcomeOf(evidence, config).failed;
+}
+
+export function resolveReceiptPath(options: RunOptions): string | null {
+  if (options.receipt === false) return null;
+  if (typeof options.receipt === "string" && options.receipt.trim()) {
+    return path.resolve(options.receipt);
+  }
+  return path.resolve(defaultReceiptPath(options.out));
 }
 
 export async function analyze(options: RunOptions): Promise<Evidence> {
@@ -140,8 +169,38 @@ export function render(evidence: Evidence, format: RunOptions["format"]): string
 
 export async function executeRun(options: RunOptions): Promise<number> {
   try {
-    const evidence = await analyze(options);
+    let evidence = await analyze(options);
     const config = resolveConfig(evidence.repo.root, options);
+    const outcome = failOnOutcomeOf(evidence, config);
+    const exitCode = outcome.failed ? 1 : 0;
+    const receiptPath = resolveReceiptPath(options);
+    if (receiptPath) {
+      if (options.sign && !process.env.PATCHPROVE_SIGNING_KEY?.trim()) {
+        process.stderr.write(
+          "patchprove: --sign set but PATCHPROVE_SIGNING_KEY is empty; writing unsigned receipt\n",
+        );
+      }
+      const receipt = buildReceipt({
+        evidence,
+        argv: options.argv ?? process.argv.slice(2),
+        options,
+        exitCode,
+        failOnOutcome: outcome,
+        sign: options.sign,
+      });
+      const writtenReceipt = writeReceipt(receiptPath, receipt);
+      const previousContentHash = findPreviousReceiptHash(
+        evidence.baselineComparison?.baselinePath,
+      );
+      const displayPath = path.relative(evidence.repo.root, writtenReceipt) || writtenReceipt;
+      evidence = attachReceiptRef(evidence, receipt, {
+        path: displayPath,
+        previousContentHash,
+      });
+      if (options.format !== "json") {
+        process.stderr.write(`wrote ${writtenReceipt}\n`);
+      }
+    }
     const outFile = writeEvidence(options.out, evidence);
     if (options.sarif) {
       const sarifFile = writeSarif(options.sarif, evidence);
@@ -155,7 +214,7 @@ export async function executeRun(options: RunOptions): Promise<number> {
     if (format !== "json") {
       process.stderr.write(`wrote ${outFile}\n`);
     }
-    return shouldFailRun(evidence, config) ? 1 : 0;
+    return exitCode;
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     process.stderr.write(`patchprove: ${message}\n`);

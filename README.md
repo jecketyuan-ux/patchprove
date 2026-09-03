@@ -32,7 +32,7 @@ CI is the merge contract for *your* repo: the jobs you already pay to run on eve
 
 **AI-on-AI reviewers** (another model summarizing or “approving” the diff) add a second opinion in the same uncertain medium. patchprove stays on the other axis: *what did a deterministic tool actually run, and what did it never see?* Use it beside CI and beside a human/LLM review — not instead of them.
 
-A later single-binary (Rust/Go) may ship for air-gapped hosts. v1.1 is TypeScript + Node ESM, with an **experimental Go thin launcher** that execs the Node CLI. Docs: [docs/](docs/index.md).
+A later single-binary (Rust/Go) may ship for air-gapped hosts. v1.2 is TypeScript + Node ESM, with an **experimental Go thin launcher** that execs the Node CLI. Docs: [docs/](docs/index.md).
 
 ## Install
 
@@ -78,6 +78,11 @@ patchprove baseline save
 # accept a known gap (still listed; does not raise risk / fail-on)
 patchprove run --accept src/generated/** --fail-on high
 
+# hashable receipt (default: evidence.receipt.json next to --out)
+patchprove run --receipt
+patchprove receipt verify evidence.json
+patchprove run --sign   # optional; needs PATCHPROVE_SIGNING_KEY
+
 # install skill + Claude Code hook + Cursor rule pack + optional MCP snippet (idempotent)
 patchprove init-agent
 patchprove init-agent --cursor
@@ -100,9 +105,12 @@ Flags:
 | `--accept <path-or-id>` | Accept a gap id or path pattern (repeatable). CLI adds to config `acceptGaps`. |
 | `--ignore <glob>` | Exclude a path glob from impact / gaps / findings (repeatable). CLI adds to config `ignorePaths`. |
 | `--disable-gate typecheck\|lint\|tests\|secrets` | Turn a gate off (repeatable). CLI overrides config `gates`. |
-| `--sarif <file>` | Write SARIF 2.1 generated from findings and gaps |
+| `--sarif <file>` | Write SARIF 2.1 from findings, gaps, and **failed contract clauses** |
+| `--receipt [file]` | Write a hashable receipt (default on: `<out>.receipt.json`) |
+| `--no-receipt` | Skip the receipt file |
+| `--sign` | Sign the receipt with `PATCHPROVE_SIGNING_KEY` (HMAC or ed25519). No key → hash only |
 
-Other commands: `patchprove init-agent`, `patchprove hook stop|post|session|subagent-stop`, `patchprove baseline save`, `patchprove mcp` (see below).
+Other commands: `patchprove receipt verify`, `patchprove init-agent`, `patchprove hook stop|post|session|subagent-stop`, `patchprove baseline save`, `patchprove mcp` (see below).
 
 Exit codes: `0` ok (or below threshold), `1` fail-on / **contract failure** / new-gap threshold met, `2` usage/runtime error.
 
@@ -184,6 +192,25 @@ Built-in: JS/TS, Python, **Go**, **Rust**, **Java**. v1.1 mapping is project-awa
 
 External plugins are **opt-in and local** (`.patchprove.yml` `plugins:`, `PATCHPROVE_PLUGINS`, or `.patchprove/plugins/*`). Example: [`examples/plugins/widget.mjs`](examples/plugins/widget.mjs). See [docs/plugins.md](docs/plugins.md).
 
+## Evidence receipts
+
+After `patchprove run`, a **receipt** (`evidence.receipt.json` by default) records a canonical content hash of the pack plus enough metadata to audit the run. Same diff twice → same `contentHash` (timestamps and check durations are excluded from the hash). See [docs/schema.md](docs/schema.md).
+
+```bash
+patchprove run --out evidence.json          # writes evidence.receipt.json
+patchprove receipt verify evidence.json     # recompute hash; exit 1 on mismatch
+```
+
+Optional signing is intentionally small:
+
+```bash
+export PATCHPROVE_SIGNING_KEY="hmac:a-long-random-secret"
+# or: PATCHPROVE_SIGNING_KEY="ed25519:$(openssl ...)"  / a PEM private key
+patchprove run --sign --out evidence.json
+```
+
+If `--sign` is set but the env var is empty, signing is skipped and the hash is still written. Ed25519 receipts store the public key so `receipt verify` does not need the private key. HMAC verify needs the same secret.
+
 ## Known-accepted gaps
 
 Gaps matching `acceptGaps` or `--accept`:
@@ -193,7 +220,7 @@ Gaps matching `acceptGaps` or `--accept`:
 - Do **not** raise `summary.risk` or trip `--fail-on`
 - `summary.gapCount` counts **open** gaps only; `summary.acceptedGapCount` is separate
 
-## What it does (v1.1)
+## What it does (v1.2)
 
 1. **Detect changed files** via `git diff` (working tree vs `HEAD`, or `--base`/`--head`), minus `ignorePaths`.
 2. **Map nearby tests** (deterministic, no LLM), in order:
@@ -209,11 +236,11 @@ Gaps matching `acceptGaps` or `--accept`:
 4. **Evaluate the contract** if `.patchprove/spec.yml` or `SPEC.md` is present (required gates, max residual risk, mapped-test globs, forbidden unproven paths).
 5. **Compare a baseline** if `--baseline`, config `baseline`, or `.patchprove/baseline.json` exists. New open gaps are regressions.
 6. **Highlight high-risk paths**: lockfiles, `.github/workflows/**`, auth/crypto-ish names.
-7. **Write** a human report, `evidence.json` (`schemaVersion: "1.0.0"`), and optionally SARIF.
+7. **Write** a human report, `evidence.json` (`schemaVersion: "1.2.0"`), a hashable **receipt**, and optionally SARIF (findings, gaps, failed contract clauses).
 
 No telemetry. No Anthropic/OpenAI account. Not a CI replacement and not an LLM reviewer.
 
-See **[docs/](docs/index.md)** for the contract, mapping, plugins, baseline, and [case study](docs/case-study.md).
+See **[docs/](docs/index.md)** for the contract, mapping, plugins, baseline, [schema](docs/schema.md), and [case study](docs/case-study.md).
 
 ## Sample: almost-right agent patch
 
@@ -222,7 +249,7 @@ An agent “fixes login lockout.” Types are clean. Lint is clean. It even upda
 What patchprove sees:
 
 ```
-patchprove  v1.1.0  ·  impact → checks → gaps → risk
+patchprove  v1.2.0  ·  impact → checks → gaps → risk
 model-free evidence pack  ·  not a CI replacement
 
 range     working tree vs HEAD
@@ -262,11 +289,11 @@ That is the product: **almost-right is not proven.** Merge when a human accepts 
 
 ## Evidence schema
 
-JSON Schema: [`schema/evidence.schema.json`](schema/evidence.schema.json)
+JSON Schema: [`schema/evidence.schema.json`](schema/evidence.schema.json). Semver rules: [docs/schema.md](docs/schema.md).
 
-Top-level shape (`schemaVersion` **1.0.0**):
+Top-level shape (`schemaVersion` **1.2.0**, 1.x additive):
 
-- `schemaVersion` — `1.0.0`
+- `schemaVersion` — `1.2.0` (1.0.0 packs remain valid 1.x documents)
 - `impact` — changed files, mapped tests, unmapped sources, languages, **`mappingStrategy`**, optional **`mappingFallbacks`**
 - `impact.mappedTests[].via` — optional `naming` \| `coverage` \| `graph`
 - `checks[]` — `typecheck` \| `lint` \| `tests` \| `secrets` with `passed` / `failed` / `skipped`
@@ -274,6 +301,7 @@ Top-level shape (`schemaVersion` **1.0.0**):
 - `findings[]` — high-risk paths, secrets, failed checks; each has a `risk`
 - `contract` — loaded/passed + clause results when a SPEC is present
 - `baselineComparison` — new/resolved gaps vs a previous pack (or `null`)
+- `receipt` — optional pointer (`contentHash`, path) written after the hash is computed; excluded from the hash
 - `summary.risk` — `none` \| `low` \| `medium` \| `high` \| `critical` (max of findings + **open** gaps)
 - `summary.gapCount` — open gaps; `summary.acceptedGapCount` — accepted gaps
 
@@ -294,15 +322,15 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - uses: jecketyuan-ux/patchprove/action@v1.0.0
+      - uses: jecketyuan-ux/patchprove/action@v1.2.0
         with:
           fail-on: high   # or critical / none; omit to use config or comment only
           upload-sarif: true
 ```
 
-The action builds the CLI from this repo, analyzes `base...head`, writes `evidence.json`, and creates or updates a **sticky** PR comment (`<!-- patchprove-sticky -->`) with Impact, Checks, Open gaps, Accepted gaps, and Findings.
+The action builds the CLI from this repo, analyzes `base...head`, writes `evidence.json` + a receipt, uploads both as workflow artifacts, and creates or updates a **sticky** PR comment (`<!-- patchprove-sticky -->`) with Impact, Checks, Contract, Receipt (content hash), Open gaps, Accepted gaps, and Findings. A later run on the same PR notes whether the receipt hash is **unchanged** or **changed**.
 
-Set `upload-sarif: true` to generate SARIF from findings/gaps and upload it with `github/codeql-action/upload-sarif`. That needs **`security-events: write`**. Accepted gaps are uploaded with SARIF suppressions (`status: accepted`). See [action/README.md](action/README.md).
+Set `upload-sarif: true` to generate SARIF from findings, gaps, and **failed contract clauses**, then upload it with `github/codeql-action/upload-sarif`. That needs **`security-events: write`**. Accepted gaps are uploaded with SARIF suppressions (`status: accepted`). See [action/README.md](action/README.md).
 
 ## MCP server
 
@@ -427,7 +455,7 @@ npx cc-kit doctor
 
 patchprove 是给 **Agent / PR 补丁** 用的证据包：影响面 → 实际跑过的检查 → 缺口 → 风险。它不是 CI 替代品，也不是「再用一个模型审一次」的 AI-on-AI。默认不调大模型、不采集遥测。人类和 Agent 都能在合并前看到：**哪些事仍然没被证明。**
 
-v1.1 在 v1.0 契约 / 导入图 / 基线之上，加强 Java Gradle·Maven、Go module/`internal`、Rust workspace 的受影响测试映射，并支持本地外部插件。有未接受的缺口、契约失败、或相对基线的新高风险缺口时，进程以 `1` 退出。**Agent 不得声称做完。**
+v1.2 在 v1.1 语言映射 / 插件之上增加**可哈希（可选签名）的证据回执**、契约条款进 SARIF，以及 Action 产物与回执对比。有未接受的缺口、契约失败、或相对基线的新高风险缺口时，进程以 `1` 退出。**Agent 不得声称做完。**
 
 ```bash
 npx patchprove run --base origin/main --fail-on high

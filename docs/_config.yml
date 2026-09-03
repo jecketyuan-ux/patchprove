@@ -9,5 +9,6 @@ header_pages:
   - mapping.md
   - plugins.md
   - baseline.md
+  - schema.md
   - case-study.md
   - standalone.md

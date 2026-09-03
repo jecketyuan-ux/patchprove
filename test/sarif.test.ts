@@ -51,4 +51,58 @@ describe("toSarif", () => {
     const finding = results.find((r) => r.ruleId === "workflow");
     expect(finding?.level).toBe("error");
   });
+
+  it("emits a failed contract clause as a SARIF result", () => {
+    const evidence = buildEvidence({
+      cwd: "/tmp",
+      root: "/tmp",
+      range: { mode: "working-tree", base: "HEAD", head: null },
+      impact: {
+        changedFiles: [],
+        mappedTests: [],
+        unmappedSources: ["src/crypto/box.ts"],
+        languages: ["typescript"],
+        mappingStrategy: "naming",
+      },
+      checks: [],
+      gaps: [],
+      findings: [],
+      generatedAt: "2026-09-03T00:00:00.000Z",
+      contract: {
+        loaded: true,
+        passed: false,
+        source: "/tmp/.patchprove/spec.yml",
+        format: "yaml",
+        clauses: [
+          {
+            id: "forbidden-unproven-0",
+            kind: "forbidden-unproven",
+            passed: false,
+            message: "Forbidden unproven path: src/crypto/box.ts",
+            files: ["src/crypto/box.ts"],
+          },
+          {
+            id: "required-gate-tests",
+            kind: "required-gate",
+            passed: true,
+            message: "required gate tests passed",
+          },
+        ],
+      },
+    });
+
+    const sarif = toSarif(evidence);
+    const run = (sarif.runs as Array<{ results: Array<Record<string, unknown>> }>)[0];
+    const results = run?.results ?? [];
+    const failed = results.find((r) => r.ruleId === "forbidden-unproven");
+    expect(failed).toBeTruthy();
+    expect(failed?.level).toBe("error");
+    expect((failed?.message as { text: string }).text).toMatch(/src\/crypto\/box\.ts/);
+    expect(failed?.properties).toMatchObject({
+      clauseId: "forbidden-unproven-0",
+      contractKind: "forbidden-unproven",
+      passed: false,
+    });
+    expect(results.some((r) => r.ruleId === "required-gate")).toBe(false);
+  });
 });

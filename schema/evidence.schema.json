@@ -22,8 +22,8 @@
   "properties": {
     "schemaVersion": {
       "type": "string",
-      "const": "1.0.0",
-      "description": "Evidence JSON schema version (semver)."
+      "pattern": "^1\\.[0-9]+\\.[0-9]+$",
+      "description": "Evidence JSON schema version (semver). Additive fields stay on 1.x; current packs emit 1.2.0. See docs/schema.md."
     },
     "generatedAt": {
       "type": "string",
@@ -129,6 +129,10 @@
         { "type": "null" },
         { "$ref": "#/definitions/baselineComparison" }
       ]
+    },
+    "receipt": {
+      "$ref": "#/definitions/receiptRef",
+      "description": "Optional pointer written after the content hash is computed. Excluded from the hash input."
     }
   },
   "definitions": {
@@ -333,6 +337,25 @@
           "type": "string",
           "enum": ["high", "critical"]
         }
+      }
+    },
+    "receiptRef": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["algorithm", "contentHash"],
+      "properties": {
+        "algorithm": { "type": "string", "const": "sha256" },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$",
+          "description": "Canonical SHA-256 of the evidence (timestamps and receipt pointer excluded)."
+        },
+        "path": { "type": "string" },
+        "previousContentHash": {
+          "type": "string",
+          "pattern": "^sha256:[0-9a-f]{64}$"
+        },
+        "unchanged": { "type": "boolean" }
       }
     }
   }

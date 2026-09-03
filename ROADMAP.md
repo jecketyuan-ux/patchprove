@@ -28,6 +28,13 @@ patchprove stays an **evidence pack + gap driver**: impact → checks → gaps �
 - Skill at `examples/skills/patchprove/` installable with [cc-kit](https://github.com/jecketyuan-ux/cc-kit) from a git path (no npm publish required)
 - Pack-ready `0.3.0`
 
+### v1.2 — evidence receipts + contract SARIF
+
+- Hashable, optionally signable evidence receipts (`evidence.receipt.json`); `patchprove receipt verify`
+- Failed **contract clauses** in SARIF / GitHub Code Scanning
+- Schema stability commitment (`docs/schema.md`); evidence `schemaVersion` **1.2.0** (additive)
+- Action uploads evidence + receipt artifacts; sticky comment shows the content hash and unchanged/changed vs the last comment or a baseline receipt
+
 ### v1.1 — language mapping + external plugins
 
 - Java/Gradle (and Maven) affected-test filtering: multi-module + package-path FQCN, `gradle --tests` / `mvn -Dtest=`
@@ -46,14 +53,12 @@ patchprove stays an **evidence pack + gap driver**: impact → checks → gaps �
 - **Docs site** (`docs/`) + case study
 - **Experimental Go thin launcher** (`go/`) that execs the Node CLI — not a rewrite
 
-## Next — v1.2
+## Next — v1.3 host gates
 
 Still deterministic and model-free unless explicitly re-scoped:
 
-- Signed / hashed evidence receipts
-- Optional SARIF for contract clauses
-- Evidence / contract schema refinements if receipts need new fields
-- First-class blocking stop semantics if Cursor adds them
+- First-class blocking stop semantics if Cursor (or other hosts) add them
+- Tighter agent-hook / MCP gate packaging around those host APIs
 - A real single-binary port only if the Node CLI becomes a liability for air-gapped hosts
 
 Out of scope: telemetry, LLM-as-primary review, vendor API keys, rewriting the entire CLI in Rust.
