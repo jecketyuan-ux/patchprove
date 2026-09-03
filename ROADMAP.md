@@ -28,6 +28,14 @@ patchprove stays an **evidence pack + gap driver**: impact → checks → gaps �
 - Skill at `examples/skills/patchprove/` installable with [cc-kit](https://github.com/jecketyuan-ux/cc-kit) from a git path (no npm publish required)
 - Pack-ready `0.3.0`
 
+### v1.1 — language mapping + external plugins
+
+- Java/Gradle (and Maven) affected-test filtering: multi-module + package-path FQCN, `gradle --tests` / `mvn -Dtest=`
+- Go `go.mod` module-path import resolution and coarse `internal/` visibility; `go test ./pkg/...` on affected packages
+- Rust Cargo workspace / multi-crate mapping; `cargo test -p <pkg>`
+- Documented v1.1 plugin API + deterministic local external plugin load (config / env / `.patchprove/plugins`)
+- Golden fixtures for Java, Go, Rust, and plugin load
+
 ### v1.0 — merge/agent gate
 
 - **SPEC.md / `.patchprove/spec.yml` contract** — required gates, max residual risk, required mapped tests, forbidden unproven globs, accepted residual-risk policy. Evaluated on `run`; fail-on / exit `1` on contract failure
@@ -38,13 +46,13 @@ patchprove stays an **evidence pack + gap driver**: impact → checks → gaps �
 - **Docs site** (`docs/`) + case study
 - **Experimental Go thin launcher** (`go/`) that execs the Node CLI — not a rewrite
 
-## Post-1.0 ideas
+## Next — v1.2
 
 Still deterministic and model-free unless explicitly re-scoped:
 
-- Richer Java/Gradle test filtering and Go module-path import resolution
 - Signed / hashed evidence receipts
 - Optional SARIF for contract clauses
+- Evidence / contract schema refinements if receipts need new fields
 - First-class blocking stop semantics if Cursor adds them
 - A real single-binary port only if the Node CLI becomes a liability for air-gapped hosts
 

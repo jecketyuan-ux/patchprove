@@ -2,6 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { extname, normalizeRel } from "./paths.js";
 import { builtinPlugins, isPluginTestFile, type LanguagePlugin } from "./plugins/index.js";
+import type { PluginContext } from "./plugins/types.js";
 import { uniqueSorted } from "./plugins/types.js";
 
 const SKIP_RE = /(^|\/)(node_modules|dist|coverage|\.git|vendor|target|build|\.patchprove)(\/|$)/;
@@ -35,13 +36,18 @@ export function resolvedImportsFor(
   sourceText: string,
   existing: ReadonlySet<string>,
   plugins: readonly LanguagePlugin[] = builtinPlugins,
+  ctx?: PluginContext,
 ): string[] {
   const plugin = plugins.find((p) => p.extensions.includes(extname(rel)));
   if (!plugin?.parseImports) return [];
   const specs = plugin.parseImports(sourceText, rel);
   const resolved: string[] = [];
   for (const spec of specs) {
-    const hit = plugin.resolveImport?.(rel, spec, existing) ?? null;
+    if (plugin.resolveImportFiles) {
+      resolved.push(...plugin.resolveImportFiles(rel, spec, existing, ctx));
+      continue;
+    }
+    const hit = plugin.resolveImport?.(rel, spec, existing, ctx) ?? null;
     if (hit) resolved.push(hit);
   }
   return uniqueSorted(resolved);
@@ -56,8 +62,14 @@ export function buildImportGraph(
   existingFiles: ReadonlySet<string>,
   plugins: readonly LanguagePlugin[] = builtinPlugins,
   readFile: (rel: string) => string | null = (rel) => readText(root, rel),
+  ctx?: PluginContext,
 ): ImportGraph {
   const existing = new Set([...existingFiles].map(normalizeRel).filter(shouldIndexPath));
+  const context: PluginContext = {
+    cwd: ctx?.cwd ?? root,
+    existing: ctx?.existing ?? existing,
+    readFile: ctx?.readFile ?? readFile,
+  };
   const imports = new Map<string, string[]>();
 
   for (const rel of existing) {
@@ -65,7 +77,7 @@ export function buildImportGraph(
     if (!plugin?.parseImports) continue;
     const text = readFile(rel);
     if (text == null) continue;
-    imports.set(rel, resolvedImportsFor(rel, text, existing, plugins));
+    imports.set(rel, resolvedImportsFor(rel, text, existing, plugins, context));
   }
 
   const reachableFrom = new Map<string, Set<string>>();
@@ -115,13 +127,14 @@ export function mapTestsFromGraph(
   existingFiles: ReadonlySet<string>,
   graph: ImportGraph | null | undefined,
   plugins: readonly LanguagePlugin[] = builtinPlugins,
+  ctx?: PluginContext,
 ): string[] {
   if (!graph) return [];
   const source = normalizeRel(filePath);
   const existing = new Set([...existingFiles].map(normalizeRel));
   const fromGraph = graph.importers.get(source) ?? [];
   const plugin = plugins.find((p) => p.extensions.includes(extname(source)));
-  const fromPackage = plugin?.packageTests?.(source, existing) ?? [];
+  const fromPackage = plugin?.packageTests?.(source, existing, ctx) ?? [];
   return uniqueSorted(
     [...fromGraph, ...fromPackage].filter((t) => existing.has(t) && isPluginTestFile(t, plugins)),
   );

@@ -88,7 +88,14 @@ export { applyAcceptedGaps, findAcceptMatch, isOpenGap, matchAcceptRule } from "
 export { globToRegExp, matchAnyGlob, matchGlob } from "./glob.js";
 export { loadCoverageMap, mapTestsForSource, parseCoverageText } from "./coverage.js";
 export { toSarif, writeSarif } from "./sarif.js";
-export { builtinPlugins, pluginForPath } from "./plugins/index.js";
+export {
+  builtinPlugins,
+  pluginForPath,
+  resolveLanguagePlugins,
+  loadPluginModule,
+  createPluginContext,
+} from "./plugins/index.js";
+export type { LanguagePlugin, PluginContext, PluginTestCommand } from "./plugins/index.js";
 export { buildImportGraph, mapTestsFromGraph } from "./graph.js";
 export {
   evaluateContract,

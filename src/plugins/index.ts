@@ -1,27 +1,18 @@
 import { extname, normalizeRel } from "../paths.js";
 import type { Language } from "../types.js";
-import { goPlugin } from "./go.js";
-import { javaPlugin } from "./java.js";
-import { jsPlugin } from "./js.js";
-import { pythonPlugin } from "./python.js";
-import { rustPlugin } from "./rust.js";
+import { builtinPlugins } from "./builtin.js";
 import type { LanguagePlugin } from "./types.js";
 
-export type { LanguagePlugin, PluginTestCommand } from "./types.js";
+export type { LanguagePlugin, PluginContext, PluginTestCommand } from "./types.js";
+export { isLanguagePlugin } from "./types.js";
+export { createPluginContext, readProjectFile } from "./context.js";
+export { resolveLanguagePlugins, loadPluginModule, splitPluginPathList } from "./load.js";
 export { jsPlugin } from "./js.js";
 export { pythonPlugin } from "./python.js";
 export { goPlugin } from "./go.js";
 export { rustPlugin } from "./rust.js";
 export { javaPlugin } from "./java.js";
-
-/** Built-in language plugins. Add a file next to these and push it here. */
-export const builtinPlugins: LanguagePlugin[] = [
-  jsPlugin,
-  pythonPlugin,
-  goPlugin,
-  rustPlugin,
-  javaPlugin,
-];
+export { builtinPlugins } from "./builtin.js";
 
 export function pluginForPath(
   filePath: string,

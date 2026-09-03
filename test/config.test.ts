@@ -36,6 +36,22 @@ acceptGaps:
       { path: "src/generated/**" },
       { id: "gap-unmapped-src/legacy/foo.ts", reason: "vendored" },
     ]);
+    expect(parsed.plugins).toEqual([]);
+  });
+
+  it("loads local plugins: paths", () => {
+    const parsed = parseConfigText(
+      `
+plugins:
+  - examples/plugins/widget.mjs
+  - ./.patchprove/plugins/custom.mjs
+`,
+      "inline",
+    );
+    expect(parsed.plugins).toEqual([
+      "examples/plugins/widget.mjs",
+      "./.patchprove/plugins/custom.mjs",
+    ]);
   });
 
   it("treats failOn null as unset", () => {

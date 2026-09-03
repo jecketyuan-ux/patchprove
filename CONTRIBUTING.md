@@ -61,7 +61,7 @@ npm run build
 
 ## Schema changes
 
-Evidence `schemaVersion` is `1.0.0`. Additive optional fields are fine. Breaking field or enum changes require a schema version bump and a CHANGELOG entry. Keep `schema/evidence.schema.json` in lockstep with `src/types.ts`. Package / `toolVersion` is `1.0.0`.
+Evidence `schemaVersion` is `1.0.0`. Additive optional fields are fine. Breaking field or enum changes require a schema version bump and a CHANGELOG entry. Keep `schema/evidence.schema.json` in lockstep with `src/types.ts`. Package / `toolVersion` is `1.1.0`.
 
 ## Pull requests
 

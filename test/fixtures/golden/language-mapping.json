@@ -1,0 +1,32 @@
+{
+  "java": {
+    "source": "api/src/main/java/com/acme/api/Router.java",
+    "mappedTests": ["api/src/test/java/com/acme/api/RouterTest.java"],
+    "gradleArgs": [":api:test", "--tests", "com.acme.api.RouterTest"],
+    "mavenArgs": ["-q", "-pl", "api", "-am", "test", "-Dtest=com.acme.api.RouterTest"]
+  },
+  "javaCore": {
+    "source": "core/src/main/java/com/acme/core/Tokens.java",
+    "mappedTests": ["core/src/test/java/com/acme/core/TokensTest.java"],
+    "gradleArgs": [":core:test", "--tests", "com.acme.core.TokensTest"]
+  },
+  "goAuth": {
+    "source": "internal/auth/token.go",
+    "mappedTests": ["internal/auth/token_test.go", "pkg/api/handler_test.go"],
+    "goTestArgs": ["test", "./internal/auth", "./pkg/api"]
+  },
+  "goCollapse": {
+    "packages": ["pkg/api", "pkg/api/v2"],
+    "goTestArgs": ["test", "./pkg/api/..."]
+  },
+  "rustAlpha": {
+    "source": "crates/alpha/src/lib.rs",
+    "mappedTests": ["crates/alpha/tests/alpha.rs"],
+    "cargoArgs": ["test", "-p", "alpha"]
+  },
+  "rustBeta": {
+    "source": "crates/beta/src/foo.rs",
+    "mappedTests": ["crates/beta/tests/foo.rs"],
+    "cargoArgs": ["test", "-p", "beta"]
+  }
+}

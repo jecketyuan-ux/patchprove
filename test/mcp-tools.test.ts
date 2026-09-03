@@ -56,7 +56,7 @@ describe("prove_patch handler", () => {
     const result = await provePatch({ cwd: dir, failOn: "high" });
 
     expect(result.evidence.schemaVersion).toBe("1.0.0");
-    expect(result.evidence.toolVersion).toBe("1.0.0");
+    expect(result.evidence.toolVersion).toBe("1.1.0");
     expect(result.evidence.impact.unmappedSources).toContain("src/utils/hash.ts");
     expect(result.summary).toMatch(/open gaps/);
     expect(result.summary).toMatch(/Do not claim done/);
