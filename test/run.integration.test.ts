@@ -1,10 +1,13 @@
 import { execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { cpSync, mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
 import { analyze } from "../src/run.js";
 import { meetsFailOn } from "../src/risk.js";
+import { shouldFailRun } from "../src/run.js";
+import { resolveConfig } from "../src/config.js";
 
 function git(cwd: string, args: string[]): void {
   execFileSync("git", args, { cwd, stdio: "pipe" });
@@ -214,5 +217,47 @@ describe("analyze integration", () => {
     });
     expect(second.baselineComparison?.regression).toBe(false);
     expect(second.baselineComparison?.newGaps).toEqual([]);
+  });
+
+  it("maps a Go module fixture and wires --fail-on high", async () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "patchprove-go-"));
+    const fixture = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "fixtures/go-internal");
+    cpSync(fixture, dir, { recursive: true });
+    git(dir, ["init"]);
+    git(dir, ["config", "user.email", "dev@example.com"]);
+    git(dir, ["config", "user.name", "patchprove fixture"]);
+    writeFileSync(
+      path.join(dir, ".patchprove.yml"),
+      ["failOn: high", "gates:", "  typecheck: false", "  lint: false", "  tests: true", "  secrets: true", ""].join(
+        "\n",
+      ),
+    );
+    git(dir, ["add", "."]);
+    git(dir, ["commit", "-m", "seed go module"]);
+    writeFileSync(
+      path.join(dir, "internal", "auth", "token.go"),
+      "package auth\n\nfunc Issue() string { return \"tok2\" }\n",
+    );
+
+    const evidence = await analyze({
+      cwd: dir,
+      json: true,
+      format: "json",
+      out: path.join(dir, "evidence.json"),
+      failOn: "high",
+    });
+
+    const mapped = evidence.impact.mappedTests.find((m) => m.source === "internal/auth/token.go");
+    expect(mapped?.tests).toEqual(["internal/auth/token_test.go", "pkg/api/handler_test.go"]);
+    expect(evidence.findings.some((f) => f.kind === "auth-crypto")).toBe(true);
+    expect(evidence.summary.risk).toBe("high");
+    const config = resolveConfig(dir, {
+      cwd: dir,
+      json: true,
+      format: "json",
+      out: "evidence.json",
+      failOn: "high",
+    });
+    expect(shouldFailRun(evidence, config)).toBe(true);
   });
 });

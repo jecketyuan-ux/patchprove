@@ -20,7 +20,7 @@ Exit `1` when residual risk meets `--fail-on`, when a loaded **contract** fails,
 
 - [Contract (`SPEC.md`)](contract.md) — required gates, max residual risk, mapped-test globs
 - [Test mapping](mapping.md) — naming, coverage, import graph
-- [Language plugins](plugins.md) — JS/TS, Python, Go, Rust, Java
+- [Language plugins](plugins.md) — v1.1 API, built-ins, external local load, `--fail-on high` on Go/Java repos
 - [Baseline comparison](baseline.md) — regression gaps
 - [Case study](case-study.md) — an almost-right agent PR caught by patchprove
 - [Standalone launcher](standalone.md) — experimental Go thin wrapper around the Node CLI

@@ -10,6 +10,8 @@ import {
   isSourceFile,
   languageOf,
 } from "./mapping.js";
+import { builtinPlugins, type LanguagePlugin } from "./plugins/index.js";
+import type { PluginContext } from "./plugins/types.js";
 import type { DiffFile } from "./git.js";
 import type {
   AcceptGapRule,
@@ -67,9 +69,12 @@ export function buildImpact(
     ignorePaths?: readonly string[];
     coverage?: CoverageIndex | null;
     graph?: ImportGraph | null;
+    plugins?: readonly LanguagePlugin[];
+    pluginContext?: PluginContext;
   },
 ): Evidence["impact"] {
   const ignorePaths = options?.ignorePaths ?? [];
+  const plugins = options?.plugins ?? builtinPlugins;
   const visible = filterIgnored(files, ignorePaths);
   const changedFiles = visible.map(toChangedFile);
   const mappedTests: MappedTest[] = [];
@@ -80,8 +85,15 @@ export function buildImpact(
 
   for (const file of visible) {
     if (file.status === "deleted") continue;
-    if (!isMappableSource(file.path)) continue;
-    const { tests, via } = mapTestsForSource(file.path, existingFiles, coverage, graph);
+    if (!isMappableSource(file.path, plugins)) continue;
+    const { tests, via } = mapTestsForSource(
+      file.path,
+      existingFiles,
+      coverage,
+      graph,
+      plugins,
+      options?.pluginContext,
+    );
     if (tests.length > 0) {
       mappedTests.push({ source: file.path, tests, via });
       if (via) vias.push(via);
@@ -96,7 +108,7 @@ export function buildImpact(
     changedFiles,
     mappedTests,
     unmappedSources,
-    languages: collectLanguages(visible.map((f) => f.path)),
+    languages: collectLanguages(visible.map((f) => f.path), plugins),
     mappingStrategy,
     ...(mappingFallbacks ? { mappingFallbacks } : {}),
   };
@@ -124,6 +136,7 @@ export function collectGaps(
   impact: Evidence["impact"],
   checks: CheckResult[],
   tools: DetectedTools,
+  plugins: readonly LanguagePlugin[] = builtinPlugins,
 ): Gap[] {
   const gaps: Gap[] = [];
 
@@ -170,10 +183,10 @@ export function collectGaps(
 
   const unsupported = impact.changedFiles
     .filter((f) => f.status !== "deleted")
-    .filter((f) => isSourceFile(f.path) === false)
+    .filter((f) => isSourceFile(f.path, plugins) === false)
     .filter((f) => !f.highRisk)
     .filter((f) => {
-      const lang = languageOf(f.path);
+      const lang = languageOf(f.path, plugins);
       return lang === "other" && /\.(rb|php|cs|kt|swift)$/i.test(f.path);
     })
     .map((f) => f.path);

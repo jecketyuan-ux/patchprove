@@ -1,6 +1,7 @@
 import { clip, runCommand } from "./exec.js";
 import type { DiffFile } from "./git.js";
-import { builtinPlugins } from "./plugins/index.js";
+import { builtinPlugins, type LanguagePlugin } from "./plugins/index.js";
+import type { PluginContext } from "./plugins/types.js";
 import { scanSecrets } from "./secrets.js";
 import type { CheckResult, DetectedTools, Finding } from "./types.js";
 
@@ -114,6 +115,8 @@ export async function runAffectedTests(
   tools: DetectedTools,
   mappedTests: string[],
   enabled = true,
+  plugins: readonly LanguagePlugin[] = builtinPlugins,
+  ctx?: PluginContext,
 ): Promise<CheckResult> {
   if (!enabled) return disabled("tests", "affected tests");
   if (mappedTests.length === 0) {
@@ -122,8 +125,9 @@ export async function runAffectedTests(
 
   const commands = [];
   const seen = new Set<string>();
-  for (const plugin of builtinPlugins) {
-    const cmd = plugin.testCommand?.(cwd, mappedTests, tools);
+  const context = ctx ?? { cwd, existing: new Set(mappedTests) };
+  for (const plugin of plugins) {
+    const cmd = plugin.testCommand?.(cwd, mappedTests, tools, context);
     if (!cmd) continue;
     const key = `${cmd.command} ${cmd.args.join(" ")}`;
     if (seen.has(key)) continue;
@@ -132,7 +136,7 @@ export async function runAffectedTests(
   }
 
   if (commands.length === 0) {
-    const missing = builtinPlugins
+    const missing = plugins
       .map((p) => p.missingTestRunnerReason?.(tools))
       .find((reason): reason is string => Boolean(reason));
     if (missing) return skip("tests", "affected tests", missing);

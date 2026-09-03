@@ -5,6 +5,8 @@ import type { ImportGraph } from "./graph.js";
 import { mapTestsFromGraph } from "./graph.js";
 import { isTestFile, mapTestsForFile, testBasenameKey } from "./mapping.js";
 import { normalizeRel, toPosix } from "./paths.js";
+import { builtinPlugins, type LanguagePlugin } from "./plugins/index.js";
+import type { PluginContext } from "./plugins/types.js";
 import type { MappingStrategy } from "./types.js";
 
 export type CoverageOrigin = "istanbul" | "cobertura" | "map";
@@ -208,6 +210,8 @@ export function mapTestsFromCoverage(
   filePath: string,
   existingFiles: ReadonlySet<string>,
   coverage: CoverageIndex,
+  plugins: readonly LanguagePlugin[] = builtinPlugins,
+  ctx?: PluginContext,
 ): string[] {
   const source = normalizeRel(filePath);
   const existing = new Set([...existingFiles].map(normalizeRel));
@@ -216,12 +220,12 @@ export function mapTestsFromCoverage(
     return uniqueSorted(explicit.filter((t) => existing.has(t)));
   }
 
-  const fromNaming = mapTestsForFile(source, existing);
+  const fromNaming = mapTestsForFile(source, existing, plugins, ctx);
   const key = testBasenameKey(source);
   const pool =
     coverage.tests.size > 0
       ? [...coverage.tests]
-      : [...existing].filter((p) => isTestFile(p));
+      : [...existing].filter((p) => isTestFile(p, plugins));
 
   const fromCoverage = pool.filter(
     (test) => existing.has(normalizeRel(test)) && basenameMatches(test, key),
@@ -235,20 +239,22 @@ export function mapTestsForSource(
   existingFiles: ReadonlySet<string>,
   coverage: CoverageIndex | null,
   graph?: ImportGraph | null,
+  plugins: readonly LanguagePlugin[] = builtinPlugins,
+  ctx?: PluginContext,
 ): { tests: string[]; via: MappingStrategy } {
   if (coverage) {
-    const tests = mapTestsFromCoverage(filePath, existingFiles, coverage);
+    const tests = mapTestsFromCoverage(filePath, existingFiles, coverage, plugins, ctx);
     if (tests.length > 0) {
-      const naming = new Set(mapTestsForFile(filePath, existingFiles));
+      const naming = new Set(mapTestsForFile(filePath, existingFiles, plugins, ctx));
       const usedCoverage =
         coverage.sourceToTests.has(normalizeRel(filePath)) ||
         tests.some((t) => !naming.has(t));
       return { tests, via: usedCoverage ? "coverage" : "naming" };
     }
   }
-  const fromGraph = mapTestsFromGraph(filePath, existingFiles, graph);
+  const fromGraph = mapTestsFromGraph(filePath, existingFiles, graph, plugins, ctx);
   if (fromGraph.length > 0) {
     return { tests: fromGraph, via: "graph" };
   }
-  return { tests: mapTestsForFile(filePath, existingFiles), via: "naming" };
+  return { tests: mapTestsForFile(filePath, existingFiles, plugins, ctx), via: "naming" };
 }

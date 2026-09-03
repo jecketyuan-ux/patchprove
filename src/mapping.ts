@@ -4,7 +4,9 @@ import {
   isPluginSourceFile,
   isPluginTestFile,
   pluginForPath,
+  type LanguagePlugin,
 } from "./plugins/index.js";
+import type { PluginContext } from "./plugins/types.js";
 import { JS_EXTS, TS_EXTS } from "./plugins/js.js";
 import type { Language } from "./types.js";
 
@@ -12,7 +14,10 @@ export { JS_EXTS, TS_EXTS };
 
 const PY_EXTS = new Set([".py"]);
 
-export function languageOf(filePath: string): Language {
+export function languageOf(
+  filePath: string,
+  plugins: readonly LanguagePlugin[] = builtinPlugins,
+): Language {
   const ext = extname(filePath);
   if (TS_EXTS.has(ext)) return "typescript";
   if (JS_EXTS.has(ext)) return "javascript";
@@ -20,39 +25,57 @@ export function languageOf(filePath: string): Language {
   if (ext === ".go") return "go";
   if (ext === ".rs") return "rust";
   if (ext === ".java") return "java";
-  return "other";
+  return pluginForPath(filePath, plugins)?.languages[0] ?? "other";
 }
 
-export function isSourceFile(filePath: string): boolean {
-  return isPluginSourceFile(filePath);
+export function isSourceFile(
+  filePath: string,
+  plugins: readonly LanguagePlugin[] = builtinPlugins,
+): boolean {
+  return isPluginSourceFile(filePath, plugins);
 }
 
-export function isTestFile(filePath: string): boolean {
-  return isPluginTestFile(filePath);
+export function isTestFile(
+  filePath: string,
+  plugins: readonly LanguagePlugin[] = builtinPlugins,
+): boolean {
+  return isPluginTestFile(filePath, plugins);
 }
 
-export function isMappableSource(filePath: string): boolean {
-  return isSourceFile(filePath) && !isTestFile(filePath);
+export function isMappableSource(
+  filePath: string,
+  plugins: readonly LanguagePlugin[] = builtinPlugins,
+): boolean {
+  return isSourceFile(filePath, plugins) && !isTestFile(filePath, plugins);
 }
 
-export function testCandidatesFor(filePath: string): string[] {
-  const plugin = pluginForPath(filePath);
-  if (!plugin || isTestFile(filePath)) return [];
-  return plugin.testCandidates(normalizeRel(filePath));
+export function testCandidatesFor(
+  filePath: string,
+  plugins: readonly LanguagePlugin[] = builtinPlugins,
+  ctx?: PluginContext,
+): string[] {
+  const plugin = pluginForPath(filePath, plugins);
+  if (!plugin || isTestFile(filePath, plugins)) return [];
+  return plugin.testCandidates(normalizeRel(filePath), ctx);
 }
 
 export function mapTestsForFile(
   filePath: string,
   existingFiles: ReadonlySet<string>,
+  plugins: readonly LanguagePlugin[] = builtinPlugins,
+  ctx?: PluginContext,
 ): string[] {
   const normalized = new Set([...existingFiles].map(normalizeRel));
-  return testCandidatesFor(filePath).filter((c) => normalized.has(c));
+  return testCandidatesFor(filePath, plugins, ctx).filter((c) => normalized.has(c));
 }
 
-export function collectLanguages(paths: string[]): Language[] {
+export function collectLanguages(
+  paths: string[],
+  plugins: readonly LanguagePlugin[] = builtinPlugins,
+): Language[] {
   const set = new Set<Language>();
   for (const p of paths) {
-    const lang = languageOf(p);
+    const lang = languageOf(p, plugins);
     if (lang !== "other") set.add(lang);
   }
   return [...set].sort();

@@ -116,6 +116,7 @@ export interface FileConfig {
   baseline: string | null;
   failOnNewGaps: FailOnLevel | undefined;
   spec: string | null;
+  plugins: string[];
 }
 
 export function parseConfigObject(raw: unknown, source: string): Omit<FileConfig, "sourcePath"> {
@@ -128,6 +129,7 @@ export function parseConfigObject(raw: unknown, source: string): Omit<FileConfig
       baseline: null,
       failOnNewGaps: undefined,
       spec: null,
+      plugins: [],
     };
   }
   const rec = asRecord(raw);
@@ -140,6 +142,7 @@ export function parseConfigObject(raw: unknown, source: string): Omit<FileConfig
     baseline: parseOptionalPath(rec.baseline, `${source}: baseline`),
     failOnNewGaps: parseFailOn(rec.failOnNewGaps, `${source}: failOnNewGaps`),
     spec: parseOptionalPath(rec.spec, `${source}: spec`),
+    plugins: parseStringList(rec.plugins, `${source}: plugins`),
   };
 }
 
@@ -218,6 +221,7 @@ export function mergeConfig(
     baseline: options.baseline ?? file?.baseline ?? null,
     failOnNewGaps,
     spec: options.spec ?? file?.spec ?? null,
+    plugins: file?.plugins ?? [],
   };
 }
 

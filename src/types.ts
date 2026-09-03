@@ -1,5 +1,5 @@
 export const SCHEMA_VERSION = "1.0.0" as const;
-export const TOOL_VERSION = "1.0.0";
+export const TOOL_VERSION = "1.1.0";
 
 export type RiskLevel = "low" | "medium" | "high" | "critical";
 export type SummaryRisk = "none" | RiskLevel;
@@ -240,6 +240,8 @@ export interface ResolvedConfig {
   baseline: string | null;
   failOnNewGaps: FailOnLevel | undefined;
   spec: string | null;
+  /** Local JS plugin module paths (config `plugins:`). */
+  plugins: string[];
 }
 
 export interface RunOptions {

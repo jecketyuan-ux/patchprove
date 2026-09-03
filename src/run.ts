@@ -15,6 +15,7 @@ import {
 import { runAffectedTests, runLint, runSecretScan, runTypecheck } from "./gates.js";
 import { collectGitSnapshot, type DiffFile } from "./git.js";
 import { buildImportGraph } from "./graph.js";
+import { createPluginContext, resolveLanguagePlugins } from "./plugins/index.js";
 import { formatHumanReport, formatMarkdownReport } from "./report.js";
 import { meetsFailOn } from "./risk.js";
 import { writeSarif } from "./sarif.js";
@@ -60,12 +61,18 @@ export async function analyze(options: RunOptions): Promise<Evidence> {
     config.ignorePaths,
   );
   const existing = new Set(snapshot.trackedFiles);
+  const plugins = await resolveLanguagePlugins(snapshot.root, {
+    configPlugins: config.plugins,
+  });
+  const pluginContext = createPluginContext(snapshot.root, existing);
   const coverage = loadCoverageMap(snapshot.root);
-  const graph = buildImportGraph(snapshot.root, existing);
+  const graph = buildImportGraph(snapshot.root, existing, plugins, undefined, pluginContext);
   const impact = buildImpact(files, existing, {
     ignorePaths: config.ignorePaths,
     coverage,
     graph,
+    plugins,
+    pluginContext,
   });
   const tools = detectTools(snapshot.root);
 
@@ -74,12 +81,12 @@ export async function analyze(options: RunOptions): Promise<Evidence> {
   const [typecheck, lint, tests, secretScan] = await Promise.all([
     runTypecheck(snapshot.root, tools, config.gates.typecheck),
     runLint(snapshot.root, tools, config.gates.lint),
-    runAffectedTests(snapshot.root, tools, mappedTestFiles, config.gates.tests),
+    runAffectedTests(snapshot.root, tools, mappedTestFiles, config.gates.tests, plugins, pluginContext),
     runSecretScan(snapshot.root, tools, files, snapshot.range, config.gates.secrets),
   ]);
 
   const checks = [typecheck, lint, tests, secretScan.check];
-  const gaps = collectGaps(impact, checks, tools);
+  const gaps = collectGaps(impact, checks, tools, plugins);
   const findings = [
     ...pathFindings(impact.changedFiles),
     ...secretScan.findings,

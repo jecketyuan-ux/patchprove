@@ -32,7 +32,7 @@ CI is the merge contract for *your* repo: the jobs you already pay to run on eve
 
 **AI-on-AI reviewers** (another model summarizing or “approving” the diff) add a second opinion in the same uncertain medium. patchprove stays on the other axis: *what did a deterministic tool actually run, and what did it never see?* Use it beside CI and beside a human/LLM review — not instead of them.
 
-A later single-binary (Rust/Go) may ship for air-gapped hosts. v1.0 is TypeScript + Node ESM, with an **experimental Go thin launcher** that execs the Node CLI. Docs: [docs/](docs/index.md).
+A later single-binary (Rust/Go) may ship for air-gapped hosts. v1.1 is TypeScript + Node ESM, with an **experimental Go thin launcher** that execs the Node CLI. Docs: [docs/](docs/index.md).
 
 ## Install
 
@@ -127,6 +127,8 @@ gates:
 baseline: .patchprove/baseline.json
 failOnNewGaps: high
 spec: .patchprove/spec.yml
+plugins:
+  - examples/plugins/widget.mjs   # optional local JS plugin; never fetched from the network
 acceptGaps:
   - src/generated/**
   - id: gap-unmapped-src/legacy/hash.ts
@@ -144,6 +146,7 @@ acceptGaps:
 | `failOnNewGaps` | `high` \| `critical` \| `null` | Fail when a new open gap vs baseline meets this risk. |
 | `spec` | path | Contract file (overridden by `--spec`). |
 | `acceptGaps` | strings or `{ id?, path?, reason? }` | Known-accepted gaps. A string starting with `gap-` is an id; otherwise it is a path pattern. |
+| `plugins` | path list | Local JS modules implementing the [v1.1 plugin API](docs/plugins.md). Also `PATCHPROVE_PLUGINS` or `.patchprove/plugins/*`. Built-ins stay loaded. |
 
 A path pattern without glob metacharacters matches that path or anything under it (`src/generated` ≡ `src/generated` and `src/generated/**`).
 
@@ -177,7 +180,9 @@ New open gaps versus the baseline are regressions (`evidence.baselineComparison`
 
 ## Language plugins
 
-Built-in: JS/TS, Python, **Go**, **Rust**, **Java**. Add another plugin under `src/plugins/` and register it in `src/plugins/index.ts`. See [docs/plugins.md](docs/plugins.md).
+Built-in: JS/TS, Python, **Go**, **Rust**, **Java**. v1.1 mapping is project-aware: Gradle/Maven multi-module FQCN filters, `go.mod` + `internal/` import resolution with `go test ./pkg/...`, Cargo workspace `cargo test -p <crate>`.
+
+External plugins are **opt-in and local** (`.patchprove.yml` `plugins:`, `PATCHPROVE_PLUGINS`, or `.patchprove/plugins/*`). Example: [`examples/plugins/widget.mjs`](examples/plugins/widget.mjs). See [docs/plugins.md](docs/plugins.md).
 
 ## Known-accepted gaps
 
@@ -188,18 +193,18 @@ Gaps matching `acceptGaps` or `--accept`:
 - Do **not** raise `summary.risk` or trip `--fail-on`
 - `summary.gapCount` counts **open** gaps only; `summary.acceptedGapCount` is separate
 
-## What it does (v1.0)
+## What it does (v1.1)
 
 1. **Detect changed files** via `git diff` (working tree vs `HEAD`, or `--base`/`--head`), minus `ignorePaths`.
 2. **Map nearby tests** (deterministic, no LLM), in order:
    - **coverage** when a map is present (`coverage/coverage-final.json`, then Cobertura XML)
-   - **graph** — parse imports from tests (JS/TS relative `import`/`require`/`import()`; Python `from`/`import` heuristics; Go same-package `*_test.go`) and reverse-map to changed modules
-   - **naming** — `foo.ts` → `foo.test.ts` / `foo.spec.ts`; `foo.py` → `test_foo.py`; `foo.go` → `foo_test.go`; Rust `tests/`; Java `*Test.java`
+   - **graph** — parse imports from tests (JS/TS relative `import`/`require`/`import()`; Python `from`/`import` heuristics; Go module-path + same-package `*_test.go`) and reverse-map to changed modules
+   - **naming** — `foo.ts` → `foo.test.ts` / `foo.spec.ts`; `foo.py` → `test_foo.py`; `foo.go` → `foo_test.go`; Rust crate `tests/`; Java module + package-path `*Test.java`
    - Evidence records `impact.mappingStrategy` and per-source `via`: `coverage` \| `graph` \| `naming`
 3. **Run gates when enabled and the target repo actually has the tools**, including language plugins:
    - typecheck: `tsc --noEmit`, or `pyright` / `mypy`
    - lint: `eslint` or `ruff`
-   - affected tests: `vitest` / `jest` / `pytest` / `go test` / `cargo test` / `mvn test` / `gradle test` on the mapped subset
+   - affected tests: `vitest` / `jest` / `pytest` / `go test ./pkg` / `cargo test -p <crate>` / `mvn -Dtest=FQCN` / `gradle --tests FQCN` on the mapped subset
    - secret scan: `gitleaks` if installed, otherwise regex on **added** lines
 4. **Evaluate the contract** if `.patchprove/spec.yml` or `SPEC.md` is present (required gates, max residual risk, mapped-test globs, forbidden unproven paths).
 5. **Compare a baseline** if `--baseline`, config `baseline`, or `.patchprove/baseline.json` exists. New open gaps are regressions.
@@ -217,7 +222,7 @@ An agent “fixes login lockout.” Types are clean. Lint is clean. It even upda
 What patchprove sees:
 
 ```
-patchprove  v1.0.0  ·  impact → checks → gaps → risk
+patchprove  v1.1.0  ·  impact → checks → gaps → risk
 model-free evidence pack  ·  not a CI replacement
 
 range     working tree vs HEAD
@@ -422,7 +427,7 @@ npx cc-kit doctor
 
 patchprove 是给 **Agent / PR 补丁** 用的证据包：影响面 → 实际跑过的检查 → 缺口 → 风险。它不是 CI 替代品，也不是「再用一个模型审一次」的 AI-on-AI。默认不调大模型、不采集遥测。人类和 Agent 都能在合并前看到：**哪些事仍然没被证明。**
 
-v1.0 增加仓库契约（`SPEC.md` / `.patchprove/spec.yml`）、导入图测试映射、Go/Rust/Java 插件、基线对比、Cursor 规则包，以及文档站。有未接受的缺口、契约失败、或相对基线的新高风险缺口时，进程以 `1` 退出。**Agent 不得声称做完。**
+v1.1 在 v1.0 契约 / 导入图 / 基线之上，加强 Java Gradle·Maven、Go module/`internal`、Rust workspace 的受影响测试映射，并支持本地外部插件。有未接受的缺口、契约失败、或相对基线的新高风险缺口时，进程以 `1` 退出。**Agent 不得声称做完。**
 
 ```bash
 npx patchprove run --base origin/main --fail-on high

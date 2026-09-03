@@ -2,6 +2,21 @@
 
 All notable changes to this project are documented here.
 
+## 1.1.0 — 2026-09-03
+
+### Added
+
+- **Java / Gradle / Maven affected-test filtering** — multi-module path → subproject; package path → Surefire/Gradle FQCN (`gradle :api:test --tests com.acme.api.RouterTest`, `mvn -pl api -am test -Dtest=…`). Prefers Gradle when both tools exist; naming fallback otherwise.
+- **Go module-path + `internal/` resolution** — parse `go.mod`; resolve in-module imports; coarse `internal/` visibility. `go test` targets affected packages (`./pkg`, `./pkg/...`), not a whole-module blind run.
+- **Rust workspace / multi-crate mapping** — `[workspace]` members → crate; `cargo test -p <pkg>` for affected crates. Single-crate repos still work.
+- **External plugin loading** — v1.1 API documented in `docs/plugins.md`. Load local JS modules from `.patchprove.yml` `plugins:`, `PATCHPROVE_PLUGINS`, or `.patchprove/plugins/*`. Built-ins stay default; remote URLs rejected. Example: `examples/plugins/widget.mjs`.
+- Golden fixtures + regression tests: `test/fixtures/java-multimodule/`, `go-internal/`, `rust-workspace/`, `test/fixtures/golden/language-mapping.json`.
+
+### Changed
+
+- Package / `toolVersion` **1.1.0**. Evidence `schemaVersion` stays **1.0.0** (no new evidence fields).
+- Affected-test gate iterates loaded plugins (built-ins + explicit extras).
+
 ## 1.0.0 — 2026-09-02
 
 ### Added

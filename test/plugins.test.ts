@@ -42,7 +42,7 @@ describe("language plugins", () => {
     expect(cmd?.args).toEqual(["test"]);
   });
 
-  it("maps Java main sources to src/test *Test.java", () => {
+  it("maps Java main sources to src/test *Test.java with Surefire FQCN", () => {
     const source = "src/main/java/com/acme/Foo.java";
     const test = "src/test/java/com/acme/FooTest.java";
     expect(isTestFile(test)).toBe(true);
@@ -52,6 +52,19 @@ describe("language plugins", () => {
       maven: true,
       mavenBin: "mvn",
     });
-    expect(cmd?.args).toContain("-Dtest=FooTest");
+    expect(cmd?.args).toContain("-Dtest=com.acme.FooTest");
+  });
+
+  it("prefers gradle --tests FQCN over maven when both bins exist", () => {
+    const test = "src/test/java/com/acme/FooTest.java";
+    const cmd = javaPlugin.testCommand?.(".", [test], {
+      ...emptyDetectedTools(),
+      maven: true,
+      mavenBin: "mvn",
+      gradle: true,
+      gradleBin: "gradle",
+    });
+    expect(cmd?.name).toMatch(/gradle/);
+    expect(cmd?.args).toEqual(["test", "--tests", "com.acme.FooTest"]);
   });
 });
