@@ -220,6 +220,8 @@ describe("analyze integration", () => {
   });
 
   it("maps a Go module fixture and wires --fail-on high", async () => {
+    // Tests gate is off so CI does not compile `go test`. Mapping + auth-path
+    // residual risk still trip fail-on high. Gate argv is locked in golden tests.
     const dir = mkdtempSync(path.join(tmpdir(), "patchprove-go-"));
     const fixture = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "fixtures/go-internal");
     cpSync(fixture, dir, { recursive: true });
@@ -228,9 +230,15 @@ describe("analyze integration", () => {
     git(dir, ["config", "user.name", "patchprove fixture"]);
     writeFileSync(
       path.join(dir, ".patchprove.yml"),
-      ["failOn: high", "gates:", "  typecheck: false", "  lint: false", "  tests: true", "  secrets: true", ""].join(
-        "\n",
-      ),
+      [
+        "failOn: high",
+        "gates:",
+        "  typecheck: false",
+        "  lint: false",
+        "  tests: false",
+        "  secrets: true",
+        "",
+      ].join("\n"),
     );
     git(dir, ["add", "."]);
     git(dir, ["commit", "-m", "seed go module"]);
@@ -251,6 +259,9 @@ describe("analyze integration", () => {
     expect(mapped?.tests).toEqual(["internal/auth/token_test.go", "pkg/api/handler_test.go"]);
     expect(evidence.findings.some((f) => f.kind === "auth-crypto")).toBe(true);
     expect(evidence.summary.risk).toBe("high");
+    const testsCheck = evidence.checks.find((c) => c.id === "tests");
+    expect(testsCheck?.status).toBe("skipped");
+    expect(testsCheck?.reason).toMatch(/Disabled by config/);
     const config = resolveConfig(dir, {
       cwd: dir,
       json: true,
