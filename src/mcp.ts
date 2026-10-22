@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 import { z } from "zod";
 import {
   LIST_GAPS_DESCRIPTION,
@@ -117,7 +117,7 @@ function isDirectRun(): boolean {
   const entry = process.argv[1];
   if (!entry) return false;
   try {
-    return import.meta.url === pathToFileURL(canonicalPath(entry)).href;
+    return canonicalPath(fileURLToPath(import.meta.url)) === canonicalPath(entry);
   } catch {
     return false;
   }

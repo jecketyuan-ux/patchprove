@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { cpSync, existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -35,11 +35,11 @@ function text(result: unknown): Record<string, any> {
 }
 
 describe("real MCP stdio transport", () => {
-  it.each(["directory", "file"] as const)("starts the standalone MCP entry through a %s alias", async (kind) => {
+  it.each(["directory", "file", "preserved directory"] as const)("starts the standalone MCP entry through a %s alias", async (kind) => {
     const cwd = temporary();
     const alias = path.join(cwd, "installed package alias");
     let entry: string;
-    if (kind === "directory") {
+    if (kind !== "file") {
       symlinkSync(path.dirname(path.dirname(mcp)), alias, process.platform === "win32" ? "junction" : "dir");
       entry = path.join(alias, "dist", "mcp.js");
     } else {
@@ -48,10 +48,25 @@ describe("real MCP stdio transport", () => {
     }
     const client = new Client({ name: "aliased-entry-fixture", version: "1.0.0" });
     const transport = new StdioClientTransport({
-      command: process.execPath, args: [entry], cwd, stderr: "pipe",
+      command: process.execPath, args: [...(kind === "preserved directory" ? ["--preserve-symlinks-main"] : []), entry], cwd, stderr: "pipe",
     });
     try {
       await client.connect(transport);
+      expect((await client.listTools()).tools.map((tool) => tool.name)).toEqual(["prove_patch", "list_gaps"]);
+    } finally { await client.close(); }
+  }, 10_000);
+
+  it("starts a copied MCP installation from the lexical temporary path", async () => {
+    // Keep tmpdir's spelling: Windows can return an 8.3 path such as RUNNER~1.
+    const cwd = temporary();
+    cpSync(path.resolve("dist"), path.join(cwd, "dist"), { recursive: true });
+    writeFileSync(path.join(cwd, "package.json"), JSON.stringify({ private: true, type: "module" }));
+    symlinkSync(path.resolve("node_modules"), path.join(cwd, "node_modules"), process.platform === "win32" ? "junction" : "dir");
+    const client = new Client({ name: "temporary-install-fixture", version: "1.0.0" });
+    try {
+      await client.connect(new StdioClientTransport({
+        command: process.execPath, args: [path.join(cwd, "dist", "mcp.js")], cwd, stderr: "pipe",
+      }));
       expect((await client.listTools()).tools.map((tool) => tool.name)).toEqual(["prove_patch", "list_gaps"]);
     } finally { await client.close(); }
   }, 10_000);

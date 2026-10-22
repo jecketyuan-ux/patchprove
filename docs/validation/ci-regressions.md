@@ -7,6 +7,7 @@
 | [39811582275](https://github.com/jecketyuan-ux/patchprove/actions/runs/39811582275) | macOS `/var` 与 `/private/var` 目录身份不一致；Windows batch 参数二次转义、stdin EOF 和测试路径假设 | 统一路径身份；batch 使用已转义命令行；保留成功和失败退出码；真实 Windows `.cmd/.bat` 参数及 Maven/Gradle 探测回归。 |
 | [39813303592](https://github.com/jecketyuan-ux/patchprove/actions/runs/39813303592) | macOS 全套单元测试通过但安装后的 MCP 因入口别名静默退出；Windows `RUNNER~1` 与长路径使输出排除、策略路径和覆盖数据匹配失效 | MCP 启动入口解析真实路径；文件身份采用原生 realpath 以展开 Windows 短路径；新增目录别名及文件符号链接的真实 stdio 回归，保持暂存/工作区与策略断言。 |
 | [39814358568](https://github.com/jecketyuan-ux/patchprove/actions/runs/39814358568) | Windows 原生相对路径包含反斜杠，变更路径排除成功但内容快照仍纳入嵌套报告，重复执行哈希不稳定 | 相对排除路径按宿主分隔符转换为 Git POSIX 路径；新增嵌套输出写入前后快照身份一致、相邻源码变化仍改变身份的回归，同时保留 POSIX 合法反斜杠文件名语义。 |
+| [39815309613](https://github.com/jecketyuan-ux/patchprove/actions/runs/39815309613) | 六个平台/Node 组合单元测试通过，Windows 全新安装包的 MCP 模块 URL 自身仍保留 8.3 路径，与已规范化的启动参数不一致 | 入口比较同时规范化模块 URL 与启动参数；新增复制构建到临时安装目录的真实 stdio 回归，保留临时路径原始拼写。 |
 
 目录别名 MCP 回归在 Linux 上复现了修复前的 `Connection closed`，修复后握手及 `tools/list` 成功。原生工具链的日志和报告由每轮 CI artifact 保留，必须以候选 SHA 对应结果为准。测试预算调整只用于真实宿主启动和 CI 调度；显式短超时、取消及退出码断言仍保留。
 
