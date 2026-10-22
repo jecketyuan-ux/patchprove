@@ -77,6 +77,6 @@
     "ajv-draft-04": "1.0.0",
     "json-schema-to-typescript": "16.0.0",
     "typescript": "^5.8.2",
-    "vitest": "^3.0.8"
+    "vitest": "^5.0.5"
   }
 }
