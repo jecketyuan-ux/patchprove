@@ -74,7 +74,7 @@ function assertArtifactInputs(outputs: string[], inputs: string[]): void {
       if (parent === ancestor) break;
       ancestor = parent;
     }
-    return path.join(realpathSync(ancestor), ...missing);
+    return path.join(realpathSync.native(ancestor), ...missing);
   };
   const identities = inputs.map(canonical);
   for (const output of outputs) {
@@ -150,7 +150,7 @@ async function provisionMatchingNodeDependencies(source: string, target: string,
   }
   // npm/pnpm workspace links can resolve into the live checkout even when the
   // package manifests match. Such links would escape the isolated code tree.
-  const dependencyRoot = realpathSync(path.join(source, "node_modules"));
+  const dependencyRoot = realpathSync.native(path.join(source, "node_modules"));
   const pending = [dependencyRoot];
   while (pending.length) {
     const directory = pending.pop()!;
@@ -158,7 +158,7 @@ async function provisionMatchingNodeDependencies(source: string, target: string,
       const candidate = path.join(directory, entry.name);
       if (entry.isSymbolicLink()) {
         let resolved: string;
-        try { resolved = realpathSync(candidate); } catch { return false; }
+        try { resolved = realpathSync.native(candidate); } catch { return false; }
         const relative = path.relative(dependencyRoot, resolved);
         if (relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) return false;
       } else if (entry.isDirectory()) pending.push(candidate);

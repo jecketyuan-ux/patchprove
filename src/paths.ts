@@ -1,7 +1,7 @@
 import path from "node:path";
 import { existsSync, realpathSync } from "node:fs";
 
-/** Resolve directory aliases even when the final artifact does not exist yet. */
+/** Resolve directory aliases (including Windows 8.3 names) without following the final file. */
 export function canonicalPathParent(file: string): string {
   const resolved = path.resolve(file);
   let directory = path.dirname(resolved);
@@ -12,11 +12,11 @@ export function canonicalPathParent(file: string): string {
     if (parent === directory) break;
     directory = parent;
   }
-  return path.join(realpathSync(directory), ...suffix);
+  return path.join(realpathSync.native(directory), ...suffix);
 }
 
 export function canonicalPath(file: string): string {
-  try { return realpathSync(file); } catch { return canonicalPathParent(file); }
+  try { return realpathSync.native(file); } catch { return canonicalPathParent(file); }
 }
 
 export function toPosix(p: string): string {

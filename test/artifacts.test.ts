@@ -12,7 +12,7 @@ vi.mock("node:fs", async (importOriginal) => {
 const originalFs = await vi.importActual<typeof import("node:fs")>("node:fs");
 const roots: string[] = [];
 function temp(): string {
-  const root = fs.realpathSync(fs.mkdtempSync(path.join(tmpdir(), "patchprove-artifacts-test-")));
+  const root = fs.realpathSync.native(fs.mkdtempSync(path.join(tmpdir(), "patchprove-artifacts-test-")));
   roots.push(root);
   return root;
 }

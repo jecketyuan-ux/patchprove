@@ -38,7 +38,7 @@ export function writeArtifactSet(entries: ArtifactEntry[], manifestPath: string)
     const resolved = path.resolve(file);
     mkdirSync(path.dirname(resolved), { recursive: true });
     if (lstatSync(resolved, { throwIfNoEntry: false })?.isSymbolicLink()) throw new Error("Artifact destinations must not be symbolic links");
-    return path.join(realpathSync(path.dirname(resolved)), path.basename(resolved));
+    return path.join(realpathSync.native(path.dirname(resolved)), path.basename(resolved));
   };
   const destinations = entries.map((entry) => canonical(entry.path));
   const manifest = canonical(manifestPath);
@@ -112,7 +112,7 @@ function openArtifactForVerification(file: string): { fd: number; stat: BigIntSt
   try {
     const stat = fstatSync(fd, { bigint: true });
     if (!stat.isFile() || !sameArtifactStat(before, stat)) throw new Error("destination changed while being opened");
-    return { fd, stat, canonical: realpathSync(file) };
+    return { fd, stat, canonical: realpathSync.native(file) };
   } catch (error) { closeSync(fd); throw error; }
 }
 

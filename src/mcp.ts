@@ -1,7 +1,6 @@
 #!/usr/bin/env node
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import path from "node:path";
 import { pathToFileURL } from "node:url";
 import { z } from "zod";
 import {
@@ -13,6 +12,7 @@ import {
   provePatchToMcpContent,
 } from "./mcp-tools.js";
 import { TOOL_VERSION } from "./types.js";
+import { canonicalPath } from "./paths.js";
 
 const failOnSchema = z.enum(["high", "critical", "none"]).optional();
 const acceptSchema = z.array(z.string()).optional();
@@ -117,7 +117,7 @@ function isDirectRun(): boolean {
   const entry = process.argv[1];
   if (!entry) return false;
   try {
-    return import.meta.url === pathToFileURL(path.resolve(entry)).href;
+    return import.meta.url === pathToFileURL(canonicalPath(entry)).href;
   } catch {
     return false;
   }

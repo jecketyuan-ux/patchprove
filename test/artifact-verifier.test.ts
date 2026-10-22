@@ -7,7 +7,7 @@ import { verifyArtifactSet, writeArtifactSet } from "../src/artifacts.js";
 
 const roots: string[] = [];
 const digest = (content: string | Buffer) => `sha256:${createHash("sha256").update(content).digest("hex")}`;
-function fixture(): string { const root = realpathSync(mkdtempSync(path.join(tmpdir(), "patchprove-verifier-test-"))); roots.push(root); return root; }
+function fixture(): string { const root = realpathSync.native(mkdtempSync(path.join(tmpdir(), "patchprove-verifier-test-"))); roots.push(root); return root; }
 function manifest(root: string, artifacts: unknown, extra: Record<string, unknown> = {}): string {
   const file = path.join(root, "manifest.json");
   writeFileSync(file, JSON.stringify({ schemaVersion: "1.0.0", runId: randomUUID(), artifacts, ...extra }));

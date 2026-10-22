@@ -1,5 +1,5 @@
 import { execFileSync, spawnSync } from "node:child_process";
-import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
@@ -35,6 +35,27 @@ function text(result: unknown): Record<string, any> {
 }
 
 describe("real MCP stdio transport", () => {
+  it.each(["directory", "file"] as const)("starts the standalone MCP entry through a %s alias", async (kind) => {
+    const cwd = temporary();
+    const alias = path.join(cwd, "installed package alias");
+    let entry: string;
+    if (kind === "directory") {
+      symlinkSync(path.dirname(path.dirname(mcp)), alias, process.platform === "win32" ? "junction" : "dir");
+      entry = path.join(alias, "dist", "mcp.js");
+    } else {
+      entry = `${alias}.js`;
+      symlinkSync(mcp, entry, "file");
+    }
+    const client = new Client({ name: "aliased-entry-fixture", version: "1.0.0" });
+    const transport = new StdioClientTransport({
+      command: process.execPath, args: [entry], cwd, stderr: "pipe",
+    });
+    try {
+      await client.connect(transport);
+      expect((await client.listTools()).tools.map((tool) => tool.name)).toEqual(["prove_patch", "list_gaps"]);
+    } finally { await client.close(); }
+  }, 10_000);
+
   it("advertises and forwards shared options, artifacts, explicit spec and baseline thresholds", async () => {
     const cwd = repo();
     const client = new Client({ name: "integration-fixture", version: "1.0.0" });

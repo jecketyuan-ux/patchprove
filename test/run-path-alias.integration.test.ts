@@ -13,7 +13,7 @@ function git(cwd: string, ...args: string[]): string {
   return execFileSync("git", args, { cwd, encoding: "utf8", stdio: "pipe" }).trim();
 }
 function fixture(): { root: string; alias: string; holder: string } {
-  const holder = realpathSync(mkdtempSync(path.join(tmpdir(), "patchprove-run-alias-")));
+  const holder = realpathSync.native(mkdtempSync(path.join(tmpdir(), "patchprove-run-alias-")));
   roots.push(holder);
   const root = path.join(holder, "repository");
   mkdirSync(root);

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
+import { realpathSync } from "node:fs";
 import { cp, mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
@@ -66,7 +67,10 @@ for (const engine of engines) {
   }
   for (const item of manifest.cases.filter((entry) => entry.engine === engine)) {
     if (!available && item.scenario !== "missing") { report.cases.push({ id: item.id, outcome: "skipped", reason: report.toolchains[engine].reason }); continue; }
-    const dir = await mkdtemp(path.join(os.tmpdir(), "patchprove-runtime-"));
+    // Maven compares selected project paths against canonical reactor basedirs.
+    // Windows temp directories may use 8.3 aliases such as RUNNER~1.
+    const requestedCwd = await mkdtemp(path.join(os.tmpdir(), "patchprove-runtime-"));
+    const dir = realpathSync.native(requestedCwd);
     try {
       await cp(path.join(fixtures, item.path), dir, { recursive: true });
       if (engine === "node" && item.scenario !== "missing") await symlink(path.join(root, "node_modules"), path.join(dir, "node_modules"), process.platform === "win32" ? "junction" : "dir");
@@ -109,10 +113,10 @@ for (const engine of engines) {
         if (["success", "failure", "multimodule"].includes(item.scenario)) assert(count > 0, `${item.id}: full suite did not establish executed tests\n${raw.stdout}\n${raw.stderr}`);
         full = { status, command: raw.command, args: fullArgs, cwd: dir, exitCode: raw.exitCode, collectedTests: count ?? null, durationMs: raw.durationMs, outputHash: raw.outputHash };
       }
-      report.cases.push({ id: item.id, outcome: "passed", expected: item.expected, selected: { status: selected.status, collectedTests: selectedCount ?? null, durationMs: selected.durationMs, records: selected.records }, full });
+      report.cases.push({ id: item.id, requestedCwd, executionCwd: dir, outcome: "passed", expected: item.expected, selected: { status: selected.status, collectedTests: selectedCount ?? null, durationMs: selected.durationMs, records: selected.records }, full });
       console.log(`PASS ${item.id}: ${selected.status}`);
     } catch (error) {
-      failures++; report.cases.push({ id: item.id, outcome: "failed", reason: String(error) }); console.error(`FAIL ${item.id}: ${error}`);
+      failures++; report.cases.push({ id: item.id, requestedCwd, executionCwd: dir, outcome: "failed", reason: String(error) }); console.error(`FAIL ${item.id}: ${error}`);
     } finally { await rm(dir, { recursive: true, force: true }); }
   }
 }

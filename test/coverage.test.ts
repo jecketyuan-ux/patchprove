@@ -23,7 +23,7 @@ function file(partial: Partial<DiffFile> & { path: string }): DiffFile {
 
 describe("coverage map parsing", () => {
   it("resolves absolute source and test paths through a directory alias", () => {
-    const root = realpathSync(mkdtempSync(path.join(tmpdir(), "patchprove-coverage-alias-")));
+    const root = realpathSync.native(mkdtempSync(path.join(tmpdir(), "patchprove-coverage-alias-")));
     try {
       const repository = path.join(root, "repository");
       const alias = path.join(root, "alias");

@@ -47,7 +47,7 @@ try {
   assert.equal(typeof exports.analyze, "function");
   const client = new Client({ name: "patchprove-package-smoke", version: "1" });
   const transport = new StdioClientTransport({ command: process.execPath, args: [path.join(installed, "dist/mcp.js")], cwd: consumer, env: childEnvironment(), stderr: "pipe" });
-  let serverError = ""; transport.stderr?.on("data", (chunk) => { serverError += String(chunk); });
+  let serverError = ""; transport.stderr?.on("data", (chunk) => { serverError = (serverError + String(chunk)).slice(-65536); });
   try {
     await client.connect(transport);
     const tools = await client.listTools();
@@ -59,6 +59,8 @@ try {
     const proof = await client.callTool({ name: "prove_patch", arguments: { cwd: repo, disableGate: ["typecheck", "lint", "tests"] } });
     assert(!proof.isError, `Installed MCP prove_patch failed: ${JSON.stringify(proof)} ${serverError}`);
     report.mcp = "stdio initialization, tools/list, list_gaps, prove_patch";
+  } catch (cause) {
+    throw new Error(`Installed MCP smoke failed: ${cause instanceof Error ? cause.message : String(cause)}\nServer stderr:\n${serverError || "(empty)"}`, { cause });
   } finally { await client.close(); }
   const base = (await command("git", ["rev-parse", "HEAD"], repo)).stdout.trim();
   await command("git", ["add", "README.md"], repo);

@@ -61,7 +61,7 @@ function write(root: string, relative: string, content: string): void {
   writeFileSync(absolute, content);
 }
 function repo(): string {
-  const root = realpathSync(mkdtempSync(path.join(tmpdir(), "patchprove-receipt-v2-")));
+  const root = realpathSync.native(mkdtempSync(path.join(tmpdir(), "patchprove-receipt-v2-")));
   roots.push(root);
   git(root, "init");
   git(root, "config", "user.email", "fixture@example.invalid");
