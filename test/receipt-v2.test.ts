@@ -1,6 +1,6 @@
 import { execFileSync } from "node:child_process";
 import { generateKeyPairSync } from "node:crypto";
-import { mkdirSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -61,7 +61,7 @@ function write(root: string, relative: string, content: string): void {
   writeFileSync(absolute, content);
 }
 function repo(): string {
-  const root = mkdtempSync(path.join(tmpdir(), "patchprove-receipt-v2-"));
+  const root = realpathSync(mkdtempSync(path.join(tmpdir(), "patchprove-receipt-v2-")));
   roots.push(root);
   git(root, "init");
   git(root, "config", "user.email", "fixture@example.invalid");

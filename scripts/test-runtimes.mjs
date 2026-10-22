@@ -57,9 +57,11 @@ for (const engine of engines) {
   const versionOutput = `${version?.stdout ?? ""}\n${version?.stderr ?? ""}`.replace(/\x1b\[[0-9;]*m/g, "");
   const available = version?.exitCode === 0 && probe.pattern.test(versionOutput);
   const versionLine = versionOutput.split("\n").find((line) => probe.pattern.test(line))?.trim();
-  report.toolchains[engine] = { available, command: probe.command, version: available ? versionLine : null, reason: available ? null : "Missing toolchain or version identity did not match" };
+  report.toolchains[engine] = { available, command: probe.command, version: available ? versionLine : null, reason: available ? null : "Missing toolchain or version identity did not match",
+    probe: { args: probe.args, exitCode: version?.exitCode ?? null, stdout: version?.stdout.slice(0, 8192) ?? "", stderr: version?.stderr.slice(0, 8192) ?? "", timedOut: version?.timedOut ?? false, outputHash: version?.outputHash ?? null } };
   if (!available) {
     console.log(`SKIP ${engine}: missing toolchain or version identity did not match${required ? " (required: failure)" : ""}`);
+    console.log(`PROBE ${engine}: ${JSON.stringify(report.toolchains[engine].probe)}`);
     if (required) failures++;
   }
   for (const item of manifest.cases.filter((entry) => entry.engine === engine)) {

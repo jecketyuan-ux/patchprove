@@ -12,6 +12,7 @@ import { gapFingerprint, findingFingerprint } from "./fingerprint.js";
 import { runAffectedTests, runLint, runSecretScan, runTypecheck } from "./gates.js";
 import { collectGitSnapshot, type DiffFile } from "./git.js";
 import { buildImportGraph } from "./graph.js";
+import { canonicalPathParent } from "./paths.js";
 import { createPluginContext, resolveLanguagePlugins } from "./plugins/index.js";
 import { attachReceiptRef, buildReceipt, defaultReceiptPath, findPreviousReceiptHash, hashCanonical } from "./receipt.js";
 import { formatHumanReport, formatMarkdownReport } from "./report.js";
@@ -169,7 +170,7 @@ async function provisionMatchingNodeDependencies(source: string, target: string,
 function remapOptions(options: RunOptions, source: string, target: string): RunOptions {
   const remap = (value: string | undefined): string | undefined => {
     if (!value || !path.isAbsolute(value)) return value;
-    const rel = path.relative(source, value);
+    const rel = path.relative(source, canonicalPathParent(value));
     return !rel.startsWith(`..${path.sep}`) && rel !== ".." ? path.join(target, rel) : value;
   };
   return { ...options, cwd: target, config: remap(options.config), spec: remap(options.spec), baseline: remap(options.baseline) };
@@ -194,7 +195,7 @@ export async function analyze(options: RunOptions): Promise<Evidence> {
     }
     const root = execution?.root ?? sourceRoot;
     const input = remapOptions(options, sourceRoot, root);
-    const excluded = artifactPaths({ ...options, cwd: sourceRoot });
+    const excluded = artifactPaths({ ...options, cwd: sourceRoot }).map(canonicalPathParent);
     if (protocol === 2) assertArtifactDestinations(excluded);
     const relativeExclusions = excluded.map((file) => path.relative(sourceRoot, file)).filter((file) => file !== ".." && !file.startsWith(`..${path.sep}`) && !path.isAbsolute(file));
     const trackedInputs = [...new Set((await checkedGit(sourceRoot, ["ls-files", "--cached", "-z"])).split("\0").filter(Boolean)
@@ -306,7 +307,7 @@ export function produceArtifacts(evidence: Evidence, options: RunOptions, signin
   if (receiptPath) {
     const outcome = failOnOutcomeOf(evidence);
     const receipt = buildReceipt({ evidence, argv: options.argv ?? process.argv.slice(2), options, exitCode: outcome.failed ? 1 : 0, failOnOutcome: outcome, sign: options.sign, signingKey });
-    result = attachReceiptRef(evidence, receipt, { path: path.relative(evidence.repo.root, receiptPath), previousContentHash: findPreviousReceiptHash(evidence.baselineComparison?.baselinePath) });
+    result = attachReceiptRef(evidence, receipt, { path: path.relative(evidence.repo.root, canonicalPathParent(receiptPath)), previousContentHash: findPreviousReceiptHash(evidence.baselineComparison?.baselinePath) });
     entries.push({ path: receiptPath, content: `${JSON.stringify(receipt, null, 2)}\n` });
   }
   entries.push({ path: output, content: `${JSON.stringify(result, null, 2)}\n` });

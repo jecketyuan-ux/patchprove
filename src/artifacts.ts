@@ -67,8 +67,8 @@ export function writeArtifactSet(entries: ArtifactEntry[], manifestPath: string)
     for (const item of staged) { renameSync(item.file, item.target); published.push(item); }
     writeJsonAtomic(manifest, {
       schemaVersion: "1.0.0", runId,
-      artifacts: entries.map((entry) => ({
-        path: path.relative(path.dirname(manifest), path.resolve(entry.path)),
+      artifacts: entries.map((entry, index) => ({
+        path: path.relative(path.dirname(manifest), destinations[index]!).split(path.sep).join("/"),
         hash: `sha256:${createHash("sha256").update(entry.content).digest("hex")}`,
       })),
     });

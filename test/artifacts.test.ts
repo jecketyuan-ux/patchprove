@@ -12,7 +12,7 @@ vi.mock("node:fs", async (importOriginal) => {
 const originalFs = await vi.importActual<typeof import("node:fs")>("node:fs");
 const roots: string[] = [];
 function temp(): string {
-  const root = fs.mkdtempSync(path.join(tmpdir(), "patchprove-artifacts-test-"));
+  const root = fs.realpathSync(fs.mkdtempSync(path.join(tmpdir(), "patchprove-artifacts-test-")));
   roots.push(root);
   return root;
 }
@@ -71,6 +71,19 @@ describe("atomic artifact publication", () => {
     fs.writeFileSync(target, "previous\n");
     expect(() => writeArtifactSet([{ path: target, content: "one\n" }, { path: path.join(alias, "evidence.json"), content: "two\n" }], path.join(root, "manifest.json"))).toThrow(/distinct/);
     expect(fs.readFileSync(target, "utf8")).toBe("previous\n");
+  });
+
+  it("writes canonical relative manifest paths through a directory alias", () => {
+    const root = temp();
+    const directory = path.join(root, "real");
+    const alias = path.join(root, "alias");
+    fs.mkdirSync(directory);
+    fs.symlinkSync(directory, alias, process.platform === "win32" ? "junction" : "dir");
+    const manifest = path.join(alias, "manifest.json");
+    writeArtifactSet([{ path: path.join(alias, "evidence.json"), content: "evidence\n" }], manifest);
+    expect(JSON.parse(fs.readFileSync(manifest, "utf8")).artifacts).toEqual([
+      { path: "evidence.json", hash: `sha256:${createHash("sha256").update("evidence\n").digest("hex")}` },
+    ]);
   });
 
   it.each([false, true])("rejects a symbolic destination when dangling=%s", (dangling) => {

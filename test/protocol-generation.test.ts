@@ -24,7 +24,7 @@ it("detects generated-file and schema drift without rewriting files in check mod
   writeFileSync(generated, `${original}\n// stale generated file\n`);
   const stale = generate("--check");
   expect(stale.status).toBe(1);
-  expect(stale.stderr).toContain("src/generated/evidence.ts");
+  expect(stale.stderr).toContain(path.join("src", "generated", "evidence.ts"));
   expect(readFileSync(generated, "utf8")).toContain("stale generated file");
   expect(generate().status).toBe(0);
   expect(generate("--check").status).toBe(0);

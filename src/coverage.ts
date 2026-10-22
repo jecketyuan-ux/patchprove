@@ -5,7 +5,7 @@ import { fileURLToPath } from "node:url";
 import type { ImportGraph } from "./graph.js";
 import { mapTestsFromGraph } from "./graph.js";
 import { isTestFile, mapTestsForFile, testBasenameKey } from "./mapping.js";
-import { normalizeRel, toPosix } from "./paths.js";
+import { canonicalPath, canonicalPathParent, normalizeRel, toPosix } from "./paths.js";
 import { builtinPlugins, pluginForPath, type LanguagePlugin } from "./plugins/index.js";
 import type { PluginContext } from "./plugins/types.js";
 import type { MappingStrategy } from "./types.js";
@@ -39,8 +39,8 @@ function toRepoRel(filePath: string, root: string): string {
       raw = raw.replace(/^file:\/\//, "");
     }
   }
-  const posix = toPosix(raw);
-  const rootPosix = toPosix(path.resolve(root)).replace(/\/$/, "");
+  const posix = toPosix(path.isAbsolute(raw) ? canonicalPathParent(raw) : raw);
+  const rootPosix = toPosix(canonicalPath(path.resolve(root))).replace(/\/$/, "");
   if (posix.startsWith(`${rootPosix}/`)) {
     return normalizeRel(posix.slice(rootPosix.length + 1));
   }

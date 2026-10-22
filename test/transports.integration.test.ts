@@ -49,7 +49,7 @@ describe("real MCP stdio transport", () => {
       const receipt = path.join(cwd, "proof.receipt.json");
       const baseline = text(await client.callTool({ name: "prove_patch", arguments: {
         cwd, out, sarif, receipt, disableGate: ["typecheck", "lint", "tests", "secrets"], strict: false,
-        protocol: 2, timeoutMs: 5000, maxOutputBytes: 8192,
+        protocol: 2, timeoutMs: process.platform === "win32" ? 30_000 : 5000, maxOutputBytes: 8192,
       } }));
       expect(baseline.evidence.schemaVersion).toBe("2.0.0");
       expect(existsSync(sarif)).toBe(true);
@@ -76,7 +76,7 @@ describe("real MCP stdio transport", () => {
       expect(gaps.claimDone).toBe(false);
       expect(gaps.verification.status).toBe("failed");
     } finally { await client.close(); }
-  }, 20_000);
+  }, process.platform === "win32" ? 90_000 : 20_000);
 
   it("starts MCP from the installed local CLI config with spaces in its path", async () => {
     const cwd = repo();
@@ -96,13 +96,13 @@ describe("real MCP stdio transport", () => {
 describe("real hook stdin transport", () => {
   it("uses payload cwd and breaks Stop re-entry / Cursor followup loops", () => {
     const cwd = repo();
-    const flags = [cli, "hook", "stop", "--disable-gate", "typecheck", "--disable-gate", "lint", "--disable-gate", "tests", "--disable-gate", "secrets", "--no-strict", "--timeout-ms", "5000"];
+    const flags = [cli, "hook", "stop", "--disable-gate", "typecheck", "--disable-gate", "lint", "--disable-gate", "tests", "--disable-gate", "secrets", "--no-strict", "--timeout-ms", process.platform === "win32" ? "30000" : "5000"];
     const output = execFileSync(process.execPath, flags, { cwd: temporary(), input: JSON.stringify({ cwd }), encoding: "utf8" });
     expect(JSON.parse(output)).toEqual({});
     for (const input of [{ cwd: "/does-not-exist", stop_hook_active: true }, { workspace_roots: ["/does-not-exist"], loop_count: 3 }]) {
       expect(JSON.parse(execFileSync(process.execPath, [cli, "hook", "stop"], { input: JSON.stringify(input), encoding: "utf8" }))).toEqual({});
     }
-  }, 10_000);
+  }, process.platform === "win32" ? 60_000 : 10_000);
 
   it("rejects an explicit artifact destination that would overwrite a repository input", () => {
     const cwd = repo();

@@ -66,7 +66,7 @@ export function whichSync(name: string, cwd?: string): string | null {
 }
 
 /** Batch launchers need cmd.exe; accept only argv that cannot activate its expansion syntax. */
-export function commandInvocation(command: string, args: string[], platform = process.platform): { command: string; args: string[] } {
+export function commandInvocation(command: string, args: string[], platform = process.platform): { command: string; args: string[]; windowsVerbatimArguments?: boolean } {
   if (platform !== "win32" || !/\.(?:cmd|bat)$/i.test(command)) return { command, args };
   if ([command, ...args].some((value) => /[\x00-\x1f\x7f"%!^&|<>]/.test(value))) {
     throw new Error("Windows batch arguments contain unsupported shell characters");
@@ -76,6 +76,9 @@ export function commandInvocation(command: string, args: string[], platform = pr
   return {
     command: path.win32.join(process.env.SystemRoot ?? "C:\\Windows", "System32", "cmd.exe"),
     args: ["/d", "/s", "/v:off", "/c", `"${[command, ...args].map(quoted).join(" ")}"`],
+    // /c receives an already quoted command line. Node's ordinary CRT escaping
+    // would add backslashes before these quotes, which cmd.exe does not accept.
+    windowsVerbatimArguments: true,
   };
 }
 
@@ -221,6 +224,7 @@ export function runCommand(
         stdio: [options.input === undefined ? "ignore" : "pipe", "pipe", "pipe"],
         detached: process.platform !== "win32",
         windowsHide: true,
+        windowsVerbatimArguments: invocation.windowsVerbatimArguments,
       });
     } catch (error) {
       capture("stderr", error instanceof Error ? error.message : "Unable to spawn command");
@@ -248,7 +252,7 @@ export function runCommand(
     if (options.input !== undefined && child.stdin) {
       child.stdin.on("error", (error: NodeJS.ErrnoException) => {
         // Programs may exit successfully without consuming all input.
-        if (finalized || error.code === "EPIPE") return;
+        if (finalized || error.code === "EPIPE" || error.code === "EOF") return;
         capture("stderr", `Unable to write command input (${error.code ?? "unknown"})`);
         terminate("input");
       });

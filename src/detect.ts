@@ -86,6 +86,7 @@ function probe(command: string, name: string, cwd: string, limits: ToolDetection
     const result = spawnSync(invocation.command, invocation.args, {
       cwd, env: childEnvironment(), encoding: "utf8", timeout: Math.max(1, Math.floor(remaining)),
       killSignal: "SIGKILL", maxBuffer: 8192, windowsHide: true,
+      windowsVerbatimArguments: invocation.windowsVerbatimArguments,
     });
     if (result.error || result.status !== 0 || remainingProbeMs(limits) <= 0) return null;
     const output = `${result.stdout}\n${result.stderr}`.replace(/\x1b\[[0-9;]*m/g, "");

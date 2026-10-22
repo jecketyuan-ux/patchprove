@@ -6,6 +6,7 @@ import path from "node:path";
 import { deflateSync } from "node:zlib";
 import { runCommand } from "./exec.js";
 import type { SnapshotIdentity } from "./types.js";
+import { canonicalPath, canonicalPathParent } from "./paths.js";
 
 export interface SnapshotOptions {
   base?: string;
@@ -116,7 +117,7 @@ export function isSnapshotPathExcluded(filePath: string, paths: string[]): boole
 }
 
 export function normalizedSnapshotExclusions(root: string, paths: string[] = []): string[] {
-  return paths.map((file) => path.isAbsolute(file) ? path.relative(root, file).split(path.sep).join("/") : file.replace(/^\.\//, ""));
+  return paths.map((file) => path.isAbsolute(file) ? path.relative(canonicalPath(root), canonicalPathParent(file)).split(path.sep).join("/") : file.replace(/^\.\//, ""));
 }
 
 /** Build a final-disk tree without touching the user's index or storing blobs in their object database. */

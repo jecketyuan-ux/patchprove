@@ -1,4 +1,23 @@
 import path from "node:path";
+import { existsSync, realpathSync } from "node:fs";
+
+/** Resolve directory aliases even when the final artifact does not exist yet. */
+export function canonicalPathParent(file: string): string {
+  const resolved = path.resolve(file);
+  let directory = path.dirname(resolved);
+  const suffix = [path.basename(resolved)];
+  while (!existsSync(directory)) {
+    suffix.unshift(path.basename(directory));
+    const parent = path.dirname(directory);
+    if (parent === directory) break;
+    directory = parent;
+  }
+  return path.join(realpathSync(directory), ...suffix);
+}
+
+export function canonicalPath(file: string): string {
+  try { return realpathSync(file); } catch { return canonicalPathParent(file); }
+}
 
 export function toPosix(p: string): string {
   return p.replaceAll("\\", "/");

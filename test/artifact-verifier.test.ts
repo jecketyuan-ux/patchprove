@@ -1,5 +1,5 @@
 import { createHash, randomUUID } from "node:crypto";
-import { mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, readFileSync, readdirSync, realpathSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -7,7 +7,7 @@ import { verifyArtifactSet, writeArtifactSet } from "../src/artifacts.js";
 
 const roots: string[] = [];
 const digest = (content: string | Buffer) => `sha256:${createHash("sha256").update(content).digest("hex")}`;
-function fixture(): string { const root = mkdtempSync(path.join(tmpdir(), "patchprove-verifier-test-")); roots.push(root); return root; }
+function fixture(): string { const root = realpathSync(mkdtempSync(path.join(tmpdir(), "patchprove-verifier-test-"))); roots.push(root); return root; }
 function manifest(root: string, artifacts: unknown, extra: Record<string, unknown> = {}): string {
   const file = path.join(root, "manifest.json");
   writeFileSync(file, JSON.stringify({ schemaVersion: "1.0.0", runId: randomUUID(), artifacts, ...extra }));
@@ -28,7 +28,7 @@ describe("read-only artifact set verification", () => {
     expect(result.ok).toBe(true);
     expect(result.runId).toMatch(/^[a-f0-9-]{36}$/);
     expect(result.errors).toEqual([]);
-    expect(result.artifacts).toEqual([{ path: "evidence.json", hashMatches: true }, { path: path.join("..", "receipts", "evidence.receipt.json"), hashMatches: true }]);
+    expect(result.artifacts).toEqual([{ path: "evidence.json", hashMatches: true }, { path: "../receipts/evidence.receipt.json", hashMatches: true }]);
     expect(readFileSync(file)).toEqual(original);
     expect(readdirSync(root, { recursive: true }).map(String).sort()).toEqual(before);
   });

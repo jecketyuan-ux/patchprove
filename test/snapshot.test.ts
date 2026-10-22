@@ -93,7 +93,8 @@ describe("snapshot identity", () => {
   it("binds a directory link target without reading the target", async () => {
     const root = repo({ "source.txt": "source\n" });
     const third = await captureSnapshotIdentity(root);
-    symlinkSync(path.join(root, "missing-target"), path.join(root, "link"), process.platform === "win32" ? "junction" : "dir");
+    // A junction is a Windows directory mount, not a Git symbolic-link entry.
+    symlinkSync(path.join(root, "missing-target"), path.join(root, "link"), "dir");
     const fourth = await captureSnapshotIdentity(root);
     expect(fourth.contentHash).not.toBe(third.contentHash);
     expect(fourth.dirty).toBe(true);

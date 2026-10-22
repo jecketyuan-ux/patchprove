@@ -127,7 +127,7 @@ describe("shared MCP options", () => {
       allowPlugins: true, strictConfig: true, adapterInputs: [{ adapter: "nx" as const, path: "nx.json" }],
       receipt: "proof.receipt.json", sarif: "proof.sarif", sign: true,
     };
-    expect(runOptionsFromInput(input)).toMatchObject(input);
+    expect(runOptionsFromInput(input)).toMatchObject({ ...input, cwd: path.resolve(input.cwd) });
   });
 
   it("does not claim completion from zero-gap historical evidence", async () => {

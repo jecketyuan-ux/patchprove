@@ -109,13 +109,25 @@ describe("baseline comparison", () => {
     const original = pack([unmapped("src/original.ts")]);
     writeBaseline(file, original);
     const reader = openSync(file, "r");
+    const replacement = pack([]);
+    let blockedByReader = false;
     try {
-      const replacement = pack([]);
-      writeBaseline(file, replacement);
+      try { writeBaseline(file, replacement); }
+      catch (error) {
+        // Windows can deny replacing a file while an existing handle is open.
+        // That path must fail without modifying the previous baseline.
+        if (process.platform !== "win32" || !["EPERM", "EACCES", "EBUSY"].includes((error as NodeJS.ErrnoException).code ?? "")) throw error;
+        blockedByReader = true;
+        expect(JSON.parse(readFileSync(file, "utf8"))).toEqual(original);
+      }
       expect(JSON.parse(readFileSync(reader, "utf8"))).toEqual(original);
-      expect(JSON.parse(readFileSync(file, "utf8"))).toEqual(replacement);
+      if (!blockedByReader) expect(JSON.parse(readFileSync(file, "utf8"))).toEqual(replacement);
     } finally {
       closeSync(reader);
+    }
+    if (blockedByReader) {
+      writeBaseline(file, replacement);
+      expect(JSON.parse(readFileSync(file, "utf8"))).toEqual(replacement);
     }
   });
 });

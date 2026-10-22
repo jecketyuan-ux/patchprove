@@ -1,5 +1,5 @@
 import { execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, rmSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it } from "vitest";
@@ -185,6 +185,20 @@ describe("Git working-tree snapshots", () => {
     expect(snapshot.trackedFiles.sort()).toEqual(["cache-adjacent/value.ts", "reports/evidence1.json", "src/value.ts"]);
     expect(snapshot.identity?.consistent).toBe(true);
     expect(snapshot.files.find((file) => file.path === "reports/evidence1.json")?.patch).toContain("+new adjacent report");
+  });
+
+  it("excludes an absolute output path through a directory alias", async () => {
+    const root = repo({ "src/value.ts": "old source\n", "reports/evidence.json": "old report\n" });
+    const holder = mkdtempSync(path.join(tmpdir(), "patchprove-git-alias-"));
+    roots.push(holder);
+    const alias = path.join(holder, "repository");
+    symlinkSync(root, alias, process.platform === "win32" ? "junction" : "dir");
+    write(root, "src/value.ts", "new source\n");
+    write(root, "reports/evidence.json", "excluded report\n");
+    const snapshot = await collectGitSnapshot(alias, { excludePaths: [path.join(alias, "reports/evidence.json")] });
+    expect(snapshot.files.map((file) => file.path)).toEqual(["src/value.ts"]);
+    expect(snapshot.trackedFiles).not.toContain("reports/evidence.json");
+    expect(snapshot.identity?.consistent).toBe(true);
   });
 
   it("keeps versioned node_modules in collection unless that path is explicitly excluded", async () => {

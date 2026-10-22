@@ -66,9 +66,9 @@ describe("bounded command execution", () => {
     expect(result.stdout).toBe(bytes.toString("hex"));
   });
 
-  it("accepts early successful stdin closure without an unhandled EPIPE", async () => {
-    const result = await runCommand(process.execPath, ["-e", "process.exit(0)"], { cwd: fixture(), input: Buffer.alloc(8 * 1024 * 1024), timeoutMs: 1000 });
-    expect(result.exitCode).toBe(0);
+  it.each([0, 23])("preserves exit %s after early stdin closure (EPIPE or Windows EOF)", async (exitCode) => {
+    const result = await runCommand(process.execPath, ["-e", `process.exit(${exitCode})`], { cwd: fixture(), input: Buffer.alloc(8 * 1024 * 1024), timeoutMs: 1000 });
+    expect(result.exitCode).toBe(exitCode);
     expect(result.timedOut).toBe(false);
   });
 
@@ -101,6 +101,7 @@ describe("Windows batch command construction", () => {
     const invocation = commandInvocation("C:\\Program Files (x86)\\repo\\vitest.cmd", ["run", "test files\\a.test.js", "C:\\path\\"], "win32");
     expect(invocation.command.toLowerCase()).toMatch(/\\system32\\cmd\.exe$/);
     expect(invocation.args.slice(0, 4)).toEqual(["/d", "/s", "/v:off", "/c"]);
+    expect(invocation.windowsVerbatimArguments).toBe(true);
     expect(invocation.args[4]).toBe('""C:\\Program Files (x86)\\repo\\vitest.cmd" "run" "test files\\a.test.js" "C:\\path\\\\""');
   });
 
@@ -111,5 +112,16 @@ describe("Windows batch command construction", () => {
   it("does not route ordinary executable argv through a shell", () => {
     const args = ["argument&with%literal!characters"];
     expect(commandInvocation("node.exe", args, "win32")).toEqual({ command: "node.exe", args });
+  });
+
+  it.skipIf(process.platform !== "win32").each(["cmd", "bat"])("executes a real .%s launcher without losing quoted argv", async (extension) => {
+    const cwd = fixture();
+    const wrapper = path.join(cwd, `test launcher (${extension}).${extension}`);
+    writeFileSync(path.join(cwd, "echo-args.cjs"), "process.stdout.write(JSON.stringify(process.argv.slice(2)));\n");
+    writeFileSync(wrapper, `@echo off\r\n\"${process.execPath}\" \"%~dp0echo-args.cjs\" %*\r\n`);
+    const args = ["plain", "two words", "(parentheses)", "C:\\folder\\", ""];
+    const result = await runCommand(wrapper, args, { cwd, timeoutMs: 5000 });
+    expect(result.exitCode, result.stderr).toBe(0);
+    expect(JSON.parse(result.stdout)).toEqual(args);
   });
 });

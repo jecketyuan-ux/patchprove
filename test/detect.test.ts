@@ -86,3 +86,23 @@ describe.skipIf(process.platform === "win32")("tool identity probes", () => {
   });
 
 });
+
+describe.skipIf(process.platform !== "win32")("Windows tool identity probes", () => {
+  it("probes real Maven and Gradle batch launchers with spaces in their paths", () => {
+    const dir = fixture();
+    const bin = path.join(dir, "tool bins (fixture)");
+    mkdirSync(bin);
+    process.env.PATH = bin;
+    writeFileSync(path.join(dir, "pom.xml"), "<project/>\n");
+    writeFileSync(path.join(dir, "build.gradle"), "plugins {}\n");
+    const maven = path.join(bin, "mvn.cmd");
+    const gradle = path.join(bin, "gradle.bat");
+    writeFileSync(maven, "@echo off\r\necho Apache Maven 3.9.9\r\n");
+    writeFileSync(gradle, "@echo off\r\necho Gradle 8.12.1\r\n");
+    const tools = detectTools(dir);
+    expect(tools.mavenBin).toBe(maven);
+    expect(tools.gradleBin).toBe(gradle);
+    expect(tools.versions?.mvn).toBe("Apache Maven 3.9.9");
+    expect(tools.versions?.gradle).toBe("Gradle 8.12.1");
+  });
+});

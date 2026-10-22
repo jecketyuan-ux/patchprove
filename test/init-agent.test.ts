@@ -167,7 +167,10 @@ describe("local installation and backups", () => {
     executeInitAgent({ cwd: dir, localCli: cli });
     const mcp = JSON.parse(readFileSync(path.join(dir, ".mcp.json"), "utf8"));
     expect(mcp.mcpServers.patchprove).toEqual({ command: process.execPath, args: [cli, "mcp"] });
-    expect(readFileSync(path.join(dir, ".claude/settings.json"), "utf8")).toContain(cli);
+    const settings = JSON.parse(readFileSync(path.join(dir, ".claude/settings.json"), "utf8")) as { hooks: Record<string, Array<{ hooks: Array<{ command: string }> }>> };
+    for (const groups of Object.values(settings.hooks)) for (const group of groups) {
+      expect(group.hooks.every((hook) => hook.command.includes(cli))).toBe(true);
+    }
     expect(() => executeInitAgent({ cwd: dir, localCli: "relative.js" })).toThrow(/absolute/);
   });
 
