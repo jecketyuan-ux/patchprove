@@ -1,3 +1,4 @@
+import path from "node:path";
 import { basenameNoExt, extname, normalizeRel, parentDir } from "../paths.js";
 import type { DetectedTools } from "../types.js";
 import type { LanguagePlugin, PluginTestCommand } from "./types.js";
@@ -33,7 +34,7 @@ export function pyTestCandidates(filePath: string): string[] {
 }
 
 const FROM_RE = /^\s*from\s+([.\w]+)\s+import\s+/gm;
-const IMPORT_RE = /^\s*import\s+([.\w]+(?:\s*,\s*[.\w]+)*)/gm;
+const IMPORT_RE = /^\s*import\s+([^\n;#]+)/gm;
 
 export function parsePyImports(sourceText: string): string[] {
   const stripped = sourceText.replace(/^\s*#.*$/gm, "").replace(/'''[\s\S]*?'''/g, " ").replace(/"""[\s\S]*?"""/g, " ");
@@ -51,6 +52,28 @@ export function parsePyImports(sourceText: string): string[] {
       const spec = part.trim().split(/\s+as\s+/)[0]?.trim();
       if (spec) specs.push(spec);
     }
+  }
+  return uniqueSorted(specs);
+}
+
+/** Expand possible submodules while retaining the module that exports names. */
+export function parsePyImportModules(sourceText: string): string[] {
+  const specs = parsePyImports(sourceText);
+  const stripped = sourceText.replace(/^\s*#.*$/gm, "").replace(/'''[\s\S]*?'''/g, " ").replace(/"""[\s\S]*?"""/g, " ");
+  const from = /^\s*from\s+([.\w]+)\s+import\s+(\([\s\S]*?\)|[^\n;#]+)/gm;
+  let match: RegExpExecArray | null;
+  while ((match = from.exec(stripped))) {
+    const module = match[1];
+    if (!module || module === "__future__") continue;
+    for (const item of (match[2] ?? "").replace(/[()]/g, "").split(",")) {
+      const name = item.trim().split(/\s+as\s+/)[0]?.trim();
+      if (!name || !/^\w+$/.test(name)) continue;
+      specs.push(`${module}${module.endsWith(".") ? "" : "."}${name}`);
+    }
+  }
+  const runtimeImport = /(?:^|[^\w])(?:__import__|(?:importlib\s*\.\s*)?import_module)\s*\(\s*(['"])([^'"]+)\1/g;
+  while ((match = runtimeImport.exec(stripped))) {
+    if (match[2]) specs.push(match[2]);
   }
   return uniqueSorted(specs);
 }
@@ -108,12 +131,13 @@ export const pythonPlugin: LanguagePlugin = {
   extensions: [".py"],
   isTestFile: isPyTestFile,
   testCandidates: pyTestCandidates,
-  parseImports: (sourceText) => parsePyImports(sourceText),
+  parseImports: (sourceText) => parsePyImportModules(sourceText),
   resolveImport: resolvePyImport,
   testCommand(_cwd: string, mappedTests: string[], tools: DetectedTools): PluginTestCommand | null {
     const tests = mappedTests.filter((t) => extname(t) === ".py");
     if (tests.length === 0 || !tools.pytestBin) return null;
-    return { name: "affected tests (pytest)", command: tools.pytestBin, args: tests };
+    const interpreter = /^python(?:\d+(?:\.\d+)*)?(?:\.exe)?$/i.test(path.basename(tools.pytestBin));
+    return { name: "affected tests (pytest)", command: tools.pytestBin, args: interpreter ? ["-m", "pytest", ...tests] : tests };
   },
   missingTestRunnerReason(tools) {
     if (tools.pytest) return "Test runner configured but binary not found";

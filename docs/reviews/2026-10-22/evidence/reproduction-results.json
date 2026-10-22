@@ -1,0 +1,168 @@
+{
+  "baselineCommit": "188e07e03da3f3a21cd64f574f35a1fab0a384c7",
+  "platform": "linux",
+  "node": "v24.19.0",
+  "purpose": "Known-defect reproduction; not a passing product regression suite",
+  "observations": [
+    {
+      "id": "F01",
+      "scenario": "staged snapshot overwrites working-tree additions",
+      "expected": "the analyzed patch includes the unstaged synthetic key",
+      "observed": {
+        "fullDiffContainsSyntheticKey": true,
+        "snapshotContainsSyntheticKey": false,
+        "secretFindings": 0
+      },
+      "reproduced": true
+    },
+    {
+      "id": "F02",
+      "scenario": "partial language execution is aggregated as passed",
+      "expected": "missing Python execution is visible and prevents an overall passed result",
+      "observed": {
+        "status": "passed",
+        "command": "/bin/true run src/foo.test.ts",
+        "missingPythonRunner": true,
+        "runnerKind": "Linux /bin/true stub; tests aggregation only"
+      },
+      "reproduced": true
+    },
+    {
+      "id": "F03",
+      "scenario": "MCP completion ignores failed checks and contract",
+      "expected": "claimDone is false",
+      "observed": {
+        "claimDone": true,
+        "checksFailed": 1,
+        "contractPassed": false,
+        "gapCount": 0
+      },
+      "reproduced": true
+    },
+    {
+      "id": "F04a",
+      "scenario": "distinct code contents share the same evidence hash",
+      "expected": "patch identity distinguishes value=2 from value=3",
+      "observed": {
+        "equalHash": true,
+        "changedFiles": [
+          {
+            "path": "src/foo.ts",
+            "status": "modified",
+            "additions": 1,
+            "deletions": 1,
+            "highRisk": false,
+            "riskKind": null
+          }
+        ]
+      },
+      "reproduced": true
+    },
+    {
+      "id": "F04b",
+      "scenario": "range analysis accepts a dirty checkout distinct from requested head",
+      "expected": "the mismatch is rejected or represented explicitly in evidence",
+      "observed": {
+        "claimedHead": true,
+        "actualWorkingTreeIsDirty": true,
+        "analysisReturned": true
+      },
+      "reproduced": true
+    },
+    {
+      "id": "F05",
+      "scenario": "coverage naming fallback suppresses graph-selected integration test",
+      "expected": "a non-attributing coverage file does not remove a known graph dependency",
+      "observed": {
+        "withoutCoverage": {
+          "tests": [
+            "src/foo.test.ts",
+            "test/integration.test.ts"
+          ],
+          "via": "graph"
+        },
+        "withCoverage": {
+          "tests": [
+            "src/foo.test.ts"
+          ],
+          "via": "naming"
+        }
+      },
+      "reproduced": true
+    },
+    {
+      "id": "F06a",
+      "scenario": "test-only change",
+      "expected": "select affected tests or explain the unsupported verification scope as a gap",
+      "observed": {
+        "mappedTests": [],
+        "unmappedSources": [],
+        "gaps": []
+      },
+      "reproduced": true
+    },
+    {
+      "id": "F06b",
+      "scenario": "source deletion",
+      "expected": "select affected tests or explain the unsupported verification scope as a gap",
+      "observed": {
+        "mappedTests": [],
+        "unmappedSources": [],
+        "gaps": []
+      },
+      "reproduced": true
+    },
+    {
+      "id": "F07",
+      "scenario": "baseline conflates different paths with the same sequential id",
+      "expected": "one new finding and one resolved finding",
+      "observed": {
+        "newFindings": 0,
+        "resolvedFindings": 0
+      },
+      "reproduced": true
+    },
+    {
+      "id": "F08",
+      "scenario": "Git C-quoted Unicode filename is not decoded",
+      "expected": "src/中文.ts remains a valid TypeScript path with a scanned patch",
+      "observed": {
+        "paths": [
+          "\"src//344/270/255/346/226/207.ts\""
+        ],
+        "languages": [],
+        "patchLengths": [
+          0
+        ],
+        "secretFindings": 0
+      },
+      "reproduced": true
+    },
+    {
+      "id": "F09",
+      "scenario": "receipt signature does not authenticate envelope metadata",
+      "expected": "a future authenticated envelope rejects metadata tampering; current evidence-only hash limitation is explicit",
+      "observed": {
+        "ok": true,
+        "signature": "verified",
+        "alteredFields": [
+          "exitCode",
+          "failOnOutcome",
+          "checks"
+        ]
+      },
+      "reproduced": true
+    },
+    {
+      "id": "F10",
+      "scenario": "runtime evidence reader accepts an unsupported schema major",
+      "expected": "unknown schema major is rejected",
+      "observed": {
+        "accepted": true,
+        "schemaVersion": "99.0.0"
+      },
+      "reproduced": true
+    }
+  ],
+  "allReproduced": true
+}

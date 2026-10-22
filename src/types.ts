@@ -1,6 +1,87 @@
-export const SCHEMA_VERSION = "1.2.0" as const;
-export const TOOL_VERSION = "1.2.0";
-export const RECEIPT_SCHEMA_VERSION = "1.2.0" as const;
+export const SCHEMA_VERSION = "2.0.0" as const;
+export const TOOL_VERSION = "2.0.0";
+export const RECEIPT_SCHEMA_VERSION = "2.0.0" as const;
+export const COMPAT_SCHEMA_VERSION = "1.3.0" as const;
+
+export interface SnapshotIdentity {
+  algorithm: "sha256";
+  version: 1;
+  mode: "working-tree" | "range";
+  base: string | null;
+  head: string | null;
+  mergeBase: string | null;
+  currentHead: string | null;
+  tree: string | null;
+  contentHash: string;
+  patchHash: string;
+  dirty: boolean;
+  consistent: boolean;
+  reason?: string;
+  excludedPaths?: string[];
+}
+
+export interface ExecutionLimits {
+  timeoutMs?: number;
+  maxOutputBytes?: number;
+  signal?: AbortSignal;
+}
+
+export interface ExecutionRecord {
+  id: string;
+  checkId: CheckId;
+  scope: string[];
+  status: CheckStatus | "cached" | "imported" | "timed-out" | "not-applicable";
+  command: string | null;
+  args: string[];
+  cwd: string;
+  exitCode: number | null;
+  durationMs: number;
+  reason?: string;
+  toolVersion?: string;
+  collectedTests?: number;
+  signal?: string | null;
+  truncated?: boolean;
+  outputHash?: string;
+  provenance?: { adapter: string; version: string; inputHash: string; snapshotHash?: string };
+}
+
+export interface VerificationPlanItem {
+  id: string;
+  unitId?: string;
+  checkId: CheckId;
+  scope: string[];
+  required: boolean;
+  reason: string;
+}
+
+export interface VerificationDecision {
+  status: "passed" | "failed" | "incomplete";
+  strict: boolean;
+  reasons: Array<{ code: string; message: string; checkId?: CheckId; scope?: string[] }>;
+  legacy?: boolean;
+}
+
+export interface Diagnostic {
+  code: string;
+  message: string;
+  severity: "warning" | "error";
+  files?: string[];
+}
+
+export interface EffectivePolicy {
+  protocol: 1 | 2;
+  strict: boolean;
+  failOn: FailOnLevel | null;
+  failOnNewGaps: FailOnLevel | null;
+  gates: PatchproveGates;
+  ignorePaths: string[];
+  acceptGaps: AcceptGapRule[];
+  plugins: string[];
+  config: { path: string; hash: string } | null;
+  spec: { path: string; hash: string; inputs?: Array<{ path: string; hash: string }> } | null;
+  baseline: { path: string; hash: string } | null;
+  hash: string;
+}
 
 export type RiskLevel = "low" | "medium" | "high" | "critical";
 export type SummaryRisk = "none" | RiskLevel;
@@ -67,6 +148,7 @@ export interface MappedTest {
   source: string;
   tests: string[];
   via?: MappingStrategy;
+  origins?: MappingStrategy[];
 }
 
 export interface CheckResult {
@@ -78,6 +160,9 @@ export interface CheckResult {
   exitCode?: number | null;
   durationMs?: number;
   detail?: string;
+  records?: ExecutionRecord[];
+  timedOut?: boolean;
+  truncated?: boolean;
 }
 
 export interface Gap {
@@ -88,6 +173,8 @@ export interface Gap {
   files?: string[];
   accepted?: boolean;
   acceptedReason?: string;
+  fingerprint?: string;
+  acceptedBy?: string[];
 }
 
 export interface Finding {
@@ -97,6 +184,7 @@ export interface Finding {
   message: string;
   path?: string;
   line?: number;
+  fingerprint?: string;
 }
 
 export interface ContractClauseResult {
@@ -122,6 +210,7 @@ export interface BaselineItemRef {
   risk: RiskLevel;
   files?: string[];
   path?: string;
+  fingerprint?: string;
 }
 
 export interface BaselineComparison {
@@ -132,6 +221,9 @@ export interface BaselineComparison {
   resolvedFindings: BaselineItemRef[];
   regression: boolean;
   failOnNewGaps?: FailOnLevel;
+  changedGaps?: BaselineItemRef[];
+  changedFindings?: BaselineItemRef[];
+  compatibility?: { compatible: boolean; reasons: string[]; contentHash?: string };
 }
 
 export type ReceiptAlgorithm = "sha256";
@@ -165,7 +257,7 @@ export interface ReceiptOptionsSummary {
 }
 
 export interface EvidenceReceipt {
-  schemaVersion: typeof RECEIPT_SCHEMA_VERSION;
+  schemaVersion: "1.2.0" | typeof RECEIPT_SCHEMA_VERSION;
   algorithm: ReceiptAlgorithm;
   contentHash: string;
   toolVersion: string;
@@ -180,6 +272,14 @@ export interface EvidenceReceipt {
   checks: CheckDigest[];
   generatedAt: string;
   signature?: ReceiptSignature;
+  canonicalizationVersion?: "2";
+  payloadHash?: string;
+  evidenceHash?: string;
+  executionHash?: string;
+  snapshotHash?: string;
+  policyHash?: string;
+  verification?: VerificationDecision;
+  effectivePolicy?: EffectivePolicy;
 }
 
 /** Pointer written onto evidence after the content hash is computed (excluded from the hash). */
@@ -211,6 +311,9 @@ export interface Evidence {
     languages: Language[];
     mappingStrategy: MappingStrategy;
     mappingFallbacks?: MappingStrategy[];
+    mappingDiagnostics?: Diagnostic[];
+    unmappedReasons?: Record<string, string>;
+    mappingEvidence?: Array<{ source: string; test: string; via: MappingStrategy; precision: "heuristic" | "structural" | "historical"; origin?: string; freshness?: "current" | "unknown" | "stale"; inputHash?: string }>;
   };
   checks: CheckResult[];
   gaps: Gap[];
@@ -227,9 +330,17 @@ export interface Evidence {
   contract: ContractResult;
   baselineComparison: BaselineComparison | null;
   receipt?: EvidenceReceiptRef;
+  snapshot?: SnapshotIdentity;
+  executionRecords?: ExecutionRecord[];
+  verificationPlan?: VerificationPlanItem[];
+  verification?: VerificationDecision;
+  effectivePolicy?: EffectivePolicy;
+  diagnostics?: Diagnostic[];
+  mappingEvidence?: Array<{ source: string; test: string; via: MappingStrategy; precision: "heuristic" | "structural" | "historical"; origin?: string; freshness?: "current" | "unknown" | "stale"; inputHash?: string }>;
 }
 
 export interface DetectedTools {
+  versions?: Record<string, string>;
   typescript: boolean;
   tscBin: string | null;
   eslint: boolean;
@@ -263,6 +374,10 @@ export interface AcceptGapRule {
   id?: string;
   path?: string;
   reason?: string;
+  ruleId?: string;
+  owner?: string;
+  expiresAt?: string;
+  ticket?: string;
 }
 
 export interface PatchproveGates {
@@ -288,14 +403,21 @@ export interface PatchproveContract {
   };
   sourcePath: string | null;
   format: "yaml" | "markdown";
+  /** Every file read to establish the contract, including linked YAML. */
+  inputPaths?: string[];
+  inputIdentities?: Array<{ path: string; hash: string }>;
 }
 
 export interface ResolvedConfig {
+  strict?: boolean;
+  protocol?: 1 | 2;
+  diagnostics?: Diagnostic[];
   failOn: FailOnLevel | undefined;
   ignorePaths: string[];
   gates: PatchproveGates;
   acceptGaps: AcceptGapRule[];
   sourcePath: string | null;
+  sourceHash?: string;
   baseline: string | null;
   failOnNewGaps: FailOnLevel | undefined;
   spec: string | null;
@@ -323,6 +445,14 @@ export interface RunOptions {
   receipt?: boolean | string;
   sign?: boolean;
   argv?: string[];
+  protocol?: 1 | 2;
+  strict?: boolean;
+  isolate?: boolean;
+  timeoutMs?: number;
+  maxOutputBytes?: number;
+  allowPlugins?: boolean;
+  strictConfig?: boolean;
+  adapterInputs?: Array<{ adapter: "nx" | "turbo" | "testmon"; path: string }>;
 }
 
 export function emptyContractResult(): ContractResult {

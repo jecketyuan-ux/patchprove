@@ -1,38 +1,21 @@
 # Publishing patchprove
 
-The package is pack-ready at version **1.2.0**. CI runs `npm pack --dry-run`; nothing publishes automatically.
+The working tree declares **2.0.0**. This does not establish an npm release or tag. Do not assume an `@v2` Action tag or registry version exists. Publishing is a separate maintainer decision.
 
-## What gets published
+## Package contents
 
-`package.json` `files`:
+`package.json` includes `dist/`, `schema/`, `action/`, `examples/`, `docs/`, `README.md`, and `LICENSE`. Dated audit records under `docs/reviews/` are excluded from the tarball. npm also includes its standard package metadata. Inspect the real tarball listing; this list is not a substitute for it. Both bins belong to the **patchprove** package: `patchprove` and `patchprove-mcp`.
 
-- `dist/` — compiled ESM (`bin` → `dist/cli.js`, `patchprove-mcp` → `dist/mcp.js`)
-- `schema/` — `evidence.schema.json`
-- `action/` — composite GitHub Action
-- `examples/` — agent skill, hooks, MCP config snippets
-- `README.md`, `LICENSE`
-
-`npx patchprove` resolves the `bin` entry after `npm run build` (also the `prepack` script).
-
-## Maintainer publish
-
-Requires an npm account with access to the `patchprove` package (or first publish if the name is still free).
-
-```bash
+```sh
 npm ci
 npm run build
 npm test
-npm pack --dry-run    # inspect the tarball listing
-npm publish           # public; publishConfig.access is public
+npm run pack:check
+npm pack
 ```
 
-Then tag the release:
+Before publishing, install the tarball in a clean environment and exercise both bins, MCP transport initialization/tool calls, installed schema loading, protocol 1/2 output, receipt verification, and artifact validation. The maintained test/CI definitions are described in [docs/validation.md](docs/validation.md); record which checks actually ran, including native runner/OS gaps. Keep package-content assertions aligned with the manifest.
 
-```bash
-git tag v1.2.0
-git push origin v1.2.0
-```
+Review the migration, dependency audit, package contents, and host examples. Signing credentials must stay out of repository tool environments and published files. Test workflows do not imply automatic publication.
 
-Pin the Action at `jecketyuan-ux/patchprove/action@v1.2.0` after the tag exists.
-
-Do **not** publish from CI or from a cloud agent unless `NPM_TOKEN` is present and you intend to release.
+After release authorization, a maintainer with npm access may run `npm publish`, then create and push the reviewed `v2.0.0` tag. Update registry examples and pin Action usage to that released, reviewed commit. These external operations are not performed by documentation or package verification.

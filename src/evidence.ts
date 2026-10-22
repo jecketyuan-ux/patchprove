@@ -8,8 +8,10 @@ import {
   collectLanguages,
   isMappableSource,
   isSourceFile,
+  isTestFile,
   languageOf,
 } from "./mapping.js";
+import { normalizeRel } from "./paths.js";
 import { builtinPlugins, type LanguagePlugin } from "./plugins/index.js";
 import type { PluginContext } from "./plugins/types.js";
 import type { DiffFile } from "./git.js";
@@ -26,7 +28,7 @@ import type {
   MappedTest,
   MappingStrategy,
 } from "./types.js";
-import { emptyContractResult, SCHEMA_VERSION, TOOL_VERSION } from "./types.js";
+import { emptyContractResult, COMPAT_SCHEMA_VERSION, TOOL_VERSION } from "./types.js";
 
 export function toChangedFile(file: DiffFile): ChangedFile {
   const riskKind = classifyPath(file.path);
@@ -49,17 +51,30 @@ export function filterIgnored<T extends { path: string }>(
 }
 
 function pickMappingStrategy(
-  coverage: CoverageIndex | null,
-  graph: ImportGraph | null | undefined,
   vias: Iterable<MappingStrategy>,
 ): { mappingStrategy: MappingStrategy; mappingFallbacks?: MappingStrategy[] } {
   const used = new Set<MappingStrategy>(vias);
   let mappingStrategy: MappingStrategy = "naming";
-  if (coverage) mappingStrategy = "coverage";
-  else if (graph && (graph.edgeCount > 0 || used.has("graph"))) mappingStrategy = "graph";
+  if (used.has("coverage")) mappingStrategy = "coverage";
   else if (used.has("graph")) mappingStrategy = "graph";
   const mappingFallbacks = [...used].filter((s) => s !== mappingStrategy);
   return mappingFallbacks.length > 0 ? { mappingStrategy, mappingFallbacks } : { mappingStrategy };
+}
+
+/** Files with executable or dependency effects still need an explicit verification scope. */
+export function unsupportedMappingReason(filePath: string): string | null {
+  const rel = normalizeRel(filePath);
+  if (/(^|\/)(fixtures?|resources?|templates?|assets?)(\/|$)/i.test(rel)) {
+    return "Changed test fixture or resource has no dependency mapping";
+  }
+  if (/\.(md|rst|adoc)$/i.test(rel) || /(^|\/)(LICENSE|NOTICE|COPYING)(\.[^/]*)?$/i.test(rel) || (/\.txt$/i.test(rel) && /(^|\/)(docs?|README|CHANGELOG|NEWS)(\/|\.|$)/i.test(rel))) return null;
+  if (/\.(c|cc|cpp|cxx|h|hh|hpp|m|mm|rb|php|cs|kt|kts|swift|scala|ex|exs|erl|hs|lua|r|sh|bash|zsh|ps1|bat|cmd)$/i.test(rel)) {
+    return "Changed source language has no configured dependency mapper";
+  }
+  if (/(^|\/)(package\.json|[^/]*lock[^/]*|go\.mod|Cargo\.toml|pom\.xml|Makefile|Dockerfile[^/]*|[^/]*config[^/]*|\.[^/]*rc[^/]*)$/i.test(rel) || /\.(json|ya?ml|toml|xml|gradle|properties|ini|cfg)$/i.test(rel)) {
+    return "Changed configuration or dependency manifest has no dependency mapping";
+  }
+  return "Changed resource has no configured dependency mapping";
 }
 
 export function buildImpact(
@@ -69,6 +84,8 @@ export function buildImpact(
     ignorePaths?: readonly string[];
     coverage?: CoverageIndex | null;
     graph?: ImportGraph | null;
+    baseGraph?: ImportGraph | null;
+    basePluginContext?: PluginContext;
     plugins?: readonly LanguagePlugin[];
     pluginContext?: PluginContext;
   },
@@ -79,30 +96,99 @@ export function buildImpact(
   const changedFiles = visible.map(toChangedFile);
   const mappedTests: MappedTest[] = [];
   const unmappedSources: string[] = [];
+  const unmappedReasons: Record<string, string> = {};
+  const mappingEvidence: NonNullable<Evidence["impact"]["mappingEvidence"]> = [];
   const coverage = options?.coverage ?? null;
   const graph = options?.graph ?? null;
   const vias: MappingStrategy[] = [];
+  const deleted = new Set(visible.filter((file) => file.status === "deleted").map((file) => normalizeRel(file.path)));
+  const existing = new Set([...existingFiles].map(normalizeRel).filter((file) => !deleted.has(file)));
+  const context = options?.pluginContext ? { ...options.pluginContext, existing } : undefined;
+  const unmapped = (file: string, reason: string): void => {
+    if (!unmappedSources.includes(file)) unmappedSources.push(file);
+    unmappedReasons[file] = reason;
+  };
 
   for (const file of visible) {
-    if (file.status === "deleted") continue;
-    if (!isMappableSource(file.path, plugins)) continue;
-    const { tests, via } = mapTestsForSource(
+    const test = isTestFile(file.path, plugins, file.status === "deleted" ? options?.basePluginContext : context);
+    const inlineSourceTest = test && !isTestFile(file.path, plugins);
+    if (test && !inlineSourceTest) {
+      if (file.status === "deleted") {
+        unmapped(file.path, "Deleted test removes verification coverage; surviving coverage cannot be inferred");
+      } else if (existing.has(normalizeRel(file.path))) {
+        mappedTests.push({ source: file.path, tests: [file.path], via: "naming" });
+        mappingEvidence.push({ source: file.path, test: file.path, via: "naming", precision: "structural", origin: "changed-test", freshness: "current" });
+        vias.push("naming");
+      } else {
+        unmapped(file.path, "Changed test is absent from the execution snapshot");
+      }
+      continue;
+    }
+    if (!isMappableSource(file.path, plugins)) {
+      const reason = unsupportedMappingReason(file.path);
+      if (reason) unmapped(file.path, reason);
+      continue;
+    }
+    const sourceGraph = file.status === "deleted" ? options?.baseGraph : graph;
+    const { tests, via, origins, evidence } = mapTestsForSource(
       file.path,
-      existingFiles,
-      coverage,
-      graph,
+      existing,
+      file.status === "deleted" ? null : coverage,
+      sourceGraph,
       plugins,
-      options?.pluginContext,
+      file.status === "deleted" ? options?.basePluginContext ?? context : context,
     );
+    if (inlineSourceTest && file.status !== "deleted" && existing.has(normalizeRel(file.path))) {
+      if (!tests.includes(file.path)) tests.push(file.path);
+      evidence.push({ source: file.path, test: file.path, via: "naming", precision: "structural", origin: "changed-test", freshness: "current" });
+      if (!origins.includes("naming")) origins.push("naming");
+      tests.sort();
+    }
+    if (file.status === "deleted" && !options?.baseGraph) {
+      unmapped(file.path, "Deleted source requires a base revision dependency graph to establish affected tests");
+    }
     if (tests.length > 0) {
-      mappedTests.push({ source: file.path, tests, via });
-      if (via) vias.push(via);
+      mappedTests.push({ source: file.path, tests, via, ...(origins.length > 1 ? { origins } : {}) });
+      mappingEvidence.push(...evidence.map((edge) => file.status === "deleted" ? { ...edge, origin: `base:${edge.origin}`, freshness: "unknown" as const } : edge));
+      vias.push(...origins);
     } else {
-      unmappedSources.push(file.path);
+      if (!unmappedReasons[file.path]) unmapped(file.path, file.status === "deleted" ? "No surviving tests mapped from the base revision for deleted source" : "No nearby test or dependency graph test mapped for changed source");
     }
   }
 
-  const { mappingStrategy, mappingFallbacks } = pickMappingStrategy(coverage, graph, vias);
+  const availableGraphs = [graph, options?.baseGraph].filter((candidate): candidate is ImportGraph => candidate != null);
+  const dynamicGraph = availableGraphs.find((candidate) => candidate.diagnostics?.some((diagnostic) => diagnostic.code === "mapping-dynamic-dependency"));
+  if (dynamicGraph) {
+    const fallbackTests = [...new Set(availableGraphs.flatMap((candidate) =>
+      [...(candidate.tests ?? new Set([...candidate.importers.values()].flat()))],
+    ))].filter((test) => existing.has(test)).sort();
+    for (const file of visible) {
+      // Test-only edits already select the changed test. Production, fixtures,
+      // and configuration can affect a dependency expression anywhere in the suite.
+      if (isTestFile(file.path, plugins)) continue;
+      if (!isSourceFile(file.path, plugins) && unsupportedMappingReason(file.path) === null) continue;
+      if (fallbackTests.length === 0) continue;
+      const mapped = mappedTests.find((entry) => entry.source === file.path);
+      if (mapped) {
+        mapped.tests = [...new Set([...mapped.tests, ...fallbackTests])].sort();
+        const origins = [...new Set([...(mapped.origins ?? (mapped.via ? [mapped.via] : [])), "graph" as const])];
+        if (origins.length > 1) mapped.origins = origins;
+      } else {
+        mappedTests.push({ source: file.path, tests: fallbackTests, via: "graph" });
+      }
+      for (const test of fallbackTests) {
+        mappingEvidence.push({ source: file.path, test, via: "graph", precision: "heuristic", origin: "dynamic-fallback", freshness: "unknown", inputHash: dynamicGraph.inputHash });
+      }
+      vias.push("graph");
+      if (file.status !== "deleted" && isSourceFile(file.path, plugins)) {
+        const index = unmappedSources.indexOf(file.path);
+        if (index >= 0) unmappedSources.splice(index, 1);
+        delete unmappedReasons[file.path];
+      }
+    }
+  }
+
+  const { mappingStrategy, mappingFallbacks } = pickMappingStrategy(vias);
 
   return {
     changedFiles,
@@ -111,6 +197,9 @@ export function buildImpact(
     languages: collectLanguages(visible.map((f) => f.path), plugins),
     mappingStrategy,
     ...(mappingFallbacks ? { mappingFallbacks } : {}),
+    ...(mappingEvidence.length ? { mappingEvidence } : {}),
+    ...(Object.keys(unmappedReasons).length ? { unmappedReasons } : {}),
+    ...((graph?.diagnostics?.length || options?.baseGraph?.diagnostics?.length) ? { mappingDiagnostics: [...(graph?.diagnostics ?? []), ...(options?.baseGraph?.diagnostics ?? [])] } : {}),
   };
 }
 
@@ -144,8 +233,8 @@ export function collectGaps(
     const auth = classifyPath(source) === "auth-crypto";
     gaps.push({
       id: `gap-unmapped-${source}`,
-      kind: "unmapped-test",
-      message: `No nearby test mapped for ${source}`,
+      kind: isSourceFile(source, plugins) ? "unmapped-test" : "unsupported-language",
+      message: `${impact.unmappedReasons?.[source] ?? "No nearby test mapped"}: ${source}`,
       risk: auth ? "high" : "medium",
       files: [source],
     });
@@ -182,12 +271,11 @@ export function collectGaps(
   }
 
   const unsupported = impact.changedFiles
-    .filter((f) => f.status !== "deleted")
+    .filter((f) => !impact.unmappedSources.includes(f.path))
     .filter((f) => isSourceFile(f.path, plugins) === false)
-    .filter((f) => !f.highRisk)
     .filter((f) => {
       const lang = languageOf(f.path, plugins);
-      return lang === "other" && /\.(rb|php|cs|kt|swift)$/i.test(f.path);
+      return lang === "other" && unsupportedMappingReason(f.path) !== null;
     })
     .map((f) => f.path);
 
@@ -195,7 +283,7 @@ export function collectGaps(
     gaps.push({
       id: "gap-unsupported-language",
       kind: "unsupported-language",
-      message: "Changed sources are outside built-in language plugins (js/ts, python, go, rust, java)",
+      message: "Changed sources, resources or configuration are outside configured dependency mapping; affected tests cannot be established",
       risk: "low",
       files: unsupported,
     });
@@ -240,7 +328,7 @@ export function buildEvidence(input: {
   ]);
 
   return {
-    schemaVersion: SCHEMA_VERSION,
+    schemaVersion: COMPAT_SCHEMA_VERSION,
     generatedAt: input.generatedAt ?? new Date().toISOString(),
     toolVersion: TOOL_VERSION,
     repo: { cwd: input.cwd, root: input.root },
@@ -260,5 +348,7 @@ export function buildEvidence(input: {
     },
     contract: input.contract ?? emptyContractResult(),
     baselineComparison: input.baselineComparison ?? null,
+    ...(input.impact.mappingEvidence ? { mappingEvidence: input.impact.mappingEvidence } : {}),
+    ...(input.impact.mappingDiagnostics ? { diagnostics: input.impact.mappingDiagnostics } : {}),
   };
 }

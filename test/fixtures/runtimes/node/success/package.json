@@ -1,0 +1,8 @@
+{
+  "name": "patchprove-runtime-fixture",
+  "private": true,
+  "type": "module",
+  "devDependencies": {
+    "vitest": "^3.0.8"
+  }
+}

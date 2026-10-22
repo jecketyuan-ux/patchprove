@@ -1,0 +1,410 @@
+{
+  "schemaVersion": 1,
+  "description": "Local minimal executable fixtures; not a real-world accuracy corpus.",
+  "cases": [
+    {
+      "id": "node-success",
+      "engine": "node",
+      "scenario": "success",
+      "path": "node/success",
+      "tests": [
+        "src/value.test.js"
+      ],
+      "sources": [
+        "src/value.js"
+      ],
+      "expected": "passed"
+    },
+    {
+      "id": "node-failure",
+      "engine": "node",
+      "scenario": "failure",
+      "path": "node/failure",
+      "tests": [
+        "src/value.test.js"
+      ],
+      "sources": [
+        "src/value.js"
+      ],
+      "expected": "failed"
+    },
+    {
+      "id": "node-zero",
+      "engine": "node",
+      "scenario": "zero",
+      "path": "node/zero",
+      "tests": [
+        "src/value.test.js"
+      ],
+      "sources": [
+        "src/value.js"
+      ],
+      "expected": "failed"
+    },
+    {
+      "id": "node-multimodule",
+      "engine": "node",
+      "scenario": "multimodule",
+      "path": "node/multimodule",
+      "tests": [
+        "alpha/src/value.test.js",
+        "beta/src/value.test.js"
+      ],
+      "sources": [
+        "alpha/src/value.js",
+        "beta/src/value.js"
+      ],
+      "expected": "passed"
+    },
+    {
+      "id": "node-missing",
+      "engine": "node",
+      "scenario": "missing",
+      "path": "node/missing",
+      "tests": [
+        "src/value.test.js"
+      ],
+      "sources": [
+        "src/value.js"
+      ],
+      "expected": "skipped"
+    },
+    {
+      "id": "python-success",
+      "engine": "python",
+      "scenario": "success",
+      "path": "python/success",
+      "tests": [
+        "test_value.py"
+      ],
+      "sources": [
+        "value.py"
+      ],
+      "expected": "passed"
+    },
+    {
+      "id": "python-failure",
+      "engine": "python",
+      "scenario": "failure",
+      "path": "python/failure",
+      "tests": [
+        "test_value.py"
+      ],
+      "sources": [
+        "value.py"
+      ],
+      "expected": "failed"
+    },
+    {
+      "id": "python-zero",
+      "engine": "python",
+      "scenario": "zero",
+      "path": "python/zero",
+      "tests": [
+        "test_value.py"
+      ],
+      "sources": [
+        "value.py"
+      ],
+      "expected": "failed"
+    },
+    {
+      "id": "python-multimodule",
+      "engine": "python",
+      "scenario": "multimodule",
+      "path": "python/multimodule",
+      "tests": [
+        "alpha/test_value.py",
+        "beta/test_value.py"
+      ],
+      "sources": [
+        "alpha/value.py",
+        "beta/value.py"
+      ],
+      "expected": "passed"
+    },
+    {
+      "id": "python-missing",
+      "engine": "python",
+      "scenario": "missing",
+      "path": "python/missing",
+      "tests": [
+        "test_value.py"
+      ],
+      "sources": [
+        "value.py"
+      ],
+      "expected": "skipped"
+    },
+    {
+      "id": "go-success",
+      "engine": "go",
+      "scenario": "success",
+      "path": "go/success",
+      "tests": [
+        "value_test.go"
+      ],
+      "sources": [
+        "value.go"
+      ],
+      "expected": "passed"
+    },
+    {
+      "id": "go-failure",
+      "engine": "go",
+      "scenario": "failure",
+      "path": "go/failure",
+      "tests": [
+        "value_test.go"
+      ],
+      "sources": [
+        "value.go"
+      ],
+      "expected": "failed"
+    },
+    {
+      "id": "go-zero",
+      "engine": "go",
+      "scenario": "zero",
+      "path": "go/zero",
+      "tests": [
+        "value_test.go"
+      ],
+      "sources": [
+        "value.go"
+      ],
+      "expected": "skipped"
+    },
+    {
+      "id": "go-multimodule",
+      "engine": "go",
+      "scenario": "multimodule",
+      "path": "go/multimodule",
+      "tests": [
+        "alpha/value_test.go",
+        "beta/value_test.go"
+      ],
+      "sources": [
+        "alpha/value.go",
+        "beta/value.go"
+      ],
+      "expected": "passed"
+    },
+    {
+      "id": "go-missing",
+      "engine": "go",
+      "scenario": "missing",
+      "path": "go/missing",
+      "tests": [
+        "value_test.go"
+      ],
+      "sources": [
+        "value.go"
+      ],
+      "expected": "skipped"
+    },
+    {
+      "id": "cargo-success",
+      "engine": "cargo",
+      "scenario": "success",
+      "path": "cargo/success",
+      "tests": [
+        "tests/value.rs"
+      ],
+      "sources": [
+        "src/lib.rs"
+      ],
+      "expected": "passed"
+    },
+    {
+      "id": "cargo-failure",
+      "engine": "cargo",
+      "scenario": "failure",
+      "path": "cargo/failure",
+      "tests": [
+        "tests/value.rs"
+      ],
+      "sources": [
+        "src/lib.rs"
+      ],
+      "expected": "failed"
+    },
+    {
+      "id": "cargo-zero",
+      "engine": "cargo",
+      "scenario": "zero",
+      "path": "cargo/zero",
+      "tests": [
+        "tests/value.rs"
+      ],
+      "sources": [
+        "src/lib.rs"
+      ],
+      "expected": "skipped"
+    },
+    {
+      "id": "cargo-multimodule",
+      "engine": "cargo",
+      "scenario": "multimodule",
+      "path": "cargo/multimodule",
+      "tests": [
+        "alpha/tests/value.rs",
+        "beta/tests/value.rs"
+      ],
+      "sources": [
+        "alpha/src/lib.rs",
+        "beta/src/lib.rs"
+      ],
+      "expected": "passed"
+    },
+    {
+      "id": "cargo-missing",
+      "engine": "cargo",
+      "scenario": "missing",
+      "path": "cargo/missing",
+      "tests": [
+        "tests/value.rs"
+      ],
+      "sources": [
+        "src/lib.rs"
+      ],
+      "expected": "skipped"
+    },
+    {
+      "id": "maven-success",
+      "engine": "maven",
+      "scenario": "success",
+      "path": "maven/success",
+      "tests": [
+        "src/test/java/fixture/ValueTest.java"
+      ],
+      "sources": [
+        "src/main/java/fixture/Value.java"
+      ],
+      "expected": "passed"
+    },
+    {
+      "id": "maven-failure",
+      "engine": "maven",
+      "scenario": "failure",
+      "path": "maven/failure",
+      "tests": [
+        "src/test/java/fixture/ValueTest.java"
+      ],
+      "sources": [
+        "src/main/java/fixture/Value.java"
+      ],
+      "expected": "failed"
+    },
+    {
+      "id": "maven-zero",
+      "engine": "maven",
+      "scenario": "zero",
+      "path": "maven/zero",
+      "tests": [
+        "src/test/java/fixture/ValueTest.java"
+      ],
+      "sources": [
+        "src/main/java/fixture/Value.java"
+      ],
+      "expected": "skipped",
+      "fullExpected": "skipped"
+    },
+    {
+      "id": "maven-multimodule",
+      "engine": "maven",
+      "scenario": "multimodule",
+      "path": "maven/multimodule",
+      "tests": [
+        "alpha/src/test/java/fixture/ValueTest.java",
+        "beta/src/test/java/fixture/ValueTest.java"
+      ],
+      "sources": [
+        "alpha/src/main/java/fixture/Value.java",
+        "beta/src/main/java/fixture/Value.java"
+      ],
+      "expected": "passed"
+    },
+    {
+      "id": "maven-missing",
+      "engine": "maven",
+      "scenario": "missing",
+      "path": "maven/missing",
+      "tests": [
+        "src/test/java/fixture/ValueTest.java"
+      ],
+      "sources": [
+        "src/main/java/fixture/Value.java"
+      ],
+      "expected": "skipped"
+    },
+    {
+      "id": "gradle-success",
+      "engine": "gradle",
+      "scenario": "success",
+      "path": "gradle/success",
+      "tests": [
+        "src/test/java/fixture/ValueTest.java"
+      ],
+      "sources": [
+        "src/main/java/fixture/Value.java"
+      ],
+      "expected": "passed"
+    },
+    {
+      "id": "gradle-failure",
+      "engine": "gradle",
+      "scenario": "failure",
+      "path": "gradle/failure",
+      "tests": [
+        "src/test/java/fixture/ValueTest.java"
+      ],
+      "sources": [
+        "src/main/java/fixture/Value.java"
+      ],
+      "expected": "failed"
+    },
+    {
+      "id": "gradle-zero",
+      "engine": "gradle",
+      "scenario": "zero",
+      "path": "gradle/zero",
+      "tests": [
+        "src/test/java/fixture/ValueTest.java"
+      ],
+      "sources": [
+        "src/main/java/fixture/Value.java"
+      ],
+      "expected": "failed",
+      "fullExpected": "skipped"
+    },
+    {
+      "id": "gradle-multimodule",
+      "engine": "gradle",
+      "scenario": "multimodule",
+      "path": "gradle/multimodule",
+      "tests": [
+        "alpha/src/test/java/fixture/ValueTest.java",
+        "beta/src/test/java/fixture/ValueTest.java"
+      ],
+      "sources": [
+        "alpha/src/main/java/fixture/Value.java",
+        "beta/src/main/java/fixture/Value.java"
+      ],
+      "expected": "passed"
+    },
+    {
+      "id": "gradle-missing",
+      "engine": "gradle",
+      "scenario": "missing",
+      "path": "gradle/missing",
+      "tests": [
+        "src/test/java/fixture/ValueTest.java"
+      ],
+      "sources": [
+        "src/main/java/fixture/Value.java"
+      ],
+      "expected": "skipped"
+    }
+  ]
+}

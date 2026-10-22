@@ -1,7 +1,11 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { isOpenGap } from "./accept.js";
 import { riskRank } from "./risk.js";
+import { gapFingerprint, findingFingerprint } from "./fingerprint.js";
+import { validateEvidence } from "./validation.js";
+import { createHash } from "node:crypto";
+import { writeJsonAtomic } from "./artifacts.js";
 import type {
   BaselineComparison,
   BaselineItemRef,
@@ -13,13 +17,14 @@ import type {
 
 export const DEFAULT_BASELINE_REL = ".patchprove/baseline.json";
 
-function gapRef(gap: Pick<Gap, "id" | "kind" | "message" | "risk" | "files">): BaselineItemRef {
+function gapRef(gap: Gap): BaselineItemRef {
   return {
     id: gap.id,
     kind: gap.kind,
     message: gap.message,
     risk: gap.risk,
     ...(gap.files ? { files: gap.files } : {}),
+    fingerprint: gap.fingerprint ?? gapFingerprint(gap),
   };
 }
 
@@ -30,12 +35,52 @@ function findingRef(finding: Finding): BaselineItemRef {
     message: finding.message,
     risk: finding.risk,
     ...(finding.path ? { path: finding.path } : {}),
+    fingerprint: finding.fingerprint ?? findingFingerprint(finding),
   };
 }
 
-function keyOf(item: { id: string; kind: string; path?: string; files?: string[] }): string {
-  if (item.id) return item.id;
-  return `${item.kind}:${item.path ?? (item.files ?? []).join(",")}`;
+function changed(a: BaselineItemRef, b: BaselineItemRef): boolean {
+  return a.risk !== b.risk || a.path !== b.path ||
+    JSON.stringify([...(a.files ?? [])].sort()) !== JSON.stringify([...(b.files ?? [])].sort());
+}
+
+function compareItems(current: BaselineItemRef[], baseline: BaselineItemRef[], aggregate = false) {
+  const consumed = new Set<number>();
+  const added: BaselineItemRef[] = [];
+  const updated: BaselineItemRef[] = [];
+  for (const item of current) {
+    let index = baseline.findIndex((prior, i) => !consumed.has(i) && prior.kind === item.kind && prior.fingerprint === item.fingerprint);
+    // A stable aggregate gap may change scope; ordinal finding IDs never pair.
+    if (index === -1 && aggregate && item.kind !== "unmapped-test") {
+      index = baseline.findIndex((prior, i) => !consumed.has(i) && prior.kind === item.kind && prior.id === item.id);
+    }
+    if (index === -1) added.push(item);
+    else {
+      consumed.add(index);
+      if (changed(item, baseline[index]!)) updated.push(item);
+    }
+  }
+  return { added, updated, resolved: baseline.filter((_, i) => !consumed.has(i)) };
+}
+
+function compatibility(current: Evidence, baseline: Evidence) {
+  const reasons: string[] = [];
+  if (current.repo.root !== baseline.repo.root) reasons.push("Repository roots differ");
+  if (!current.snapshot) reasons.push("Current evidence lacks snapshot provenance");
+  if (!baseline.snapshot) reasons.push("Baseline lacks snapshot provenance");
+  else if (!baseline.snapshot.consistent) reasons.push("Baseline snapshot was inconsistent");
+  else if (current.snapshot && (current.snapshot.algorithm !== baseline.snapshot.algorithm ||
+    current.snapshot.version !== baseline.snapshot.version || current.snapshot.mode !== baseline.snapshot.mode)) {
+    reasons.push("Snapshot algorithms, versions, or modes differ");
+  }
+  if (!current.effectivePolicy) reasons.push("Current evidence lacks effective policy provenance");
+  if (!baseline.effectivePolicy) reasons.push("Baseline lacks effective policy provenance");
+  else if (current.effectivePolicy && current.effectivePolicy.hash !== baseline.effectivePolicy.hash) reasons.push("Effective policies differ");
+  return {
+    compatible: reasons.length === 0,
+    reasons,
+    contentHash: `sha256:${createHash("sha256").update(JSON.stringify(baseline)).digest("hex")}`,
+  };
 }
 
 export function findBaselinePath(
@@ -56,6 +101,7 @@ export function findBaselinePath(
       ? options.fromConfig
       : path.resolve(root, options.fromConfig);
     if (existsSync(resolved)) return resolved;
+    throw new Error(`Configured baseline evidence not found: ${resolved}`);
   }
   const fallback = path.join(root, DEFAULT_BASELINE_REL);
   return existsSync(fallback) ? fallback : null;
@@ -67,54 +113,46 @@ export function compareToBaseline(
   baselinePath: string,
   failOnNewGaps?: FailOnLevel,
 ): BaselineComparison {
-  const currentGaps = current.gaps.filter(isOpenGap);
-  const baselineGaps = baseline.gaps.filter(isOpenGap);
-  const currentGapKeys = new Set(currentGaps.map(keyOf));
-  const baselineGapKeys = new Set(baselineGaps.map(keyOf));
-
-  const newGaps = currentGaps.filter((g) => !baselineGapKeys.has(keyOf(g))).map(gapRef);
-  const resolvedGaps = baselineGaps.filter((g) => !currentGapKeys.has(keyOf(g))).map(gapRef);
-
-  const currentFindingKeys = new Set(current.findings.map(keyOf));
-  const baselineFindingKeys = new Set(baseline.findings.map(keyOf));
-  const newFindings = current.findings.filter((f) => !baselineFindingKeys.has(keyOf(f))).map(findingRef);
-  const resolvedFindings = baseline.findings.filter((f) => !currentFindingKeys.has(keyOf(f))).map(findingRef);
+  const gaps = compareItems(current.gaps.filter(isOpenGap).map(gapRef), baseline.gaps.filter(isOpenGap).map(gapRef), true);
+  const findings = compareItems(current.findings.map(findingRef), baseline.findings.map(findingRef));
 
   return {
     baselinePath,
-    newGaps,
-    resolvedGaps,
-    newFindings,
-    resolvedFindings,
-    regression: newGaps.length > 0,
+    newGaps: gaps.added,
+    resolvedGaps: gaps.resolved,
+    newFindings: findings.added,
+    resolvedFindings: findings.resolved,
+    changedGaps: gaps.updated,
+    changedFindings: findings.updated,
+    compatibility: compatibility(current, baseline),
+    regression: gaps.added.length > 0 || gaps.updated.length > 0,
     ...(failOnNewGaps ? { failOnNewGaps } : {}),
   };
 }
 
-export function loadBaselineEvidence(filePath: string): Evidence {
+export function loadBaselineInput(filePath: string): { evidence: Evidence; identity: { path: string; hash: string } } {
   const resolved = path.resolve(filePath);
   let raw: unknown;
+  let text: string;
   try {
-    raw = JSON.parse(readFileSync(resolved, "utf8"));
+    text = readFileSync(resolved, "utf8");
+    raw = JSON.parse(text);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(`Cannot read baseline evidence JSON at ${resolved}: ${message}`);
   }
-  if (!raw || typeof raw !== "object") {
-    throw new Error(`Not a patchprove evidence JSON: ${resolved}`);
-  }
-  const rec = raw as Record<string, unknown>;
-  if (!Array.isArray(rec.gaps) || rec.summary === undefined || rec.impact === undefined) {
-    throw new Error(`Not a patchprove evidence JSON: ${resolved}`);
-  }
-  return raw as Evidence;
+  return {
+    evidence: validateEvidence(raw, resolved),
+    identity: { path: resolved, hash: `sha256:${createHash("sha256").update(JSON.stringify(text)).digest("hex")}` },
+  };
+}
+
+export function loadBaselineEvidence(filePath: string): Evidence {
+  return loadBaselineInput(filePath).evidence;
 }
 
 export function writeBaseline(filePath: string, evidence: Evidence): string {
-  const resolved = path.resolve(filePath);
-  mkdirSync(path.dirname(resolved), { recursive: true });
-  writeFileSync(resolved, `${JSON.stringify(evidence, null, 2)}\n`, "utf8");
-  return resolved;
+  return writeJsonAtomic(filePath, evidence);
 }
 
 export function newGapsMeetFailOn(

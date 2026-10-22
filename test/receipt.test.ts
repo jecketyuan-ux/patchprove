@@ -274,8 +274,9 @@ describe("receipt path + two-run hash", () => {
       receipt: true,
       argv: ["run"],
     });
-    expect(code1).toBe(0);
-    expect(code2).toBe(0);
+    // Strict v2 correctly reports the unmapped source as incomplete.
+    expect(code1).toBe(1);
+    expect(code2).toBe(1);
     const first = JSON.parse(readFileSync(firstOut, "utf8")) as Evidence;
     const second = JSON.parse(readFileSync(secondOut, "utf8")) as Evidence;
     expect(first.receipt?.contentHash).toBe(second.receipt?.contentHash);

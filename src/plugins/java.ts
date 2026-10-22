@@ -301,7 +301,7 @@ export const javaPlugin: LanguagePlugin = {
       };
     }
     if (tools.mavenBin) {
-      const args = ["-q"];
+      const args: string[] = [];
       const modules = mavenModuleList(tests, projects.length ? projects : tests.map((t) => {
         const info = javaClassFromPath(t);
         return info.moduleDir

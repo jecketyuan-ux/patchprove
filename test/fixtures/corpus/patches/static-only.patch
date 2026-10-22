@@ -1,0 +1,7 @@
+diff --git a/src/spare.js b/src/spare.js
+index 7b79add..44ef1de 100644
+--- a/src/spare.js
++++ b/src/spare.js
+@@ -1 +1 @@
+-export const spare = 4;
++export const spare = 5;

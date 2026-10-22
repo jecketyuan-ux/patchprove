@@ -1,4 +1,4 @@
-export { SCHEMA_VERSION, TOOL_VERSION } from "./types.js";
+export { SCHEMA_VERSION, COMPAT_SCHEMA_VERSION, TOOL_VERSION } from "./types.js";
 export type {
   AcceptGapRule,
   BaselineComparison,
@@ -26,6 +26,13 @@ export type {
   RiskLevel,
   RunOptions,
   SummaryRisk,
+  SnapshotIdentity,
+  ExecutionLimits,
+  ExecutionRecord,
+  VerificationPlanItem,
+  VerificationDecision,
+  Diagnostic,
+  EffectivePolicy,
 } from "./types.js";
 export { emptyContractResult, emptyDetectedTools, RECEIPT_SCHEMA_VERSION } from "./types.js";
 export {
@@ -57,7 +64,7 @@ export {
   toChangedFile,
 } from "./evidence.js";
 export { formatHumanReport, formatMarkdownReport, formatShortSummary } from "./report.js";
-export { analyze, executeRun, failOnOutcomeOf, render, resolveReceiptPath, shouldFailRun, writeEvidence } from "./run.js";
+export { analyze, analyzeAndWrite, produceArtifacts, executeRun, failOnOutcomeOf, render, resolveReceiptPath, shouldFailRun, writeEvidence } from "./run.js";
 export {
   listGaps,
   provePatch,
@@ -104,6 +111,8 @@ export {
   findPreviousReceiptHash,
   hashCanonical,
   hashEvidence,
+  hashReceiptPayload,
+  publicKeyFingerprint,
   isReceiptShape,
   parseSigningKey,
   readReceiptFile,
@@ -113,7 +122,7 @@ export {
   verifySignature,
   writeReceipt,
 } from "./receipt.js";
-export type { BuildReceiptInput, SigningMaterial, VerifyReceiptResult } from "./receipt.js";
+export type { BuildReceiptInput, SigningMaterial, VerifyReceiptResult, ReceiptVerificationPolicy } from "./receipt.js";
 export {
   builtinPlugins,
   pluginForPath,
@@ -134,5 +143,17 @@ export {
   compareToBaseline,
   DEFAULT_BASELINE_REL,
   findBaselinePath,
+  loadBaselineInput,
+  loadBaselineEvidence,
   writeBaseline,
 } from "./baseline.js";
+export { evaluateVerification } from "./decision.js";
+export { validateEvidence, validateReceipt } from "./validation.js";
+export { findingFingerprint, gapFingerprint } from "./fingerprint.js";
+export { captureSnapshotIdentity, createExecutionSnapshot } from "./snapshot.js";
+export type { SnapshotOptions } from "./snapshot.js";
+export { writeArtifactSet, verifyArtifactSet, writeJsonAtomic, writeTextAtomic } from "./artifacts.js";
+export { loadAdapterEvidence, adapterInputHash, verifyCosignBundle } from "./adapters.js";
+export type { AdapterKind, AdapterTaskEvidence, AdapterEvidence } from "./adapters.js";
+export type { EvidenceWire, EvidenceV2Wire, EvidenceV2RequiredFields } from "./generated/evidence.js";
+export type { ReceiptWire, ReceiptV2Wire, ReceiptV2RequiredFields } from "./generated/receipt.js";

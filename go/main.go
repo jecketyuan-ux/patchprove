@@ -12,7 +12,7 @@ import (
 func main() {
 	node, err := exec.LookPath("node")
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "patchprove: node not found on PATH (Node 20+ is required)\n")
+		fmt.Fprintf(os.Stderr, "patchprove: node not found on PATH (Node 22+ is required)\n")
 		os.Exit(2)
 	}
 	cli, err := findCLI()

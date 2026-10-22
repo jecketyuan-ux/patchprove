@@ -1,4 +1,4 @@
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { mkdirSync, mkdtempSync, realpathSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
@@ -22,6 +22,21 @@ function file(partial: Partial<DiffFile> & { path: string }): DiffFile {
 }
 
 describe("coverage map parsing", () => {
+  it("resolves absolute source and test paths through a directory alias", () => {
+    const root = realpathSync.native(mkdtempSync(path.join(tmpdir(), "patchprove-coverage-alias-")));
+    try {
+      const repository = path.join(root, "repository");
+      const alias = path.join(root, "alias");
+      mkdirSync(path.join(repository, "src"), { recursive: true });
+      mkdirSync(path.join(repository, "test"));
+      writeFileSync(path.join(repository, "src/value.ts"), "export const value = 1;\n");
+      writeFileSync(path.join(repository, "test/value.test.ts"), "export const passed = true;\n");
+      symlinkSync(repository, alias, process.platform === "win32" ? "junction" : "dir");
+      const index = parseCoverageText(JSON.stringify({ [path.join(alias, "src/value.ts")]: [path.join(alias, "test/value.test.ts")] }), repository, "json");
+      expect(index?.sourceToTests.get("src/value.ts")).toEqual(["test/value.test.ts"]);
+    } finally { rmSync(root, { recursive: true, force: true }); }
+  });
+
   it("parses Istanbul/V8 coverage-final.json", () => {
     const root = "/repo";
     const json = JSON.stringify({

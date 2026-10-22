@@ -1,0 +1,117 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-22T12:31:51.199Z",
+  "platform": "linux",
+  "architecture": "x64",
+  "node": "v22.23.4",
+  "executable": "/tmp/patchprove-node22-validation/node-v22.23.4-linux-x64/bin/node",
+  "distribution": {
+    "url": "https://nodejs.org/dist/latest-v22.x/node-v22.23.4-linux-x64.tar.xz",
+    "checksumSource": "https://nodejs.org/dist/latest-v22.x/SHASUMS256.txt",
+    "sha256": "1805bcd35e6815559bd2eb97db438d3fdb0eb3a5e6a977b7c1badca76337e9ce",
+    "verified": true,
+    "immutableUrl": "https://nodejs.org/dist/v22.23.4/node-v22.23.4-linux-x64.tar.xz",
+    "immutableChecksumSource": "https://nodejs.org/dist/v22.23.4/SHASUMS256.txt"
+  },
+  "checks": [
+    {
+      "name": "build",
+      "command": [
+        "/tmp/patchprove-node22-validation/node-v22.23.4-linux-x64/bin/node",
+        "/tmp/patchprove-node22-validation/node-v22.23.4-linux-x64/lib/node_modules/npm/bin/npm-cli.js",
+        "run",
+        "build"
+      ],
+      "cwd": "/workspace/patchprove",
+      "exitCode": 0,
+      "durationMs": 2657,
+      "stdoutLog": "/tmp/patchprove-node22-validation/build.stdout.log",
+      "stderrLog": "/tmp/patchprove-node22-validation/build.stderr.log",
+      "outputHash": "ecaa27ab530b801f025e3c966bd5f5b7c8898ef34d6665a82adc92ada365a9a2"
+    },
+    {
+      "name": "typecheck-test",
+      "command": [
+        "/tmp/patchprove-node22-validation/node-v22.23.4-linux-x64/bin/node",
+        "/tmp/patchprove-node22-validation/node-v22.23.4-linux-x64/lib/node_modules/npm/bin/npm-cli.js",
+        "run",
+        "typecheck:test"
+      ],
+      "cwd": "/workspace/patchprove",
+      "exitCode": 0,
+      "durationMs": 3365,
+      "stdoutLog": "/tmp/patchprove-node22-validation/typecheck-test.stdout.log",
+      "stderrLog": "/tmp/patchprove-node22-validation/typecheck-test.stderr.log",
+      "outputHash": "ec6475fc8287e5c6fe04e9a6cf1fabbcc382a4fa08fb5c54ad888c5c989762f5"
+    },
+    {
+      "name": "tests",
+      "command": [
+        "/tmp/patchprove-node22-validation/node-v22.23.4-linux-x64/bin/node",
+        "/tmp/patchprove-node22-validation/node-v22.23.4-linux-x64/lib/node_modules/npm/bin/npm-cli.js",
+        "test",
+        "--",
+        "--maxWorkers=2",
+        "--reporter=json",
+        "--outputFile=/tmp/patchprove-node22-validation/vitest-results.json"
+      ],
+      "cwd": "/workspace/patchprove",
+      "exitCode": 0,
+      "durationMs": 25336,
+      "stdoutLog": "/tmp/patchprove-node22-validation/tests.stdout.log",
+      "stderrLog": "/tmp/patchprove-node22-validation/tests.stderr.log",
+      "outputHash": "8d4bb8e2bb689713ed9354784939e8d84e9517e0a2e429e1c4b120442a92b8a5"
+    },
+    {
+      "name": "package",
+      "command": [
+        "/tmp/patchprove-node22-validation/node-v22.23.4-linux-x64/bin/node",
+        "/tmp/patchprove-node22-validation/node-v22.23.4-linux-x64/lib/node_modules/npm/bin/npm-cli.js",
+        "run",
+        "test:package"
+      ],
+      "cwd": "/workspace/patchprove",
+      "exitCode": 0,
+      "durationMs": 9047,
+      "stdoutLog": "/tmp/patchprove-node22-validation/package.stdout.log",
+      "stderrLog": "/tmp/patchprove-node22-validation/package.stderr.log",
+      "outputHash": "ee8cb5bfafc6812dee6018cd82c1d869b2d9e2c61900d35ad5b2f3aa43e1ba2e"
+    }
+  ],
+  "limitations": [
+    "Linux only; this does not establish macOS or Windows runtime behavior.",
+    "Declared dependency installation is allowed for the fresh consumer tarball smoke. Project node_modules and package lock are reused unchanged."
+  ],
+  "tests": {
+    "files": 46,
+    "passedFiles": 46,
+    "failedFiles": 0,
+    "total": 414,
+    "passed": 414,
+    "failed": 0,
+    "pending": 0,
+    "success": true,
+    "suites": 126
+  },
+  "package": {
+    "schemaVersion": 1,
+    "node": "v22.23.4",
+    "platform": "linux",
+    "install": "Local project tarball in a fresh consumer; declared dependencies downloaded with install scripts disabled",
+    "runtimeNetwork": "No application network calls are required for CLI and stdio MCP checks",
+    "mcp": "stdio initialization, tools/list, list_gaps, prove_patch",
+    "publisher": "trusted rendering accepts matching receipt/head and rejects wrong head or tampered evidence; no publication performed",
+    "package": {
+      "filename": "patchprove-2.0.0.tgz",
+      "integrity": "sha512-31rBoI0t4ZVks1icWkhI02EFMh1+HSMBHIZrWhd/t6m2sWEVvOD3QkJgAhQVmH/aCtSq7u4yYJMcCSfELSOD7Q==",
+      "shasum": "6efc72f83eafd141071b8622c003b0b0cf3e79b7",
+      "version": "2.0.0"
+    },
+    "cli": "version, help, strict protocol-2 evidence, receipt verification, public module import"
+  },
+  "passed": true,
+  "npm": "10.9.9",
+  "projectLockSha256Before": "7b5a81bc70a1a592d753258d91c711ab3c0aabdc955053c47d2839c58ebde064",
+  "projectLockSha256After": "7b5a81bc70a1a592d753258d91c711ab3c0aabdc955053c47d2839c58ebde064",
+  "projectLockUnchanged": true
+}

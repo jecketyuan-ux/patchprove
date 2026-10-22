@@ -1,8 +1,7 @@
 #!/usr/bin/env node
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js";
-import path from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 import { z } from "zod";
 import {
   LIST_GAPS_DESCRIPTION,
@@ -12,8 +11,8 @@ import {
   provePatch,
   provePatchToMcpContent,
 } from "./mcp-tools.js";
-import { isCheckId } from "./config.js";
-import { TOOL_VERSION, type CheckId, type FailOnLevel } from "./types.js";
+import { TOOL_VERSION } from "./types.js";
+import { canonicalPath } from "./paths.js";
 
 const failOnSchema = z.enum(["high", "critical", "none"]).optional();
 const acceptSchema = z.array(z.string()).optional();
@@ -26,6 +25,20 @@ const provePatchShape = {
   accept: acceptSchema.describe("Gap ids or path patterns to accept (added to config acceptGaps)"),
   config: z.string().optional().describe("Explicit .patchprove.yml / .yaml path"),
   out: z.string().optional().describe("If set, write evidence.json to this path"),
+  spec: z.string().optional(),
+  baseline: z.string().optional(),
+  failOnNewGaps: failOnSchema,
+  protocol: z.union([z.literal(1), z.literal(2)]).optional(),
+  strict: z.boolean().optional(),
+  isolate: z.boolean().optional(),
+  timeoutMs: z.number().int().positive().optional(),
+  maxOutputBytes: z.number().int().positive().optional(),
+  allowPlugins: z.boolean().optional(),
+  strictConfig: z.boolean().optional(),
+  adapterInputs: z.array(z.object({ adapter: z.enum(["nx", "turbo", "testmon"]), path: z.string() })).optional(),
+  sarif: z.string().optional(),
+  receipt: z.union([z.boolean(), z.string()]).optional(),
+  sign: z.boolean().optional(),
   ignore: z.array(z.string()).optional().describe("Path globs to exclude"),
   disableGate: z
     .array(z.enum(["typecheck", "lint", "tests", "secrets"]))
@@ -58,17 +71,7 @@ export function createMcpServer(): McpServer {
     },
     async (args) => {
       try {
-        const result = await provePatch({
-          cwd: args.cwd,
-          base: args.base,
-          head: args.head,
-          failOn: args.failOn as FailOnLevel | "none" | undefined,
-          accept: args.accept,
-          config: args.config,
-          out: args.out,
-          ignore: args.ignore,
-          disableGate: sanitizeGates(args.disableGate),
-        });
+        const result = await provePatch(args);
         return { content: [{ type: "text", text: provePatchToMcpContent(result) }] };
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
@@ -89,18 +92,7 @@ export function createMcpServer(): McpServer {
     },
     async (args) => {
       try {
-        const result = await listGaps({
-          cwd: args.cwd,
-          base: args.base,
-          head: args.head,
-          failOn: args.failOn as FailOnLevel | "none" | undefined,
-          accept: args.accept,
-          config: args.config,
-          out: args.out,
-          ignore: args.ignore,
-          disableGate: sanitizeGates(args.disableGate),
-          evidencePath: args.evidencePath,
-        });
+        const result = await listGaps(args);
         return { content: [{ type: "text", text: listGapsToMcpContent(result) }] };
       } catch (err) {
         const message = err instanceof Error ? err.message : String(err);
@@ -115,15 +107,6 @@ export function createMcpServer(): McpServer {
   return server;
 }
 
-function sanitizeGates(ids: string[] | undefined): CheckId[] | undefined {
-  if (!ids) return undefined;
-  const bad = ids.filter((id) => !isCheckId(id));
-  if (bad.length > 0) {
-    throw new Error(`disableGate must be typecheck, lint, tests, or secrets (got ${bad.join(", ")})`);
-  }
-  return ids as CheckId[];
-}
-
 export async function startMcpServer(): Promise<void> {
   const server = createMcpServer();
   const transport = new StdioServerTransport();
@@ -134,7 +117,7 @@ function isDirectRun(): boolean {
   const entry = process.argv[1];
   if (!entry) return false;
   try {
-    return import.meta.url === pathToFileURL(path.resolve(entry)).href;
+    return canonicalPath(fileURLToPath(import.meta.url)) === canonicalPath(entry);
   } catch {
     return false;
   }

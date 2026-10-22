@@ -10,6 +10,14 @@ function file(path: string): DiffFile {
 }
 
 describe("SPEC / contract parsing", () => {
+  it.each([false, 42, [], null, {}, { policy: null }, { policy: "sometimes" }])("rejects invalid acceptance policy %j", (value) => {
+    expect(() => parseContractText(`acceptedResidualRisk: ${JSON.stringify(value)}`, "policy.yml")).toThrow(/acceptedResidualRisk/);
+  });
+
+  it("keeps the omitted policy default and accepts shorthand", () => {
+    expect(parseContractText("{}", "inline").acceptedResidualRisk.policy).toBe("allow");
+    expect(parseContractText("acceptedResidualRisk: listed-only", "inline").acceptedResidualRisk.policy).toBe("listed-only");
+  });
   it("parses required gates, max risk, globs, and policy", () => {
     const spec = parseContractText(
       `
@@ -52,6 +60,19 @@ acceptedResidualRisk:
 });
 
 describe("contract evaluation", () => {
+  it("uses the source classification already recorded by external plugins", () => {
+    const custom = buildEvidence({ cwd: "/tmp", root: "/tmp", range: { mode: "working-tree", base: "HEAD", head: null }, impact: {
+      changedFiles: [{ path: "src/a.widget", status: "modified", additions: 1, deletions: 0, highRisk: false, riskKind: null }],
+      unmappedSources: ["src/a.widget"], mappedTests: [], languages: ["other"], mappingStrategy: "naming",
+    }, checks: [], gaps: [], findings: [] });
+    const spec = { ...parseContractText("requiredMappedTests: [src/**]", "inline"), sourcePath: "inline", format: "yaml" as const };
+    expect(evaluateContract(spec, custom).passed).toBe(false);
+    custom.impact.unmappedSources = [];
+    custom.impact.mappedTests = [{ source: "src/a.widget", tests: ["test/a.widget"] }];
+    expect(evaluateContract(spec, custom).passed).toBe(true);
+    custom.impact.mappedTests[0]!.tests = [];
+    expect(evaluateContract(spec, custom).passed).toBe(false);
+  });
   const existing = new Set([
     "src/auth/session.ts",
     "src/auth/session.test.ts",

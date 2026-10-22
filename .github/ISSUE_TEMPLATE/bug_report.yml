@@ -1,0 +1,36 @@
+name: Bug report
+description: Report incorrect selection, execution, evidence, or integration behavior.
+body:
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+      description: Include the affected paths, selected tests, and verification decision.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Minimal reproduction
+      description: Commands and a small repository or patch; include staged, unstaged, and range state.
+    validations:
+      required: true
+  - type: textarea
+    id: environment
+    attributes:
+      label: Environment and versions
+      description: OS, Node, patchprove, Git, runner versions, entry point, protocol, and relevant configuration.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Redacted evidence and receipt verification
+      description: Remove credentials, proprietary code, paths, and sensitive command output. Keep the schema version, decision reasons, plan, and execution statuses. Share a minimal public fixture when possible.
+  - type: checkboxes
+    id: secrets
+    attributes:
+      label: Before submitting
+      options:
+        - label: I removed secrets and sensitive material from the reproduction and attachments.
+          required: true

@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildEvidence } from "../src/evidence.js";
-import { buildHookResponse, hookFailurePayload } from "../src/hook.js";
+import { buildHookResponse, hookFailurePayload, parseHookContext } from "../src/hook.js";
 import type { ProvePatchResult } from "../src/mcp-tools.js";
 import type { Evidence } from "../src/types.js";
 
@@ -21,6 +21,13 @@ function pack(partial: Pick<Evidence, "gaps"> & Partial<Pick<Evidence, "findings
     findings: partial.findings ?? [],
     generatedAt: "2026-09-02T00:00:00.000Z",
   });
+  evidence.snapshot = { algorithm: "sha256", version: 1, mode: "working-tree", base: "HEAD", head: null,
+    mergeBase: null, currentHead: "abc", tree: "abc", contentHash: "sha256:fixture", patchHash: "sha256:patch", dirty: false, consistent: true };
+  evidence.effectivePolicy = { protocol: 2, strict: true, failOn: "high", failOnNewGaps: null,
+    gates: { typecheck: false, lint: false, tests: false, secrets: false }, ignorePaths: [], acceptGaps: [], plugins: [],
+    config: null, spec: null, baseline: null, hash: "sha256:policy" };
+  evidence.executionRecords = [];
+  evidence.verificationPlan = [];
   return {
     evidence,
     failOnMet: false,
@@ -91,6 +98,7 @@ describe("buildHookResponse", () => {
     });
     const cursor = buildHookResponse(result, "cursor", "stop");
     expect(cursor.payload.followup_message).toMatch(/Do not claim done/);
+    expect(cursor.blocked).toBe(false);
   });
 
   it("blocks when fail-on is met even if gaps are empty", () => {
@@ -108,5 +116,19 @@ describe("hookFailurePayload", () => {
   it("surfaces a runtime error as a block / followup", () => {
     expect(hookFailurePayload("claude-code", "boom").decision).toBe("block");
     expect(hookFailurePayload("cursor", "boom").followup_message).toMatch(/boom/);
+  });
+});
+
+
+describe("hook context", () => {
+  it("reads Claude and Cursor repository context and loop guards", () => {
+    expect(parseHookContext({ cwd: "/repo", stop_hook_active: true })).toEqual({ cwd: "/repo", stopHookActive: true, loopCount: 0 });
+    expect(parseHookContext({ workspace_roots: ["/cursor"], loop_count: 3 })).toEqual({ cwd: "/cursor", stopHookActive: false, loopCount: 3 });
+    expect(() => parseHookContext({ cwd: "relative" })).toThrow(/absolute/);
+    expect(() => parseHookContext({ loop_count: "3" })).toThrow(/integer/);
+  });
+
+  it("does not use a Stop block payload for PostToolUse failures", () => {
+    expect(hookFailurePayload("claude-code", "boom", "post")).toMatchObject({ hookSpecificOutput: { hookEventName: "PostToolUse" } });
   });
 });

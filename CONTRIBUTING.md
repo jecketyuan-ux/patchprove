@@ -1,73 +1,29 @@
 # Contributing
 
-Thanks for helping make agent patches more honest before merge.
+Requires Node 22+ and Git. Native language suites also need runners/toolchains; see [validation](docs/validation.md) for actual coverage and skip policy.
 
-## Requirements
-
-- Node.js 20 or 22
-- git
-
-## Setup
-
-```bash
-git clone https://github.com/jecketyuan-ux/patchprove.git
-cd patchprove
-npm install
+```sh
+npm ci
+npm run check:protocol
 npm run build
 npm test
+npm run typecheck:test
+npm run test:runtimes
+npm run test:package
+npm run test:corpus
+npm run pack:check
 node dist/cli.js run --help
+node dist/cli.js init-agent --help
 ```
 
-## What belongs in v0.x
+The working tree is version 2.0.0 and is not a release announcement. Tie changes to a concrete verification invariant: snapshot identity, selection, execution, policy, decision, or artifact integrity. Add meaningful regression cases for changed behavior, including failure and incomplete paths. Mapping fixtures and fake commands must not be labeled native runner or live host validation.
 
-patchprove is an **evidence pack + gap driver**, not a coding agent and not an LLM reviewer.
+Protocol changes must update TypeScript types, published schemas, runtime readers, fixtures, and migration documentation together. Protocol 2 requires snapshot, execution, plan, effective policy, and verification fields. `--protocol 1` emits 1.3 compatibility evidence; historical receipt 1.2 canonicalization must remain unchanged. Consumers tolerate unknown optional fields in supported evidence majors while validating known structure, enums, identities, and summary counts.
 
-Good changes:
+Edit the JSON schemas as the wire protocol source, run `npm run generate:protocol`, and commit the generated modules in `src/generated/`. `npm run check:protocol` detects schema/type drift in CI. Runtime readers derive from the same schemas; type fixtures check compatibility with the domain model and schema-derived v2 required fields.
 
-- Sharper mapping heuristics (still deterministic)
-- Better tool detection / gate commands
-- Schema-compatible evidence fields
-- Action comment quality
+Keep policy resolution centralized and consume the shared decision in every entry point. Preserve literal Git paths and the user's index/checkout. Child tools must not receive signing secrets. Local plugins are executable code and need the documented permission boundary. Artifact tests should cover distinct output paths, partial/mixed outputs, and manifest digests. Signature tests must distinguish integrity, signature validity, and configured signer trust.
 
-Out of scope unless discussed first:
+Update [CHANGELOG.md](CHANGELOG.md) and current docs. Do not rewrite dated audit evidence under `docs/reviews/`. Record checks actually executed and environmental skips; a workflow file or green stub is not a remote-platform result. The repository's lenient dogfood contract checks wiring and reporting, not strict gate soundness.
 
-- LLM-as-primary review
-- Telemetry
-- Vendor API coupling
-- Single-binary rewrite as the default (the Go launcher is experimental and still execs Node)
-
-## Tests
-
-Please add or extend tests when you touch:
-
-- `src/mapping.ts` — fixture-style path cases
-- `src/risk.ts` — path classification and fail-on
-- `src/evidence.ts` / schema — keep `schema/evidence.schema.json` in lockstep
-- CLI flags — help text and exit codes
-- `src/config.ts` — `.patchprove.yml` load + CLI override
-- `src/coverage.ts` — coverage map parse + naming fallback
-- `src/accept.ts` — accepted gaps must not raise summary risk
-- `src/mcp-tools.ts` — `prove_patch` / `list_gaps` handlers (fixtures; no live MCP client)
-- `src/init-agent.ts` — temp-dir writes, idempotent merge, `--force` / `--dry-run`
-- `src/spec.ts` — contract parse + evaluation fixtures
-- `src/graph.ts` — import reverse-map
-- `src/plugins/` — language plugins
-- `src/baseline.ts` — regression vs saved evidence
-- `src/receipt.ts` — canonical hash, verify, optional HMAC/ed25519
-- `src/sarif.ts` — findings, gaps, and failed contract clauses
-
-```bash
-npm test
-npm run build
-```
-
-## Schema changes
-
-Evidence `schemaVersion` is `1.2.0` (1.x is additive; see [docs/schema.md](docs/schema.md)). Breaking field or enum changes require a **major** schema version bump and a CHANGELOG entry. Keep `schema/evidence.schema.json` in lockstep with `src/types.ts`. Fixture JSON that looks like an evidence pack must validate against the published schema (`test/schema-fixtures.test.ts`). Package / `toolVersion` is `1.2.0`.
-
-## Pull requests
-
-1. Branch from `main`.
-2. Keep the PR focused.
-3. Update `CHANGELOG.md`.
-4. CI must stay green (`npm run build`, `npm test`, `patchprove run --help`, `patchprove init-agent --help`).
+Pull requests should explain the observable problem, resulting behavior, validation, and material limits. Publishing, tagging, or changing external services is a separate maintainer operation described in [PUBLISH.md](PUBLISH.md).

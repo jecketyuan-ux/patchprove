@@ -1,64 +1,30 @@
 # Roadmap
 
-patchprove stays an **evidence pack + gap driver**: impact → checks → gaps → risk. Model-free. Not a CI replacement, not an LLM reviewer.
+The working tree implements the 2.0 upgrade; publishing and external validation remain separate activities. The dated [2026-10-22 review](docs/reviews/2026-10-22/03-upgrade-roadmap.md) is an immutable historical assessment, not a current feature-status list.
 
-## Done
+## Implemented in this checkout
 
-### v0.1 — evidence pack CLI
+- Final-working-tree and resolved-range snapshots, content/patch digests, drift checks, and optional isolated execution.
+- Planned scopes and per-unit execution records; one shared passed/failed/incomplete decision across CLI, MCP, hooks, and Action.
+- Conservative test selection, changed-test execution, scoped skips, bounded processes, and signing-variable removal from tool environments.
+- Validated policy/acceptance, semantic baseline fingerprints, versioned readers, and protocol 1 compatibility output.
+- Protocol 2 receipt envelopes, optional HMAC/Ed25519 signing, explicit signature/trusted-key policy, and artifact manifests.
+- Explicit local-plugin permission, corrected package/bin launchers, and export-based Nx/Turbo/testmon adapters with optional offline Cosign bundle verification.
 
-- `patchprove run` on a working tree or `base...head` range
-- Naming-heuristic test mapping for JS/TS and Python
-- Deterministic gates when tools exist: typecheck, lint, affected tests, secret scan
-- High-risk path findings, versioned `evidence.json`, sticky GitHub Action comment
-- `--fail-on high|critical`
+Implementation and fixture coverage do not establish complete language semantics, native runner compatibility, external CI results, or live host enforcement. Current evidence belongs in [docs/validation.md](docs/validation.md).
 
-### v0.2 — config, accepted gaps, coverage mapping, SARIF
+## Release gates
 
-- `.patchprove.yml` / `.yaml` (`failOn`, `ignorePaths`, `gates`, `acceptGaps`) with CLI override
-- Known-accepted gaps that remain visible but do not inflate risk / fail-on
-- Coverage-map test selection (`coverage/coverage-final.json`, `coverage.xml`) with naming fallback
-- Action markdown sections for accepted gaps; optional SARIF upload
-- npm pack-ready `0.2.0`
+1. Complete build, regression, package-install/transport, native-runner, schema, and artifact checks in the intended environment.
+2. Execute and retain results from the declared Node/OS CI matrix; resolve failures before declaring those platforms validated.
+3. Exercise actual supported host versions, including cancellation, re-entry, and advisory/blocking responses.
+4. Review tarball contents, migration guidance, dependency state, and release references before a separate authorized publish/tag operation.
 
-### v0.3 — MCP, agent hooks, init-agent, cc-kit skill
+## Further work
 
-- stdio MCP server (`prove_patch`, `list_gaps`) via `@modelcontextprotocol/sdk`
-- Claude Code + Cursor hook examples; `patchprove hook stop|post`
-- `patchprove init-agent` writes skill + hook merge + optional `.mcp.json`
-- Skill at `examples/skills/patchprove/` installable with [cc-kit](https://github.com/jecketyuan-ux/cc-kit) from a git path (no npm publish required)
-- Pack-ready `0.3.0`
+- Expand real-project corpora and report denominators for missed affected tests, unknown scopes, fallbacks, and false blocking.
+- Broaden language/build-system semantics where current heuristics explicitly report uncertainty.
+- Add adapters only against documented machine interfaces with version, input, and snapshot provenance; distinguish cached, imported, and executed results.
+- Consider a standalone runtime only if measured deployment needs justify replacing the experimental Node-dependent launcher.
 
-### v1.2 — evidence receipts + contract SARIF
-
-- Hashable, optionally signable evidence receipts (`evidence.receipt.json`); `patchprove receipt verify`
-- Failed **contract clauses** in SARIF / GitHub Code Scanning
-- Schema stability commitment (`docs/schema.md`); evidence `schemaVersion` **1.2.0** (additive)
-- Action uploads evidence + receipt artifacts; sticky comment shows the content hash and unchanged/changed vs the last comment or a baseline receipt
-
-### v1.1 — language mapping + external plugins
-
-- Java/Gradle (and Maven) affected-test filtering: multi-module + package-path FQCN, `gradle --tests` / `mvn -Dtest=`
-- Go `go.mod` module-path import resolution and coarse `internal/` visibility; `go test ./pkg/...` on affected packages
-- Rust Cargo workspace / multi-crate mapping; `cargo test -p <pkg>`
-- Documented v1.1 plugin API + deterministic local external plugin load (config / env / `.patchprove/plugins`)
-- Golden fixtures for Java, Go, Rust, and plugin load
-
-### v1.0 — merge/agent gate
-
-- **SPEC.md / `.patchprove/spec.yml` contract** — required gates, max residual risk, required mapped tests, forbidden unproven globs, accepted residual-risk policy. Evaluated on `run`; fail-on / exit `1` on contract failure
-- **Import/module-graph mapping** (JS/TS + Python heuristics) beside coverage and naming. `mappingStrategy`: `naming` | `coverage` | `graph`
-- **Language plugins** — Go, Rust, Java (plus JS/TS/Python) without a CLI rewrite
-- **Baseline evidence comparison** — `--baseline`, `.patchprove/baseline.json`, `patchprove baseline save`, new gaps = regression
-- **Tighter host integration** — Claude Code SessionStart / SubagentStop; Cursor rule pack; `init-agent --cursor`
-- **Docs site** (`docs/`) + case study
-- **Experimental Go thin launcher** (`go/`) that execs the Node CLI — not a rewrite
-
-## Next — v1.3 host gates
-
-Still deterministic and model-free unless explicitly re-scoped:
-
-- First-class blocking stop semantics if Cursor (or other hosts) add them
-- Tighter agent-hook / MCP gate packaging around those host APIs
-- A real single-binary port only if the Node CLI becomes a liability for air-gapped hosts
-
-Out of scope: telemetry, LLM-as-primary review, vendor API keys, rewriting the entire CLI in Rust.
+No telemetry, hosted service, LLM dependency, or ecosystem performance claim is part of this upgrade.

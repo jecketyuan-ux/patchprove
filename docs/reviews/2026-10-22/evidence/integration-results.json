@@ -1,0 +1,112 @@
+{
+  "baselineCommit": "188e07e03da3f3a21cd64f574f35a1fab0a384c7",
+  "packageVersion": "1.2.0",
+  "node": "v24.19.0",
+  "platform": "linux",
+  "githubNetworkRequestsSent": false,
+  "generatedMcp": {
+    "config": {
+      "mcpServers": {
+        "patchprove": {
+          "command": "npx",
+          "args": [
+            "-y",
+            "patchprove-mcp"
+          ]
+        }
+      }
+    },
+    "packageMetadata": {
+      "name": "patchprove",
+      "version": "1.2.0",
+      "bin": {
+        "patchprove": "dist/cli.js",
+        "patchprove-mcp": "dist/mcp.js"
+      }
+    },
+    "issue": "Default npx argument names a different npm package, although patchprove-mcp is a bin provided by patchprove.",
+    "sourceEvidence": [
+      "src/init-agent.ts:168",
+      "package.json:2",
+      "package.json:20",
+      "test/init-agent.test.ts:65"
+    ],
+    "registryCheck": {
+      "performed": true,
+      "checkedAt": "2026-10-22T10:15:30.246Z",
+      "command": "npm view patchprove-mcp name version --json --fetch-retries=0 --fetch-timeout=10000 --cache <temporary cache>",
+      "exitCode": 1,
+      "error": null,
+      "response": {
+        "error": {
+          "code": "E404",
+          "summary": "Not Found - GET https://registry.npmjs.org/patchprove-mcp - Not found",
+          "detail": "The requested resource 'patchprove-mcp@*' could not be found or you do not have permission to access it.\n\nNote that you can also install from a\ntarball, folder, http url, or git url."
+        }
+      },
+      "stderr": "npm error code E404\nnpm error 404 Not Found - GET https://registry.npmjs.org/patchprove-mcp - Not found\nnpm error 404\nnpm error 404  The requested resource 'patchprove-mcp@*' could not be found or you do not have permission to access it.\nnpm error 404\nnpm error 404 Note that you can also install from a\nnpm error 404 tarball, folder, http url, or git url.\nnpm notice\nnpm notice New major version of npm available! 11.9.0 -> 12.2.1\nnpm notice Changelog: https://github.com/npm/cli/releases/tag/v12.2.1\nnpm notice To update run: npm install -g npm@12.2.1\nnpm notice\nnpm error A complete log of this run can be found in: <temporary directory>/npm-cache/_logs/2026-10-22T10_15_29_884Z-debug-0.log",
+      "limitation": "Read-only registry metadata query; no package was installed or executed. Future registration may change this result; malicious-package execution was not demonstrated."
+    }
+  },
+  "commentMarkerCollision": {
+    "mockDataset": {
+      "author": {
+        "login": "ordinary-commenter",
+        "type": "User"
+      },
+      "marker": true,
+      "expectedOwnership": "not the patchprove bot"
+    },
+    "exitCode": 2,
+    "error": null,
+    "stdout": "",
+    "stderr": "patchprove comment: update comment failed: 403 mock: cannot update another author comment",
+    "calls": [
+      {
+        "url": "https://api.github.com/repos/example/repo/issues/1/comments?per_page=100",
+        "method": "GET"
+      },
+      {
+        "url": "https://api.github.com/repos/example/repo/issues/comments/123",
+        "method": "PATCH"
+      }
+    ],
+    "reproduced": true,
+    "conclusion": "The production script selects a user-supplied marker without checking author identity; the 403 response models a token that cannot edit that comment.",
+    "limitation": "Target selection is reproduced with mocked GitHub responses; real GitHub edit permission was not tested.",
+    "sourceEvidence": [
+      "action/post-comment.mjs:65",
+      "action/post-comment.mjs:70",
+      "action/post-comment.mjs:77"
+    ]
+  },
+  "commentPagination": {
+    "mockDataset": {
+      "totalComments": 101,
+      "existingBotReportIndex": 101
+    },
+    "exitCode": 0,
+    "error": null,
+    "stdout": "Created sticky comment 999",
+    "stderr": "",
+    "calls": [
+      {
+        "url": "https://api.github.com/repos/example/repo/issues/1/comments?per_page=100",
+        "method": "GET"
+      },
+      {
+        "url": "https://api.github.com/repos/example/repo/issues/1/comments",
+        "method": "POST"
+      }
+    ],
+    "reproduced": true,
+    "conclusion": "The production script reads only page 1 and creates another report although an existing bot report is on page 2.",
+    "limitation": "Pagination behavior is reproduced with a local mock; no GitHub comment was created.",
+    "sourceEvidence": [
+      "action/post-comment.mjs:65",
+      "action/post-comment.mjs:70",
+      "action/post-comment.mjs:86"
+    ]
+  },
+  "temporaryFixturesRemovedOnExit": true
+}

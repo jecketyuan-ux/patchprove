@@ -30,7 +30,7 @@ export interface LanguagePlugin {
   id: string;
   languages: Language[];
   extensions: string[];
-  isTestFile(rel: string): boolean;
+  isTestFile(rel: string, ctx?: PluginContext): boolean;
   testCandidates(rel: string, ctx?: PluginContext): string[];
   /** Unresolved import specifiers (module strings as they appear in source). */
   parseImports?(sourceText: string, rel: string): string[];

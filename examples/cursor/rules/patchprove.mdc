@@ -9,13 +9,13 @@ patchprove is a **model-free evidence pack**, not CI and not an LLM review.
 
 ## Hard rule
 
-**Do not claim done, merge-ready, or “tests cover this” while open (non-accepted) gaps remain.**
+**Do not claim done, merge-ready, or “tests cover this” unless `verification.status` is `passed`.**
 
 Run one of:
 
 ```bash
-npx patchprove run --fail-on high
-npx patchprove run --base origin/main --head HEAD --fail-on high --out evidence.json
+npx --yes --package patchprove@2.0.0 patchprove run --fail-on high
+npx --yes --package patchprove@2.0.0 patchprove run --base origin/main --head HEAD --fail-on high --out evidence.json
 ```
 
 If the repo has a contract (`SPEC.md` or `.patchprove/spec.yml`), the run evaluates it. Contract failures fail the process.
@@ -30,7 +30,7 @@ If `.patchprove/baseline.json` exists (or `--baseline` is passed), new gaps vers
 4. **Risk** — max of findings + **open** gaps
 5. **Contract / baseline** — gate clauses and regressions, when loaded
 
-Accepted gaps stay visible. They do not raise summary risk. Everything else in `gaps[]` is still unproven.
+Accepted gaps stay visible. They do not raise summary risk. Failed checks and missing execution provenance still prevent completion, even when no open gaps remain.
 
 ## Do not
 

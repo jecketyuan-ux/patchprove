@@ -1,0 +1,104 @@
+import { isOpenGap } from "./accept.js";
+import { newGapsMeetFailOn } from "./baseline.js";
+import { meetsFailOn } from "./risk.js";
+import type { CheckId, Evidence, ExecutionRecord, ResolvedConfig, VerificationDecision } from "./types.js";
+
+/** The common completion decision consumed by every entry point. */
+export function evaluateVerification(
+  evidence: Evidence,
+  config?: ResolvedConfig,
+  strict = config?.strict ?? evidence.effectivePolicy?.strict ?? true,
+): VerificationDecision {
+  const reasons: VerificationDecision["reasons"] = [];
+  let failed = false;
+  const add = (code: string, message: string, detail: { checkId?: CheckId; scope?: string[] } = {}) => {
+    reasons.push({ code, message, ...detail });
+  };
+  const gates = config?.gates ?? evidence.effectivePolicy?.gates;
+  const requiredGates = new Set<CheckId>(evidence.contract.clauses
+    .filter((clause) => clause.kind === "required-gate")
+    .map((clause) => clause.id.replace(/^required-gate-/, "") as CheckId));
+  const disabled = (id: CheckId) => gates?.[id] === false && !requiredGates.has(id);
+
+  for (const check of evidence.checks) {
+    if (check.status === "failed" || check.timedOut) {
+      failed = true;
+      add(check.timedOut ? "check-timed-out" : "check-failed", `${check.name} ${check.timedOut ? "timed out" : "failed"}`, { checkId: check.id });
+    }
+  }
+  const records = evidence.executionRecords ?? evidence.checks.flatMap((check) => check.records ?? []);
+  for (const record of records) {
+    if (record.status === "failed" || record.status === "timed-out" || (record.exitCode !== null && record.exitCode !== 0)) {
+      failed = true;
+      add("execution-failed", `Execution ${record.id} did not succeed`, { checkId: record.checkId, scope: record.scope });
+    }
+    if (record.checkId === "tests" && record.collectedTests === 0 && !disabled("tests")) {
+      add("zero-tests-collected", `Execution ${record.id} collected no tests`, { checkId: record.checkId, scope: record.scope });
+    }
+    if (record.status === "passed" && record.exitCode !== 0) {
+      add("execution-exit-unproven", `Execution ${record.id} has no successful exit code`, { checkId: record.checkId, scope: record.scope });
+    }
+  }
+  if (!evidence.contract.passed || evidence.contract.clauses.some((clause) => !clause.passed)) {
+    failed = true;
+    add("contract-failed", "The verification contract did not pass");
+  }
+  const failOn = config?.failOn ?? evidence.effectivePolicy?.failOn ?? undefined;
+  if (meetsFailOn(evidence.summary.risk, failOn)) {
+    failed = true;
+    add("risk-threshold", `Residual risk ${evidence.summary.risk} meets failOn ${failOn}`);
+  }
+  const failOnNewGaps = config?.failOnNewGaps ?? evidence.effectivePolicy?.failOnNewGaps ?? evidence.baselineComparison?.failOnNewGaps;
+  if (newGapsMeetFailOn(evidence.baselineComparison, failOnNewGaps)) {
+    failed = true;
+    add("new-gap-threshold", `New open gaps meet failOnNewGaps ${failOnNewGaps}`);
+  }
+  const legacy = !evidence.snapshot || !evidence.effectivePolicy || !evidence.verificationPlan || !evidence.executionRecords;
+  if (legacy) add("legacy-provenance-missing", "Evidence lacks snapshot, policy, plan, or execution provenance");
+  if (evidence.snapshot && !evidence.snapshot.consistent) {
+    add("snapshot-mismatch", evidence.snapshot.reason ?? "The execution snapshot differs from the analyzed patch");
+  }
+  if (evidence.baselineComparison?.compatibility?.compatible === false) {
+    add("baseline-incompatible", evidence.baselineComparison.compatibility.reasons.join("; "));
+  }
+  for (const diagnostic of evidence.diagnostics ?? []) {
+    if (diagnostic.severity === "error") add(diagnostic.code, diagnostic.message, diagnostic.files ? { scope: diagnostic.files } : {});
+  }
+  for (const gate of requiredGates) {
+    if (evidence.checks.find((check) => check.id === gate)?.status !== "passed") {
+      failed = true;
+      add("required-gate-failed", `Required gate ${gate} did not pass`, { checkId: gate });
+    }
+  }
+  const completed = (record: ExecutionRecord): boolean => {
+    if (record.checkId === "tests" && record.collectedTests === 0) return false;
+    if (record.status === "passed") return record.exitCode === 0;
+    if (record.status !== "cached" && record.status !== "imported") return false;
+    if (record.status === "imported" && record.exitCode !== 0) return false;
+    return Boolean(record.provenance?.inputHash && record.provenance.snapshotHash === evidence.snapshot?.contentHash);
+  };
+  for (const item of evidence.verificationPlan ?? []) {
+    if (!item.required || disabled(item.checkId)) continue;
+    const candidates = records.filter((record) => record.checkId === item.checkId &&
+      (!item.unitId || record.id === item.unitId) && completed(record));
+    const scope = item.scope.filter((file) => !candidates.some((record) => record.scope.includes(file)));
+    if (scope.length > 0 || (item.scope.length === 0 && candidates.length === 0)) {
+      add("planned-scope-unverified", `Planned ${item.checkId} scope has no successful execution`, { checkId: item.checkId, scope });
+    }
+  }
+  if (strict) {
+    for (const gap of evidence.gaps.filter(isOpenGap)) {
+      // Disabling a gate is an explicit policy choice, not a missing-tool error.
+      const gate = (["typecheck", "lint", "tests", "secrets"] as CheckId[])
+        .find((id) => gap.id === `gap-tool-${id}`);
+      if (gate && disabled(gate)) continue;
+      add("open-verification-gap", gap.message, { ...(gap.files ? { scope: gap.files } : {}) });
+    }
+  }
+  return {
+    status: failed ? "failed" : reasons.length > 0 ? "incomplete" : "passed",
+    strict,
+    reasons,
+    ...(legacy ? { legacy: true } : {}),
+  };
+}

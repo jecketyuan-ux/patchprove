@@ -1,0 +1,583 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-22T12:22:20.989Z",
+  "corpusKind": "seeded-local",
+  "manifestHash": "ce7130ef3ee88c229af4ad594446de2b4ac2dddb64ef4ed7b05f0e7aed178376",
+  "environment": {
+    "node": "v24.19.0",
+    "platform": "linux",
+    "architecture": "x64",
+    "network": false
+  },
+  "cases": [
+    {
+      "id": "static-and-dynamic",
+      "repositoryCommit": "571533610b312dae74f9d1f7a79de9e2d713dc7b",
+      "patchHash": "b735970fb99daf7631211196adc3d97f0457365f9e118d465f5b6163c71b36ab",
+      "license": {
+        "spdx": "MIT",
+        "path": "seed/LICENSE"
+      },
+      "environment": {
+        "runtime": "node",
+        "minimumMajor": 22,
+        "platform": "any",
+        "network": false
+      },
+      "baseline": {
+        "status": "passed",
+        "durationMs": 394,
+        "outcomes": [
+          {
+            "test": "src/value.test.js",
+            "status": "passed",
+            "exitCode": 0,
+            "durationMs": 136,
+            "outputHash": "60b4dad777c92855c8c9f17814afd039c72e49b411817e6d0fba02091b234d6c"
+          },
+          {
+            "test": "src/spare.test.js",
+            "status": "passed",
+            "exitCode": 0,
+            "durationMs": 140,
+            "outputHash": "78dca743397842e63c36272899e803490bbb461967c723a9a914a15529d4713c"
+          },
+          {
+            "test": "test/dynamic.test.js",
+            "status": "passed",
+            "exitCode": 0,
+            "durationMs": 118,
+            "outputHash": "46f6876dc0d489f6725fded4c0ef262f2bff8f9b43225263acd910774b10be84"
+          }
+        ]
+      },
+      "selected": {
+        "status": "failed",
+        "durationMs": 369,
+        "outcomes": [
+          {
+            "test": "src/spare.test.js",
+            "status": "passed",
+            "exitCode": 0,
+            "durationMs": 121,
+            "outputHash": "e01a166c427c4ff728446f06be3aaa6ef6b2e621ec24759fcd567d4d8259ccad"
+          },
+          {
+            "test": "src/value.test.js",
+            "status": "failed",
+            "exitCode": 1,
+            "durationMs": 132,
+            "outputHash": "971411cded079129d2c1d77b8c41411e122d17b01f756094dd3a2a3c61d4e0b2"
+          },
+          {
+            "test": "test/dynamic.test.js",
+            "status": "failed",
+            "exitCode": 1,
+            "durationMs": 116,
+            "outputHash": "e384d2ab9c454463ae49dd306b740f1394caab42d4841be17f445b45cacbbd3a"
+          }
+        ]
+      },
+      "full": {
+        "status": "failed",
+        "durationMs": 377,
+        "outcomes": [
+          {
+            "test": "src/value.test.js",
+            "status": "failed",
+            "exitCode": 1,
+            "durationMs": 114,
+            "outputHash": "c281da52967de6715bfbb8fb0bce06f6c4a09621dc40ec93f1c7cb194a2d1327"
+          },
+          {
+            "test": "src/spare.test.js",
+            "status": "passed",
+            "exitCode": 0,
+            "durationMs": 122,
+            "outputHash": "cb7afc907ac27fe138684d1bb7c478c21a9c6b3b9afd10c798778aebb5610a12"
+          },
+          {
+            "test": "test/dynamic.test.js",
+            "status": "failed",
+            "exitCode": 1,
+            "durationMs": 141,
+            "outputHash": "1fdd1119698c4b9a116702c8df2a1848071f032875f0f972d0bbe75daa256b54"
+          }
+        ]
+      },
+      "selectedTests": [
+        "src/spare.test.js",
+        "src/value.test.js",
+        "test/dynamic.test.js"
+      ],
+      "misses": [],
+      "extra": [
+        "src/spare.test.js"
+      ],
+      "unknown": [],
+      "unmappedSources": [],
+      "mappingEvidence": [
+        {
+          "source": "src/value.js",
+          "test": "src/value.test.js",
+          "via": "naming",
+          "precision": "heuristic",
+          "origin": "filename",
+          "freshness": "current",
+          "inputHash": "22477fdfc7186e3e005c314c9451c32ad691a1ca988b188f42afc84a2b75c2bb"
+        },
+        {
+          "source": "src/value.js",
+          "test": "src/value.test.js",
+          "via": "graph",
+          "precision": "structural",
+          "origin": "import-graph",
+          "freshness": "current",
+          "inputHash": "c325e93efd5db1074621aadde3e65b984869fad57d88e20fcc268751a74995fb"
+        },
+        {
+          "source": "src/value.js",
+          "test": "src/spare.test.js",
+          "via": "graph",
+          "precision": "heuristic",
+          "origin": "dynamic-fallback",
+          "freshness": "unknown",
+          "inputHash": "c325e93efd5db1074621aadde3e65b984869fad57d88e20fcc268751a74995fb"
+        },
+        {
+          "source": "src/value.js",
+          "test": "src/value.test.js",
+          "via": "graph",
+          "precision": "heuristic",
+          "origin": "dynamic-fallback",
+          "freshness": "unknown",
+          "inputHash": "c325e93efd5db1074621aadde3e65b984869fad57d88e20fcc268751a74995fb"
+        },
+        {
+          "source": "src/value.js",
+          "test": "test/dynamic.test.js",
+          "via": "graph",
+          "precision": "heuristic",
+          "origin": "dynamic-fallback",
+          "freshness": "unknown",
+          "inputHash": "c325e93efd5db1074621aadde3e65b984869fad57d88e20fcc268751a74995fb"
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "mapping-unresolved-import",
+          "message": "Import \"node:assert/strict\" in src/spare.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+          "severity": "warning",
+          "files": [
+            "src/spare.test.js"
+          ]
+        },
+        {
+          "code": "mapping-unresolved-import",
+          "message": "Import \"node:test\" in src/spare.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+          "severity": "warning",
+          "files": [
+            "src/spare.test.js"
+          ]
+        },
+        {
+          "code": "mapping-unresolved-import",
+          "message": "Import \"node:assert/strict\" in src/value.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+          "severity": "warning",
+          "files": [
+            "src/value.test.js"
+          ]
+        },
+        {
+          "code": "mapping-unresolved-import",
+          "message": "Import \"node:test\" in src/value.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+          "severity": "warning",
+          "files": [
+            "src/value.test.js"
+          ]
+        },
+        {
+          "code": "mapping-dynamic-dependency",
+          "message": "Dependency call in test/dynamic.test.js uses an expression that the static import graph cannot resolve; selecting all known tests is a conservative fallback",
+          "severity": "warning",
+          "files": [
+            "test/dynamic.test.js"
+          ]
+        },
+        {
+          "code": "mapping-unresolved-import",
+          "message": "Import \"node:assert/strict\" in test/dynamic.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+          "severity": "warning",
+          "files": [
+            "test/dynamic.test.js"
+          ]
+        },
+        {
+          "code": "mapping-unresolved-import",
+          "message": "Import \"node:test\" in test/dynamic.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+          "severity": "warning",
+          "files": [
+            "test/dynamic.test.js"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "static-only",
+      "repositoryCommit": "571533610b312dae74f9d1f7a79de9e2d713dc7b",
+      "patchHash": "7fa94ddae03b1fcf5029f14346d97a924fc6b73c33c10870daa541e83f5ddff2",
+      "license": {
+        "spdx": "MIT",
+        "path": "seed/LICENSE"
+      },
+      "environment": {
+        "runtime": "node",
+        "minimumMajor": 22,
+        "platform": "any",
+        "network": false
+      },
+      "baseline": {
+        "status": "passed",
+        "durationMs": 460,
+        "outcomes": [
+          {
+            "test": "src/value.test.js",
+            "status": "passed",
+            "exitCode": 0,
+            "durationMs": 126,
+            "outputHash": "bb1a23af97bb2b0c2158744acbd5515f4ad5ee31ba6db0fb4078e3b2d621813b"
+          },
+          {
+            "test": "src/spare.test.js",
+            "status": "passed",
+            "exitCode": 0,
+            "durationMs": 172,
+            "outputHash": "1ab8c2fccf740a205fe8e6ab41b9af32a6d637b506b5b2c66f3add54f0731df5"
+          },
+          {
+            "test": "test/dynamic.test.js",
+            "status": "passed",
+            "exitCode": 0,
+            "durationMs": 162,
+            "outputHash": "f91c2837fa9c96e135cafd383ff5b4e0883275a7a78491202a979d4dd7cac5c6"
+          }
+        ]
+      },
+      "selected": {
+        "status": "failed",
+        "durationMs": 469,
+        "outcomes": [
+          {
+            "test": "src/spare.test.js",
+            "status": "failed",
+            "exitCode": 1,
+            "durationMs": 159,
+            "outputHash": "f034b6d276b14b4e14d04d0996e33fec2a14620c28dcd834160325af694eaad1"
+          },
+          {
+            "test": "src/value.test.js",
+            "status": "passed",
+            "exitCode": 0,
+            "durationMs": 158,
+            "outputHash": "b1428003c679113903bbefc763c91eca648724270724d513a60c08060010e1e7"
+          },
+          {
+            "test": "test/dynamic.test.js",
+            "status": "passed",
+            "exitCode": 0,
+            "durationMs": 152,
+            "outputHash": "3598347c2d59e2462ec2fd825c1a77455a538be587f43db158009eef8720a83b"
+          }
+        ]
+      },
+      "full": {
+        "status": "failed",
+        "durationMs": 356,
+        "outcomes": [
+          {
+            "test": "src/value.test.js",
+            "status": "passed",
+            "exitCode": 0,
+            "durationMs": 115,
+            "outputHash": "d316c5bc8706c506c1ae8e6a4342624a24c44a9c8e36d9f53400a39c43695a12"
+          },
+          {
+            "test": "src/spare.test.js",
+            "status": "failed",
+            "exitCode": 1,
+            "durationMs": 114,
+            "outputHash": "3667761bea7dde23a2bdca4b293fb643f71aac1ebf68e3357b71b2e49046b8a0"
+          },
+          {
+            "test": "test/dynamic.test.js",
+            "status": "passed",
+            "exitCode": 0,
+            "durationMs": 127,
+            "outputHash": "8dd17de11ac9a8fd24602c806f65b5a2010e268817ce86ea90c82ce0c1f32e22"
+          }
+        ]
+      },
+      "selectedTests": [
+        "src/spare.test.js",
+        "src/value.test.js",
+        "test/dynamic.test.js"
+      ],
+      "misses": [],
+      "extra": [
+        "src/value.test.js",
+        "test/dynamic.test.js"
+      ],
+      "unknown": [],
+      "unmappedSources": [],
+      "mappingEvidence": [
+        {
+          "source": "src/spare.js",
+          "test": "src/spare.test.js",
+          "via": "naming",
+          "precision": "heuristic",
+          "origin": "filename",
+          "freshness": "current",
+          "inputHash": "6387994a96fb4d41c0d029a6fb8a961953736e7c30ac2359032e1032fd1168d8"
+        },
+        {
+          "source": "src/spare.js",
+          "test": "src/spare.test.js",
+          "via": "graph",
+          "precision": "structural",
+          "origin": "import-graph",
+          "freshness": "current",
+          "inputHash": "656750c0d899159b9d4349e3c9e84061c1997292cde09d2139ce32fc4ad45210"
+        },
+        {
+          "source": "src/spare.js",
+          "test": "src/spare.test.js",
+          "via": "graph",
+          "precision": "heuristic",
+          "origin": "dynamic-fallback",
+          "freshness": "unknown",
+          "inputHash": "656750c0d899159b9d4349e3c9e84061c1997292cde09d2139ce32fc4ad45210"
+        },
+        {
+          "source": "src/spare.js",
+          "test": "src/value.test.js",
+          "via": "graph",
+          "precision": "heuristic",
+          "origin": "dynamic-fallback",
+          "freshness": "unknown",
+          "inputHash": "656750c0d899159b9d4349e3c9e84061c1997292cde09d2139ce32fc4ad45210"
+        },
+        {
+          "source": "src/spare.js",
+          "test": "test/dynamic.test.js",
+          "via": "graph",
+          "precision": "heuristic",
+          "origin": "dynamic-fallback",
+          "freshness": "unknown",
+          "inputHash": "656750c0d899159b9d4349e3c9e84061c1997292cde09d2139ce32fc4ad45210"
+        }
+      ],
+      "diagnostics": [
+        {
+          "code": "mapping-unresolved-import",
+          "message": "Import \"node:assert/strict\" in src/spare.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+          "severity": "warning",
+          "files": [
+            "src/spare.test.js"
+          ]
+        },
+        {
+          "code": "mapping-unresolved-import",
+          "message": "Import \"node:test\" in src/spare.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+          "severity": "warning",
+          "files": [
+            "src/spare.test.js"
+          ]
+        },
+        {
+          "code": "mapping-unresolved-import",
+          "message": "Import \"node:assert/strict\" in src/value.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+          "severity": "warning",
+          "files": [
+            "src/value.test.js"
+          ]
+        },
+        {
+          "code": "mapping-unresolved-import",
+          "message": "Import \"node:test\" in src/value.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+          "severity": "warning",
+          "files": [
+            "src/value.test.js"
+          ]
+        },
+        {
+          "code": "mapping-dynamic-dependency",
+          "message": "Dependency call in test/dynamic.test.js uses an expression that the static import graph cannot resolve; selecting all known tests is a conservative fallback",
+          "severity": "warning",
+          "files": [
+            "test/dynamic.test.js"
+          ]
+        },
+        {
+          "code": "mapping-unresolved-import",
+          "message": "Import \"node:assert/strict\" in test/dynamic.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+          "severity": "warning",
+          "files": [
+            "test/dynamic.test.js"
+          ]
+        },
+        {
+          "code": "mapping-unresolved-import",
+          "message": "Import \"node:test\" in test/dynamic.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+          "severity": "warning",
+          "files": [
+            "test/dynamic.test.js"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "documentation",
+      "repositoryCommit": "571533610b312dae74f9d1f7a79de9e2d713dc7b",
+      "patchHash": "fa7fce70a5a55721f900b62b9d8b4002f1a8dd321e90fbfe9576a0b11f9f6c58",
+      "license": {
+        "spdx": "MIT",
+        "path": "seed/LICENSE"
+      },
+      "environment": {
+        "runtime": "node",
+        "minimumMajor": 22,
+        "platform": "any",
+        "network": false
+      },
+      "baseline": {
+        "status": "passed",
+        "durationMs": 590,
+        "outcomes": [
+          {
+            "test": "src/value.test.js",
+            "status": "passed",
+            "exitCode": 0,
+            "durationMs": 201,
+            "outputHash": "93a721890e5b79ef1f3e3c39e23ae345763fd6067f3d8489ca0627b3123fd9fa"
+          },
+          {
+            "test": "src/spare.test.js",
+            "status": "passed",
+            "exitCode": 0,
+            "durationMs": 192,
+            "outputHash": "f869e4db8d7d62574bb8e3ad4383df9234e1b5b05807b54583d8e6e1d054edd9"
+          },
+          {
+            "test": "test/dynamic.test.js",
+            "status": "passed",
+            "exitCode": 0,
+            "durationMs": 197,
+            "outputHash": "1783dec95011f0e90db703fb31fe852d7abf1a3c841e9f58dee506614223c7c7"
+          }
+        ]
+      },
+      "selected": {
+        "status": "not-applicable",
+        "durationMs": 0,
+        "outcomes": []
+      },
+      "full": {
+        "status": "passed",
+        "durationMs": 560,
+        "outcomes": [
+          {
+            "test": "src/value.test.js",
+            "status": "passed",
+            "exitCode": 0,
+            "durationMs": 149,
+            "outputHash": "aeb701299650f44681e01208c0e8be37e8e573ad9bf3b5169fef00a7f0cdd72b"
+          },
+          {
+            "test": "src/spare.test.js",
+            "status": "passed",
+            "exitCode": 0,
+            "durationMs": 253,
+            "outputHash": "57cae7b6c60c283d39524395e859887f418b7d17634485c289bb3fbe9e3e3900"
+          },
+          {
+            "test": "test/dynamic.test.js",
+            "status": "passed",
+            "exitCode": 0,
+            "durationMs": 158,
+            "outputHash": "474138320ca98b2ef699630d50bf30ee30ddfecd5b20d8d256585c83b14fdcb4"
+          }
+        ]
+      },
+      "selectedTests": [],
+      "misses": [],
+      "extra": [],
+      "unknown": [],
+      "unmappedSources": [],
+      "mappingEvidence": [],
+      "diagnostics": [
+        {
+          "code": "mapping-unresolved-import",
+          "message": "Import \"node:assert/strict\" in src/spare.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+          "severity": "warning",
+          "files": [
+            "src/spare.test.js"
+          ]
+        },
+        {
+          "code": "mapping-unresolved-import",
+          "message": "Import \"node:test\" in src/spare.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+          "severity": "warning",
+          "files": [
+            "src/spare.test.js"
+          ]
+        },
+        {
+          "code": "mapping-unresolved-import",
+          "message": "Import \"node:assert/strict\" in src/value.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+          "severity": "warning",
+          "files": [
+            "src/value.test.js"
+          ]
+        },
+        {
+          "code": "mapping-unresolved-import",
+          "message": "Import \"node:test\" in src/value.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+          "severity": "warning",
+          "files": [
+            "src/value.test.js"
+          ]
+        },
+        {
+          "code": "mapping-dynamic-dependency",
+          "message": "Dependency call in test/dynamic.test.js uses an expression that the static import graph cannot resolve; selecting all known tests is a conservative fallback",
+          "severity": "warning",
+          "files": [
+            "test/dynamic.test.js"
+          ]
+        },
+        {
+          "code": "mapping-unresolved-import",
+          "message": "Import \"node:assert/strict\" in test/dynamic.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+          "severity": "warning",
+          "files": [
+            "test/dynamic.test.js"
+          ]
+        },
+        {
+          "code": "mapping-unresolved-import",
+          "message": "Import \"node:test\" in test/dynamic.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+          "severity": "warning",
+          "files": [
+            "test/dynamic.test.js"
+          ]
+        }
+      ]
+    }
+  ],
+  "limitations": [
+    "The bundled corpus contains three seeded local patches; it is not a real-world 50-patch benchmark.",
+    "Misses are full-suite failing test files absent from selection. Extra selections are selected test files that passed, not evidence that selection was unnecessary.",
+    "Dynamic imports and resource dependencies can remain unmapped. Missing outcomes are unknown; no accuracy percentage is reported.",
+    "Durations include local process and tool caches and are not speedup measurements. A fixture's network:false declaration is not enforced as a network sandbox for external code."
+  ]
+}

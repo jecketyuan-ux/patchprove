@@ -1,0 +1,50 @@
+[
+  {
+    "name": "nx",
+    "repo": "nrwl/nx",
+    "commit": "cb7daf5a61370e49b21635515e504607d47ee846",
+    "license_url": "https://github.com/nrwl/nx/blob/cb7daf5a61370e49b21635515e504607d47ee846/LICENSE",
+    "sha256": "50bb7bf81374073606d3c3f277762d5222d82c918b2088f3789ed7e5f9f8b496",
+    "bytes": 1093
+  },
+  {
+    "name": "turborepo",
+    "repo": "vercel/turborepo",
+    "commit": "b90e6ea31e02ab150b8ab85f5fab18b941b21e75",
+    "license_url": "https://github.com/vercel/turborepo/blob/b90e6ea31e02ab150b8ab85f5fab18b941b21e75/LICENSE",
+    "sha256": "f7ac4712aa30551de5b97b30215010515d783638107f207bcce32a85bfffc05e",
+    "bytes": 1055
+  },
+  {
+    "name": "pytest-testmon",
+    "repo": "tarpas/pytest-testmon",
+    "commit": "dccc58d2ed8edec98096ff1974acb7c07d3e3482",
+    "license_url": "https://github.com/tarpas/pytest-testmon/blob/dccc58d2ed8edec98096ff1974acb7c07d3e3482/LICENSE",
+    "sha256": "f8b8265d821c97583ade7bf68b6bd378b03d8e5892a36d44c6e856dbd92dec29",
+    "bytes": 1077
+  },
+  {
+    "name": "reviewdog",
+    "repo": "reviewdog/reviewdog",
+    "commit": "849f8668b797d8da9a31a4e3f660fdfdbaf20e5c",
+    "license_url": "https://github.com/reviewdog/reviewdog/blob/849f8668b797d8da9a31a4e3f660fdfdbaf20e5c/LICENSE",
+    "sha256": "92d4ef949ca2214f27ed3f426a2db4b2c7344e30746397f23745b1e1f59d24b9",
+    "bytes": 1067
+  },
+  {
+    "name": "pr-agent",
+    "repo": "The-PR-Agent/pr-agent",
+    "commit": "9533564b0d1bbe66bea62c9e7f2ddc5779fcfbce",
+    "license_url": "https://github.com/The-PR-Agent/pr-agent/blob/9533564b0d1bbe66bea62c9e7f2ddc5779fcfbce/LICENSE",
+    "sha256": "ea19f3b6bfd70ce0bf8d60fc5b15cdb789fcf86a63c0d6542977f888519f5788",
+    "bytes": 1069
+  },
+  {
+    "name": "cosign",
+    "repo": "sigstore/cosign",
+    "commit": "f8e6ea940dd753b03e1d494f273855771b828ff3",
+    "license_url": "https://github.com/sigstore/cosign/blob/f8e6ea940dd753b03e1d494f273855771b828ff3/LICENSE",
+    "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4",
+    "bytes": 11357
+  }
+]

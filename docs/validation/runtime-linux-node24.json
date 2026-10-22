@@ -1,0 +1,1393 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-22T12:22:19.530Z",
+  "node": "v24.19.0",
+  "platform": "linux",
+  "toolchains": {
+    "node": {
+      "available": true,
+      "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+      "version": "vitest/3.2.7 linux-x64 node-v24.19.0",
+      "reason": null
+    },
+    "python": {
+      "available": true,
+      "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+      "version": "pytest 8.3.5",
+      "reason": null
+    },
+    "go": {
+      "available": true,
+      "command": "/tmp/patchprove-toolchains/go/bin/go",
+      "version": "go version go1.23.6 linux/amd64",
+      "reason": null
+    },
+    "cargo": {
+      "available": true,
+      "command": "/tmp/patchprove-toolchains/cargo/bin/cargo",
+      "version": "cargo 1.85.0 (d73d2caf9 2024-12-31)",
+      "reason": null
+    },
+    "maven": {
+      "available": true,
+      "command": "/tmp/patchprove-toolchains/apache-maven-3.9.9/bin/mvn",
+      "version": "Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)",
+      "reason": null
+    },
+    "gradle": {
+      "available": true,
+      "command": "/tmp/patchprove-toolchains/gradle-8.12.1/bin/gradle",
+      "version": "Gradle 8.12.1",
+      "reason": null
+    },
+    "java": {
+      "available": true,
+      "command": "/tmp/patchprove-toolchains/jdk-17.0.13+11/bin/java",
+      "version": "openjdk version \"17.0.13\" 2024-10-15"
+    }
+  },
+  "cases": [
+    {
+      "id": "node-success",
+      "outcome": "passed",
+      "expected": "passed",
+      "selected": {
+        "status": "passed",
+        "collectedTests": 1,
+        "durationMs": 570,
+        "records": [
+          {
+            "id": "tests:javascript",
+            "checkId": "tests",
+            "scope": [
+              "src/value.test.js"
+            ],
+            "status": "passed",
+            "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+            "args": [
+              "/workspace/patchprove/node_modules/vitest/vitest.mjs",
+              "run",
+              "src/value.test.js"
+            ],
+            "cwd": "/tmp/patchprove-runtime-gEqNjn",
+            "exitCode": 0,
+            "durationMs": 570,
+            "reason": "ok",
+            "toolVersion": "vitest/3.2.7 linux-x64 node-v24.19.0",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "ae0632d9e573d6e95811b832b407febe926244e9df1602959cf67faca4c66f15"
+          }
+        ]
+      },
+      "full": {
+        "status": "passed",
+        "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node /workspace/patchprove/node_modules/vitest/vitest.mjs run",
+        "args": [
+          "/workspace/patchprove/node_modules/vitest/vitest.mjs",
+          "run"
+        ],
+        "cwd": "/tmp/patchprove-runtime-gEqNjn",
+        "exitCode": 0,
+        "collectedTests": 1,
+        "durationMs": 544,
+        "outputHash": "d38397e46cf3fc572b8f475321619ce90a7000ba564085d48314efb8ddde2379"
+      }
+    },
+    {
+      "id": "node-failure",
+      "outcome": "passed",
+      "expected": "failed",
+      "selected": {
+        "status": "failed",
+        "collectedTests": 1,
+        "durationMs": 654,
+        "records": [
+          {
+            "id": "tests:javascript",
+            "checkId": "tests",
+            "scope": [
+              "src/value.test.js"
+            ],
+            "status": "failed",
+            "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+            "args": [
+              "/workspace/patchprove/node_modules/vitest/vitest.mjs",
+              "run",
+              "src/value.test.js"
+            ],
+            "cwd": "/tmp/patchprove-runtime-Ocvv6H",
+            "exitCode": 1,
+            "durationMs": 654,
+            "reason": "exit 1",
+            "toolVersion": "vitest/3.2.7 linux-x64 node-v24.19.0",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "4a5247b46583a5342cc745f250988f33dbfbd54a389e3b262c3133ea25d12eea"
+          }
+        ]
+      },
+      "full": {
+        "status": "failed",
+        "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node /workspace/patchprove/node_modules/vitest/vitest.mjs run",
+        "args": [
+          "/workspace/patchprove/node_modules/vitest/vitest.mjs",
+          "run"
+        ],
+        "cwd": "/tmp/patchprove-runtime-Ocvv6H",
+        "exitCode": 1,
+        "collectedTests": 1,
+        "durationMs": 631,
+        "outputHash": "fbb22d38f88556244514a57c1aab058b527cc5d2510fda20fa33b997b0423c77"
+      }
+    },
+    {
+      "id": "node-zero",
+      "outcome": "passed",
+      "expected": "failed",
+      "selected": {
+        "status": "failed",
+        "collectedTests": 0,
+        "durationMs": 737,
+        "records": [
+          {
+            "id": "tests:javascript",
+            "checkId": "tests",
+            "scope": [
+              "src/value.test.js"
+            ],
+            "status": "failed",
+            "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+            "args": [
+              "/workspace/patchprove/node_modules/vitest/vitest.mjs",
+              "run",
+              "src/value.test.js"
+            ],
+            "cwd": "/tmp/patchprove-runtime-uAuuaQ",
+            "exitCode": 1,
+            "durationMs": 737,
+            "reason": "exit 1",
+            "toolVersion": "vitest/3.2.7 linux-x64 node-v24.19.0",
+            "signal": null,
+            "truncated": false,
+            "outputHash": "5fd4b2cf8453f1aab6ac4ba78083a12d1cf47aaadc183fef41778849d3357c05"
+          }
+        ]
+      },
+      "full": {
+        "status": "failed",
+        "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node /workspace/patchprove/node_modules/vitest/vitest.mjs run",
+        "args": [
+          "/workspace/patchprove/node_modules/vitest/vitest.mjs",
+          "run"
+        ],
+        "cwd": "/tmp/patchprove-runtime-uAuuaQ",
+        "exitCode": 1,
+        "collectedTests": null,
+        "durationMs": 828,
+        "outputHash": "012bfacd36cbbd48028b7b951265c3564abc1cb112ac3524556709bba5f8b4cf"
+      }
+    },
+    {
+      "id": "node-multimodule",
+      "outcome": "passed",
+      "expected": "passed",
+      "selected": {
+        "status": "passed",
+        "collectedTests": 2,
+        "durationMs": 795,
+        "records": [
+          {
+            "id": "tests:javascript",
+            "checkId": "tests",
+            "scope": [
+              "alpha/src/value.test.js",
+              "beta/src/value.test.js"
+            ],
+            "status": "passed",
+            "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+            "args": [
+              "/workspace/patchprove/node_modules/vitest/vitest.mjs",
+              "run",
+              "alpha/src/value.test.js",
+              "beta/src/value.test.js"
+            ],
+            "cwd": "/tmp/patchprove-runtime-OhXVkg",
+            "exitCode": 0,
+            "durationMs": 795,
+            "reason": "ok",
+            "toolVersion": "vitest/3.2.7 linux-x64 node-v24.19.0",
+            "collectedTests": 2,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "34ae7b755a1dc18b9bdae8f9fcbb0b0b86e66a80650132ee31af137effc7f746"
+          }
+        ]
+      },
+      "full": {
+        "status": "passed",
+        "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node /workspace/patchprove/node_modules/vitest/vitest.mjs run",
+        "args": [
+          "/workspace/patchprove/node_modules/vitest/vitest.mjs",
+          "run"
+        ],
+        "cwd": "/tmp/patchprove-runtime-OhXVkg",
+        "exitCode": 0,
+        "collectedTests": 2,
+        "durationMs": 896,
+        "outputHash": "5bbe070c6ab94566075097002f313c5f3a815c109892a94e96140223e118e6bf"
+      }
+    },
+    {
+      "id": "node-missing",
+      "outcome": "passed",
+      "expected": "skipped",
+      "selected": {
+        "status": "skipped",
+        "collectedTests": 0,
+        "durationMs": 0,
+        "records": [
+          {
+            "id": "tests:javascript",
+            "checkId": "tests",
+            "scope": [
+              "src/value.test.js"
+            ],
+            "status": "skipped",
+            "command": null,
+            "args": [],
+            "cwd": "/tmp/patchprove-runtime-IpZriV",
+            "exitCode": null,
+            "durationMs": 0,
+            "reason": "Test runner configured but binary not found"
+          }
+        ]
+      },
+      "full": null
+    },
+    {
+      "id": "python-success",
+      "outcome": "passed",
+      "expected": "passed",
+      "selected": {
+        "status": "passed",
+        "collectedTests": 1,
+        "durationMs": 511,
+        "records": [
+          {
+            "id": "tests:python",
+            "checkId": "tests",
+            "scope": [
+              "test_value.py"
+            ],
+            "status": "passed",
+            "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+            "args": [
+              "-m",
+              "pytest",
+              "test_value.py"
+            ],
+            "cwd": "/tmp/patchprove-runtime-8J81Gs",
+            "exitCode": 0,
+            "durationMs": 511,
+            "reason": "ok",
+            "toolVersion": "pytest 8.3.5",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "2e04477cbba738a6c744e84e86ba43c2a4daa0b81eca3b9d3090a5e508fa3850"
+          }
+        ]
+      },
+      "full": {
+        "status": "passed",
+        "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python -m pytest",
+        "args": [
+          "-m",
+          "pytest"
+        ],
+        "cwd": "/tmp/patchprove-runtime-8J81Gs",
+        "exitCode": 0,
+        "collectedTests": 1,
+        "durationMs": 562,
+        "outputHash": "8479d4aba77789381e3b191ae56f657dd3ffae626a98dd2678bc27577b8778b3"
+      }
+    },
+    {
+      "id": "python-failure",
+      "outcome": "passed",
+      "expected": "failed",
+      "selected": {
+        "status": "failed",
+        "collectedTests": 1,
+        "durationMs": 456,
+        "records": [
+          {
+            "id": "tests:python",
+            "checkId": "tests",
+            "scope": [
+              "test_value.py"
+            ],
+            "status": "failed",
+            "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+            "args": [
+              "-m",
+              "pytest",
+              "test_value.py"
+            ],
+            "cwd": "/tmp/patchprove-runtime-6MWEoa",
+            "exitCode": 1,
+            "durationMs": 456,
+            "reason": "exit 1",
+            "toolVersion": "pytest 8.3.5",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "03aa53fa6f04bb6fb4a5d3b9e4fccf7892d13053c6123b64290d0442f32514c9"
+          }
+        ]
+      },
+      "full": {
+        "status": "failed",
+        "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python -m pytest",
+        "args": [
+          "-m",
+          "pytest"
+        ],
+        "cwd": "/tmp/patchprove-runtime-6MWEoa",
+        "exitCode": 1,
+        "collectedTests": 1,
+        "durationMs": 350,
+        "outputHash": "03aa53fa6f04bb6fb4a5d3b9e4fccf7892d13053c6123b64290d0442f32514c9"
+      }
+    },
+    {
+      "id": "python-zero",
+      "outcome": "passed",
+      "expected": "failed",
+      "selected": {
+        "status": "failed",
+        "collectedTests": 0,
+        "durationMs": 336,
+        "records": [
+          {
+            "id": "tests:python",
+            "checkId": "tests",
+            "scope": [
+              "test_value.py"
+            ],
+            "status": "failed",
+            "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+            "args": [
+              "-m",
+              "pytest",
+              "test_value.py"
+            ],
+            "cwd": "/tmp/patchprove-runtime-VehGwX",
+            "exitCode": 5,
+            "durationMs": 336,
+            "reason": "Test runner collected zero tests",
+            "toolVersion": "pytest 8.3.5",
+            "collectedTests": 0,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "6d1328186955c2ce9d20fe11289b8d2e2fb0bb10d162127af816725c416d5ed6"
+          }
+        ]
+      },
+      "full": {
+        "status": "failed",
+        "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python -m pytest",
+        "args": [
+          "-m",
+          "pytest"
+        ],
+        "cwd": "/tmp/patchprove-runtime-VehGwX",
+        "exitCode": 5,
+        "collectedTests": 0,
+        "durationMs": 332,
+        "outputHash": "6d1328186955c2ce9d20fe11289b8d2e2fb0bb10d162127af816725c416d5ed6"
+      }
+    },
+    {
+      "id": "python-multimodule",
+      "outcome": "passed",
+      "expected": "passed",
+      "selected": {
+        "status": "passed",
+        "collectedTests": 2,
+        "durationMs": 363,
+        "records": [
+          {
+            "id": "tests:python",
+            "checkId": "tests",
+            "scope": [
+              "alpha/test_value.py",
+              "beta/test_value.py"
+            ],
+            "status": "passed",
+            "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python",
+            "args": [
+              "-m",
+              "pytest",
+              "alpha/test_value.py",
+              "beta/test_value.py"
+            ],
+            "cwd": "/tmp/patchprove-runtime-O4VjzV",
+            "exitCode": 0,
+            "durationMs": 363,
+            "reason": "ok",
+            "toolVersion": "pytest 8.3.5",
+            "collectedTests": 2,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "5a13fb0f299108ec800998ba7c407135547f7e8e12b1a8f390737887b01a4d58"
+          }
+        ]
+      },
+      "full": {
+        "status": "passed",
+        "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python -m pytest",
+        "args": [
+          "-m",
+          "pytest"
+        ],
+        "cwd": "/tmp/patchprove-runtime-O4VjzV",
+        "exitCode": 0,
+        "collectedTests": 2,
+        "durationMs": 347,
+        "outputHash": "5a13fb0f299108ec800998ba7c407135547f7e8e12b1a8f390737887b01a4d58"
+      }
+    },
+    {
+      "id": "python-missing",
+      "outcome": "passed",
+      "expected": "skipped",
+      "selected": {
+        "status": "skipped",
+        "collectedTests": 0,
+        "durationMs": 0,
+        "records": [
+          {
+            "id": "tests:python",
+            "checkId": "tests",
+            "scope": [
+              "test_value.py"
+            ],
+            "status": "skipped",
+            "command": null,
+            "args": [],
+            "cwd": "/tmp/patchprove-runtime-Gi91Uy",
+            "exitCode": null,
+            "durationMs": 0,
+            "reason": "Test runner configured but binary not found"
+          }
+        ]
+      },
+      "full": null
+    },
+    {
+      "id": "go-success",
+      "outcome": "passed",
+      "expected": "passed",
+      "selected": {
+        "status": "passed",
+        "collectedTests": 1,
+        "durationMs": 173,
+        "records": [
+          {
+            "id": "tests:go",
+            "checkId": "tests",
+            "scope": [
+              "value_test.go"
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-toolchains/go/bin/go",
+            "args": [
+              "test",
+              "-json",
+              "."
+            ],
+            "cwd": "/tmp/patchprove-runtime-mo3yGn",
+            "exitCode": 0,
+            "durationMs": 173,
+            "reason": "ok",
+            "toolVersion": "go version go1.23.6 linux/amd64",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "446577ebb000a75edd472173d65c1024a9c8393bb15ade299887ee9565435859"
+          }
+        ]
+      },
+      "full": {
+        "status": "passed",
+        "command": "/tmp/patchprove-toolchains/go/bin/go test -json ./...",
+        "args": [
+          "test",
+          "-json",
+          "./..."
+        ],
+        "cwd": "/tmp/patchprove-runtime-mo3yGn",
+        "exitCode": 0,
+        "collectedTests": 1,
+        "durationMs": 83,
+        "outputHash": "4d866131d72f5f05bd8eeb423144ff3ecc2f456af9ab222c97352f05278215fd"
+      }
+    },
+    {
+      "id": "go-failure",
+      "outcome": "passed",
+      "expected": "failed",
+      "selected": {
+        "status": "failed",
+        "collectedTests": 1,
+        "durationMs": 153,
+        "records": [
+          {
+            "id": "tests:go",
+            "checkId": "tests",
+            "scope": [
+              "value_test.go"
+            ],
+            "status": "failed",
+            "command": "/tmp/patchprove-toolchains/go/bin/go",
+            "args": [
+              "test",
+              "-json",
+              "."
+            ],
+            "cwd": "/tmp/patchprove-runtime-YxH31I",
+            "exitCode": 1,
+            "durationMs": 153,
+            "reason": "exit 1",
+            "toolVersion": "go version go1.23.6 linux/amd64",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "ce5c34e519043d3641d3b3c48db39fd7157925ae46d49ab51dfeaa82a2921d44"
+          }
+        ]
+      },
+      "full": {
+        "status": "failed",
+        "command": "/tmp/patchprove-toolchains/go/bin/go test -json ./...",
+        "args": [
+          "test",
+          "-json",
+          "./..."
+        ],
+        "cwd": "/tmp/patchprove-runtime-YxH31I",
+        "exitCode": 1,
+        "collectedTests": 1,
+        "durationMs": 135,
+        "outputHash": "053270df6eb96cc781a7a8708deb4f0113af3800711ebdd55350ba407b846ef2"
+      }
+    },
+    {
+      "id": "go-zero",
+      "outcome": "passed",
+      "expected": "skipped",
+      "selected": {
+        "status": "skipped",
+        "collectedTests": 0,
+        "durationMs": 149,
+        "records": [
+          {
+            "id": "tests:go",
+            "checkId": "tests",
+            "scope": [
+              "value_test.go"
+            ],
+            "status": "skipped",
+            "command": "/tmp/patchprove-toolchains/go/bin/go",
+            "args": [
+              "test",
+              "-json",
+              "."
+            ],
+            "cwd": "/tmp/patchprove-runtime-7qU9da",
+            "exitCode": 0,
+            "durationMs": 149,
+            "reason": "Test runner collected zero tests",
+            "toolVersion": "go version go1.23.6 linux/amd64",
+            "collectedTests": 0,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "5feb1340ea36e555277108f429f1ffffda53f8f6d0590eb70938c2dd5231478d"
+          }
+        ]
+      },
+      "full": {
+        "status": "skipped",
+        "command": "/tmp/patchprove-toolchains/go/bin/go test -json ./...",
+        "args": [
+          "test",
+          "-json",
+          "./..."
+        ],
+        "cwd": "/tmp/patchprove-runtime-7qU9da",
+        "exitCode": 0,
+        "collectedTests": 0,
+        "durationMs": 129,
+        "outputHash": "a648f25c2e200e1c28c3d6cffca87319f053ae63e3f8bf7f3667c448a4e1b475"
+      }
+    },
+    {
+      "id": "go-multimodule",
+      "outcome": "passed",
+      "expected": "passed",
+      "selected": {
+        "status": "passed",
+        "collectedTests": 2,
+        "durationMs": 212,
+        "records": [
+          {
+            "id": "tests:go",
+            "checkId": "tests",
+            "scope": [
+              "alpha/value_test.go",
+              "beta/value_test.go"
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-toolchains/go/bin/go",
+            "args": [
+              "test",
+              "-json",
+              "./alpha",
+              "./beta"
+            ],
+            "cwd": "/tmp/patchprove-runtime-wT38z7",
+            "exitCode": 0,
+            "durationMs": 212,
+            "reason": "ok",
+            "toolVersion": "go version go1.23.6 linux/amd64",
+            "collectedTests": 2,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "955b65208170eb443fe4fb30ac3296679d8ab7f386b038c0f8af09da6522fe51"
+          }
+        ]
+      },
+      "full": {
+        "status": "passed",
+        "command": "/tmp/patchprove-toolchains/go/bin/go test -json ./...",
+        "args": [
+          "test",
+          "-json",
+          "./..."
+        ],
+        "cwd": "/tmp/patchprove-runtime-wT38z7",
+        "exitCode": 0,
+        "collectedTests": 2,
+        "durationMs": 83,
+        "outputHash": "8efe8237a4402d59e90c371d7007021f856edb71c28fdf8481eacc0439a1d2c6"
+      }
+    },
+    {
+      "id": "go-missing",
+      "outcome": "passed",
+      "expected": "skipped",
+      "selected": {
+        "status": "skipped",
+        "collectedTests": 0,
+        "durationMs": 0,
+        "records": [
+          {
+            "id": "tests:go",
+            "checkId": "tests",
+            "scope": [
+              "value_test.go"
+            ],
+            "status": "skipped",
+            "command": null,
+            "args": [],
+            "cwd": "/tmp/patchprove-runtime-n3WAWr",
+            "exitCode": null,
+            "durationMs": 0,
+            "reason": "Go module present but go binary not found"
+          }
+        ]
+      },
+      "full": null
+    },
+    {
+      "id": "cargo-success",
+      "outcome": "passed",
+      "expected": "passed",
+      "selected": {
+        "status": "passed",
+        "collectedTests": 1,
+        "durationMs": 263,
+        "records": [
+          {
+            "id": "tests:rust",
+            "checkId": "tests",
+            "scope": [
+              "tests/value.rs"
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-toolchains/cargo/bin/cargo",
+            "args": [
+              "test",
+              "-p",
+              "fixture"
+            ],
+            "cwd": "/tmp/patchprove-runtime-a2tufA",
+            "exitCode": 0,
+            "durationMs": 263,
+            "reason": "ok",
+            "toolVersion": "cargo 1.85.0 (d73d2caf9 2024-12-31)",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "fdeb9a4cd30e9c08def16b242e4a2031e0927996fac46bb13c61d8e3bd0a4cb2"
+          }
+        ]
+      },
+      "full": {
+        "status": "passed",
+        "command": "/tmp/patchprove-toolchains/cargo/bin/cargo test --workspace",
+        "args": [
+          "test",
+          "--workspace"
+        ],
+        "cwd": "/tmp/patchprove-runtime-a2tufA",
+        "exitCode": 0,
+        "collectedTests": 1,
+        "durationMs": 40,
+        "outputHash": "686688f8c8f807aca57a8e34cd617369c4062a6458b8f466071c317433d871ce"
+      }
+    },
+    {
+      "id": "cargo-failure",
+      "outcome": "passed",
+      "expected": "failed",
+      "selected": {
+        "status": "failed",
+        "collectedTests": 1,
+        "durationMs": 300,
+        "records": [
+          {
+            "id": "tests:rust",
+            "checkId": "tests",
+            "scope": [
+              "tests/value.rs"
+            ],
+            "status": "failed",
+            "command": "/tmp/patchprove-toolchains/cargo/bin/cargo",
+            "args": [
+              "test",
+              "-p",
+              "fixture"
+            ],
+            "cwd": "/tmp/patchprove-runtime-pvBTne",
+            "exitCode": 101,
+            "durationMs": 300,
+            "reason": "exit 101",
+            "toolVersion": "cargo 1.85.0 (d73d2caf9 2024-12-31)",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "8dd891b17ceea3c99a388b8f75062b6b8228a9c0c625b4795402f6c64de47d95"
+          }
+        ]
+      },
+      "full": {
+        "status": "failed",
+        "command": "/tmp/patchprove-toolchains/cargo/bin/cargo test --workspace",
+        "args": [
+          "test",
+          "--workspace"
+        ],
+        "cwd": "/tmp/patchprove-runtime-pvBTne",
+        "exitCode": 101,
+        "collectedTests": 1,
+        "durationMs": 23,
+        "outputHash": "6b71a6f2e698be566fa6eb45d73531f46b2ead61c34ebbb544deed18953f1eeb"
+      }
+    },
+    {
+      "id": "cargo-zero",
+      "outcome": "passed",
+      "expected": "skipped",
+      "selected": {
+        "status": "skipped",
+        "collectedTests": 0,
+        "durationMs": 290,
+        "records": [
+          {
+            "id": "tests:rust",
+            "checkId": "tests",
+            "scope": [
+              "tests/value.rs"
+            ],
+            "status": "skipped",
+            "command": "/tmp/patchprove-toolchains/cargo/bin/cargo",
+            "args": [
+              "test",
+              "-p",
+              "fixture"
+            ],
+            "cwd": "/tmp/patchprove-runtime-SU603Y",
+            "exitCode": 0,
+            "durationMs": 290,
+            "reason": "Test runner collected zero tests",
+            "toolVersion": "cargo 1.85.0 (d73d2caf9 2024-12-31)",
+            "collectedTests": 0,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "52a045b33feb46909861a47b8c29b57cd1fbf0b5a7c969e6cabb84cb5d3308e2"
+          }
+        ]
+      },
+      "full": {
+        "status": "skipped",
+        "command": "/tmp/patchprove-toolchains/cargo/bin/cargo test --workspace",
+        "args": [
+          "test",
+          "--workspace"
+        ],
+        "cwd": "/tmp/patchprove-runtime-SU603Y",
+        "exitCode": 0,
+        "collectedTests": 0,
+        "durationMs": 40,
+        "outputHash": "1a6c85af0b8181f5322133c95fb9760e7145b71d1b86aa85950de2abe3150764"
+      }
+    },
+    {
+      "id": "cargo-multimodule",
+      "outcome": "passed",
+      "expected": "passed",
+      "selected": {
+        "status": "passed",
+        "collectedTests": 2,
+        "durationMs": 448,
+        "records": [
+          {
+            "id": "tests:rust",
+            "checkId": "tests",
+            "scope": [
+              "alpha/tests/value.rs",
+              "beta/tests/value.rs"
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-toolchains/cargo/bin/cargo",
+            "args": [
+              "test",
+              "-p",
+              "alpha",
+              "-p",
+              "beta"
+            ],
+            "cwd": "/tmp/patchprove-runtime-V8aErh",
+            "exitCode": 0,
+            "durationMs": 448,
+            "reason": "ok",
+            "toolVersion": "cargo 1.85.0 (d73d2caf9 2024-12-31)",
+            "collectedTests": 2,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "0b9ca719a47d3c56fcf4d2608bbbd538aaae29cb3184e03a8a345c0a6328c92d"
+          }
+        ]
+      },
+      "full": {
+        "status": "passed",
+        "command": "/tmp/patchprove-toolchains/cargo/bin/cargo test --workspace",
+        "args": [
+          "test",
+          "--workspace"
+        ],
+        "cwd": "/tmp/patchprove-runtime-V8aErh",
+        "exitCode": 0,
+        "collectedTests": 2,
+        "durationMs": 105,
+        "outputHash": "177dccbdd06cd7edf06c23fe16c77c57fbd2bb7621377ace593d2746b29e1ef9"
+      }
+    },
+    {
+      "id": "cargo-missing",
+      "outcome": "passed",
+      "expected": "skipped",
+      "selected": {
+        "status": "skipped",
+        "collectedTests": 0,
+        "durationMs": 0,
+        "records": [
+          {
+            "id": "tests:rust",
+            "checkId": "tests",
+            "scope": [
+              "tests/value.rs"
+            ],
+            "status": "skipped",
+            "command": null,
+            "args": [],
+            "cwd": "/tmp/patchprove-runtime-yz6wc2",
+            "exitCode": null,
+            "durationMs": 0,
+            "reason": "Cargo.toml present but cargo binary not found"
+          }
+        ]
+      },
+      "full": null
+    },
+    {
+      "id": "maven-success",
+      "outcome": "passed",
+      "expected": "passed",
+      "selected": {
+        "status": "passed",
+        "collectedTests": 1,
+        "durationMs": 3620,
+        "records": [
+          {
+            "id": "tests:java",
+            "checkId": "tests",
+            "scope": [
+              "src/test/java/fixture/ValueTest.java"
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-toolchains/apache-maven-3.9.9/bin/mvn",
+            "args": [
+              "test",
+              "-Dtest=fixture.ValueTest"
+            ],
+            "cwd": "/tmp/patchprove-runtime-fmkbjc",
+            "exitCode": 0,
+            "durationMs": 3620,
+            "reason": "ok",
+            "toolVersion": "Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "57a17367966c9e20265a8374d34d52402e1b0036c0eabd9779d0b65059b3777d"
+          }
+        ]
+      },
+      "full": {
+        "status": "passed",
+        "command": "/tmp/patchprove-toolchains/apache-maven-3.9.9/bin/mvn test --batch-mode",
+        "args": [
+          "test",
+          "--batch-mode"
+        ],
+        "cwd": "/tmp/patchprove-runtime-fmkbjc",
+        "exitCode": 0,
+        "collectedTests": 1,
+        "durationMs": 3068,
+        "outputHash": "55bb03ca05b709f405bfa34bf278d759e484457ccd3d2d87a8959fce58f1ad64"
+      }
+    },
+    {
+      "id": "maven-failure",
+      "outcome": "passed",
+      "expected": "failed",
+      "selected": {
+        "status": "failed",
+        "collectedTests": 1,
+        "durationMs": 3742,
+        "records": [
+          {
+            "id": "tests:java",
+            "checkId": "tests",
+            "scope": [
+              "src/test/java/fixture/ValueTest.java"
+            ],
+            "status": "failed",
+            "command": "/tmp/patchprove-toolchains/apache-maven-3.9.9/bin/mvn",
+            "args": [
+              "test",
+              "-Dtest=fixture.ValueTest"
+            ],
+            "cwd": "/tmp/patchprove-runtime-mUU4pR",
+            "exitCode": 1,
+            "durationMs": 3742,
+            "reason": "exit 1",
+            "toolVersion": "Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "7d63e0d717e523df301ec8405158ef590649565b8f3fb510fb00f087c62bb827"
+          }
+        ]
+      },
+      "full": {
+        "status": "failed",
+        "command": "/tmp/patchprove-toolchains/apache-maven-3.9.9/bin/mvn test --batch-mode",
+        "args": [
+          "test",
+          "--batch-mode"
+        ],
+        "cwd": "/tmp/patchprove-runtime-mUU4pR",
+        "exitCode": 1,
+        "collectedTests": 1,
+        "durationMs": 3406,
+        "outputHash": "97e4917dd87a3cca08bec4963a5c43a7c4b9aaf3698b648ea161c77904884cfa"
+      }
+    },
+    {
+      "id": "maven-zero",
+      "outcome": "passed",
+      "expected": "skipped",
+      "selected": {
+        "status": "skipped",
+        "collectedTests": 0,
+        "durationMs": 3515,
+        "records": [
+          {
+            "id": "tests:java",
+            "checkId": "tests",
+            "scope": [
+              "src/test/java/fixture/ValueTest.java"
+            ],
+            "status": "skipped",
+            "command": "/tmp/patchprove-toolchains/apache-maven-3.9.9/bin/mvn",
+            "args": [
+              "test",
+              "-Dtest=fixture.ValueTest"
+            ],
+            "cwd": "/tmp/patchprove-runtime-nyfqte",
+            "exitCode": 0,
+            "durationMs": 3515,
+            "reason": "Test runner collected zero tests",
+            "toolVersion": "Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)",
+            "collectedTests": 0,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "53ddff1f54c1559bd68f42edb48b5d86cb987641434e634cde63c52416d9d06d"
+          }
+        ]
+      },
+      "full": {
+        "status": "skipped",
+        "command": "/tmp/patchprove-toolchains/apache-maven-3.9.9/bin/mvn test --batch-mode",
+        "args": [
+          "test",
+          "--batch-mode"
+        ],
+        "cwd": "/tmp/patchprove-runtime-nyfqte",
+        "exitCode": 0,
+        "collectedTests": 0,
+        "durationMs": 2860,
+        "outputHash": "4cc936f488c01ed93468d2789d78c743e9a8d305a870b75ecba58ba1aa65ac14"
+      }
+    },
+    {
+      "id": "maven-multimodule",
+      "outcome": "passed",
+      "expected": "passed",
+      "selected": {
+        "status": "passed",
+        "collectedTests": 2,
+        "durationMs": 4474,
+        "records": [
+          {
+            "id": "tests:java",
+            "checkId": "tests",
+            "scope": [
+              "alpha/src/test/java/fixture/ValueTest.java",
+              "beta/src/test/java/fixture/ValueTest.java"
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-toolchains/apache-maven-3.9.9/bin/mvn",
+            "args": [
+              "-pl",
+              "alpha,beta",
+              "-am",
+              "test",
+              "-Dtest=fixture.ValueTest"
+            ],
+            "cwd": "/tmp/patchprove-runtime-ZhfdAr",
+            "exitCode": 0,
+            "durationMs": 4474,
+            "reason": "ok",
+            "toolVersion": "Apache Maven 3.9.9 (8e8579a9e76f7d015ee5ec7bfcdc97d260186937)",
+            "collectedTests": 2,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "9d864334a7231e1c3022427aebb1a228b5c41471fdeda522a604915aeca09d61"
+          }
+        ]
+      },
+      "full": {
+        "status": "passed",
+        "command": "/tmp/patchprove-toolchains/apache-maven-3.9.9/bin/mvn test --batch-mode",
+        "args": [
+          "test",
+          "--batch-mode"
+        ],
+        "cwd": "/tmp/patchprove-runtime-ZhfdAr",
+        "exitCode": 0,
+        "collectedTests": 2,
+        "durationMs": 2938,
+        "outputHash": "43dfc18a57781a2233d89c45d09c360a6ae7e145dafa4110d8a378ede8a4b4da"
+      }
+    },
+    {
+      "id": "maven-missing",
+      "outcome": "passed",
+      "expected": "skipped",
+      "selected": {
+        "status": "skipped",
+        "collectedTests": 0,
+        "durationMs": 0,
+        "records": [
+          {
+            "id": "tests:java",
+            "checkId": "tests",
+            "scope": [
+              "src/test/java/fixture/ValueTest.java"
+            ],
+            "status": "skipped",
+            "command": null,
+            "args": [],
+            "cwd": "/tmp/patchprove-runtime-Sz8a65",
+            "exitCode": null,
+            "durationMs": 0,
+            "reason": "Java build tool configured but mvn/gradle binary not found"
+          }
+        ]
+      },
+      "full": null
+    },
+    {
+      "id": "gradle-success",
+      "outcome": "passed",
+      "expected": "passed",
+      "selected": {
+        "status": "passed",
+        "collectedTests": 1,
+        "durationMs": 1157,
+        "records": [
+          {
+            "id": "tests:java",
+            "checkId": "tests",
+            "scope": [
+              "src/test/java/fixture/ValueTest.java"
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-toolchains/gradle-8.12.1/bin/gradle",
+            "args": [
+              "test",
+              "--tests",
+              "fixture.ValueTest"
+            ],
+            "cwd": "/tmp/patchprove-runtime-Tk2hWz",
+            "exitCode": 0,
+            "durationMs": 1157,
+            "reason": "ok",
+            "toolVersion": "Gradle 8.12.1",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "b95e39d381c4a990f5030269d1659cad48299f40dd2135ed079b7f8c3a82a05c"
+          }
+        ]
+      },
+      "full": {
+        "status": "passed",
+        "command": "/tmp/patchprove-toolchains/gradle-8.12.1/bin/gradle cleanTest test --console=plain --no-daemon",
+        "args": [
+          "cleanTest",
+          "test",
+          "--console=plain",
+          "--no-daemon"
+        ],
+        "cwd": "/tmp/patchprove-runtime-Tk2hWz",
+        "exitCode": 0,
+        "collectedTests": 1,
+        "durationMs": 4844,
+        "outputHash": "b1cdc84d2acc9d11644cc6388eee31358915ebb4d24d4b0e84bff099348b927f"
+      }
+    },
+    {
+      "id": "gradle-failure",
+      "outcome": "passed",
+      "expected": "failed",
+      "selected": {
+        "status": "failed",
+        "collectedTests": 1,
+        "durationMs": 1192,
+        "records": [
+          {
+            "id": "tests:java",
+            "checkId": "tests",
+            "scope": [
+              "src/test/java/fixture/ValueTest.java"
+            ],
+            "status": "failed",
+            "command": "/tmp/patchprove-toolchains/gradle-8.12.1/bin/gradle",
+            "args": [
+              "test",
+              "--tests",
+              "fixture.ValueTest"
+            ],
+            "cwd": "/tmp/patchprove-runtime-Ngw5PH",
+            "exitCode": 1,
+            "durationMs": 1192,
+            "reason": "exit 1",
+            "toolVersion": "Gradle 8.12.1",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "de143c7056014f665289ee41c8e2b59b66666f6e79e5e19426ea84dad86d59d8"
+          }
+        ]
+      },
+      "full": {
+        "status": "failed",
+        "command": "/tmp/patchprove-toolchains/gradle-8.12.1/bin/gradle cleanTest test --console=plain --no-daemon",
+        "args": [
+          "cleanTest",
+          "test",
+          "--console=plain",
+          "--no-daemon"
+        ],
+        "cwd": "/tmp/patchprove-runtime-Ngw5PH",
+        "exitCode": 1,
+        "collectedTests": 1,
+        "durationMs": 5499,
+        "outputHash": "10f84b52c0f24c62cccffdc93786bfe49429b9af5e40dda499fbd99e34590f9c"
+      }
+    },
+    {
+      "id": "gradle-zero",
+      "outcome": "passed",
+      "expected": "failed",
+      "selected": {
+        "status": "failed",
+        "collectedTests": 0,
+        "durationMs": 1233,
+        "records": [
+          {
+            "id": "tests:java",
+            "checkId": "tests",
+            "scope": [
+              "src/test/java/fixture/ValueTest.java"
+            ],
+            "status": "failed",
+            "command": "/tmp/patchprove-toolchains/gradle-8.12.1/bin/gradle",
+            "args": [
+              "test",
+              "--tests",
+              "fixture.ValueTest"
+            ],
+            "cwd": "/tmp/patchprove-runtime-9QJ5qL",
+            "exitCode": 1,
+            "durationMs": 1233,
+            "reason": "Test runner collected zero tests",
+            "toolVersion": "Gradle 8.12.1",
+            "collectedTests": 0,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "d7b321c72e14e3d92d9cab5426da4b606371153a21a4732fae1d4f54ebc4d5ea"
+          }
+        ]
+      },
+      "full": {
+        "status": "skipped",
+        "command": "/tmp/patchprove-toolchains/gradle-8.12.1/bin/gradle cleanTest test --console=plain --no-daemon",
+        "args": [
+          "cleanTest",
+          "test",
+          "--console=plain",
+          "--no-daemon"
+        ],
+        "cwd": "/tmp/patchprove-runtime-9QJ5qL",
+        "exitCode": 0,
+        "collectedTests": 0,
+        "durationMs": 5026,
+        "outputHash": "4237ec829d04c59312f38e60331efabc61e219e1a58e61e0647039c73834710d"
+      }
+    },
+    {
+      "id": "gradle-multimodule",
+      "outcome": "passed",
+      "expected": "passed",
+      "selected": {
+        "status": "passed",
+        "collectedTests": 2,
+        "durationMs": 1824,
+        "records": [
+          {
+            "id": "tests:java",
+            "checkId": "tests",
+            "scope": [
+              "alpha/src/test/java/fixture/ValueTest.java",
+              "beta/src/test/java/fixture/ValueTest.java"
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-toolchains/gradle-8.12.1/bin/gradle",
+            "args": [
+              ":alpha:test",
+              "--tests",
+              "fixture.ValueTest",
+              ":beta:test",
+              "--tests",
+              "fixture.ValueTest"
+            ],
+            "cwd": "/tmp/patchprove-runtime-BEFpXI",
+            "exitCode": 0,
+            "durationMs": 1824,
+            "reason": "ok",
+            "toolVersion": "Gradle 8.12.1",
+            "collectedTests": 2,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "700378c1041d221f6b910e3e251b8633fadd0233123698d6fa433b169571f224"
+          }
+        ]
+      },
+      "full": {
+        "status": "passed",
+        "command": "/tmp/patchprove-toolchains/gradle-8.12.1/bin/gradle cleanTest test --console=plain --no-daemon",
+        "args": [
+          "cleanTest",
+          "test",
+          "--console=plain",
+          "--no-daemon"
+        ],
+        "cwd": "/tmp/patchprove-runtime-BEFpXI",
+        "exitCode": 0,
+        "collectedTests": 2,
+        "durationMs": 5696,
+        "outputHash": "c3d6949c1af56b2252fdca7bff9693a875c65cbc2751916e80401e48fb33f033"
+      }
+    },
+    {
+      "id": "gradle-missing",
+      "outcome": "passed",
+      "expected": "skipped",
+      "selected": {
+        "status": "skipped",
+        "collectedTests": 0,
+        "durationMs": 0,
+        "records": [
+          {
+            "id": "tests:java",
+            "checkId": "tests",
+            "scope": [
+              "src/test/java/fixture/ValueTest.java"
+            ],
+            "status": "skipped",
+            "command": null,
+            "args": [],
+            "cwd": "/tmp/patchprove-runtime-P3kcP7",
+            "exitCode": null,
+            "durationMs": 0,
+            "reason": "Java build tool configured but mvn/gradle binary not found"
+          }
+        ]
+      },
+      "full": null
+    }
+  ],
+  "limitations": [
+    "Minimal local fixtures exercise execution and collection behavior; they do not measure real-world mapping accuracy.",
+    "Durations include local build/tool caches and are not speedup measurements."
+  ]
+}

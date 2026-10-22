@@ -5,7 +5,7 @@ import { readProjectFile } from "./context.js";
 import type { LanguagePlugin, PluginContext, PluginTestCommand } from "./types.js";
 import { uniqueSorted } from "./types.js";
 
-export function isRustTestFile(filePath: string): boolean {
+export function isRustTestFile(filePath: string, ctx?: PluginContext): boolean {
   const rel = normalizeRel(filePath);
   if (extname(rel) !== ".rs") return false;
   return (
@@ -13,7 +13,10 @@ export function isRustTestFile(filePath: string): boolean {
     rel.startsWith("tests/") ||
     rel.includes("/tests/") ||
     rel.endsWith("_test.rs") ||
-    /\/tests\.rs$/.test(rel)
+    /\/tests\.rs$/.test(rel) ||
+    (ctx != null && /#\s*\[\s*(?:[\w]+::)*test(?:\s*\([^\]]*\))?\s*\]/.test(
+      (readProjectFile(ctx, rel) ?? "").replace(/\/\*[\s\S]*?\*\//g, " ").replace(/\/\/[^\n]*/g, " "),
+    ))
   );
 }
 
@@ -159,7 +162,7 @@ export function rustTestCandidates(filePath: string, ctx?: PluginContext): strin
   return uniqueSorted(candidates);
 }
 
-const USE_RE = /(?:^|\n)\s*(?:pub\s+)?use\s+((?:crate|super|self)?(?:::\w+)+)/g;
+const USE_RE = /(?:^|\n)\s*(?:pub(?:\([^)]*\))?\s+)?use\s+((?:\w+::)*\w+)(?=::|\s|;)/g;
 const MOD_RE = /(?:^|\n)\s*(?:pub\s+)?mod\s+(\w+)\s*;/g;
 
 export function parseRustImports(sourceText: string): string[] {
@@ -199,22 +202,83 @@ export function resolveRustImport(
     }
     return null;
   }
-  const parts = specifier.split("::").filter((p) => p && p !== "crate" && p !== "self");
-  if (specifier.startsWith("super::")) {
-    const parent = dir === "." ? "." : parentDir(dir) || ".";
-    const rest = specifier.slice("super::".length).split("::").filter(Boolean);
-    const prefix = parent === "." ? "" : `${parent}/`;
-    const joined = `${prefix}${rest.join("/")}`;
+  let parts = specifier.split("::").filter(Boolean);
+  let moduleDir = srcPrefix;
+  let knownCrate = ["crate", "self", "super"].includes(parts[0] ?? "");
+  if (parts[0] === "super") {
+    moduleDir = dir;
+    while (parts[0] === "super") {
+      moduleDir = parentDir(moduleDir) || ".";
+      parts.shift();
+    }
+  } else if (parts[0] === "self") {
+    moduleDir = dir;
+    parts.shift();
+  } else if (parts[0] === "crate") {
+    parts.shift();
+  } else {
+    const crate = loadCargoCrates(ctx).find((candidate) => candidate.name.replaceAll("-", "_") === parts[0]);
+    if (crate) {
+      knownCrate = true;
+      moduleDir = crate.path ? `${crate.path}/src` : "src";
+      parts.shift();
+    }
+  }
+  // A use path often ends in an item (alpha::module::function), so peel
+  // item names until the containing source module is found.
+  for (let length = parts.length; length > 0; length--) {
+    const joined = `${moduleDir}/${parts.slice(0, length).join("/")}`;
     for (const candidate of [`${joined}.rs`, `${joined}/mod.rs`].map(normalizeRel)) {
       if (existing.has(candidate)) return candidate;
     }
   }
-  if (parts.length === 0) return null;
-  const cratePaths = [`${srcPrefix}/${parts.join("/")}.rs`, `${srcPrefix}/${parts.join("/")}/mod.rs`];
-  for (const candidate of cratePaths.map(normalizeRel)) {
+  if (!knownCrate) return null;
+  for (const candidate of [`${moduleDir}/lib.rs`, `${moduleDir}/main.rs`].map(normalizeRel)) {
     if (existing.has(candidate)) return candidate;
   }
   return null;
+}
+
+function crateDependencyRoots(crate: CargoCrate, crates: CargoCrate[], ctx?: PluginContext): string[] {
+  const manifest = readProjectFile(ctx, crate.path ? `${crate.path}/Cargo.toml` : "Cargo.toml") ?? "";
+  const roots = new Set<string>();
+  let section = "";
+  for (const rawLine of manifest.split(/\r?\n/)) {
+    const line = rawLine.replace(/\s+#.*$/, "");
+    const header = /^\s*\[([^\]]+)\]/.exec(line)?.[1];
+    if (header) {
+      section = header;
+      const dependency = /(?:^|\.)(?:dev-|build-)?dependencies\.([\w-]+)$/.exec(header)?.[1];
+      if (dependency) {
+        const hit = crates.find((candidate) => candidate.name === dependency);
+        if (hit) roots.add(hit.path);
+      }
+      continue;
+    }
+    if (!/(?:^|\.)(?:dev-|build-)?dependencies(?:\.|$)/.test(section)) continue;
+    const entry = /^\s*([\w-]+)\s*=\s*(.*)$/.exec(line);
+    if (!entry) continue;
+    const key = entry[1] ?? "";
+    const value = entry[2] ?? "";
+    const packageName = /\bpackage\s*=\s*["']([^"']+)/.exec(value)?.[1];
+    const pathValue = /\bpath\s*=\s*["']([^"']+)/.exec(value)?.[1];
+    const dedicatedName = /(?:^|\.)(?:dev-|build-)?dependencies\.([\w-]+)$/.exec(section)?.[1];
+    const resolvedPath = pathValue ? normalizeRel(path.posix.join(crate.path || ".", pathValue)) : null;
+    const hit = crates.find((candidate) => candidate.path === resolvedPath || candidate.name === (packageName ?? dedicatedName ?? key));
+    if (hit) roots.add(hit.path);
+    // Dedicated [dependencies.alias] tables use one field per line.
+    if (dedicatedName && key === "path") {
+      const target = /^["']([^"']+)/.exec(value)?.[1];
+      const hitByPath = target ? crates.find((candidate) => candidate.path === normalizeRel(path.posix.join(crate.path || ".", target))) : null;
+      if (hitByPath) roots.add(hitByPath.path);
+    }
+    if (dedicatedName && key === "package") {
+      const target = /^["']([^"']+)/.exec(value)?.[1];
+      const hitByName = crates.find((candidate) => candidate.name === target);
+      if (hitByName) roots.add(hitByName.path);
+    }
+  }
+  return [...roots];
 }
 
 export function rustPackageTests(
@@ -224,13 +288,22 @@ export function rustPackageTests(
 ): string[] {
   const source = normalizeRel(rel);
   if (extname(source) !== ".rs" || isRustTestFile(source)) return [];
-  const root = findCrateRoot(source, ctx);
-  const tests: string[] = [];
-  for (const file of existing) {
-    if (!isRustTestFile(file)) continue;
-    if (findCrateRoot(file, ctx) === root) tests.push(file);
+  const roots = new Set([findCrateRoot(source, ctx)]);
+  const crates = loadCargoCrates(ctx);
+  // Cargo package tests exercise the crate as a unit. Include transitive
+  // dependents even when a use path refers to an exported symbol, not a file.
+  let added = true;
+  while (added) {
+    added = false;
+    for (const crate of crates) {
+      if (roots.has(crate.path)) continue;
+      if (crateDependencyRoots(crate, crates, ctx).some((dependency) => roots.has(dependency))) {
+        roots.add(crate.path);
+        added = true;
+      }
+    }
   }
-  return uniqueSorted(tests);
+  return uniqueSorted([...existing].filter((file) => isRustTestFile(file, ctx) && roots.has(findCrateRoot(file, ctx))));
 }
 
 export const rustPlugin: LanguagePlugin = {

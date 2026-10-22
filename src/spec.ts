@@ -1,9 +1,9 @@
 import { existsSync, readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { parse as parseYaml } from "yaml";
 import { isOpenGap } from "./accept.js";
 import { matchAnyGlob } from "./glob.js";
-import { isMappableSource } from "./mapping.js";
 import { riskRank } from "./risk.js";
 import type {
   CheckId,
@@ -51,6 +51,9 @@ function parseGlobClauses(value: unknown, source: string): GlobClause[] {
     if (!rec || typeof rec.glob !== "string" || !rec.glob.trim()) {
       throw new Error(`${loc}: must be a glob string or { glob, reason? }`);
     }
+    if (rec.reason !== undefined && typeof rec.reason !== "string") {
+      throw new Error(`${loc}: reason must be a string`);
+    }
     const reason = typeof rec.reason === "string" ? rec.reason.trim() : undefined;
     out.push({ glob: rec.glob.trim(), ...(reason ? { reason } : {}) });
   }
@@ -78,7 +81,7 @@ export function parseContractObject(raw: unknown, source: string): Omit<Patchpro
 
   let policy: PatchproveContract["acceptedResidualRisk"]["policy"] = "allow";
   const accepted = rec.acceptedResidualRisk;
-  if (accepted !== undefined && accepted !== null) {
+  if (accepted !== undefined) {
     if (typeof accepted === "string") {
       if (accepted !== "none" && accepted !== "listed-only" && accepted !== "allow") {
         throw new Error(`${source}: acceptedResidualRisk must be none|listed-only|allow`);
@@ -86,8 +89,11 @@ export function parseContractObject(raw: unknown, source: string): Omit<Patchpro
       policy = accepted;
     } else {
       const acc = asRecord(accepted);
+      if (!acc) {
+        throw new Error(`${source}: acceptedResidualRisk must be none|listed-only|allow or a policy mapping`);
+      }
       const rawPolicy = acc?.policy;
-      if (rawPolicy !== undefined && rawPolicy !== "none" && rawPolicy !== "listed-only" && rawPolicy !== "allow") {
+      if (rawPolicy !== "none" && rawPolicy !== "listed-only" && rawPolicy !== "allow") {
         throw new Error(`${source}: acceptedResidualRisk.policy must be none|listed-only|allow`);
       }
       if (rawPolicy === "none" || rawPolicy === "listed-only" || rawPolicy === "allow") {
@@ -96,6 +102,9 @@ export function parseContractObject(raw: unknown, source: string): Omit<Patchpro
     }
   }
 
+  if (rec.schemaVersion !== undefined && (typeof rec.schemaVersion !== "string" || !rec.schemaVersion.trim())) {
+    throw new Error(`${source}: schemaVersion must be a non-empty string`);
+  }
   const schemaVersion =
     typeof rec.schemaVersion === "string" && rec.schemaVersion.trim()
       ? rec.schemaVersion.trim()
@@ -165,8 +174,10 @@ export function loadContract(root: string, explicit?: string): PatchproveContrac
   const found = findSpecPath(root, explicit);
   if (!found) return null;
   const text = readFileSync(found.path, "utf8");
+  const identify = (file: string, content: string) => ({ path: file, hash: `sha256:${createHash("sha256").update(JSON.stringify(content)).digest("hex")}` });
+  const primary = identify(found.path, text);
   if (found.format === "yaml") {
-    return { ...parseContractText(text, found.path), sourcePath: found.path, format: "yaml" };
+    return { ...parseContractText(text, found.path), sourcePath: found.path, format: "yaml", inputIdentities: [primary] };
   }
   const extracted = extractYamlFromSpecMd(text);
   if (!extracted) {
@@ -180,16 +191,21 @@ export function loadContract(root: string, explicit?: string): PatchproveContrac
       throw new Error(`${found.path}: linked spec not found: ${linked}`);
     }
     const linkedText = readFileSync(linked, "utf8");
-    return { ...parseContractText(linkedText, linked), sourcePath: found.path, format: "markdown" };
+    return { ...parseContractText(linkedText, linked), sourcePath: found.path, format: "markdown", inputPaths: [found.path, linked], inputIdentities: [primary, identify(linked, linkedText)] };
   }
-  return { ...parseContractText(extracted.yaml, found.path), sourcePath: found.path, format: "markdown" };
+  return { ...parseContractText(extracted.yaml, found.path), sourcePath: found.path, format: "markdown", inputIdentities: [primary] };
 }
 
 function changedMappable(evidence: Evidence): string[] {
+  // Impact has already classified sources using the plugins selected for this run.
+  const sources = new Set([
+    ...evidence.impact.unmappedSources,
+    ...evidence.impact.mappedTests.map((mapping) => mapping.source),
+  ]);
   return evidence.impact.changedFiles
     .filter((f) => f.status !== "deleted")
     .map((f) => f.path)
-    .filter((p) => isMappableSource(p));
+    .filter((p) => sources.has(p));
 }
 
 export function evaluateContract(contract: PatchproveContract | null, evidence: Evidence): ContractResult {
@@ -222,7 +238,7 @@ export function evaluateContract(contract: PatchproveContract | null, evidence: 
     });
   }
 
-  const mapped = new Set(evidence.impact.mappedTests.map((m) => m.source));
+  const mapped = new Set(evidence.impact.mappedTests.filter((m) => m.tests.length > 0).map((m) => m.source));
   const mappable = changedMappable(evidence);
 
   for (const [i, clause] of contract.requiredMappedTests.entries()) {

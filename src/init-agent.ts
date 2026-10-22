@@ -1,6 +1,8 @@
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync, statSync } from "node:fs";
 import path from "node:path";
 import { cursorRuleTemplatePath, skillTemplatePath } from "./pkg.js";
+import { writeJsonAtomic, writeTextAtomic } from "./artifacts.js";
+import { TOOL_VERSION } from "./types.js";
 
 export interface InitAgentOptions {
   cwd: string;
@@ -11,8 +13,10 @@ export interface InitAgentOptions {
   skill?: boolean;
   /** Install Cursor rule pack + .cursor/hooks.json (default true). */
   cursor?: boolean;
-  /** CLI invocation embedded in hook commands (default: `npx patchprove`). */
+  /** CLI invocation embedded in hook commands (default: a pinned package invocation). */
   cli?: string;
+  /** Absolute local CLI entry point, used by both hooks and MCP. */
+  localCli?: string;
 }
 
 export interface InitAgentResult {
@@ -28,10 +32,22 @@ export function isPatchproveHookCommand(
 ): boolean {
   const needle = event === "subagent-stop" ? "hook subagent-stop" : `hook ${event}`;
   if (!command.includes(needle)) return false;
-  return /patchprove(?:-mcp)?\b/.test(command) || /(?:^|[/\s])cli\.js\b/.test(command);
+  return /patchprove(?:-mcp)?\b/.test(command) || /(?:^|[\\/\s\"'])cli\.(?:js|mjs|cjs)\b/.test(command);
 }
 
-export const DEFAULT_CLI = "npx patchprove";
+export const DEFAULT_CLI = `npx --yes --package patchprove@${TOOL_VERSION} patchprove`;
+
+function shellQuote(value: string): string {
+  if (process.platform === "win32") return `"${value.replaceAll('"', '\\"')}"`;
+  return `'${value.replaceAll("'", "'\\''")}'`;
+}
+
+function backup(filePath: string): void {
+  if (!existsSync(filePath)) return;
+  let destination = `${filePath}.bak`;
+  for (let i = 1; existsSync(destination); i++) destination = `${filePath}.bak.${i}`;
+  writeTextAtomic(destination, readFileSync(filePath, "utf8"));
+}
 
 function rel(root: string, filePath: string): string {
   return path.relative(root, filePath) || filePath;
@@ -49,13 +65,13 @@ function readJsonIfPresent(filePath: string): unknown | undefined {
 }
 
 function writeJson(filePath: string, value: unknown): void {
-  mkdirSync(path.dirname(filePath), { recursive: true });
-  writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`, "utf8");
+  backup(filePath);
+  writeJsonAtomic(filePath, value);
 }
 
 function asRecord(value: unknown): Record<string, unknown> {
   if (value && typeof value === "object" && !Array.isArray(value)) {
-    return value as Record<string, unknown>;
+    return { ...value as Record<string, unknown> };
   }
   return {};
 }
@@ -111,7 +127,8 @@ export function mergeClaudeSettings(
     matcher?: string,
   ): unknown[] => {
     const list = Array.isArray(hooks[key]) ? [...(hooks[key] as unknown[])] : [];
-    const idx = list.findIndex((g) => hookCommandContains(g, event));
+    const idx = list.findIndex((g) => hookCommandContains(g, event) ||
+      (Array.isArray(asRecord(g).hooks) && (asRecord(g).hooks as unknown[]).some((item) => asRecord(item).command === command)));
     if (idx === -1) {
       list.push(claudeHookGroup(command, matcher));
       changed = true;
@@ -144,10 +161,10 @@ export function mergeCursorHooks(
   const command = `${cli} hook stop --adapter cursor --fail-on high`;
   const idx = stopList.findIndex((item) => {
     const cmd = asRecord(item).command;
-    return typeof cmd === "string" && isPatchproveHookCommand(cmd, "stop");
+    return typeof cmd === "string" && (cmd === command || isPatchproveHookCommand(cmd, "stop"));
   });
   let changed = false;
-  const entry = { command, timeout: 180, loop_limit: 3 };
+  const entry = { command, timeout: 35, loop_limit: 3 };
   if (idx === -1) {
     stopList.push(entry);
     changed = true;
@@ -162,13 +179,13 @@ export function mergeCursorHooks(
 export function mergeMcpConfig(
   existing: unknown,
   force: boolean,
+  localCli?: string,
 ): { next: Record<string, unknown>; changed: boolean } {
   const next = asRecord(existing);
   const servers = asRecord(next.mcpServers);
-  const snippet = {
-    command: "npx",
-    args: ["-y", "patchprove-mcp"],
-  };
+  const snippet = localCli
+    ? { command: process.execPath, args: [localCli, "mcp"] }
+    : { command: "npx", args: ["--yes", "--package", `patchprove@${TOOL_VERSION}`, "patchprove-mcp"] };
   const current = servers.patchprove;
   if (current && !force) {
     return { next: { ...next, mcpServers: servers }, changed: false };
@@ -186,7 +203,13 @@ export function executeInitAgent(options: InitAgentOptions): InitAgentResult {
   const writeHooks = options.hooks !== false;
   const writeMcp = options.mcp !== false;
   const writeCursor = options.cursor !== false;
-  const cli = (options.cli ?? DEFAULT_CLI).trim() || DEFAULT_CLI;
+  if (options.localCli && (!path.isAbsolute(options.localCli) || !existsSync(options.localCli) || !statSync(options.localCli).isFile())) {
+    throw new Error("--local-cli must point to an existing absolute CLI file");
+  }
+  if (options.localCli && options.cli) throw new Error("Use either --local-cli or --cli");
+  const cli = options.localCli
+    ? `${shellQuote(process.execPath)} ${shellQuote(options.localCli)}`
+    : (options.cli ?? DEFAULT_CLI).trim() || DEFAULT_CLI;
 
   const written: string[] = [];
   const skipped: string[] = [];
@@ -211,8 +234,8 @@ export function executeInitAgent(options: InitAgentOptions): InitAgentResult {
       note(dest, "skip", "already up to date");
     } else {
       if (!dryRun) {
-        mkdirSync(path.dirname(dest), { recursive: true });
-        writeFileSync(dest, template, "utf8");
+        backup(dest);
+        writeTextAtomic(dest, template);
       }
       note(dest, "write");
     }
@@ -233,7 +256,7 @@ export function executeInitAgent(options: InitAgentOptions): InitAgentResult {
   if (writeMcp) {
     const dest = path.join(root, ".mcp.json");
     const existing = readJsonIfPresent(dest);
-    const { next, changed } = mergeMcpConfig(existing, force);
+    const { next, changed } = mergeMcpConfig(existing, force, options.localCli);
     if (!changed) {
       note(dest, "skip", "mcpServers.patchprove already present; pass --force to overwrite");
     } else {
@@ -253,8 +276,8 @@ export function executeInitAgent(options: InitAgentOptions): InitAgentResult {
       note(ruleDest, "skip", "already up to date");
     } else {
       if (!dryRun) {
-        mkdirSync(path.dirname(ruleDest), { recursive: true });
-        writeFileSync(ruleDest, template, "utf8");
+        backup(ruleDest);
+        writeTextAtomic(ruleDest, template);
       }
       note(ruleDest, "write");
     }
@@ -271,7 +294,7 @@ export function executeInitAgent(options: InitAgentOptions): InitAgentResult {
   }
 
   messages.push(
-    "Agent must not claim done while open gaps remain. Run `patchprove run --fail-on high` or MCP prove_patch / list_gaps.",
+    "Agent completion requires verification.status passed. Run `patchprove run --fail-on high` or MCP prove_patch / list_gaps.",
   );
 
   return { dryRun, written, skipped, messages };

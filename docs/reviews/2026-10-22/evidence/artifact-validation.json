@@ -1,0 +1,45 @@
+{
+  "baselineCommit": "188e07e03da3f3a21cd64f574f35a1fab0a384c7",
+  "reports": [
+    "docs/reviews/2026-10-22/01-code-audit.md",
+    "docs/reviews/2026-10-22/02-product-modules.md",
+    "docs/reviews/2026-10-22/03-upgrade-roadmap.md"
+  ],
+  "jsonFilesValidated": [
+    "docs/reviews/2026-10-22/evidence/artifact-validation.json",
+    "docs/reviews/2026-10-22/evidence/baseline-files.json",
+    "docs/reviews/2026-10-22/evidence/competitor-licenses.json",
+    "docs/reviews/2026-10-22/evidence/competitor-sources.json",
+    "docs/reviews/2026-10-22/evidence/dependency-audit.json",
+    "docs/reviews/2026-10-22/evidence/execution-results.json",
+    "docs/reviews/2026-10-22/evidence/findings.json",
+    "docs/reviews/2026-10-22/evidence/integration-results.json",
+    "docs/reviews/2026-10-22/evidence/policy-results.json",
+    "docs/reviews/2026-10-22/evidence/reproduction-results.json",
+    "docs/reviews/2026-10-22/evidence/validation.json"
+  ],
+  "localLinkCount": 96,
+  "scriptsSyntax": [
+    {
+      "file": "docs/reviews/2026-10-22/evidence/execution-probes.mjs",
+      "exitCode": 0
+    },
+    {
+      "file": "docs/reviews/2026-10-22/evidence/integration-probes.mjs",
+      "exitCode": 0
+    },
+    {
+      "file": "docs/reviews/2026-10-22/evidence/policy-probes.mjs",
+      "exitCode": 0
+    },
+    {
+      "file": "docs/reviews/2026-10-22/evidence/reproduce.mjs",
+      "exitCode": 0
+    }
+  ],
+  "allFindingEvidencePointersResolve": true,
+  "trackedChanges": [],
+  "untrackedReviewArtifactsExpected": true,
+  "errors": [],
+  "ok": true
+}

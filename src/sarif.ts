@@ -1,5 +1,6 @@
-import { mkdirSync, writeFileSync } from "node:fs";
-import path from "node:path";
+import { createHash } from "node:crypto";
+import { pathToFileURL } from "node:url";
+import { writeJsonAtomic } from "./artifacts.js";
 import { isOpenGap } from "./accept.js";
 import type { ContractClauseResult, Evidence, Finding, Gap, RiskLevel, SummaryRisk } from "./types.js";
 
@@ -11,9 +12,18 @@ function sarifLevel(risk: RiskLevel | SummaryRisk): SarifLevel {
   return "note";
 }
 
-function uri(filePath: string | undefined): string | undefined {
+export function sarifUri(filePath: string | undefined): string | undefined {
   if (!filePath) return undefined;
-  return filePath.replaceAll("\\", "/").replace(/^\.?\//, "");
+  if (/^[A-Za-z]:[\\/]/.test(filePath) || filePath.startsWith("\\\\")) {
+    return pathToFileURL(filePath, { windows: true }).href;
+  }
+  if (filePath.startsWith("/")) return pathToFileURL(filePath, { windows: false }).href;
+  // Relative evidence paths are Git paths; a backslash can be a literal name.
+  return filePath.replace(/^\.\//, "").split("/").map(encodeURIComponent).join("/");
+}
+
+function fingerprint(kind: string, paths: string[], identity: string): Record<string, string> {
+  return { "patchprove/v2": createHash("sha256").update(JSON.stringify([kind, [...paths].sort(), identity])).digest("hex") };
 }
 
 interface SarifResult {
@@ -33,10 +43,11 @@ interface SarifResult {
     justification?: string;
   }>;
   properties?: Record<string, unknown>;
+  partialFingerprints?: Record<string, string>;
 }
 
 function location(filePath?: string, line?: number): SarifResult["locations"] {
-  const file = uri(filePath);
+  const file = sarifUri(filePath);
   if (!file) return undefined;
   return [
     {
@@ -57,6 +68,7 @@ function gapResult(gap: Gap): SarifResult {
     kind: accepted ? "review" : "fail",
     message: { text: gap.message },
     locations: location(firstFile),
+    partialFingerprints: gap.fingerprint ? { "patchprove/v2": gap.fingerprint } : fingerprint(gap.kind, gap.files ?? [], gap.id),
     properties: {
       gapId: gap.id,
       risk: gap.risk,
@@ -83,6 +95,7 @@ function findingResult(finding: Finding): SarifResult {
     kind: "fail",
     message: { text: finding.message },
     locations: location(finding.path, finding.line),
+    partialFingerprints: finding.fingerprint ? { "patchprove/v2": finding.fingerprint } : fingerprint(finding.kind, finding.path ? [finding.path] : [], finding.message),
     properties: {
       findingId: finding.id,
       risk: finding.risk,
@@ -97,6 +110,7 @@ function failedContractResult(clause: ContractClauseResult): SarifResult {
     kind: "fail",
     message: { text: clause.message },
     locations: location(clause.files?.[0]),
+    partialFingerprints: fingerprint(clause.kind, clause.files ?? [], clause.id),
     properties: {
       clauseId: clause.id,
       contractKind: clause.kind,
@@ -110,7 +124,7 @@ export function toSarif(evidence: Evidence): Record<string, unknown> {
     { id: "unmapped-test", name: "Unmapped test", shortDescription: { text: "Changed source has no mapped test" } },
     { id: "no-tests-mapped", name: "No tests mapped", shortDescription: { text: "Affected-test gate had no mapped tests" } },
     { id: "tool-missing", name: "Tool missing", shortDescription: { text: "A configured gate could not run" } },
-    { id: "unsupported-language", name: "Unsupported language", shortDescription: { text: "Changed sources are outside JS/TS/Python mapping" } },
+    { id: "unsupported-language", name: "Unsupported language", shortDescription: { text: "Changed inputs are outside configured dependency mapping" } },
     { id: "high-risk-path", name: "High-risk path", shortDescription: { text: "Diff touches a high-risk path" } },
     { id: "lockfile", name: "Lockfile change", shortDescription: { text: "Lockfile changed" } },
     { id: "workflow", name: "Workflow change", shortDescription: { text: "CI workflow changed" } },
@@ -125,7 +139,7 @@ export function toSarif(evidence: Evidence): Record<string, unknown> {
   ];
 
   return {
-    $schema: "https://json.schemastore.org/sarif-2.1.0.json",
+    $schema: "https://docs.oasis-open.org/sarif/sarif/v2.1.0/errata01/os/schemas/sarif-schema-2.1.0.json",
     version: "2.1.0",
     runs: [
       {
@@ -150,8 +164,5 @@ export function toSarif(evidence: Evidence): Record<string, unknown> {
 }
 
 export function writeSarif(outPath: string, evidence: Evidence): string {
-  const resolved = path.resolve(outPath);
-  mkdirSync(path.dirname(resolved), { recursive: true });
-  writeFileSync(resolved, `${JSON.stringify(toSarif(evidence), null, 2)}\n`, "utf8");
-  return resolved;
+  return writeJsonAtomic(outPath, toSarif(evidence));
 }

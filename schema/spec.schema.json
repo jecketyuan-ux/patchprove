@@ -6,26 +6,50 @@
   "type": "object",
   "additionalProperties": true,
   "properties": {
-    "schemaVersion": { "type": "string" },
+    "schemaVersion": {
+      "type": "string"
+    },
     "requiredGates": {
       "type": "array",
-      "items": { "type": "string", "enum": ["typecheck", "lint", "tests", "secrets"] }
+      "items": {
+        "type": "string",
+        "enum": [
+          "typecheck",
+          "lint",
+          "tests",
+          "secrets"
+        ]
+      }
     },
     "maxResidualRisk": {
       "type": "string",
-      "enum": ["none", "low", "medium", "high", "critical"]
+      "enum": [
+        "none",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
     },
     "requiredMappedTests": {
       "type": "array",
       "items": {
         "oneOf": [
-          { "type": "string" },
+          {
+            "type": "string"
+          },
           {
             "type": "object",
-            "required": ["glob"],
+            "required": [
+              "glob"
+            ],
             "properties": {
-              "glob": { "type": "string" },
-              "reason": { "type": "string" }
+              "glob": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
             }
           }
         ]
@@ -35,13 +59,21 @@
       "type": "array",
       "items": {
         "oneOf": [
-          { "type": "string" },
+          {
+            "type": "string"
+          },
           {
             "type": "object",
-            "required": ["glob"],
+            "required": [
+              "glob"
+            ],
             "properties": {
-              "glob": { "type": "string" },
-              "reason": { "type": "string" }
+              "glob": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              }
             }
           }
         ]
@@ -49,12 +81,29 @@
     },
     "acceptedResidualRisk": {
       "oneOf": [
-        { "type": "string", "enum": ["none", "listed-only", "allow"] },
+        {
+          "type": "string",
+          "enum": [
+            "none",
+            "listed-only",
+            "allow"
+          ]
+        },
         {
           "type": "object",
           "properties": {
-            "policy": { "type": "string", "enum": ["none", "listed-only", "allow"] }
-          }
+            "policy": {
+              "type": "string",
+              "enum": [
+                "none",
+                "listed-only",
+                "allow"
+              ]
+            }
+          },
+          "required": [
+            "policy"
+          ]
         }
       ]
     }

@@ -1,29 +1,10 @@
 import { describe, expect, it } from "vitest";
 import { applyAcceptedGaps, findAcceptMatch } from "../src/accept.js";
 import { buildEvidence, collectGaps } from "../src/evidence.js";
-import type { CheckResult, DetectedTools, Gap } from "../src/types.js";
+import type { CheckResult, Gap } from "../src/types.js";
+import { emptyDetectedTools } from "../src/types.js";
 
-const emptyTools: DetectedTools = {
-  typescript: false,
-  tscBin: null,
-  eslint: false,
-  eslintBin: null,
-  vitest: false,
-  vitestBin: null,
-  jest: false,
-  jestBin: null,
-  python: false,
-  pyright: false,
-  pyrightBin: null,
-  mypy: false,
-  mypyBin: null,
-  ruff: false,
-  ruffBin: null,
-  pytest: false,
-  pytestBin: null,
-  gitleaks: false,
-  gitleaksBin: null,
-};
+const emptyTools = emptyDetectedTools();
 
 const skippedChecks: CheckResult[] = [
   { id: "typecheck", name: "typecheck", status: "skipped", reason: "No typechecker configured (tsc / pyright / mypy)" },
@@ -43,6 +24,24 @@ function unmappedGap(file: string): Gap {
 }
 
 describe("acceptGaps matching", () => {
+  const aggregate: Gap = { id: "gap-unsupported-language", kind: "unsupported-language", message: "Unsupported", risk: "low", files: ["generated/a.swift", "core/b.swift"] };
+
+  it("requires path rules to cover the complete aggregate scope", () => {
+    const partial = applyAcceptedGaps([aggregate], [{ path: "generated/**" }]);
+    expect(partial[0]?.accepted).not.toBe(true);
+    const covered = applyAcceptedGaps([aggregate], [
+      { ruleId: "generated", path: "generated/**", reason: "generated code" },
+      { ruleId: "core", path: "core/**", reason: "tracked debt" },
+    ]);
+    expect(covered[0]?.accepted).toBe(true);
+    expect(covered[0]?.acceptedBy).toEqual(["generated", "core"]);
+    expect(covered[0]?.acceptedReason).toBe("generated code; tracked debt");
+  });
+
+  it("allows explicit ID acceptance and rejects expired exceptions", () => {
+    expect(applyAcceptedGaps([aggregate], [{ id: aggregate.id }])[0]?.accepted).toBe(true);
+    expect(applyAcceptedGaps([aggregate], [{ id: aggregate.id, expiresAt: "2000-01-01" }])[0]?.accepted).not.toBe(true);
+  });
   it("matches gap ids and path patterns", () => {
     const gap = unmappedGap("src/generated/foo.ts");
     expect(findAcceptMatch(gap, [{ id: "gap-unmapped-src/generated/foo.ts" }])).toBeTruthy();

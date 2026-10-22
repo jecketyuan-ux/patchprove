@@ -6,10 +6,32 @@ import {
   loadConfigFile,
   mergeConfig,
   parseConfigText,
+  parseConfigObject,
   resolveConfig,
 } from "../src/config.js";
 
 describe("parseConfigText", () => {
+  it("rejects unknown keys in strict mode and diagnoses them in compatibility mode", () => {
+    expect(() => parseConfigText("gates: { test: false }", "cfg")).toThrow(/unknown key "test"/);
+    const diagnostics: import("../src/types.js").Diagnostic[] = [];
+    const parsed = parseConfigText("faillOn: high", "cfg", { strict: false, diagnostics });
+    expect(parsed.failOn).toBeUndefined();
+    expect(diagnostics[0]?.code).toBe("unknown-config-key");
+    const dir = mkdtempSync(path.join(tmpdir(), "pp-cfg-"));
+    writeFileSync(path.join(dir, ".patchprove.yml"), "faillOn: high");
+    const opts = { cwd: dir, out: "evidence.json", json: false, format: "human" as const };
+    expect(() => resolveConfig(dir, opts)).toThrow(/unknown key/);
+    expect(resolveConfig(dir, { ...opts, protocol: 1 }).diagnostics).toHaveLength(1);
+  });
+
+  it("validates acceptance ownership, expiry and rule identities", () => {
+    const rule = { ruleId: "debt-42", path: "src/**", owner: "platform", expiresAt: "2099-01-01", ticket: "ISSUE-42" };
+    expect(parseConfigObject({ acceptGaps: [rule] }, "cfg").acceptGaps).toEqual([rule]);
+    for (const invalid of [{ owner: 42 }, { expiresAt: "forever" }, { expiresAt: "2026-02-30" }, { path: false }, { reason: [] }]) {
+      expect(() => parseConfigObject({ acceptGaps: [{ ...rule, ...invalid }] }, "cfg")).toThrow();
+    }
+    expect(() => parseConfigObject({ acceptGaps: [rule, rule] }, "cfg")).toThrow(/duplicate ruleId/);
+  });
   it("loads failOn, ignorePaths, gates, and acceptGaps", () => {
     const parsed = parseConfigText(
       `

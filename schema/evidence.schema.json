@@ -22,8 +22,8 @@
   "properties": {
     "schemaVersion": {
       "type": "string",
-      "pattern": "^1\\.[0-9]+\\.[0-9]+$",
-      "description": "Evidence JSON schema version (semver). Additive fields stay on 1.x; current packs emit 1.2.0. See docs/schema.md."
+      "pattern": "^(1|2)\\.[0-9]+\\.[0-9]+$",
+      "description": "Evidence semver: protocol 2 emits 2.0.0; explicit protocol 1 compatibility emits 1.3.0. Readers accept known-major additive fields."
     },
     "generatedAt": {
       "type": "string",
@@ -36,66 +36,151 @@
     "repo": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["cwd", "root"],
+      "required": [
+        "cwd",
+        "root"
+      ],
       "properties": {
-        "cwd": { "type": "string" },
-        "root": { "type": "string" }
+        "cwd": {
+          "type": "string"
+        },
+        "root": {
+          "type": "string"
+        }
       }
     },
     "range": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["mode", "base", "head"],
+      "required": [
+        "mode",
+        "base",
+        "head"
+      ],
       "properties": {
-        "mode": { "type": "string", "enum": ["working-tree", "range"] },
-        "base": { "type": ["string", "null"] },
-        "head": { "type": ["string", "null"] }
+        "mode": {
+          "type": "string",
+          "enum": [
+            "working-tree",
+            "range"
+          ]
+        },
+        "base": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "head": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
       }
     },
     "impact": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["changedFiles", "mappedTests", "unmappedSources", "languages", "mappingStrategy"],
+      "required": [
+        "changedFiles",
+        "mappedTests",
+        "unmappedSources",
+        "languages",
+        "mappingStrategy"
+      ],
       "properties": {
         "changedFiles": {
           "type": "array",
-          "items": { "$ref": "#/definitions/changedFile" }
+          "items": {
+            "$ref": "#/definitions/changedFile"
+          }
         },
         "mappedTests": {
           "type": "array",
-          "items": { "$ref": "#/definitions/mappedTest" }
+          "items": {
+            "$ref": "#/definitions/mappedTest"
+          }
         },
         "unmappedSources": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
         "languages": {
           "type": "array",
-          "items": { "type": "string", "enum": ["javascript", "typescript", "python", "go", "rust", "java", "other"] }
+          "items": {
+            "type": "string",
+            "enum": [
+              "javascript",
+              "typescript",
+              "python",
+              "go",
+              "rust",
+              "java",
+              "other"
+            ]
+          }
         },
         "mappingStrategy": {
           "type": "string",
-          "enum": ["naming", "coverage", "graph"],
+          "enum": [
+            "naming",
+            "coverage",
+            "graph"
+          ],
           "description": "Primary mapping strategy that produced mappings (coverage if a coverage map was loaded; else graph if import reverse-map produced hits; else naming)."
         },
         "mappingFallbacks": {
           "type": "array",
-          "items": { "type": "string", "enum": ["naming", "coverage", "graph"] },
-          "description": "Other strategies that also produced at least one source→test mapping on this run."
+          "items": {
+            "type": "string",
+            "enum": [
+              "naming",
+              "coverage",
+              "graph"
+            ]
+          },
+          "description": "Other strategies that also produced at least one source\u2192test mapping on this run."
+        },
+        "mappingEvidence": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/mappingEvidence"
+          }
+        },
+        "mappingDiagnostics": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/diagnostic"
+          }
+        },
+        "unmappedReasons": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },
     "checks": {
       "type": "array",
-      "items": { "$ref": "#/definitions/check" }
+      "items": {
+        "$ref": "#/definitions/check"
+      }
     },
     "gaps": {
       "type": "array",
-      "items": { "$ref": "#/definitions/gap" }
+      "items": {
+        "$ref": "#/definitions/gap"
+      }
     },
     "findings": {
       "type": "array",
-      "items": { "$ref": "#/definitions/finding" }
+      "items": {
+        "$ref": "#/definitions/finding"
+      }
     },
     "summary": {
       "type": "object",
@@ -110,103 +195,272 @@
         "findingCount"
       ],
       "properties": {
-        "risk": { "$ref": "#/definitions/summaryRisk" },
-        "checksPassed": { "type": "integer", "minimum": 0 },
-        "checksFailed": { "type": "integer", "minimum": 0 },
-        "checksSkipped": { "type": "integer", "minimum": 0 },
+        "risk": {
+          "$ref": "#/definitions/summaryRisk"
+        },
+        "checksPassed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "checksFailed": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "checksSkipped": {
+          "type": "integer",
+          "minimum": 0
+        },
         "gapCount": {
           "type": "integer",
           "minimum": 0,
           "description": "Open (non-accepted) gaps. Accepted gaps are counted separately and do not raise risk."
         },
-        "acceptedGapCount": { "type": "integer", "minimum": 0 },
-        "findingCount": { "type": "integer", "minimum": 0 }
+        "acceptedGapCount": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "findingCount": {
+          "type": "integer",
+          "minimum": 0
+        }
       }
     },
-    "contract": { "$ref": "#/definitions/contract" },
+    "contract": {
+      "$ref": "#/definitions/contract"
+    },
     "baselineComparison": {
       "oneOf": [
-        { "type": "null" },
-        { "$ref": "#/definitions/baselineComparison" }
+        {
+          "type": "null"
+        },
+        {
+          "$ref": "#/definitions/baselineComparison"
+        }
       ]
     },
     "receipt": {
       "$ref": "#/definitions/receiptRef",
       "description": "Optional pointer written after the content hash is computed. Excluded from the hash input."
+    },
+    "snapshot": {
+      "$ref": "#/definitions/snapshot"
+    },
+    "effectivePolicy": {
+      "$ref": "#/definitions/effectivePolicy"
+    },
+    "verification": {
+      "$ref": "#/definitions/verification"
+    },
+    "executionRecords": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/executionRecord"
+      }
+    },
+    "verificationPlan": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/planItem"
+      }
+    },
+    "diagnostics": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/diagnostic"
+      }
+    },
+    "mappingEvidence": {
+      "type": "array",
+      "items": {
+        "$ref": "#/definitions/mappingEvidence"
+      }
     }
   },
   "definitions": {
     "riskLevel": {
       "type": "string",
-      "enum": ["low", "medium", "high", "critical"]
+      "enum": [
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
     },
     "summaryRisk": {
       "type": "string",
-      "enum": ["none", "low", "medium", "high", "critical"]
+      "enum": [
+        "none",
+        "low",
+        "medium",
+        "high",
+        "critical"
+      ]
     },
     "changedFile": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["path", "status", "additions", "deletions", "highRisk"],
+      "required": [
+        "path",
+        "status",
+        "additions",
+        "deletions",
+        "highRisk"
+      ],
       "properties": {
-        "path": { "type": "string" },
+        "path": {
+          "type": "string"
+        },
         "status": {
           "type": "string",
-          "enum": ["added", "modified", "deleted", "renamed", "untracked"]
+          "enum": [
+            "added",
+            "modified",
+            "deleted",
+            "renamed",
+            "untracked"
+          ]
         },
-        "additions": { "type": "integer", "minimum": 0 },
-        "deletions": { "type": "integer", "minimum": 0 },
-        "highRisk": { "type": "boolean" },
+        "additions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "deletions": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "highRisk": {
+          "type": "boolean"
+        },
         "riskKind": {
-          "type": ["string", "null"],
-          "enum": ["lockfile", "workflow", "auth-crypto", null]
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "lockfile",
+            "workflow",
+            "auth-crypto",
+            null
+          ]
         }
       }
     },
     "mappedTest": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["source", "tests"],
+      "required": [
+        "source",
+        "tests"
+      ],
       "properties": {
-        "source": { "type": "string" },
+        "source": {
+          "type": "string"
+        },
         "tests": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
         "via": {
           "type": "string",
-          "enum": ["naming", "coverage", "graph"],
+          "enum": [
+            "naming",
+            "coverage",
+            "graph"
+          ],
           "description": "How this source was mapped. Present when a coverage map or naming heuristic produced the list."
+        },
+        "origins": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "naming",
+              "graph",
+              "coverage"
+            ]
+          }
         }
       }
     },
     "check": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "name", "status"],
+      "required": [
+        "id",
+        "name",
+        "status"
+      ],
       "properties": {
         "id": {
           "type": "string",
-          "enum": ["typecheck", "lint", "tests", "secrets"]
+          "enum": [
+            "typecheck",
+            "lint",
+            "tests",
+            "secrets"
+          ]
         },
-        "name": { "type": "string" },
+        "name": {
+          "type": "string"
+        },
         "status": {
           "type": "string",
-          "enum": ["passed", "failed", "skipped"]
+          "enum": [
+            "passed",
+            "failed",
+            "skipped"
+          ]
         },
-        "reason": { "type": "string" },
-        "command": { "type": ["string", "null"] },
-        "exitCode": { "type": ["integer", "null"] },
-        "durationMs": { "type": "number", "minimum": 0 },
-        "detail": { "type": "string" }
+        "reason": {
+          "type": "string"
+        },
+        "command": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "exitCode": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "durationMs": {
+          "type": "number",
+          "minimum": 0
+        },
+        "detail": {
+          "type": "string"
+        },
+        "records": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/executionRecord"
+          }
+        },
+        "timedOut": {
+          "type": "boolean"
+        },
+        "truncated": {
+          "type": "boolean"
+        }
       }
     },
     "gap": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "kind", "message", "risk"],
+      "required": [
+        "id",
+        "kind",
+        "message",
+        "risk"
+      ],
       "properties": {
-        "id": { "type": "string" },
+        "id": {
+          "type": "string"
+        },
         "kind": {
           "type": "string",
           "enum": [
@@ -218,25 +472,49 @@
             "regression"
           ]
         },
-        "message": { "type": "string" },
-        "risk": { "$ref": "#/definitions/riskLevel" },
+        "message": {
+          "type": "string"
+        },
+        "risk": {
+          "$ref": "#/definitions/riskLevel"
+        },
         "files": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
         "accepted": {
           "type": "boolean",
           "description": "True when this gap matches acceptGaps or --accept. Visible for audit; excluded from summary risk / fail-on."
         },
-        "acceptedReason": { "type": "string" }
+        "acceptedReason": {
+          "type": "string"
+        },
+        "fingerprint": {
+          "type": "string"
+        },
+        "acceptedBy": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     },
     "finding": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "kind", "risk", "message"],
+      "required": [
+        "id",
+        "kind",
+        "risk",
+        "message"
+      ],
       "properties": {
-        "id": { "type": "string" },
+        "id": {
+          "type": "string"
+        },
         "kind": {
           "type": "string",
           "enum": [
@@ -249,18 +527,37 @@
             "regression"
           ]
         },
-        "risk": { "$ref": "#/definitions/riskLevel" },
-        "message": { "type": "string" },
-        "path": { "type": "string" },
-        "line": { "type": "integer", "minimum": 1 }
+        "risk": {
+          "$ref": "#/definitions/riskLevel"
+        },
+        "message": {
+          "type": "string"
+        },
+        "path": {
+          "type": "string"
+        },
+        "line": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "fingerprint": {
+          "type": "string"
+        }
       }
     },
     "contractClause": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "kind", "passed", "message"],
+      "required": [
+        "id",
+        "kind",
+        "passed",
+        "message"
+      ],
       "properties": {
-        "id": { "type": "string" },
+        "id": {
+          "type": "string"
+        },
         "kind": {
           "type": "string",
           "enum": [
@@ -271,92 +568,823 @@
             "accepted-residual-risk"
           ]
         },
-        "passed": { "type": "boolean" },
-        "message": { "type": "string" },
+        "passed": {
+          "type": "boolean"
+        },
+        "message": {
+          "type": "string"
+        },
         "files": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
     "contract": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["loaded", "passed", "source", "format", "clauses"],
+      "required": [
+        "loaded",
+        "passed",
+        "source",
+        "format",
+        "clauses"
+      ],
       "properties": {
-        "loaded": { "type": "boolean" },
-        "passed": { "type": "boolean" },
-        "source": { "type": ["string", "null"] },
-        "format": { "type": ["string", "null"], "enum": ["yaml", "markdown", null] },
+        "loaded": {
+          "type": "boolean"
+        },
+        "passed": {
+          "type": "boolean"
+        },
+        "source": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "format": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "enum": [
+            "yaml",
+            "markdown",
+            null
+          ]
+        },
         "clauses": {
           "type": "array",
-          "items": { "$ref": "#/definitions/contractClause" }
+          "items": {
+            "$ref": "#/definitions/contractClause"
+          }
         }
       }
     },
     "baselineItem": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["id", "kind", "message", "risk"],
+      "required": [
+        "id",
+        "kind",
+        "message",
+        "risk"
+      ],
       "properties": {
-        "id": { "type": "string" },
-        "kind": { "type": "string" },
-        "message": { "type": "string" },
-        "risk": { "$ref": "#/definitions/riskLevel" },
+        "id": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "risk": {
+          "$ref": "#/definitions/riskLevel"
+        },
         "files": {
           "type": "array",
-          "items": { "type": "string" }
+          "items": {
+            "type": "string"
+          }
         },
-        "path": { "type": "string" }
+        "path": {
+          "type": "string"
+        },
+        "fingerprint": {
+          "type": "string"
+        }
       }
     },
     "baselineComparison": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["baselinePath", "newGaps", "resolvedGaps", "newFindings", "resolvedFindings", "regression"],
+      "required": [
+        "baselinePath",
+        "newGaps",
+        "resolvedGaps",
+        "newFindings",
+        "resolvedFindings",
+        "regression"
+      ],
       "properties": {
-        "baselinePath": { "type": "string" },
+        "baselinePath": {
+          "type": "string"
+        },
         "newGaps": {
           "type": "array",
-          "items": { "$ref": "#/definitions/baselineItem" }
+          "items": {
+            "$ref": "#/definitions/baselineItem"
+          }
         },
         "resolvedGaps": {
           "type": "array",
-          "items": { "$ref": "#/definitions/baselineItem" }
+          "items": {
+            "$ref": "#/definitions/baselineItem"
+          }
         },
         "newFindings": {
           "type": "array",
-          "items": { "$ref": "#/definitions/baselineItem" }
+          "items": {
+            "$ref": "#/definitions/baselineItem"
+          }
         },
         "resolvedFindings": {
           "type": "array",
-          "items": { "$ref": "#/definitions/baselineItem" }
+          "items": {
+            "$ref": "#/definitions/baselineItem"
+          }
         },
-        "regression": { "type": "boolean" },
+        "regression": {
+          "type": "boolean"
+        },
         "failOnNewGaps": {
           "type": "string",
-          "enum": ["high", "critical"]
+          "enum": [
+            "high",
+            "critical"
+          ]
+        },
+        "changedGaps": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/baselineItem"
+          }
+        },
+        "changedFindings": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/baselineItem"
+          }
+        },
+        "compatibility": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "compatible": {
+              "type": "boolean"
+            },
+            "reasons": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "contentHash": {
+              "type": "string",
+              "pattern": "^(sha256:)?[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "compatible",
+            "reasons"
+          ]
         }
       }
     },
     "receiptRef": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["algorithm", "contentHash"],
+      "required": [
+        "algorithm",
+        "contentHash"
+      ],
       "properties": {
-        "algorithm": { "type": "string", "const": "sha256" },
+        "algorithm": {
+          "type": "string",
+          "const": "sha256"
+        },
         "contentHash": {
           "type": "string",
           "pattern": "^sha256:[0-9a-f]{64}$",
           "description": "Canonical SHA-256 of the evidence (timestamps and receipt pointer excluded)."
         },
-        "path": { "type": "string" },
+        "path": {
+          "type": "string"
+        },
         "previousContentHash": {
           "type": "string",
           "pattern": "^sha256:[0-9a-f]{64}$"
         },
-        "unchanged": { "type": "boolean" }
+        "unchanged": {
+          "type": "boolean"
+        }
+      }
+    },
+    "diagnostic": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "code": {
+          "type": "string"
+        },
+        "message": {
+          "type": "string"
+        },
+        "severity": {
+          "enum": [
+            "warning",
+            "error"
+          ]
+        },
+        "files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": [
+        "code",
+        "message",
+        "severity"
+      ]
+    },
+    "snapshot": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "algorithm": {
+          "const": "sha256"
+        },
+        "version": {
+          "const": 1
+        },
+        "mode": {
+          "enum": [
+            "working-tree",
+            "range"
+          ]
+        },
+        "base": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "head": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "mergeBase": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "currentHead": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "tree": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "contentHash": {
+          "type": "string",
+          "pattern": "^(sha256:)?[0-9a-f]{64}$"
+        },
+        "patchHash": {
+          "type": "string",
+          "pattern": "^(sha256:)?[0-9a-f]{64}$"
+        },
+        "dirty": {
+          "type": "boolean"
+        },
+        "consistent": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "excludedPaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "uniqueItems": true
+        }
+      },
+      "required": [
+        "algorithm",
+        "version",
+        "mode",
+        "base",
+        "head",
+        "mergeBase",
+        "currentHead",
+        "tree",
+        "contentHash",
+        "patchHash",
+        "dirty",
+        "consistent"
+      ]
+    },
+    "executionRecord": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "checkId": {
+          "enum": [
+            "typecheck",
+            "lint",
+            "tests",
+            "secrets"
+          ]
+        },
+        "scope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "status": {
+          "enum": [
+            "passed",
+            "failed",
+            "skipped",
+            "cached",
+            "imported",
+            "timed-out",
+            "not-applicable"
+          ]
+        },
+        "command": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "args": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "cwd": {
+          "type": "string"
+        },
+        "exitCode": {
+          "type": [
+            "integer",
+            "null"
+          ]
+        },
+        "durationMs": {
+          "type": "number",
+          "minimum": 0
+        },
+        "reason": {
+          "type": "string"
+        },
+        "toolVersion": {
+          "type": "string"
+        },
+        "collectedTests": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "signal": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "truncated": {
+          "type": "boolean"
+        },
+        "outputHash": {
+          "type": "string",
+          "pattern": "^(sha256:)?[0-9a-f]{64}$"
+        },
+        "provenance": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "adapter": {
+              "type": "string"
+            },
+            "version": {
+              "type": "string"
+            },
+            "inputHash": {
+              "type": "string",
+              "pattern": "^(sha256:)?[0-9a-f]{64}$"
+            },
+            "snapshotHash": {
+              "type": "string",
+              "pattern": "^(sha256:)?[0-9a-f]{64}$"
+            }
+          },
+          "required": [
+            "adapter",
+            "version",
+            "inputHash"
+          ]
+        }
+      },
+      "required": [
+        "id",
+        "checkId",
+        "scope",
+        "status",
+        "command",
+        "args",
+        "cwd",
+        "exitCode",
+        "durationMs"
+      ]
+    },
+    "planItem": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "checkId": {
+          "enum": [
+            "typecheck",
+            "lint",
+            "tests",
+            "secrets"
+          ]
+        },
+        "scope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "required": {
+          "type": "boolean"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "unitId": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "id",
+        "checkId",
+        "scope",
+        "required",
+        "reason"
+      ]
+    },
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "passed",
+            "failed",
+            "incomplete"
+          ]
+        },
+        "strict": {
+          "type": "boolean"
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "checkId": {
+                "enum": [
+                  "typecheck",
+                  "lint",
+                  "tests",
+                  "secrets"
+                ]
+              },
+              "scope": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "code",
+              "message"
+            ]
+          }
+        },
+        "legacy": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "status",
+        "strict",
+        "reasons"
+      ]
+    },
+    "effectivePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "protocol": {
+          "enum": [
+            1,
+            2
+          ]
+        },
+        "strict": {
+          "type": "boolean"
+        },
+        "failOn": {
+          "enum": [
+            "high",
+            "critical",
+            null
+          ]
+        },
+        "failOnNewGaps": {
+          "enum": [
+            "high",
+            "critical",
+            null
+          ]
+        },
+        "gates": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "typecheck": {
+              "type": "boolean"
+            },
+            "lint": {
+              "type": "boolean"
+            },
+            "tests": {
+              "type": "boolean"
+            },
+            "secrets": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "typecheck",
+            "lint",
+            "tests",
+            "secrets"
+          ]
+        },
+        "ignorePaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "acceptGaps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              },
+              "ruleId": {
+                "type": "string"
+              },
+              "owner": {
+                "type": "string"
+              },
+              "expiresAt": {
+                "type": "string",
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                ]
+              },
+              "ticket": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "plugins": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "config": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "hash": {
+                  "type": "string",
+                  "pattern": "^(sha256:)?[0-9a-f]{64}$"
+                }
+              },
+              "required": [
+                "path",
+                "hash"
+              ]
+            }
+          ]
+        },
+        "spec": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "hash": {
+                  "type": "string",
+                  "pattern": "^(sha256:)?[0-9a-f]{64}$"
+                },
+                "inputs": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "path",
+                      "hash"
+                    ],
+                    "properties": {
+                      "path": {
+                        "type": "string"
+                      },
+                      "hash": {
+                        "type": "string",
+                        "pattern": "^(sha256:)?[0-9a-f]{64}$"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "path",
+                "hash"
+              ]
+            }
+          ]
+        },
+        "baseline": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "hash": {
+                  "type": "string",
+                  "pattern": "^(sha256:)?[0-9a-f]{64}$"
+                }
+              },
+              "required": [
+                "path",
+                "hash"
+              ]
+            }
+          ]
+        },
+        "hash": {
+          "type": "string",
+          "pattern": "^(sha256:)?[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "protocol",
+        "strict",
+        "failOn",
+        "failOnNewGaps",
+        "gates",
+        "ignorePaths",
+        "acceptGaps",
+        "plugins",
+        "config",
+        "spec",
+        "baseline",
+        "hash"
+      ]
+    },
+    "mappingEvidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": {
+          "type": "string"
+        },
+        "test": {
+          "type": "string"
+        },
+        "via": {
+          "enum": [
+            "coverage",
+            "graph",
+            "naming"
+          ]
+        },
+        "precision": {
+          "enum": [
+            "heuristic",
+            "structural",
+            "historical"
+          ]
+        },
+        "origin": {
+          "type": "string"
+        },
+        "freshness": {
+          "enum": [
+            "current",
+            "unknown",
+            "stale"
+          ]
+        },
+        "inputHash": {
+          "type": "string",
+          "pattern": "^(sha256:)?[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "source",
+        "test",
+        "via",
+        "precision"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "schemaVersion": {
+            "pattern": "^2\\."
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "snapshot",
+          "executionRecords",
+          "verificationPlan",
+          "effectivePolicy",
+          "verification"
+        ]
       }
     }
-  }
+  ]
 }

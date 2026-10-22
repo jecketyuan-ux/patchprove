@@ -7,8 +7,11 @@ import {
   timingSafeEqual,
   verify,
 } from "node:crypto";
-import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { writeJsonAtomic } from "./artifacts.js";
+import { evaluateVerification } from "./decision.js";
+import { validateEvidence, validateReceipt } from "./validation.js";
 import type {
   CheckDigest,
   Evidence,
@@ -48,6 +51,15 @@ export interface VerifyReceiptResult {
   signature: "verified" | "mismatch" | "skipped" | "absent";
   signatureAlg?: ReceiptSignature["alg"];
   message: string;
+  payloadMatches?: boolean;
+  trust?: "trusted" | "untrusted" | "unconfigured";
+  legacy?: boolean;
+}
+
+export interface ReceiptVerificationPolicy {
+  requireSignature?: boolean;
+  trustedKeyFingerprints?: string[];
+  allowLegacy?: boolean;
 }
 
 function isPlainObject(value: unknown): value is Record<string, unknown> {
@@ -58,7 +70,7 @@ function isPlainObject(value: unknown): value is Record<string, unknown> {
 export function sortKeys(value: unknown): unknown {
   if (Array.isArray(value)) return value.map(sortKeys);
   if (!isPlainObject(value)) return value;
-  const out: Record<string, unknown> = {};
+  const out: Record<string, unknown> = Object.create(null) as Record<string, unknown>;
   for (const key of Object.keys(value).sort()) {
     const item = value[key];
     if (item === undefined) continue;
@@ -74,6 +86,24 @@ export function sortKeys(value: unknown): unknown {
  */
 export function canonicalEvidence(evidence: Evidence): unknown {
   const { generatedAt: _generatedAt, receipt: _receipt, ...rest } = evidence;
+  if (evidence.schemaVersion.startsWith("2.")) {
+    const locations = evidence.executionRecords?.map((record) => record.cwd).filter(Boolean) ?? [];
+    const portable = (value: string): string => locations.reduce((text, cwd) => text.replaceAll(cwd, "<snapshot>"), value);
+    const stableRecord = (record: NonNullable<Evidence["executionRecords"]>[number]) => {
+      const { durationMs: _duration, outputHash: _output, cwd: _cwd, ...stable } = record;
+      return { ...stable, command: stable.command ? portable(stable.command) : null, args: stable.args.map(portable) };
+    };
+    const { excludedPaths: _outputs, ...snapshot } = evidence.snapshot ?? {};
+    return sortKeys({
+      ...rest,
+      snapshot,
+      checks: rest.checks.map((check) => {
+        const { durationMs: _duration, detail: _detail, records: _records, ...stable } = check;
+        return { ...stable, command: stable.command ? portable(stable.command) : stable.command };
+      }),
+      executionRecords: rest.executionRecords?.map(stableRecord),
+    });
+  }
   return sortKeys({
     ...rest,
     checks: rest.checks.map((check) => {
@@ -208,35 +238,65 @@ export function verifySignature(
 
 export function buildReceipt(input: BuildReceiptInput): EvidenceReceipt {
   const contentHash = hashEvidence(input.evidence);
+  const modern = input.evidence.schemaVersion.startsWith("2.");
+  if (modern && (!input.evidence.snapshot || !input.evidence.effectivePolicy || !input.evidence.verification)) {
+    throw new Error("Protocol 2 receipts require snapshot, effective policy, and verification evidence");
+  }
+  if (modern) {
+    validateEvidence(input.evidence, "receipt evidence");
+    const decision = evaluateVerification(input.evidence);
+    if (canonicalize(decision) !== canonicalize(input.evidence.verification)) throw new Error("Receipt evidence decision does not match the verification policy and execution records");
+    const failed = decision.status === "failed" || decision.strict && decision.status === "incomplete";
+    if (input.exitCode !== (failed ? 1 : 0) || input.failOnOutcome.failed !== failed || (input.failOnOutcome.reason === "ok") === failed) {
+      throw new Error("Receipt exit code and fail-on outcome do not match the verification decision");
+    }
+  }
   const receipt: EvidenceReceipt = {
-    schemaVersion: RECEIPT_SCHEMA_VERSION,
+    schemaVersion: modern ? RECEIPT_SCHEMA_VERSION : "1.2.0",
     algorithm: "sha256",
     contentHash,
     toolVersion: input.evidence.toolVersion || TOOL_VERSION,
     evidenceSchemaVersion: input.evidence.schemaVersion,
     argv: input.argv ?? [],
-    options: optionsSummary(input.options),
+    options: { ...optionsSummary(input.options), sign: Boolean(input.sign) },
     exitCode: input.exitCode,
     failOnOutcome: input.failOnOutcome,
     checks: checkDigests(input.evidence),
     generatedAt: input.generatedAt ?? new Date().toISOString(),
   };
 
+  const policy = input.evidence.effectivePolicy;
+  if (policy) {
+    receipt.options.failOn = policy.failOn;
+    receipt.options.failOnNewGaps = policy.failOnNewGaps;
+    receipt.options.spec = policy.spec?.path ?? null;
+    receipt.options.baseline = policy.baseline?.path ?? null;
+  }
+  if (modern) {
+    const { receipt: _ref, ...fullEvidence } = input.evidence;
+    receipt.canonicalizationVersion = "2";
+    receipt.evidenceHash = hashCanonical(fullEvidence);
+    receipt.executionHash = hashCanonical(input.evidence.executionRecords ?? []);
+    receipt.snapshotHash = input.evidence.snapshot!.contentHash;
+    receipt.policyHash = policy!.hash;
+    receipt.verification = input.evidence.verification;
+    receipt.effectivePolicy = policy;
+    receipt.payloadHash = hashReceiptPayload(receipt);
+  }
+
   if (input.sign) {
     const material = parseSigningKey(input.signingKey ?? process.env.PATCHPROVE_SIGNING_KEY);
+    if (modern && !material) throw new Error("Signing was required but no signing key was provided");
     if (material) {
-      receipt.signature = signContentHash(contentHash, material);
+      receipt.signature = signContentHash(modern ? receipt.payloadHash! : contentHash, material);
     }
   }
 
-  return receipt;
+  return modern ? validateReceipt(receipt, "generated receipt") : receipt;
 }
 
 export function writeReceipt(outPath: string, receipt: EvidenceReceipt): string {
-  const resolved = path.resolve(outPath);
-  mkdirSync(path.dirname(resolved), { recursive: true });
-  writeFileSync(resolved, `${JSON.stringify(receipt, null, 2)}\n`, "utf8");
-  return resolved;
+  return writeJsonAtomic(outPath, receipt);
 }
 
 export function readReceiptFile(filePath: string): EvidenceReceipt {
@@ -248,20 +308,11 @@ export function readReceiptFile(filePath: string): EvidenceReceipt {
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(`Cannot read receipt JSON at ${resolved}: ${message}`);
   }
-  if (!isReceiptShape(raw)) {
-    throw new Error(`Not a patchprove receipt JSON: ${resolved}`);
-  }
-  return raw;
+  return validateReceipt(raw, resolved);
 }
 
 export function isReceiptShape(value: unknown): value is EvidenceReceipt {
-  if (!isPlainObject(value)) return false;
-  return (
-    typeof value.contentHash === "string" &&
-    value.algorithm === "sha256" &&
-    Array.isArray(value.checks) &&
-    isPlainObject(value.failOnOutcome)
-  );
+  try { validateReceipt(value, "receipt"); return true; } catch { return false; }
 }
 
 export function readReceiptHash(filePath: string): string | null {
@@ -300,20 +351,47 @@ export function verifyReceipt(
   evidence: Evidence,
   receipt: EvidenceReceipt,
   signingKey?: string | null,
+  policy: ReceiptVerificationPolicy = {},
 ): VerifyReceiptResult {
   const computedHash = hashEvidence(evidence);
   const hashMatches = computedHash === receipt.contentHash;
+  const modern = receipt.schemaVersion.startsWith("2.");
+  const protocolMatches = modern === evidence.schemaVersion.startsWith("2.") &&
+    (modern ? receipt.canonicalizationVersion === "2" : receipt.schemaVersion === "1.2.0") &&
+    receipt.evidenceSchemaVersion === evidence.schemaVersion;
+  const { receipt: _ref, ...fullEvidence } = evidence;
+  const payloadMatches = !modern || (
+    receipt.payloadHash === hashReceiptPayload(receipt) &&
+    receipt.evidenceHash === hashCanonical(fullEvidence) &&
+    receipt.executionHash === hashCanonical(evidence.executionRecords ?? []) &&
+    receipt.snapshotHash === evidence.snapshot?.contentHash &&
+    receipt.policyHash === evidence.effectivePolicy?.hash &&
+    receipt.evidenceSchemaVersion === evidence.schemaVersion &&
+    canonicalize(receipt.verification) === canonicalize(evidence.verification) &&
+    canonicalize(receipt.effectivePolicy) === canonicalize(evidence.effectivePolicy)
+  );
   let signature: VerifyReceiptResult["signature"] = "absent";
   if (receipt.signature) {
-    signature = verifySignature(receipt.contentHash, receipt.signature, signingKey);
+    signature = verifySignature(modern ? receipt.payloadHash ?? "" : receipt.contentHash, receipt.signature, signingKey);
   }
-  const ok = hashMatches && signature !== "mismatch";
+  const trustedKeys = policy.trustedKeyFingerprints ?? [];
+  const fingerprint = receipt.signature?.publicKey ? publicKeyFingerprint(receipt.signature.publicKey) : null;
+  const trust: NonNullable<VerifyReceiptResult["trust"]> = trustedKeys.length === 0 ? "unconfigured" : signature === "verified" && fingerprint && trustedKeys.includes(fingerprint) ? "trusted" : "untrusted";
+  const signatureRequired = policy.requireSignature || trustedKeys.length > 0;
+  const legacyAllowed = modern || policy.allowLegacy !== false;
+  const ok = protocolMatches && hashMatches && payloadMatches && signature !== "mismatch" && (!signatureRequired || signature === "verified") && trust !== "untrusted" && legacyAllowed;
   const parts = [
     hashMatches ? "hash matches" : `hash mismatch (receipt ${receipt.contentHash}, computed ${computedHash})`,
   ];
+  if (!protocolMatches) parts.push("evidence and receipt protocol versions do not match");
+  if (modern) parts.push(payloadMatches ? "authenticated payload matches" : "receipt payload mismatch");
+  else parts.push("legacy evidence-only receipt; metadata is not authenticated");
   if (signature === "verified") parts.push(`${receipt.signature?.alg} signature verified`);
   else if (signature === "mismatch") parts.push(`${receipt.signature?.alg} signature mismatch`);
   else if (signature === "skipped") parts.push(`${receipt.signature?.alg} signature not verified (no key)`);
+  if (signature === "absent") parts.push("unsigned");
+  parts.push(`signer trust ${trust}`);
+  if (!legacyAllowed) parts.push("legacy receipt rejected by policy");
   return {
     ok,
     contentHash: receipt.contentHash,
@@ -322,5 +400,18 @@ export function verifyReceipt(
     signature,
     signatureAlg: receipt.signature?.alg,
     message: parts.join("; "),
+    payloadMatches,
+    trust,
+    legacy: !modern,
   };
+}
+
+/** The full v2 receipt envelope, excluding only its self-reference and signature. */
+export function hashReceiptPayload(receipt: EvidenceReceipt): string {
+  const { payloadHash: _payloadHash, signature: _signature, ...payload } = receipt;
+  return hashCanonical(payload);
+}
+
+export function publicKeyFingerprint(publicKey: string): string {
+  return `${HASH_PREFIX}${createHash("sha256").update(Buffer.from(publicKey, "base64")).digest("hex")}`;
 }

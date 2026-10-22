@@ -1,9 +1,11 @@
 import { existsSync, readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { parse as parseYaml } from "yaml";
 import type {
   AcceptGapRule,
   CheckId,
+  Diagnostic,
   FailOnLevel,
   PatchproveGates,
   ResolvedConfig,
@@ -12,6 +14,21 @@ import type {
 
 const CONFIG_NAMES = [".patchprove.yml", ".patchprove.yaml"] as const;
 const CHECK_IDS: CheckId[] = ["typecheck", "lint", "tests", "secrets"];
+const CONFIG_KEYS = ["failOn", "ignorePaths", "gates", "acceptGaps", "baseline", "failOnNewGaps", "spec", "plugins"];
+
+export interface ConfigParseOptions {
+  strict?: boolean;
+  diagnostics?: Diagnostic[];
+}
+
+function checkKeys(rec: Record<string, unknown>, allowed: readonly string[], source: string, options: ConfigParseOptions): void {
+  for (const key of Object.keys(rec)) {
+    if (allowed.includes(key)) continue;
+    const message = `${source}: unknown key "${key}"`;
+    if (options.strict !== false) throw new Error(message);
+    options.diagnostics?.push({ code: "unknown-config-key", message, severity: "warning" });
+  }
+}
 
 export const DEFAULT_GATES: PatchproveGates = {
   typecheck: true,
@@ -49,10 +66,11 @@ function parseOptionalPath(value: unknown, source: string): string | null {
   return value.trim() || null;
 }
 
-function parseGates(value: unknown, source: string): Partial<PatchproveGates> {
+function parseGates(value: unknown, source: string, options: ConfigParseOptions): Partial<PatchproveGates> {
   if (value === undefined || value === null) return {};
   const rec = asRecord(value);
   if (!rec) throw new Error(`${source}: gates must be a mapping`);
+  checkKeys(rec, CHECK_IDS, source, options);
   const out: Partial<PatchproveGates> = {};
   for (const id of CHECK_IDS) {
     if (!(id in rec)) continue;
@@ -65,7 +83,7 @@ function parseGates(value: unknown, source: string): Partial<PatchproveGates> {
   return out;
 }
 
-export function parseAcceptGapRules(value: unknown, source: string): AcceptGapRule[] {
+export function parseAcceptGapRules(value: unknown, source: string, options: ConfigParseOptions = {}): AcceptGapRule[] {
   if (value === undefined || value === null) return [];
   if (!Array.isArray(value)) {
     throw new Error(`${source}: acceptGaps must be a list`);
@@ -83,6 +101,18 @@ export function parseAcceptGapRules(value: unknown, source: string): AcceptGapRu
     if (!rec) {
       throw new Error(`${loc}: must be a string or { id?, path?, reason? }`);
     }
+    checkKeys(rec, ["id", "path", "reason", "ruleId", "owner", "expiresAt", "ticket"], loc, options);
+    for (const key of ["id", "path", "reason", "ruleId", "owner", "expiresAt", "ticket"]) {
+      if (rec[key] !== undefined && (typeof rec[key] !== "string" || !rec[key].trim())) {
+        throw new Error(`${loc}: ${key} must be a non-empty string`);
+      }
+    }
+    if (typeof rec.expiresAt === "string" &&
+      (!/^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2}))?$/.test(rec.expiresAt) ||
+        !Number.isFinite(Date.parse(rec.expiresAt)) ||
+        new Date(`${rec.expiresAt.slice(0, 10)}T00:00:00Z`).toISOString().slice(0, 10) !== rec.expiresAt.slice(0, 10))) {
+      throw new Error(`${loc}: expiresAt must be a valid ISO date or timestamp`);
+    }
     const id = typeof rec.id === "string" ? rec.id.trim() : undefined;
     const pathPattern = typeof rec.path === "string" ? rec.path.trim() : undefined;
     const reason = typeof rec.reason === "string" ? rec.reason.trim() : undefined;
@@ -93,8 +123,14 @@ export function parseAcceptGapRules(value: unknown, source: string): AcceptGapRu
       ...(id ? { id } : {}),
       ...(pathPattern ? { path: pathPattern } : {}),
       ...(reason ? { reason } : {}),
+      ...(typeof rec.ruleId === "string" ? { ruleId: rec.ruleId.trim() } : {}),
+      ...(typeof rec.owner === "string" ? { owner: rec.owner.trim() } : {}),
+      ...(typeof rec.expiresAt === "string" ? { expiresAt: rec.expiresAt.trim() } : {}),
+      ...(typeof rec.ticket === "string" ? { ticket: rec.ticket.trim() } : {}),
     });
   }
+  const identities = rules.flatMap((rule) => rule.ruleId ? [rule.ruleId] : []);
+  if (new Set(identities).size !== identities.length) throw new Error(`${source}: duplicate ruleId`);
   return rules;
 }
 
@@ -113,13 +149,15 @@ export interface FileConfig {
   gates: Partial<PatchproveGates>;
   acceptGaps: AcceptGapRule[];
   sourcePath: string;
+  sourceHash?: string;
   baseline: string | null;
   failOnNewGaps: FailOnLevel | undefined;
   spec: string | null;
   plugins: string[];
+  diagnostics?: Diagnostic[];
 }
 
-export function parseConfigObject(raw: unknown, source: string): Omit<FileConfig, "sourcePath"> {
+export function parseConfigObject(raw: unknown, source: string, options: ConfigParseOptions = {}): Omit<FileConfig, "sourcePath"> {
   if (raw === undefined || raw === null) {
     return {
       failOn: undefined,
@@ -134,11 +172,12 @@ export function parseConfigObject(raw: unknown, source: string): Omit<FileConfig
   }
   const rec = asRecord(raw);
   if (!rec) throw new Error(`${source}: config root must be a mapping`);
+  checkKeys(rec, CONFIG_KEYS, source, options);
   return {
     failOn: parseFailOn(rec.failOn, `${source}: failOn`),
     ignorePaths: parseStringList(rec.ignorePaths, `${source}: ignorePaths`),
-    gates: parseGates(rec.gates, `${source}: gates`),
-    acceptGaps: parseAcceptGapRules(rec.acceptGaps, `${source}: acceptGaps`),
+    gates: parseGates(rec.gates, `${source}: gates`, options),
+    acceptGaps: parseAcceptGapRules(rec.acceptGaps, `${source}: acceptGaps`, options),
     baseline: parseOptionalPath(rec.baseline, `${source}: baseline`),
     failOnNewGaps: parseFailOn(rec.failOnNewGaps, `${source}: failOnNewGaps`),
     spec: parseOptionalPath(rec.spec, `${source}: spec`),
@@ -146,7 +185,7 @@ export function parseConfigObject(raw: unknown, source: string): Omit<FileConfig
   };
 }
 
-export function parseConfigText(text: string, source: string): Omit<FileConfig, "sourcePath"> {
+export function parseConfigText(text: string, source: string, options: ConfigParseOptions = {}): Omit<FileConfig, "sourcePath"> {
   let raw: unknown;
   try {
     raw = parseYaml(text, { prettyErrors: true });
@@ -154,7 +193,7 @@ export function parseConfigText(text: string, source: string): Omit<FileConfig, 
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(`${source}: invalid YAML (${message})`);
   }
-  return parseConfigObject(raw, source);
+  return parseConfigObject(raw, source, options);
 }
 
 export function findConfigPath(root: string, explicit?: string): string | null {
@@ -172,16 +211,18 @@ export function findConfigPath(root: string, explicit?: string): string | null {
   return null;
 }
 
-export function loadConfigFile(root: string, explicit?: string): FileConfig | null {
+export function loadConfigFile(root: string, explicit?: string, options: ConfigParseOptions = {}): FileConfig | null {
   const sourcePath = findConfigPath(root, explicit);
   if (!sourcePath) return null;
   const text = readFileSync(sourcePath, "utf8");
-  return { ...parseConfigText(text, sourcePath), sourcePath };
+  const diagnostics = options.diagnostics ?? [];
+  return { ...parseConfigText(text, sourcePath, { ...options, diagnostics }), sourcePath,
+    sourceHash: `sha256:${createHash("sha256").update(JSON.stringify(text)).digest("hex")}`, diagnostics };
 }
 
 export function mergeConfig(
   file: FileConfig | null,
-  options: Pick<RunOptions, "failOn" | "accept" | "ignore" | "disableGate" | "baseline" | "failOnNewGaps" | "spec">,
+  options: Pick<RunOptions, "failOn" | "accept" | "ignore" | "disableGate" | "baseline" | "failOnNewGaps" | "spec" | "protocol" | "strict">,
 ): ResolvedConfig {
   const gates: PatchproveGates = { ...DEFAULT_GATES, ...(file?.gates ?? {}) };
   for (const id of options.disableGate ?? []) {
@@ -218,15 +259,19 @@ export function mergeConfig(
     gates,
     acceptGaps,
     sourcePath: file?.sourcePath ?? null,
+    ...(file?.sourceHash ? { sourceHash: file.sourceHash } : {}),
     baseline: options.baseline ?? file?.baseline ?? null,
     failOnNewGaps,
     spec: options.spec ?? file?.spec ?? null,
     plugins: file?.plugins ?? [],
+    strict: options.strict ?? options.protocol !== 1,
+    protocol: options.protocol ?? 2,
+    diagnostics: file?.diagnostics ?? [],
   };
 }
 
 export function resolveConfig(root: string, options: RunOptions): ResolvedConfig {
-  const file = loadConfigFile(root, options.config);
+  const file = loadConfigFile(root, options.config, { strict: options.strictConfig ?? options.protocol !== 1 });
   return mergeConfig(file, options);
 }
 

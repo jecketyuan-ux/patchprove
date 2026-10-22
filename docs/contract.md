@@ -2,66 +2,35 @@
 title: Contract
 ---
 
-# Contract (`SPEC.md` / `.patchprove/spec.yml`)
+# Verification contract
 
-v1.0 can load an in-repo **contract** and evaluate it on every `patchprove run`. The contract is the merge/agent gate: required checks, mapped tests, and how much residual risk is allowed.
-
-## Primary file
-
-**Primary:** `.patchprove/spec.yml` (or `.patchprove/spec.yaml`)
-
-`SPEC.md` at the repo root is also supported:
-
-- Embed a fenced `yaml` / `yml` block, or
-- Link to the yaml (`[contract](.patchprove/spec.yml)`)
-
-If both exist, the yaml file wins. Override with `--spec <file>` or `spec:` in `.patchprove.yml`.
-
-JSON Schema: [`schema/spec.schema.json`](https://github.com/jecketyuan-ux/patchprove/blob/main/schema/spec.schema.json)
-
-## Shape
+Discovery order is `.patchprove/spec.yml`, `.patchprove/spec.yaml`, then root `SPEC.md` containing a YAML fence or link. Explicit `--spec` or configuration `spec:` selects a file. The [spec schema](../schema/spec.schema.json) describes its shape; contract schema `1.0` is independent of evidence protocol 2.
 
 ```yaml
-# .patchprove/spec.yml
 schemaVersion: "1.0"
-requiredGates:
-  - tests
-  - secrets
-maxResidualRisk: medium          # none | low | medium | high | critical
+requiredGates: [tests, secrets]
+maxResidualRisk: medium
 requiredMappedTests:
   - glob: src/auth/**
-    reason: auth paths must have a mapped test
+    reason: auth changes need mapped tests
 forbiddenUnproven:
   - glob: src/crypto/**
-    reason: crypto changes cannot ship unmapped
 acceptedResidualRisk:
-  policy: listed-only            # none | listed-only | allow
+  policy: listed-only
 ```
 
-| Field | Meaning |
+| Clause | Evaluation |
 | --- | --- |
-| `requiredGates` | Each listed gate (`typecheck`, `lint`, `tests`, `secrets`) must **pass** |
-| `maxResidualRisk` | `summary.risk` must be at or below this (open gaps + findings) |
-| `requiredMappedTests` | Changed mappable files matching `glob` must have mapped tests |
-| `forbiddenUnproven` | Matching changed sources must not appear in `unmappedSources` |
-| `acceptedResidualRisk.policy` | `none` = no residual risk/open gaps/findings; `listed-only` = no **open** gaps (everything leftover must be in `acceptGaps`); `allow` = only the other clauses apply |
+| `requiredGates` | Each listed check must pass, including when configuration disabled it |
+| `maxResidualRisk` | Maximum allowed summary risk from findings and open gaps |
+| `requiredMappedTests` | Changed, classified sources matching the glob need a nonempty test mapping |
+| `forbiddenUnproven` | Matching sources must not remain in `impact.unmappedSources` |
+| `acceptedResidualRisk` | `none`: no residual risk, open gaps, or findings; `listed-only`: no open gaps; `allow`: other clauses still apply |
 
-## Evidence
+The acceptance policy may be a shorthand string or `{ policy: ... }`. Truly omitted policy defaults to `allow`; explicit `null`, booleans, numbers, arrays, missing object policy, and unknown policy values fail parsing. Source classification comes from the current impact analysis, including permitted external plugins. A glob with no relevant changed source passes vacuously. A mapped test does not prove that a branch is asserted or exercised.
 
-`evidence.contract`:
+`evidence.contract` records each clause and its affected paths. Any failed clause fails the shared verification decision, even without a risk threshold. A passing contract alone does not turn missing planned execution or snapshot provenance into `passed`.
 
-```json
-{
-  "loaded": true,
-  "passed": false,
-  "source": "/repo/.patchprove/spec.yml",
-  "format": "yaml",
-  "clauses": [
-    { "id": "forbidden-unproven-0", "kind": "forbidden-unproven", "passed": false, "message": "…" }
-  ]
-}
-```
+Gap acceptance is separate configuration (`acceptGaps` or `--accept`). Path rules must jointly cover all files in an aggregate; an explicit ID accepts the group. Rules can record `ruleId`, `reason`, `owner`, `expiresAt`, and `ticket`; expired rules do not apply. Acceptance retains the gap and never removes findings. `listed-only` concerns open gaps and does not itself permit findings above `maxResidualRisk` or a configured `failOn` threshold.
 
-A loaded contract that fails **exits 1**, even if `--fail-on` is unset. That is the gate.
-
-Failed clauses are also emitted as SARIF results (`--sarif` / Action `upload-sarif: true`) so GitHub Code Scanning can show them. That path needs `security-events: write`.
+Failed clauses can be emitted to SARIF. The lenient contract in this repository is a wiring/reporting fixture, not proof of strict policy coverage. See [validation](validation.md).

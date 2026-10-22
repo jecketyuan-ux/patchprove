@@ -1,9 +1,10 @@
 import { execFileSync } from "node:child_process";
-import { mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
+import { existsSync, mkdirSync, mkdtempSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { describe, expect, it } from "vitest";
+import type { Evidence } from "../src/types.js";
 import { createMcpServer, MCP_TOOL_NAMES } from "../src/mcp.js";
 import {
   LIST_GAPS_DESCRIPTION,
@@ -13,6 +14,7 @@ import {
   provePatch,
   provePatchToMcpContent,
   readEvidenceFile,
+  runOptionsFromInput,
 } from "../src/mcp-tools.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -54,20 +56,21 @@ describe("prove_patch handler", () => {
     );
 
     const result = await provePatch({ cwd: dir, failOn: "high" });
+    expect(existsSync(path.join(dir, "evidence.json"))).toBe(false);
 
-    expect(result.evidence.schemaVersion).toBe("1.2.0");
-    expect(result.evidence.toolVersion).toBe("1.2.0");
+    expect(result.evidence.schemaVersion).toBe("2.0.0");
+    expect(result.evidence.toolVersion).toBe("2.0.0");
     expect(result.evidence.impact.unmappedSources).toContain("src/utils/hash.ts");
     expect(result.summary).toMatch(/open gaps/);
     expect(result.summary).toMatch(/Do not claim done/);
-    expect(result.failOnMet).toBe(false);
+    expect(result.failOnMet).toBe(true);
 
     const payload = JSON.parse(provePatchToMcpContent(result)) as {
       summary: string;
       evidence: { schemaVersion: string };
     };
     expect(payload.summary).toBe(result.summary);
-    expect(payload.evidence.schemaVersion).toBe("1.2.0");
+    expect(payload.evidence.schemaVersion).toBe("2.0.0");
   });
 
   it("writes evidence.json only when out is set", async () => {
@@ -76,7 +79,7 @@ describe("prove_patch handler", () => {
     const out = path.join(dir, "from-mcp.json");
     await provePatch({ cwd: dir, out });
     const written = readEvidenceFile(out);
-    expect(written.schemaVersion).toBe("1.2.0");
+    expect(written.schemaVersion).toBe("2.0.0");
   });
 });
 
@@ -111,6 +114,60 @@ describe("list_gaps handler", () => {
     const dir = mkdtempSync(path.join(tmpdir(), "patchprove-bad-"));
     const file = path.join(dir, "nope.json");
     writeFileSync(file, "{\"hello\":true}\n");
-    await expect(listGaps({ evidencePath: file })).rejects.toThrow(/Not a patchprove evidence JSON/);
+    await expect(listGaps({ evidencePath: file })).rejects.toThrow(/schemaVersion/);
+  });
+});
+
+
+describe("shared MCP options", () => {
+  it("forwards execution, protocol, policy, imports and artifact options", () => {
+    const input = {
+      cwd: "/tmp", spec: "SPEC.md", baseline: "baseline.json", failOnNewGaps: "critical" as const,
+      protocol: 1 as const, strict: false, isolate: true, timeoutMs: 1000, maxOutputBytes: 4096,
+      allowPlugins: true, strictConfig: true, adapterInputs: [{ adapter: "nx" as const, path: "nx.json" }],
+      receipt: "proof.receipt.json", sarif: "proof.sarif", sign: true,
+    };
+    expect(runOptionsFromInput(input)).toMatchObject({ ...input, cwd: path.resolve(input.cwd) });
+  });
+
+  it("does not claim completion from zero-gap historical evidence", async () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "patchprove-legacy-"));
+    const original = readEvidenceFile(fixtureEvidence);
+    const file = path.join(dir, "legacy.json");
+    writeFileSync(file, JSON.stringify({ ...original, gaps: [], summary: { ...original.summary, risk: "none", gapCount: 0, acceptedGapCount: 0 } }));
+    const result = await listGaps({ evidencePath: file });
+    expect(result.gapCount).toBe(0);
+    expect(result.claimDone).toBe(false);
+    expect(result.verification.reasons.some((reason) => reason.code === "legacy-provenance-missing")).toBe(true);
+  });
+});
+
+
+describe("zero-gap completion decisions", () => {
+  it.each(["failed-check", "failed-contract", "baseline-threshold"])("rejects %s even with a stored passed status", async (kind) => {
+    const dir = mkdtempSync(path.join(tmpdir(), "patchprove-completion-"));
+    const original = readEvidenceFile(fixtureEvidence);
+    const evidence: Evidence = {
+      ...original, gaps: [], checks: [],
+      summary: { ...original.summary, risk: "none", gapCount: 0, acceptedGapCount: 0, checksPassed: 0, checksFailed: 0, checksSkipped: 0 },
+      verification: { status: "passed", strict: true, reasons: [] },
+    };
+    if (kind === "failed-check") {
+      evidence.checks = [{ id: "tests", name: "tests", status: "failed", exitCode: 1 }];
+      evidence.summary.checksFailed = 1;
+    } else if (kind === "failed-contract") {
+      evidence.contract = { loaded: true, passed: false, source: "spec.yml", format: "yaml", clauses: [] };
+    } else {
+      evidence.baselineComparison = {
+        baselinePath: "old.json", newGaps: [{ id: "gap-new", kind: "tool-missing", message: "new", risk: "high" }],
+        resolvedGaps: [], newFindings: [], resolvedFindings: [], regression: true, failOnNewGaps: "high",
+      };
+    }
+    const file = path.join(dir, "zero-gaps.json");
+    writeFileSync(file, JSON.stringify(evidence));
+    const result = await listGaps({ evidencePath: file });
+    expect(result.gapCount).toBe(0);
+    expect(result.claimDone).toBe(false);
+    expect(result.verification.status).toBe("failed");
   });
 });

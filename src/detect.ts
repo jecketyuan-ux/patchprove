@@ -1,6 +1,7 @@
 import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import path from "node:path";
-import { localBin, whichSync } from "./exec.js";
+import { childEnvironment, commandInvocation, localBin, whichSync } from "./exec.js";
 import type { DetectedTools } from "./types.js";
 
 function readJson(filePath: string): Record<string, unknown> | null {
@@ -45,24 +46,70 @@ function readText(filePath: string): string {
   }
 }
 
-function resolveBin(
-  cwd: string,
-  names: string[],
-  configured: boolean,
-): string | null {
+const IDENTITIES: Record<string, { args: string[]; pattern: RegExp }> = {
+  tsc: { args: ["--version"], pattern: /^Version \d+\.\d+(?:\.\d+)?/im },
+  eslint: { args: ["--version"], pattern: /^v\d+\.\d+\.\d+(?:\.\d+)?/im },
+  vitest: { args: ["--version"], pattern: /\bvitest\/\d+\.\d+(?:\.\d+)?/i },
+  jest: { args: ["--version"], pattern: /^\d+\.\d+\.\d+(?:\.\d+)?/m },
+  pyright: { args: ["--version"], pattern: /\bpyright\s+\d+\.\d+(?:\.\d+)?/i },
+  mypy: { args: ["--version"], pattern: /\bmypy\s+\d+\.\d+(?:\.\d+)?/i },
+  ruff: { args: ["--version"], pattern: /\bruff\s+\d+\.\d+(?:\.\d+)?/i },
+  pytest: { args: ["--version"], pattern: /\bpytest\s+\d+\.\d+(?:\.\d+)?/i },
+  gitleaks: { args: ["version"], pattern: /^(?:gitleaks\s+)?v?\d+\.\d+\.\d+(?:\.\d+)?/im },
+  go: { args: ["version"], pattern: /^go version go\d+\.\d+(?:\.\d+)?/m },
+  cargo: { args: ["--version"], pattern: /^cargo \d+\.\d+(?:\.\d+)?/m },
+  mvn: { args: ["--version"], pattern: /Apache Maven \d+\.\d+(?:\.\d+)?/i },
+  gradle: { args: ["--version"], pattern: /^Gradle \d+\.\d+(?:\.\d+)?/m },
+};
+
+export interface ToolDetectionLimits {
+  deadlineAt?: number;
+  signal?: AbortSignal;
+  probeTimeoutMs?: number;
+}
+
+function remainingProbeMs(limits: ToolDetectionLimits): number {
+  if (limits.signal?.aborted) return 0;
+  const remaining = limits.deadlineAt === undefined ? Infinity : limits.deadlineAt - Date.now();
+  if (!(remaining > 0)) return 0;
+  const perProbe = Number.isFinite(limits.probeTimeoutMs) ? Math.max(0, limits.probeTimeoutMs!) : 2_000;
+  return Math.min(2_000, perProbe, remaining);
+}
+
+function probe(command: string, name: string, cwd: string, limits: ToolDetectionLimits, prefix: string[] = []): string | null {
+  const remaining = remainingProbeMs(limits);
+  if (remaining <= 0) return null;
+  const identity = IDENTITIES[name];
+  if (!identity) return null;
+  try {
+    const invocation = commandInvocation(command, [...prefix, ...identity.args]);
+    const result = spawnSync(invocation.command, invocation.args, {
+      cwd, env: childEnvironment(), encoding: "utf8", timeout: Math.max(1, Math.floor(remaining)),
+      killSignal: "SIGKILL", maxBuffer: 8192, windowsHide: true,
+      windowsVerbatimArguments: invocation.windowsVerbatimArguments,
+    });
+    if (result.error || result.status !== 0 || remainingProbeMs(limits) <= 0) return null;
+    const output = `${result.stdout}\n${result.stderr}`.replace(/\x1b\[[0-9;]*m/g, "");
+    return output.match(identity.pattern)?.[0].slice(0, 120) ?? null;
+  } catch { return null; }
+}
+
+function resolveBin(cwd: string, names: string[], configured: boolean, versions: Record<string, string>, limits: ToolDetectionLimits): string | null {
+  if (!configured || remainingProbeMs(limits) <= 0) return null;
   for (const name of names) {
-    const local = localBin(cwd, name);
-    if (local) return local;
-  }
-  if (!configured) return null;
-  for (const name of names) {
-    const globalBin = whichSync(name);
-    if (globalBin) return globalBin;
+    const candidates = [localBin(cwd, name), whichSync(name)];
+    for (const candidate of new Set(candidates)) {
+      if (remainingProbeMs(limits) <= 0) return null;
+      if (!candidate) continue;
+      const version = probe(candidate, name, cwd, limits);
+      if (version) { versions[name] = version; return candidate; }
+    }
   }
   return null;
 }
 
-export function detectTools(cwd: string): DetectedTools {
+export function detectTools(cwd: string, limits: ToolDetectionLimits = {}): DetectedTools {
+  const versions: Record<string, string> = {};
   const pkg = readJson(path.join(cwd, "package.json"));
   const pyproject = readText(path.join(cwd, "pyproject.toml"));
   const requirements = [
@@ -108,35 +155,34 @@ export function detectTools(cwd: string): DetectedTools {
     ruffConfigured ||
     pytestConfigured;
 
-  const tscBin = resolveBin(cwd, ["tsc"], typescript);
-  const eslintBin = resolveBin(cwd, ["eslint"], eslintConfigured);
-  const vitestBin = resolveBin(cwd, ["vitest"], vitestConfigured);
-  const jestBin = resolveBin(cwd, ["jest"], jestConfigured);
-  const pyrightBin = resolveBin(cwd, ["pyright"], pyrightConfigured);
-  const mypyBin =
-    resolveBin(cwd, ["mypy"], mypyConfigured) ??
-    (mypyConfigured && whichSync("python3") ? "python3" : null);
-  const ruffBin = resolveBin(cwd, ["ruff"], ruffConfigured);
-  const pytestBin = resolveBin(cwd, ["pytest"], pytestConfigured);
-  const gitleaksBin = whichSync("gitleaks") ?? localBin(cwd, "gitleaks");
+  const tscBin = resolveBin(cwd, ["tsc"], typescript, versions, limits);
+  const eslintBin = resolveBin(cwd, ["eslint"], eslintConfigured, versions, limits);
+  const vitestBin = resolveBin(cwd, ["vitest"], vitestConfigured, versions, limits);
+  const jestBin = resolveBin(cwd, ["jest"], jestConfigured, versions, limits);
+  const pyrightBin = resolveBin(cwd, ["pyright"], pyrightConfigured, versions, limits);
+  let mypyBin = resolveBin(cwd, ["mypy"], mypyConfigured, versions, limits);
+  if (!mypyBin && mypyConfigured && remainingProbeMs(limits) > 0) {
+    const python = whichSync("python3") ?? whichSync("python");
+    const version = python ? probe(python, "mypy", cwd, limits, ["-m", "mypy"]) : null;
+    if (python && version) { mypyBin = python; versions.mypy = version; }
+  }
+  const ruffBin = resolveBin(cwd, ["ruff"], ruffConfigured, versions, limits);
+  const pytestBin = resolveBin(cwd, ["pytest"], pytestConfigured, versions, limits);
+  const gitleaksBin = resolveBin(cwd, ["gitleaks"], true, versions, limits);
 
   const goPresent = anyExists(cwd, ["go.mod", "go.sum"]);
   const cargoPresent = anyExists(cwd, ["Cargo.toml", "Cargo.lock"]);
   const mavenPresent = anyExists(cwd, ["pom.xml"]);
   const gradlePresent = anyExists(cwd, ["build.gradle", "build.gradle.kts", "settings.gradle", "settings.gradle.kts"]);
 
-  const goBin = goPresent ? whichSync("go") : null;
-  const cargoBin = cargoPresent ? whichSync("cargo") : null;
-  const mavenBin = mavenPresent ? whichSync("mvn") : null;
-  const gradleBin = gradlePresent
-    ? (existsSync(path.join(cwd, "gradlew"))
-      ? path.join(cwd, "gradlew")
-      : existsSync(path.join(cwd, "gradlew.bat"))
-        ? path.join(cwd, "gradlew.bat")
-        : whichSync("gradle"))
-    : null;
+  const goBin = resolveBin(cwd, ["go"], goPresent, versions, limits);
+  const cargoBin = resolveBin(cwd, ["cargo"], cargoPresent, versions, limits);
+  const mavenBin = resolveBin(cwd, ["mvn"], mavenPresent, versions, limits);
+  // A wrapper may download a distribution even for --version. Only use an installed Gradle.
+  const gradleBin = resolveBin(cwd, ["gradle"], gradlePresent, versions, limits);
 
   return {
+    versions,
     typescript,
     tscBin,
     eslint: eslintConfigured,

@@ -5,7 +5,7 @@ import Ajv from "ajv";
 import addFormats from "ajv-formats";
 import { describe, expect, it } from "vitest";
 import { buildEvidence } from "../src/evidence.js";
-import { SCHEMA_VERSION } from "../src/types.js";
+import { COMPAT_SCHEMA_VERSION } from "../src/types.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const schema = JSON.parse(
@@ -60,7 +60,7 @@ describe("published evidence schema", () => {
     }
   });
 
-  it("validates a freshly built 1.2 pack including an optional receipt pointer", () => {
+  it("validates a freshly built compatibility pack including an optional receipt pointer", () => {
     const evidence = buildEvidence({
       cwd: "/tmp",
       root: "/tmp",
@@ -85,7 +85,7 @@ describe("published evidence schema", () => {
         path: "evidence.receipt.json",
       },
     };
-    expect(evidence.schemaVersion).toBe(SCHEMA_VERSION);
+    expect(evidence.schemaVersion).toBe(COMPAT_SCHEMA_VERSION);
     expect(validate(evidence)).toBe(true);
     expect(validate.errors).toBeNull();
     expect(validate(withReceipt)).toBe(true);

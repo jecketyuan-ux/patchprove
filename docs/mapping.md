@@ -2,45 +2,21 @@
 title: Test mapping
 ---
 
-# Test mapping
+# Test selection and its limits
 
-Deterministic. No LLM. Strategies, in order, per changed source:
+Selection conservatively merges available coverage relationships, import/package graph edges, and filename candidates. A weak coverage hint must not discard known graph or naming relationships. Changed test files enter execution directly. Unsupported sources/resources/configuration and unresolved dependency boundaries remain explicit uncertainty; deleted-source relationships may use the base graph where available, with a gap when they cannot be established.
 
-1. **coverage** — `coverage/coverage-final.json` or Cobertura XML (explicit source→tests, else basename pairing)
-2. **graph** — parse imports from tests, reverse-map to changed modules (JS/TS, Python heuristics, plus plugin graphs)
-3. **naming** — `foo.ts` → `foo.test.ts` / `foo.spec.ts`; `foo.py` → `test_foo.py`; Go `foo.go` → `foo_test.go`; Java package-path `*Test.java`; Rust crate `tests/`.
+| Evidence | What it supports | What it does not establish |
+| --- | --- | --- |
+| Explicit source-to-test export | Historical relationship between a source and named tests | Current branch coverage or assertion quality |
+| Import/package graph | Statically resolvable dependency reachability | Dynamic imports, all runtime dependencies, or test assertions |
+| Filename candidates | A plausible nearby test | Execution or behavioral coverage |
+| Ordinary Istanbul/Cobertura report | Recorded source hit data and heuristic pairing where possible | Per-test attribution without explicit relationships |
 
-Evidence:
+`impact.mappingStrategy` summarizes the primary strategy; `mappingFallbacks` records additional strategies. Per-source `via` is a coarse label. Detailed `mappingEvidence` retains each edge's precision (`heuristic`, `structural`, `historical`), origin, available input digest, and freshness. Ordinary reports have unknown freshness unless snapshot provenance establishes more. A coverage strategy label is not a percentage of changed lines covered.
 
-- `impact.mappingStrategy` — primary for the run (`coverage` if a coverage map loaded; else `graph` if the import graph had edges; else `naming`)
-- `impact.mappingFallbacks` — other strategies that actually mapped a file
-- `impact.mappedTests[].via` — `naming` \| `coverage` \| `graph` for that source
+JS/TS graph parsing handles supported import/export/require forms and configured alias/workspace patterns. Unresolved/dynamic cases are not a full compiler model. Python import resolution remains heuristic. Go supports module imports, same-package tests, and coarse internal visibility. Rust selects affected crate/workspace test units including inline cases. Java uses module/package naming and test filters. See [plugins](plugins.md) for commands and unresolved language boundaries.
 
-## Graph (JS/TS)
+Selection and execution are separate. `verificationPlan` names required scopes; `executionRecords` show which units ran. A missing runner or omitted language cannot be covered by another unit's successful record. Reports of zero collected tests cannot establish a successful test gate. Disabling an optional gate is an explicit policy choice, while a required contract gate still must pass.
 
-Light-weight: no bundler. The runner reads tracked files, parses `import` / `export from` / `require()` / `import()`, resolves relative specifiers (including `.js` → `.ts`), then BFS from test files. A changed source maps to every test that can reach it.
-
-Python uses `from` / `import` path heuristics (`pkg.mod` → `pkg/mod.py`, relative dots, `src/` prefix).
-
-Go adds same-package `*_test.go` neighbors even without an explicit import. v1.1 also resolves `go.mod` module-path imports and applies coarse `internal/` visibility (only packages under the parent of the last `internal` segment can import it). Affected-test gating uses `go test ./pkg` or `./pkg/...`, not a whole-module blind run.
-
-Java maps `*/src/main/java/<pkg>/<Name>.java` to the same module’s `src/test/java/<pkg>/<Name>Test.java` (also `Tests` / `IT`). Gradle projects from `settings.gradle*` become `:subproject:test --tests <FQCN>`. Maven multi-module `pom.xml` uses `-pl <module> -am -Dtest=<FQCN>`.
-
-Rust workspaces (`[workspace]` in the root `Cargo.toml`) map files to crate packages and run `cargo test -p <pkg>`. A single-crate repo still works (`cargo test` or `cargo test -p <name>`).
-
-Golden fixtures that lock this behavior: `test/fixtures/java-multimodule/`, `test/fixtures/go-internal/`, `test/fixtures/rust-workspace/`, compared in `test/golden.test.ts`.
-
-## External Go / Java repo + `--fail-on high`
-
-In a repo that is not this one:
-
-```yaml
-# .patchprove.yml
-failOn: high
-```
-
-```bash
-npx patchprove run --base origin/main --fail-on high
-```
-
-The fixtures above are the stand-in layouts. Exit `1` when residual risk is high (unmapped sources, auth/crypto paths, failed gates). See [plugins.md](plugins.md) for the exact gate commands.
+Golden and parser fixtures verify selection behavior. Native runner tests verify actual invocation/result behavior only for their recorded versions/environments. Neither proves zero missed affected tests across arbitrary projects. See [validation](validation.md), and [ecosystem](ecosystem.md) for snapshot-bound Nx/Turbo/testmon exports.

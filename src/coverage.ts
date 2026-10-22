@@ -1,11 +1,12 @@
 import { existsSync, readFileSync } from "node:fs";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import type { ImportGraph } from "./graph.js";
 import { mapTestsFromGraph } from "./graph.js";
 import { isTestFile, mapTestsForFile, testBasenameKey } from "./mapping.js";
-import { normalizeRel, toPosix } from "./paths.js";
-import { builtinPlugins, type LanguagePlugin } from "./plugins/index.js";
+import { canonicalPath, canonicalPathParent, normalizeRel, toPosix } from "./paths.js";
+import { builtinPlugins, pluginForPath, type LanguagePlugin } from "./plugins/index.js";
 import type { PluginContext } from "./plugins/types.js";
 import type { MappingStrategy } from "./types.js";
 
@@ -17,6 +18,8 @@ export interface CoverageIndex {
   sources: Set<string>;
   tests: Set<string>;
   sourceToTests: Map<string, string[]>;
+  inputHash?: string;
+  freshness?: "current" | "unknown" | "stale";
 }
 
 const COVERAGE_CANDIDATES = [
@@ -36,8 +39,8 @@ function toRepoRel(filePath: string, root: string): string {
       raw = raw.replace(/^file:\/\//, "");
     }
   }
-  const posix = toPosix(raw);
-  const rootPosix = toPosix(path.resolve(root)).replace(/\/$/, "");
+  const posix = toPosix(path.isAbsolute(raw) ? canonicalPathParent(raw) : raw);
+  const rootPosix = toPosix(canonicalPath(path.resolve(root))).replace(/\/$/, "");
   if (posix.startsWith(`${rootPosix}/`)) {
     return normalizeRel(posix.slice(rootPosix.length + 1));
   }
@@ -180,7 +183,8 @@ export function parseCoverageText(
   root: string,
   kind: "json" | "xml",
 ): CoverageIndex | null {
-  return kind === "xml" ? parseCobertura(text, root) : parseCoverageJson(text, root);
+  const index = kind === "xml" ? parseCobertura(text, root) : parseCoverageJson(text, root);
+  return index ? { ...index, inputHash: createHash("sha256").update(text).digest("hex"), freshness: "unknown" } : null;
 }
 
 export function loadCoverageMap(root: string): CoverageIndex | null {
@@ -216,22 +220,30 @@ export function mapTestsFromCoverage(
   const source = normalizeRel(filePath);
   const existing = new Set([...existingFiles].map(normalizeRel));
   const explicit = coverage.sourceToTests.get(source);
-  if (explicit && explicit.length > 0) {
-    return uniqueSorted(explicit.filter((t) => existing.has(t)));
-  }
+  const explicitTests = (explicit ?? []).filter((t) => existing.has(t) && isTestFile(t, plugins, ctx));
 
   const fromNaming = mapTestsForFile(source, existing, plugins, ctx);
   const key = testBasenameKey(source);
   const pool =
     coverage.tests.size > 0
       ? [...coverage.tests]
-      : [...existing].filter((p) => isTestFile(p, plugins));
+      : [...existing].filter((p) => isTestFile(p, plugins, ctx));
 
-  const fromCoverage = pool.filter(
-    (test) => existing.has(normalizeRel(test)) && basenameMatches(test, key),
-  );
+  const fromCoverage = coverage.sources.has(source) ? pool.filter(
+    (test) => existing.has(normalizeRel(test)) && isTestFile(test, plugins, ctx) && basenameMatches(test, key),
+  ) : [];
 
-  return uniqueSorted([...fromNaming, ...fromCoverage]);
+  return uniqueSorted([...explicitTests, ...fromNaming, ...fromCoverage]);
+}
+
+export interface MappingEdge {
+  source: string;
+  test: string;
+  via: MappingStrategy;
+  precision: "heuristic" | "structural" | "historical";
+  origin?: string;
+  freshness?: "current" | "unknown" | "stale";
+  inputHash?: string;
 }
 
 export function mapTestsForSource(
@@ -241,20 +253,30 @@ export function mapTestsForSource(
   graph?: ImportGraph | null,
   plugins: readonly LanguagePlugin[] = builtinPlugins,
   ctx?: PluginContext,
-): { tests: string[]; via: MappingStrategy } {
+): { tests: string[]; via: MappingStrategy; origins: MappingStrategy[]; evidence: MappingEdge[] } {
+  const source = normalizeRel(filePath);
+  const naming = mapTestsForFile(source, existingFiles, plugins, ctx);
+  const namingHash = createHash("sha256").update(JSON.stringify([source, naming])).digest("hex");
+  const fromGraph = mapTestsFromGraph(filePath, existingFiles, graph, plugins, ctx);
+  const evidence: MappingEdge[] = naming.map((test) => ({ source, test, via: "naming", precision: "heuristic", origin: "filename", freshness: "current", inputHash: namingHash }));
+  for (const test of fromGraph) {
+    const origin = graph?.importers.get(source)?.includes(test) ? "import-graph" : `${pluginForPath(source, plugins)?.id ?? "plugin"}:package-tests`;
+    evidence.push({ source, test, via: "graph", precision: "structural", origin, freshness: "current", inputHash: graph?.inputHash });
+  }
   if (coverage) {
-    const tests = mapTestsFromCoverage(filePath, existingFiles, coverage, plugins, ctx);
-    if (tests.length > 0) {
-      const naming = new Set(mapTestsForFile(filePath, existingFiles, plugins, ctx));
-      const usedCoverage =
-        coverage.sourceToTests.has(normalizeRel(filePath)) ||
-        tests.some((t) => !naming.has(t));
-      return { tests, via: usedCoverage ? "coverage" : "naming" };
+    const explicit = new Set(coverage.sourceToTests.get(source) ?? []);
+    for (const test of mapTestsFromCoverage(source, existingFiles, coverage, plugins, ctx)) {
+      if (!explicit.has(test) && naming.includes(test)) continue;
+      evidence.push({
+        source, test, via: "coverage",
+        precision: explicit.has(test) ? "historical" : "heuristic",
+        origin: `${coverage.origin}:${coverage.file || "inline"}${explicit.has(test) ? "" : ":basename"}`,
+        freshness: coverage.freshness ?? "unknown",
+        inputHash: coverage.inputHash,
+      });
     }
   }
-  const fromGraph = mapTestsFromGraph(filePath, existingFiles, graph, plugins, ctx);
-  if (fromGraph.length > 0) {
-    return { tests: fromGraph, via: "graph" };
-  }
-  return { tests: mapTestsForFile(filePath, existingFiles, plugins, ctx), via: "naming" };
+  const origins = [...new Set(evidence.map((edge) => edge.via))];
+  const via: MappingStrategy = origins.includes("coverage") ? "coverage" : origins.includes("graph") ? "graph" : "naming";
+  return { tests: uniqueSorted(evidence.map((edge) => edge.test)), via, origins, evidence };
 }

@@ -1,24 +1,15 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { isOpenGap } from "./accept.js";
-import { resolveConfig } from "./config.js";
+import { evaluateVerification } from "./decision.js";
+import { validateEvidence } from "./validation.js";
 import { formatShortSummary } from "./report.js";
-import { analyze, shouldFailRun, writeEvidence } from "./run.js";
-import type { CheckId, Evidence, FailOnLevel, Gap, RunOptions, SummaryRisk } from "./types.js";
+import { analyze, analyzeAndWrite, shouldFailRun } from "./run.js";
+import type { Evidence, FailOnLevel, Gap, RunOptions, SummaryRisk } from "./types.js";
 
-export interface ProvePatchInput {
+export interface ProvePatchInput extends Partial<Omit<RunOptions, "cwd" | "json" | "format" | "out">> {
   cwd?: string;
-  base?: string;
-  head?: string;
-  failOn?: FailOnLevel | "none";
-  accept?: string[];
-  config?: string;
   out?: string;
-  ignore?: string[];
-  disableGate?: CheckId[];
-  baseline?: string;
-  spec?: string;
-  failOnNewGaps?: FailOnLevel | "none";
 }
 
 export interface ProvePatchResult {
@@ -40,6 +31,7 @@ export interface ListGapsResult {
   acceptedGapCount: number;
   gaps: Gap[];
   claimDone: boolean;
+  verification: NonNullable<Evidence["verification"]>;
   reminder: string;
   summary: string;
 }
@@ -48,25 +40,16 @@ export const PROVE_PATCH_DESCRIPTION =
   "Run the patchprove evidence pipeline (same as `patchprove run`): impact → checks → gaps → risk. Returns structured evidence plus a short human summary. Model-free; not a CI replacement.";
 
 export const LIST_GAPS_DESCRIPTION =
-  "Return open (non-accepted) gaps from a fresh patchprove run or from a provided evidence JSON path. Agents must not claim done while this list is non-empty.";
+  "Return open (non-accepted) gaps from a fresh patchprove run or from a provided evidence JSON path. Completion requires verification.status passed, including successful checks, contracts, policy, and provenance.";
 
 export function runOptionsFromInput(input: ProvePatchInput): RunOptions {
   const cwd = path.resolve(input.cwd ?? process.cwd());
   return {
+    ...input,
     cwd,
     json: true,
     format: "json",
     out: input.out ?? path.join(cwd, "evidence.json"),
-    failOn: input.failOn,
-    base: input.base,
-    head: input.head,
-    accept: input.accept,
-    config: input.config,
-    ignore: input.ignore,
-    disableGate: input.disableGate,
-    baseline: input.baseline,
-    spec: input.spec,
-    failOnNewGaps: input.failOnNewGaps,
   };
 }
 
@@ -79,30 +62,20 @@ export function readEvidenceFile(filePath: string): Evidence {
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(`Cannot read evidence JSON at ${resolved}: ${message}`);
   }
-  if (!isEvidenceShape(raw)) {
-    throw new Error(`Not a patchprove evidence JSON: ${resolved}`);
-  }
-  return raw;
-}
-
-function isEvidenceShape(value: unknown): value is Evidence {
-  if (!value || typeof value !== "object") return false;
-  const rec = value as Record<string, unknown>;
-  return Array.isArray(rec.gaps) && rec.summary !== undefined && rec.impact !== undefined;
+  return validateEvidence(raw, resolved);
 }
 
 export async function provePatch(input: ProvePatchInput = {}): Promise<ProvePatchResult> {
   const options = runOptionsFromInput(input);
-  const evidence = await analyze(options);
-  if (input.out) {
-    writeEvidence(input.out, evidence);
-  }
-  const config = resolveConfig(evidence.repo.root, options);
-  const failOnMet = shouldFailRun(evidence, config);
+  const writesRequested = input.out !== undefined || input.sarif !== undefined || input.receipt === true || typeof input.receipt === "string";
+  const evidence = writesRequested ? (await analyzeAndWrite(options)).evidence : await analyze(options);
+  evidence.verification = evaluateVerification(evidence);
+  const failOn = evidence.effectivePolicy?.failOn ?? undefined;
+  const failOnMet = shouldFailRun(evidence);
   return {
     failOnMet,
-    failOn: config.failOn,
-    summary: formatShortSummary(evidence, { failOnMet, failOn: config.failOn }),
+    failOn,
+    summary: formatShortSummary(evidence, { failOnMet, failOn }),
     evidence,
   };
 }
@@ -119,10 +92,12 @@ export async function listGaps(input: ListGapsInput = {}): Promise<ListGapsResul
     source = "run";
   }
   const gaps = evidence.gaps.filter(isOpenGap);
-  const claimDone = gaps.length === 0;
+  const verification = evaluateVerification(evidence);
+  evidence.verification = verification;
+  const claimDone = verification.status === "passed";
   const reminder = claimDone
-    ? "No open gaps."
-    : "Do not claim done while open gaps remain.";
+    ? "Verification passed."
+    : `Do not claim done: verification ${verification.status}. ${verification.reasons.map((reason) => reason.message).join("; ")}`;
   return {
     source,
     risk: evidence.summary.risk,
@@ -130,6 +105,7 @@ export async function listGaps(input: ListGapsInput = {}): Promise<ListGapsResul
     acceptedGapCount: evidence.summary.acceptedGapCount ?? evidence.gaps.filter((g) => g.accepted).length,
     gaps,
     claimDone,
+    verification,
     reminder,
     summary: formatShortSummary(evidence),
   };

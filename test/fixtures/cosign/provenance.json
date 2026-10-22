@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "1",
+  "upstreamRepository": "https://github.com/sigstore/cosign",
+  "release": "v3.1.4",
+  "sourceCommit": "0e48502cf5ef34e2e60bbd3617aa19945712f705",
+  "retrievedOn": "2026-10-22",
+  "license": "Apache-2.0; retained COSIGN-LICENSE is unchanged upstream text.",
+  "certificateIdentity": "keyless@projectsigstore.iam.gserviceaccount.com",
+  "certificateOidcIssuer": "https://accounts.google.com",
+  "binary": {
+    "asset": "cosign-linux-amd64",
+    "url": "https://github.com/sigstore/cosign/releases/download/v3.1.4/cosign-linux-amd64",
+    "bytes": 145688404,
+    "sha256": "424e2c97d0b45fd7a6b608a87f090f35633f4c23ece5f092d48bba11aaf4bbfa"
+  },
+  "files": [
+    {
+      "file": "cosign_checksums.txt",
+      "sourceUrl": "https://github.com/sigstore/cosign/releases/download/v3.1.4/cosign_checksums.txt",
+      "bytes": 3906,
+      "sha256": "e70e59b328d52949b3a9ae3e0d04721ea8f380c4e91c28197aa91df02afbf4c0"
+    },
+    {
+      "file": "cosign_checksums.txt.sigstore.json",
+      "sourceUrl": "https://github.com/sigstore/cosign/releases/download/v3.1.4/cosign_checksums.txt.sigstore.json",
+      "bytes": 6651,
+      "sha256": "8fc87b5562359b0414655ee281b80eb3752f58c4e137d5f0e4881f095bc26309"
+    },
+    {
+      "file": "trusted_root_pgi.json",
+      "sourceUrl": "https://github.com/sigstore/cosign/blob/0e48502cf5ef34e2e60bbd3617aa19945712f705/pkg/cosign/testdata/trusted_root_pgi.json",
+      "bytes": 4537,
+      "sha256": "f44a1b88128e55ebfb62189becbc0fa48d4ec9915c65ac54ba0e46a008b12d5b"
+    },
+    {
+      "file": "COSIGN-LICENSE",
+      "sourceUrl": "https://github.com/sigstore/cosign/blob/0e48502cf5ef34e2e60bbd3617aa19945712f705/LICENSE",
+      "bytes": 11357,
+      "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+    }
+  ]
+}
