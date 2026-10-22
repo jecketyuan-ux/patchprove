@@ -68,7 +68,7 @@
     "@modelcontextprotocol/sdk": "^1.32.1",
     "ajv": "^8.20.0",
     "ajv-formats": "^3.0.1",
-    "commander": "^13.1.0",
+    "commander": "^15.0.0",
     "yaml": "^2.8.1",
     "zod": "^4.5.4"
   },
