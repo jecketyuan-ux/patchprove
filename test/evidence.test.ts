@@ -12,7 +12,7 @@ import {
   pathFindings,
 } from "../src/evidence.js";
 import type { DiffFile } from "../src/git.js";
-import { emptyDetectedTools, type CheckResult } from "../src/types.js";
+import { COMPAT_SCHEMA_VERSION, emptyDetectedTools, type CheckResult } from "../src/types.js";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
 const schema = JSON.parse(
@@ -106,7 +106,7 @@ describe("evidence JSON shape", () => {
     const ok = validate(evidence);
     expect(validate.errors).toBeNull();
     expect(ok).toBe(true);
-    expect(evidence.schemaVersion).toBe("1.2.0");
+    expect(evidence.schemaVersion).toBe(COMPAT_SCHEMA_VERSION);
     expect(evidence.impact.mappingStrategy).toBe("naming");
     expect(evidence.summary.acceptedGapCount).toBe(0);
     expect(evidence.impact.mappedTests).toEqual([

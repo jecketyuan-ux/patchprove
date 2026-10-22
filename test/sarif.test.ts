@@ -1,6 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { buildEvidence } from "../src/evidence.js";
-import { toSarif } from "../src/sarif.js";
+import { sarifUri, toSarif } from "../src/sarif.js";
 
 describe("toSarif", () => {
   it("emits findings and marks accepted gaps as suppressed", () => {
@@ -50,6 +50,10 @@ describe("toSarif", () => {
     ]);
     const finding = results.find((r) => r.ruleId === "workflow");
     expect(finding?.level).toBe("error");
+    expect(finding?.partialFingerprints).toEqual({ "patchprove/v2": expect.stringMatching(/^[a-f0-9]{64}$/) });
+    evidence.findings[0]!.line = 19;
+    const moved = ((toSarif(evidence).runs as Array<{ results: Array<Record<string, unknown>> }>)[0]!.results).find((result) => result.ruleId === "workflow");
+    expect(moved?.partialFingerprints).toEqual(finding?.partialFingerprints);
   });
 
   it("emits a failed contract clause as a SARIF result", () => {
@@ -104,5 +108,14 @@ describe("toSarif", () => {
       passed: false,
     });
     expect(results.some((r) => r.ruleId === "required-gate")).toBe(false);
+  });
+});
+
+
+describe("SARIF location encoding", () => {
+  it("encodes URI reserved characters and preserves platform paths", () => {
+    expect(sarifUri("./src/a #b?.ts")).toBe("src/a%20%23b%3F.ts");
+    expect(sarifUri("C:\\src\\a b.ts")).toBe("file:///C:/src/a%20b.ts");
+    expect(sarifUri("/tmp/a #b.ts")).toBe("file:///tmp/a%20%23b.ts");
   });
 });

@@ -1,0 +1,188 @@
+{
+  "commitUnderReview": "188e07e03da3f3a21cd64f574f35a1fab0a384c7",
+  "runtime": {
+    "node": "v24.19.0",
+    "platform": "linux"
+  },
+  "assertionMeaning": "Assertions reproduce current defects; expected fields describe desired behavior after fixes.",
+  "cases": [
+    {
+      "id": "POLICY-01",
+      "label": "invalid-accepted-residual-risk-fails-open",
+      "severity": "P2",
+      "source": [
+        "src/spec.ts:87",
+        "schema/spec.schema.json:50"
+      ],
+      "observed": {
+        "openGaps": 1,
+        "invalidPolicies": [
+          {
+            "input": false,
+            "schemaValid": false,
+            "normalizedPolicy": "allow",
+            "contractPassed": true
+          },
+          {
+            "input": 42,
+            "schemaValid": false,
+            "normalizedPolicy": "allow",
+            "contractPassed": true
+          },
+          {
+            "input": [],
+            "schemaValid": false,
+            "normalizedPolicy": "allow",
+            "contractPassed": true
+          }
+        ]
+      },
+      "expected": "Reject an explicitly supplied acceptedResidualRisk value outside the published string/object type before contract evaluation.",
+      "reproduced": true
+    },
+    {
+      "id": "POLICY-02",
+      "label": "external-plugin-source-bypasses-required-mapped-tests",
+      "severity": "P2",
+      "source": [
+        "src/spec.ts:188",
+        "src/spec.ts:192"
+      ],
+      "observed": {
+        "plugin": "example-widget",
+        "unmappedSources": [
+          "src/foo.widget"
+        ],
+        "clause": {
+          "id": "required-mapped-tests-0",
+          "kind": "required-mapped-tests",
+          "passed": true,
+          "files": [],
+          "message": "Required mapped tests for src/** held"
+        },
+        "contractPassed": true
+      },
+      "expected": "Use the same source classification as impact analysis; src/foo.widget has no mapped test, so the matching requiredMappedTests clause must fail.",
+      "reproduced": true
+    },
+    {
+      "id": "POLICY-03",
+      "label": "partial-path-acceptance-suppresses-whole-aggregate-gap",
+      "severity": "P2",
+      "source": [
+        "src/accept.ts:9",
+        "src/accept.ts:33",
+        "src/evidence.ts:194"
+      ],
+      "observed": {
+        "acceptPath": "src/generated/**",
+        "gaps": [
+          {
+            "id": "gap-unsupported-language",
+            "kind": "unsupported-language",
+            "message": "Changed sources are outside built-in language plugins (js/ts, python, go, rust, java)",
+            "risk": "low",
+            "files": [
+              "src/generated/a.swift",
+              "src/core/b.swift"
+            ],
+            "accepted": true,
+            "acceptedReason": "generated code"
+          }
+        ],
+        "summary": {
+          "risk": "none",
+          "checksPassed": 0,
+          "checksFailed": 0,
+          "checksSkipped": 0,
+          "gapCount": 0,
+          "acceptedGapCount": 1,
+          "findingCount": 0
+        },
+        "listedOnlyContractPassed": true
+      },
+      "expected": "Keep src/core/b.swift open because no path rule accepts it; residual risk stays at least low and listed-only fails.",
+      "reproduced": true
+    },
+    {
+      "id": "POLICY-04",
+      "label": "typescript-module-test-extensions-are-not-recognized",
+      "severity": "P2",
+      "source": [
+        "src/plugins/js.ts:8",
+        "src/plugins/js.ts:30"
+      ],
+      "observed": [
+        {
+          "sourceFile": "src/calc.mts",
+          "testFile": "src/calc.test.mts",
+          "recognizedAsTest": false,
+          "namingMapped": [],
+          "resolvedTestImports": [
+            "src/calc.mts"
+          ],
+          "graphMapped": [],
+          "graphEdgeCount": 0
+        },
+        {
+          "sourceFile": "src/calc.cts",
+          "testFile": "src/calc.test.cts",
+          "recognizedAsTest": false,
+          "namingMapped": [],
+          "resolvedTestImports": [
+            "src/calc.cts"
+          ],
+          "graphMapped": [],
+          "graphEdgeCount": 0
+        }
+      ],
+      "expected": "Recognize .test.mts/.test.cts consistently with their supported source extensions; include them in naming candidates and reverse test graph.",
+      "reproduced": true
+    },
+    {
+      "id": "POLICY-05",
+      "label": "malformed-baseline-accepted-then-comparison-crashes",
+      "severity": "P2",
+      "source": [
+        "src/baseline.ts:107",
+        "src/baseline.ts:110",
+        "src/baseline.ts:79"
+      ],
+      "observed": {
+        "suppliedShape": {
+          "gaps": [],
+          "summary": {},
+          "impact": {}
+        },
+        "loaderAccepted": true,
+        "comparisonError": {
+          "name": "TypeError",
+          "message": "Cannot read properties of undefined (reading 'map')"
+        }
+      },
+      "expected": "Reject malformed evidence with an actionable validation error before attempting comparison; required findings must be an array.",
+      "reproduced": true
+    },
+    {
+      "id": "POLICY-06",
+      "label": "unsupported-evidence-major-version-accepted",
+      "severity": "P3",
+      "source": [
+        "src/baseline.ts:103",
+        "src/baseline.ts:110",
+        "schema/evidence.schema.json:23"
+      ],
+      "observed": {
+        "suppliedSchemaVersion": "999.0.0",
+        "publishedEvidenceSchemaValid": false,
+        "loaderAccepted": true,
+        "comparisonCompleted": true,
+        "regression": false
+      },
+      "expected": "Validate the supported evidence schema major version before interpreting a baseline; reject or explicitly migrate an unsupported major.",
+      "reproduced": true
+    }
+  ],
+  "fixtureCleanedUp": true,
+  "reproducedCaseCount": 6
+}

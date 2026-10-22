@@ -62,7 +62,7 @@ describe("mergeMcpConfig", () => {
     const created = mergeMcpConfig({}, false);
     expect(created.changed).toBe(true);
     const servers = created.next.mcpServers as { patchprove: { command: string; args: string[] } };
-    expect(servers.patchprove).toEqual({ command: "npx", args: ["-y", "patchprove-mcp"] });
+    expect(servers.patchprove).toEqual({ command: "npx", args: ["--yes", "--package", "patchprove@2.0.0", "patchprove-mcp"] });
 
     const again = mergeMcpConfig(created.next, false);
     expect(again.changed).toBe(false);
@@ -154,5 +154,31 @@ describe("init-agent CLI help", () => {
     expect(out).toMatch(/Install the patchprove skill/);
     expect(out).toMatch(/--dry-run/);
     expect(out).toMatch(/--force/);
+  });
+});
+
+
+describe("local installation and backups", () => {
+  it("uses the same existing local CLI in hooks and MCP, including paths with spaces", () => {
+    const dir = tmp();
+    const cli = path.join(dir, "local checkout", "cli.js");
+    mkdirSync(path.dirname(cli), { recursive: true });
+    writeFileSync(cli, "// local CLI\n");
+    executeInitAgent({ cwd: dir, localCli: cli });
+    const mcp = JSON.parse(readFileSync(path.join(dir, ".mcp.json"), "utf8"));
+    expect(mcp.mcpServers.patchprove).toEqual({ command: process.execPath, args: [cli, "mcp"] });
+    expect(readFileSync(path.join(dir, ".claude/settings.json"), "utf8")).toContain(cli);
+    expect(() => executeInitAgent({ cwd: dir, localCli: "relative.js" })).toThrow(/absolute/);
+  });
+
+  it("preserves original config bytes before an atomic merge and remains idempotent", () => {
+    const dir = tmp();
+    const config = path.join(dir, ".mcp.json");
+    const original = '{ "mcpServers": { "other": { "command": "existing" } } }\n';
+    writeFileSync(config, original);
+    executeInitAgent({ cwd: dir });
+    expect(readFileSync(config + ".bak", "utf8")).toBe(original);
+    expect(JSON.parse(readFileSync(config, "utf8")).mcpServers.other.command).toBe("existing");
+    expect(executeInitAgent({ cwd: dir }).written).toEqual([]);
   });
 });

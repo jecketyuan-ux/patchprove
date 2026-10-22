@@ -3,8 +3,8 @@
   "hooks": {
     "stop": [
       {
-        "command": "npx patchprove hook stop --adapter cursor --fail-on high",
-        "timeout": 180,
+        "command": "npx --yes --package patchprove@2.0.0 patchprove hook stop --adapter cursor --fail-on high",
+        "timeout": 35,
         "loop_limit": 3
       }
     ]

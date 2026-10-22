@@ -1,0 +1,49 @@
+{
+  "checkedDate": "2026-10-22",
+  "timezone": "Asia/Shanghai",
+  "method": "Live official documentation/repository extraction and fixed-commit license verification; capabilities are not runtime benchmarks",
+  "competitors": [
+    "Nx",
+    "Turborepo",
+    "pytest-testmon",
+    "reviewdog",
+    "CodeRabbit CLI",
+    "PR-Agent",
+    "Sigstore/Cosign"
+  ],
+  "sourceUrls": [
+    "https://nx.dev/docs/features/ci-features/affected",
+    "https://nx.dev/docs/features/cache-task-results",
+    "https://nx.dev/docs/reference/nx-commands",
+    "https://nx.dev/docs/technologies/test-tools/jest/introduction",
+    "https://nx.dev/docs/technologies/test-tools/vitest/introduction",
+    "https://nx.dev/docs/reference/telemetry",
+    "https://turborepo.com/docs/reference/run",
+    "https://turborepo.com/docs/crafting-your-repository/constructing-ci",
+    "https://turborepo.com/docs/core-concepts/remote-caching",
+    "https://turborepo.com/docs/telemetry",
+    "https://testmon.org/",
+    "https://github.com/tarpas/pytest-testmon",
+    "https://github.com/reviewdog/reviewdog/blob/master/README.md",
+    "https://docs.coderabbit.ai/cli",
+    "https://docs.coderabbit.ai/cli/codex-integration",
+    "https://docs.coderabbit.ai/cli/network-requirements",
+    "https://docs.coderabbit.ai/cli/headless-cli-integration",
+    "https://github.com/coderabbitai/skills/blob/main/LICENSE",
+    "https://github.com/The-PR-Agent/pr-agent",
+    "https://github.com/The-PR-Agent/pr-agent/blob/main/docs/docs/installation/locally.md",
+    "https://github.com/The-PR-Agent/pr-agent/blob/main/docs/docs/usage-guide/local_git_provider.md",
+    "https://github.com/The-PR-Agent/pr-agent/blob/main/pr_agent/settings/.secrets_template.toml",
+    "https://docs.sigstore.dev/quickstart/quickstart-cosign",
+    "https://docs.sigstore.dev/cosign/verifying/verify/",
+    "https://github.com/sigstore/cosign",
+    "https://docs.sigstore.dev/cosign/key_management/signing_with_self-managed_keys/"
+  ],
+  "licenseEvidence": "competitor-licenses.json",
+  "unmeasured": [
+    "runtime speed",
+    "selection accuracy",
+    "false positive/negative rate",
+    "fully disconnected behavior"
+  ]
+}

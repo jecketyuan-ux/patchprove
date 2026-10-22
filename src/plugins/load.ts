@@ -77,6 +77,8 @@ export async function loadPluginModule(absPath: string): Promise<LanguagePlugin>
 export interface ResolvePluginsOptions {
   configPlugins?: readonly string[];
   env?: NodeJS.ProcessEnv;
+  /** Strict callers must explicitly authorize auto-discovered repository code. */
+  allowAuto?: boolean;
 }
 
 /**
@@ -105,7 +107,7 @@ export async function resolveLanguagePlugins(
   };
 
   const autoDir = path.join(root, ".patchprove", "plugins");
-  if (existsSync(autoDir) && statSync(autoDir).isDirectory()) {
+  if (options?.allowAuto !== false && existsSync(autoDir) && statSync(autoDir).isDirectory()) {
     for (const file of listPluginFiles(autoDir)) {
       await take(file);
     }

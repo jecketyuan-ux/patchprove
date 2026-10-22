@@ -1,0 +1,520 @@
+{
+  "reviewDate": "2026-10-22",
+  "timezone": "Asia/Shanghai",
+  "baselineCommit": "188e07e03da3f3a21cd64f574f35a1fab0a384c7",
+  "summary": {
+    "total": 21,
+    "P1": 9,
+    "P2": 12
+  },
+  "findings": [
+    {
+      "id": "F01",
+      "priority": "P1",
+      "title": "已复现：暂存补丁覆盖完整工作树补丁",
+      "status": "open; no production fixes in this review",
+      "classification": "isolated reproduction",
+      "report": "01-code-audit.md",
+      "reportLine": 81,
+      "sourceLocations": [
+        {
+          "path": "src/git.ts",
+          "line": 142
+        },
+        {
+          "path": "src/git.ts",
+          "line": 171
+        }
+      ],
+      "evidence": [
+        "reproduction-results.json#/observations/0"
+      ]
+    },
+    {
+      "id": "F02",
+      "priority": "P1",
+      "title": "已复现：多语言部分执行被汇总为通过",
+      "status": "open; no production fixes in this review",
+      "classification": "isolated reproduction",
+      "report": "01-code-audit.md",
+      "reportLine": 87,
+      "sourceLocations": [
+        {
+          "path": "src/gates.ts",
+          "line": 126
+        },
+        {
+          "path": "src/evidence.ts",
+          "line": 162
+        }
+      ],
+      "evidence": [
+        "reproduction-results.json#/observations/1"
+      ]
+    },
+    {
+      "id": "F03",
+      "priority": "P1",
+      "title": "已复现：MCP 的完成信号忽略失败",
+      "status": "open; no production fixes in this review",
+      "classification": "isolated reproduction",
+      "report": "01-code-audit.md",
+      "reportLine": 93,
+      "sourceLocations": [
+        {
+          "path": "src/mcp-tools.ts",
+          "line": 110
+        }
+      ],
+      "evidence": [
+        "reproduction-results.json#/observations/2",
+        "execution-results.json#/mcpFreshFailedTests"
+      ]
+    },
+    {
+      "id": "F04",
+      "priority": "P1",
+      "title": "已复现并含设计缺口：证据没有可靠绑定实际代码快照",
+      "status": "open; no production fixes in this review",
+      "classification": "isolated reproduction",
+      "report": "01-code-audit.md",
+      "reportLine": 99,
+      "sourceLocations": [
+        {
+          "path": "src/git.ts",
+          "line": 159
+        },
+        {
+          "path": "src/run.ts",
+          "line": 92
+        },
+        {
+          "path": "src/types.ts",
+          "line": 204
+        },
+        {
+          "path": "src/receipt.ts",
+          "line": 72
+        }
+      ],
+      "evidence": [
+        "reproduction-results.json#/observations/3",
+        "reproduction-results.json#/observations/4",
+        "execution-results.json#/rangeMismatch"
+      ]
+    },
+    {
+      "id": "F05",
+      "priority": "P1",
+      "title": "已复现：无关 coverage 可缩小已知测试影响集",
+      "status": "open; no production fixes in this review",
+      "classification": "isolated reproduction",
+      "report": "01-code-audit.md",
+      "reportLine": 107,
+      "sourceLocations": [
+        {
+          "path": "src/coverage.ts",
+          "line": 223
+        },
+        {
+          "path": "src/coverage.ts",
+          "line": 245
+        }
+      ],
+      "evidence": [
+        "reproduction-results.json#/observations/5"
+      ]
+    },
+    {
+      "id": "F06",
+      "priority": "P1",
+      "title": "已复现：仅测试变更及源码删除没有验证闭环",
+      "status": "open; no production fixes in this review",
+      "classification": "isolated reproduction",
+      "report": "01-code-audit.md",
+      "reportLine": 113,
+      "sourceLocations": [
+        {
+          "path": "src/evidence.ts",
+          "line": 86
+        },
+        {
+          "path": "src/run.ts",
+          "line": 108
+        },
+        {
+          "path": "src/evidence.ts",
+          "line": 154
+        }
+      ],
+      "evidence": [
+        "reproduction-results.json#/observations/6",
+        "reproduction-results.json#/observations/7"
+      ]
+    },
+    {
+      "id": "F07",
+      "priority": "P2",
+      "title": "已复现：基线用序号 ID 混淆问题身份",
+      "status": "open; no production fixes in this review",
+      "classification": "isolated reproduction",
+      "report": "01-code-audit.md",
+      "reportLine": 119,
+      "sourceLocations": [
+        {
+          "path": "src/baseline.ts",
+          "line": 36
+        },
+        {
+          "path": "src/evidence.ts",
+          "line": 117
+        },
+        {
+          "path": "src/secrets.ts",
+          "line": 112
+        }
+      ],
+      "evidence": [
+        "reproduction-results.json#/observations/8"
+      ]
+    },
+    {
+      "id": "F08",
+      "priority": "P1",
+      "title": "已复现：普通中文路径破坏变更身份并漏检",
+      "status": "open; no production fixes in this review",
+      "classification": "isolated reproduction",
+      "report": "01-code-audit.md",
+      "reportLine": 125,
+      "sourceLocations": [
+        {
+          "path": "src/git.ts",
+          "line": 62
+        },
+        {
+          "path": "src/git.ts",
+          "line": 162
+        },
+        {
+          "path": "src/paths.ts",
+          "line": 3
+        }
+      ],
+      "evidence": [
+        "reproduction-results.json#/observations/9"
+      ]
+    },
+    {
+      "id": "F09",
+      "priority": "P2",
+      "title": "已复现的设计限制：签名保护范围与可信身份不足",
+      "status": "open; no production fixes in this review",
+      "classification": "reproduced design limit",
+      "report": "01-code-audit.md",
+      "reportLine": 131,
+      "sourceLocations": [
+        {
+          "path": "src/receipt.ts",
+          "line": 155
+        },
+        {
+          "path": "src/receipt.ts",
+          "line": 225
+        },
+        {
+          "path": "src/receipt.ts",
+          "line": 299
+        }
+      ],
+      "evidence": [
+        "reproduction-results.json#/observations/10"
+      ]
+    },
+    {
+      "id": "F10",
+      "priority": "P2",
+      "title": "已复现：外部证据读取缺少运行时结构和版本验证",
+      "status": "open; no production fixes in this review",
+      "classification": "isolated reproduction",
+      "report": "01-code-audit.md",
+      "reportLine": 137,
+      "sourceLocations": [
+        {
+          "path": "src/mcp-tools.ts",
+          "line": 73
+        },
+        {
+          "path": "src/baseline.ts",
+          "line": 94
+        },
+        {
+          "path": "src/receipt.ts",
+          "line": 256
+        }
+      ],
+      "evidence": [
+        "reproduction-results.json#/observations/11",
+        "policy-results.json#/cases/4",
+        "policy-results.json#/cases/5"
+      ]
+    },
+    {
+      "id": "F11",
+      "priority": "P1",
+      "title": "参数路径已复现：gitleaks 可用时工作区扫描范围反而缩小",
+      "status": "open; no production fixes in this review",
+      "classification": "command or HTTP contract reproduced with stub",
+      "report": "01-code-audit.md",
+      "reportLine": 143,
+      "sourceLocations": [
+        {
+          "path": "src/gates.ts",
+          "line": 194
+        }
+      ],
+      "evidence": [
+        "execution-results.json#/gitleaksScopeStub"
+      ]
+    },
+    {
+      "id": "F12",
+      "priority": "P2",
+      "title": "已复现：超时不保证终止，输出在截断前无界累积",
+      "status": "open; no production fixes in this review",
+      "classification": "isolated reproduction",
+      "report": "01-code-audit.md",
+      "reportLine": 149,
+      "sourceLocations": [
+        {
+          "path": "src/exec.ts",
+          "line": 48
+        },
+        {
+          "path": "src/exec.ts",
+          "line": 57
+        },
+        {
+          "path": "src/gates.ts",
+          "line": 36
+        }
+      ],
+      "evidence": [
+        "execution-results.json#/timeout",
+        "execution-results.json#/outputCapture"
+      ]
+    },
+    {
+      "id": "F13",
+      "priority": "P2",
+      "title": "已复现：错误的风险接受字段静默变为 allow",
+      "status": "open; no production fixes in this review",
+      "classification": "isolated reproduction",
+      "report": "01-code-audit.md",
+      "reportLine": 155,
+      "sourceLocations": [
+        {
+          "path": "src/spec.ts",
+          "line": 79
+        },
+        {
+          "path": "schema/spec.schema.json",
+          "line": 50
+        }
+      ],
+      "evidence": [
+        "policy-results.json#/cases/0"
+      ]
+    },
+    {
+      "id": "F14",
+      "priority": "P2",
+      "title": "已复现：外部插件源可绕过 requiredMappedTests",
+      "status": "open; no production fixes in this review",
+      "classification": "isolated reproduction",
+      "report": "01-code-audit.md",
+      "reportLine": 161,
+      "sourceLocations": [
+        {
+          "path": "src/spec.ts",
+          "line": 188
+        },
+        {
+          "path": "src/spec.ts",
+          "line": 225
+        }
+      ],
+      "evidence": [
+        "policy-results.json#/cases/1"
+      ]
+    },
+    {
+      "id": "F15",
+      "priority": "P2",
+      "title": "已复现：一个路径匹配可接受整个多文件 gap",
+      "status": "open; no production fixes in this review",
+      "classification": "isolated reproduction",
+      "report": "01-code-audit.md",
+      "reportLine": 167,
+      "sourceLocations": [
+        {
+          "path": "src/accept.ts",
+          "line": 9
+        },
+        {
+          "path": "src/accept.ts",
+          "line": 28
+        },
+        {
+          "path": "src/evidence.ts",
+          "line": 194
+        }
+      ],
+      "evidence": [
+        "policy-results.json#/cases/2"
+      ]
+    },
+    {
+      "id": "F16",
+      "priority": "P2",
+      "title": "实际协议核实：MCP 与 CLI/SDK 能力不对等",
+      "status": "open; no production fixes in this review",
+      "classification": "live stdio catalog capability gap",
+      "report": "01-code-audit.md",
+      "reportLine": 173,
+      "sourceLocations": [
+        {
+          "path": "src/mcp.ts",
+          "line": 20
+        },
+        {
+          "path": "src/mcp-tools.ts",
+          "line": 10
+        }
+      ],
+      "evidence": [
+        "validation.json#/mcp/catalog"
+      ]
+    },
+    {
+      "id": "F17",
+      "priority": "P2",
+      "title": "已复现：声明支持的 .mts/.cts 测试不能被识别",
+      "status": "open; no production fixes in this review",
+      "classification": "isolated reproduction",
+      "report": "01-code-audit.md",
+      "reportLine": 179,
+      "sourceLocations": [
+        {
+          "path": "src/plugins/js.ts",
+          "line": 6
+        },
+        {
+          "path": "src/plugins/js.ts",
+          "line": 8
+        },
+        {
+          "path": "src/plugins/js.ts",
+          "line": 30
+        }
+      ],
+      "evidence": [
+        "policy-results.json#/cases/3"
+      ]
+    },
+    {
+      "id": "F18",
+      "priority": "P2",
+      "title": "设计缺口：Schema 前向兼容承诺缺少可执行策略",
+      "status": "open; no production fixes in this review",
+      "classification": "design/compatibility gap",
+      "report": "01-code-audit.md",
+      "reportLine": 185,
+      "sourceLocations": [
+        {
+          "path": "docs/schema.md",
+          "line": 13
+        },
+        {
+          "path": "schema/evidence.schema.json",
+          "line": 7
+        }
+      ],
+      "evidence": []
+    },
+    {
+      "id": "F19",
+      "priority": "P1",
+      "title": "配置与 registry 核实：初始化的默认 MCP 命令解析到错误包名",
+      "status": "open; no production fixes in this review",
+      "classification": "generated configuration + read-only registry observation",
+      "report": "01-code-audit.md",
+      "reportLine": 191,
+      "sourceLocations": [
+        {
+          "path": "src/init-agent.ts",
+          "line": 162
+        },
+        {
+          "path": "package.json",
+          "line": 2
+        }
+      ],
+      "evidence": [
+        "integration-results.json#/generatedMcp"
+      ]
+    },
+    {
+      "id": "F20",
+      "priority": "P2",
+      "title": "已复现：收据声称记录生效参数，实际只存 CLI 原始覆盖值",
+      "status": "open; no production fixes in this review",
+      "classification": "isolated reproduction",
+      "report": "01-code-audit.md",
+      "reportLine": 197,
+      "sourceLocations": [
+        {
+          "path": "src/run.ts",
+          "line": 173
+        },
+        {
+          "path": "src/run.ts",
+          "line": 183
+        },
+        {
+          "path": "src/receipt.ts",
+          "line": 113
+        },
+        {
+          "path": "docs/schema.md",
+          "line": 35
+        }
+      ],
+      "evidence": [
+        "execution-results.json#/receiptEffectiveOptions"
+      ]
+    },
+    {
+      "id": "F21",
+      "priority": "P2",
+      "title": "本地替身复现：sticky 评论缺少作者约束和分页",
+      "status": "open; no production fixes in this review",
+      "classification": "command or HTTP contract reproduced with stub",
+      "report": "01-code-audit.md",
+      "reportLine": 203,
+      "sourceLocations": [
+        {
+          "path": "action/post-comment.mjs",
+          "line": 65
+        },
+        {
+          "path": "action/post-comment.mjs",
+          "line": 70
+        }
+      ],
+      "evidence": [
+        "integration-results.json#/commentMarkerCollision",
+        "integration-results.json#/commentPagination"
+      ]
+    }
+  ]
+}

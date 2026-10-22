@@ -1,7 +1,7 @@
 import { extname, normalizeRel } from "../paths.js";
 import type { Language } from "../types.js";
 import { builtinPlugins } from "./builtin.js";
-import type { LanguagePlugin } from "./types.js";
+import type { LanguagePlugin, PluginContext } from "./types.js";
 
 export type { LanguagePlugin, PluginContext, PluginTestCommand } from "./types.js";
 export { isLanguagePlugin } from "./types.js";
@@ -25,9 +25,10 @@ export function pluginForPath(
 export function isPluginTestFile(
   filePath: string,
   plugins: readonly LanguagePlugin[] = builtinPlugins,
+  ctx?: PluginContext,
 ): boolean {
   const plugin = pluginForPath(filePath, plugins);
-  return plugin ? plugin.isTestFile(normalizeRel(filePath)) : false;
+  return plugin ? plugin.isTestFile(normalizeRel(filePath), ctx) : false;
 }
 
 export function isPluginSourceFile(

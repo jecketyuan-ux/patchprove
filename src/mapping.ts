@@ -38,8 +38,9 @@ export function isSourceFile(
 export function isTestFile(
   filePath: string,
   plugins: readonly LanguagePlugin[] = builtinPlugins,
+  ctx?: PluginContext,
 ): boolean {
-  return isPluginTestFile(filePath, plugins);
+  return isPluginTestFile(filePath, plugins, ctx);
 }
 
 export function isMappableSource(
@@ -55,7 +56,7 @@ export function testCandidatesFor(
   ctx?: PluginContext,
 ): string[] {
   const plugin = pluginForPath(filePath, plugins);
-  if (!plugin || isTestFile(filePath, plugins)) return [];
+  if (!plugin || isTestFile(filePath, plugins, ctx)) return [];
   return plugin.testCandidates(normalizeRel(filePath), ctx);
 }
 

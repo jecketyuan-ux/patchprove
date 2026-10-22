@@ -10,6 +10,11 @@ export function normalizeRel(p: string): string {
   return normalized === "." ? "" : normalized;
 }
 
+/** Git's NUL-delimited paths are already relative POSIX paths, not display escapes. */
+export function normalizeGitPath(p: string): string {
+  return p.startsWith("./") ? p.slice(2) : p;
+}
+
 export function basenameNoExt(filePath: string): string {
   return path.parse(filePath).name;
 }

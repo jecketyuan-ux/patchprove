@@ -1,0 +1,88 @@
+{
+  "schemaVersion": 1,
+  "corpusKind": "seeded-local",
+  "description": "Three deterministic local patches. No claim of real-world accuracy or a 50-patch corpus.",
+  "commit": {
+    "authorName": "patchprove fixtures",
+    "authorEmail": "fixtures@example.invalid",
+    "date": "2026-01-01T00:00:00Z",
+    "message": "Seeded corpus v1"
+  },
+  "cases": [
+    {
+      "id": "static-and-dynamic",
+      "repository": {
+        "kind": "seed",
+        "path": "seed",
+        "baseCommit": "571533610b312dae74f9d1f7a79de9e2d713dc7b"
+      },
+      "patch": "patches/static-and-dynamic.patch",
+      "patchHash": "b735970fb99daf7631211196adc3d97f0457365f9e118d465f5b6163c71b36ab",
+      "license": {
+        "spdx": "MIT",
+        "path": "seed/LICENSE"
+      },
+      "environment": {
+        "runtime": "node",
+        "minimumMajor": 22,
+        "platform": "any",
+        "network": false
+      },
+      "tests": [
+        "src/value.test.js",
+        "src/spare.test.js",
+        "test/dynamic.test.js"
+      ]
+    },
+    {
+      "id": "static-only",
+      "repository": {
+        "kind": "seed",
+        "path": "seed",
+        "baseCommit": "571533610b312dae74f9d1f7a79de9e2d713dc7b"
+      },
+      "patch": "patches/static-only.patch",
+      "patchHash": "7fa94ddae03b1fcf5029f14346d97a924fc6b73c33c10870daa541e83f5ddff2",
+      "license": {
+        "spdx": "MIT",
+        "path": "seed/LICENSE"
+      },
+      "environment": {
+        "runtime": "node",
+        "minimumMajor": 22,
+        "platform": "any",
+        "network": false
+      },
+      "tests": [
+        "src/value.test.js",
+        "src/spare.test.js",
+        "test/dynamic.test.js"
+      ]
+    },
+    {
+      "id": "documentation",
+      "repository": {
+        "kind": "seed",
+        "path": "seed",
+        "baseCommit": "571533610b312dae74f9d1f7a79de9e2d713dc7b"
+      },
+      "patch": "patches/documentation.patch",
+      "patchHash": "fa7fce70a5a55721f900b62b9d8b4002f1a8dd321e90fbfe9576a0b11f9f6c58",
+      "license": {
+        "spdx": "MIT",
+        "path": "seed/LICENSE"
+      },
+      "environment": {
+        "runtime": "node",
+        "minimumMajor": 22,
+        "platform": "any",
+        "network": false
+      },
+      "tests": [
+        "src/value.test.js",
+        "src/spare.test.js",
+        "test/dynamic.test.js"
+      ]
+    }
+  ]
+}

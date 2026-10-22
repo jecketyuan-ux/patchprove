@@ -1,0 +1,182 @@
+{
+  "baselineCommit": "188e07e03da3f3a21cd64f574f35a1fab0a384c7",
+  "packageVersion": "1.2.0",
+  "node": "v24.19.0",
+  "platform": "linux",
+  "architecture": "x64",
+  "trackedFiles": 137,
+  "sourceTypeScriptFiles": 39,
+  "baselineBuild": {
+    "command": "npm run build",
+    "exitCode": 0
+  },
+  "baselineTests": {
+    "command": "npm test -- --reporter=json --outputFile=<temporary file>",
+    "files": 22,
+    "cases": 116,
+    "passed": 116,
+    "failed": 0,
+    "exitCode": 0,
+    "limitation": "Only local Node v24.19.0/Linux was run; repository Node20/22 CI and other OS not rerun"
+  },
+  "cliSmoke": [
+    {
+      "args": [
+        "run",
+        "--help"
+      ],
+      "exitCode": 0,
+      "expectedExit": 0,
+      "ok": true
+    },
+    {
+      "args": [
+        "init-agent",
+        "--help"
+      ],
+      "exitCode": 0,
+      "expectedExit": 0,
+      "ok": true
+    },
+    {
+      "args": [
+        "hook",
+        "--help"
+      ],
+      "exitCode": 0,
+      "expectedExit": 0,
+      "ok": true
+    },
+    {
+      "args": [
+        "baseline",
+        "save",
+        "--help"
+      ],
+      "exitCode": 0,
+      "expectedExit": 0,
+      "ok": true
+    },
+    {
+      "args": [
+        "receipt",
+        "verify",
+        "--help"
+      ],
+      "exitCode": 0,
+      "expectedExit": 0,
+      "ok": true
+    },
+    {
+      "args": [
+        "run",
+        "--fail-on",
+        "invalid"
+      ],
+      "exitCode": 2,
+      "expectedExit": 2,
+      "ok": true
+    }
+  ],
+  "binShebangs": [
+    {
+      "file": "dist/cli.js",
+      "firstLine": "#!/usr/bin/env node"
+    },
+    {
+      "file": "dist/mcp.js",
+      "firstLine": "#!/usr/bin/env node"
+    }
+  ],
+  "packing": {
+    "command": "npm pack --dry-run --json --ignore-scripts --cache /tmp/patchprove-review-npm-cache",
+    "exitCode": 0,
+    "entryCount": 199,
+    "unpackedSize": 665800,
+    "requiredEntries": [
+      {
+        "file": "dist/cli.js",
+        "present": true
+      },
+      {
+        "file": "dist/mcp.js",
+        "present": true
+      },
+      {
+        "file": "schema/evidence.schema.json",
+        "present": true
+      },
+      {
+        "file": "schema/receipt.schema.json",
+        "present": true
+      },
+      {
+        "file": "examples/skills/patchprove/SKILL.md",
+        "present": true
+      }
+    ],
+    "limitation": "Package content dry-run after a separate successful build; a writable temporary npm cache was used. No registry publish or fresh global installation. Entry count includes in-progress review artifacts."
+  },
+  "mcp": {
+    "connected": true,
+    "catalog": [
+      {
+        "name": "prove_patch",
+        "inputProperties": [
+          "cwd",
+          "base",
+          "head",
+          "failOn",
+          "accept",
+          "config",
+          "out",
+          "ignore",
+          "disableGate"
+        ]
+      },
+      {
+        "name": "list_gaps",
+        "inputProperties": [
+          "cwd",
+          "base",
+          "head",
+          "failOn",
+          "accept",
+          "config",
+          "out",
+          "ignore",
+          "disableGate",
+          "evidencePath"
+        ]
+      }
+    ],
+    "fixtureCall": {
+      "isError": false,
+      "source": "file",
+      "gapCount": 1,
+      "claimDone": false
+    }
+  },
+  "languageRuntimeAvailability": {
+    "javascript": "Node24/Vitest real execution",
+    "python": "Python3.12.14 present, pytest executable absent; no real pytest run",
+    "go": "PATH resolves /usr/bin/go to a non-toolchain program; go version fails; Go runtime tests not run",
+    "rust": "cargo/rustc absent; not run",
+    "java": "OpenJDK21 runtime present; javac/Maven/Gradle absent; not run"
+  },
+  "dependencyVersions": {
+    "@modelcontextprotocol/sdk": "1.30.0",
+    "hono": "4.13.5",
+    "ajv": "8.20.0",
+    "fast-uri": "3.1.6",
+    "express": "5.2.1",
+    "proxy-addr": "2.0.7",
+    "ip-address": "10.7.0"
+  },
+  "testTypecheckDiagnostic": {
+    "command": "tsc --noEmit --strict --target ES2022 --module NodeNext --moduleResolution NodeNext --esModuleInterop --skipLibCheck test/accept.test.ts",
+    "exitCode": 2,
+    "output": "test/accept.test.ts(6,7): error TS2740: Type '{ typescript: false; tscBin: null; eslint: false; eslintBin: null; vitest: false; vitestBin: null; jest: false; jestBin: null; python: false; pyright: false; pyrightBin: null; mypy: false; mypyBin: null; ... 5 more ...; gitleaksBin: null; }' is missing the following properties from type 'DetectedTools': go, goBin, cargo, cargoBin, and 4 more.",
+    "meaning": "Diagnostic gap in existing test fixtures; production build and Vitest baseline remain successful. No fixture source was modified."
+  }
+}

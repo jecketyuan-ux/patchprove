@@ -21,7 +21,10 @@
   "properties": {
     "schemaVersion": {
       "type": "string",
-      "const": "1.2.0"
+      "enum": [
+        "1.2.0",
+        "2.0.0"
+      ]
     },
     "algorithm": {
       "type": "string",
@@ -31,38 +34,111 @@
       "type": "string",
       "pattern": "^sha256:[0-9a-f]{64}$"
     },
-    "toolVersion": { "type": "string", "minLength": 1 },
-    "evidenceSchemaVersion": { "type": "string", "minLength": 1 },
+    "toolVersion": {
+      "type": "string",
+      "minLength": 1
+    },
+    "evidenceSchemaVersion": {
+      "type": "string",
+      "minLength": 1
+    },
     "argv": {
       "type": "array",
-      "items": { "type": "string" }
+      "items": {
+        "type": "string"
+      }
     },
     "options": {
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "failOn": { "type": ["string", "null"] },
-        "failOnNewGaps": { "type": ["string", "null"] },
-        "base": { "type": ["string", "null"] },
-        "head": { "type": ["string", "null"] },
-        "out": { "type": ["string", "null"] },
-        "sarif": { "type": ["string", "null"] },
-        "spec": { "type": ["string", "null"] },
-        "baseline": { "type": ["string", "null"] },
-        "format": { "type": ["string", "null"] },
-        "sign": { "type": "boolean" }
+        "failOn": {
+          "enum": [
+            "none",
+            "high",
+            "critical",
+            null
+          ]
+        },
+        "failOnNewGaps": {
+          "enum": [
+            "none",
+            "high",
+            "critical",
+            null
+          ]
+        },
+        "base": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "head": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "out": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "sarif": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "spec": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "baseline": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "format": {
+          "enum": [
+            "human",
+            "markdown",
+            "json",
+            null
+          ]
+        },
+        "sign": {
+          "type": "boolean"
+        }
       }
     },
-    "exitCode": { "type": "integer" },
+    "exitCode": {
+      "type": "integer"
+    },
     "failOnOutcome": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["failed", "reason"],
+      "required": [
+        "failed",
+        "reason"
+      ],
       "properties": {
-        "failed": { "type": "boolean" },
+        "failed": {
+          "type": "boolean"
+        },
         "reason": {
           "type": "string",
-          "enum": ["ok", "fail-on", "contract", "new-gaps"]
+          "enum": [
+            "ok",
+            "fail-on",
+            "contract",
+            "new-gaps"
+          ]
         }
       }
     },
@@ -71,17 +147,41 @@
       "items": {
         "type": "object",
         "additionalProperties": false,
-        "required": ["id", "command", "exitCode", "status"],
+        "required": [
+          "id",
+          "command",
+          "exitCode",
+          "status"
+        ],
         "properties": {
           "id": {
             "type": "string",
-            "enum": ["typecheck", "lint", "tests", "secrets"]
+            "enum": [
+              "typecheck",
+              "lint",
+              "tests",
+              "secrets"
+            ]
           },
-          "command": { "type": ["string", "null"] },
-          "exitCode": { "type": ["integer", "null"] },
+          "command": {
+            "type": [
+              "string",
+              "null"
+            ]
+          },
+          "exitCode": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          },
           "status": {
             "type": "string",
-            "enum": ["passed", "failed", "skipped"]
+            "enum": [
+              "passed",
+              "failed",
+              "skipped"
+            ]
           }
         }
       }
@@ -93,18 +193,359 @@
     "signature": {
       "type": "object",
       "additionalProperties": false,
-      "required": ["alg", "value"],
+      "required": [
+        "alg",
+        "value"
+      ],
       "properties": {
         "alg": {
           "type": "string",
-          "enum": ["ed25519", "hmac-sha256"]
+          "enum": [
+            "ed25519",
+            "hmac-sha256"
+          ]
         },
-        "value": { "type": "string", "minLength": 1 },
+        "value": {
+          "type": "string",
+          "minLength": 1
+        },
         "publicKey": {
           "type": "string",
           "description": "SPKI DER (base64) for ed25519, so verify does not need the private key."
         }
       }
+    },
+    "canonicalizationVersion": {
+      "const": "2"
+    },
+    "payloadHash": {
+      "type": "string",
+      "pattern": "^(sha256:)?[0-9a-f]{64}$"
+    },
+    "evidenceHash": {
+      "type": "string",
+      "pattern": "^(sha256:)?[0-9a-f]{64}$"
+    },
+    "executionHash": {
+      "type": "string",
+      "pattern": "^(sha256:)?[0-9a-f]{64}$"
+    },
+    "snapshotHash": {
+      "type": "string",
+      "pattern": "^(sha256:)?[0-9a-f]{64}$"
+    },
+    "policyHash": {
+      "type": "string",
+      "pattern": "^(sha256:)?[0-9a-f]{64}$"
+    },
+    "verification": {
+      "$ref": "#/definitions/verification"
+    },
+    "effectivePolicy": {
+      "$ref": "#/definitions/effectivePolicy"
     }
-  }
+  },
+  "definitions": {
+    "verification": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "status": {
+          "enum": [
+            "passed",
+            "failed",
+            "incomplete"
+          ]
+        },
+        "strict": {
+          "type": "boolean"
+        },
+        "reasons": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "code": {
+                "type": "string"
+              },
+              "message": {
+                "type": "string"
+              },
+              "checkId": {
+                "enum": [
+                  "typecheck",
+                  "lint",
+                  "tests",
+                  "secrets"
+                ]
+              },
+              "scope": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            },
+            "required": [
+              "code",
+              "message"
+            ]
+          }
+        },
+        "legacy": {
+          "type": "boolean"
+        }
+      },
+      "required": [
+        "status",
+        "strict",
+        "reasons"
+      ]
+    },
+    "effectivePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "protocol": {
+          "enum": [
+            1,
+            2
+          ]
+        },
+        "strict": {
+          "type": "boolean"
+        },
+        "failOn": {
+          "enum": [
+            "high",
+            "critical",
+            null
+          ]
+        },
+        "failOnNewGaps": {
+          "enum": [
+            "high",
+            "critical",
+            null
+          ]
+        },
+        "gates": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "typecheck": {
+              "type": "boolean"
+            },
+            "lint": {
+              "type": "boolean"
+            },
+            "tests": {
+              "type": "boolean"
+            },
+            "secrets": {
+              "type": "boolean"
+            }
+          },
+          "required": [
+            "typecheck",
+            "lint",
+            "tests",
+            "secrets"
+          ]
+        },
+        "ignorePaths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "acceptGaps": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "path": {
+                "type": "string"
+              },
+              "reason": {
+                "type": "string"
+              },
+              "ruleId": {
+                "type": "string"
+              },
+              "owner": {
+                "type": "string"
+              },
+              "expiresAt": {
+                "type": "string",
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date"
+                  },
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  }
+                ]
+              },
+              "ticket": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "plugins": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "config": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "hash": {
+                  "type": "string",
+                  "pattern": "^(sha256:)?[0-9a-f]{64}$"
+                }
+              },
+              "required": [
+                "path",
+                "hash"
+              ]
+            }
+          ]
+        },
+        "spec": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "hash": {
+                  "type": "string",
+                  "pattern": "^(sha256:)?[0-9a-f]{64}$"
+                },
+                "inputs": {
+                  "type": "array",
+                  "minItems": 1,
+                  "items": {
+                    "type": "object",
+                    "required": [
+                      "path",
+                      "hash"
+                    ],
+                    "properties": {
+                      "path": {
+                        "type": "string"
+                      },
+                      "hash": {
+                        "type": "string",
+                        "pattern": "^(sha256:)?[0-9a-f]{64}$"
+                      }
+                    },
+                    "additionalProperties": false
+                  }
+                }
+              },
+              "required": [
+                "path",
+                "hash"
+              ]
+            }
+          ]
+        },
+        "baseline": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "properties": {
+                "path": {
+                  "type": "string"
+                },
+                "hash": {
+                  "type": "string",
+                  "pattern": "^(sha256:)?[0-9a-f]{64}$"
+                }
+              },
+              "required": [
+                "path",
+                "hash"
+              ]
+            }
+          ]
+        },
+        "hash": {
+          "type": "string",
+          "pattern": "^(sha256:)?[0-9a-f]{64}$"
+        }
+      },
+      "required": [
+        "protocol",
+        "strict",
+        "failOn",
+        "failOnNewGaps",
+        "gates",
+        "ignorePaths",
+        "acceptGaps",
+        "plugins",
+        "config",
+        "spec",
+        "baseline",
+        "hash"
+      ]
+    }
+  },
+  "allOf": [
+    {
+      "if": {
+        "properties": {
+          "schemaVersion": {
+            "pattern": "^2\\."
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "canonicalizationVersion",
+          "payloadHash",
+          "evidenceHash",
+          "executionHash",
+          "snapshotHash",
+          "policyHash",
+          "verification",
+          "effectivePolicy"
+        ],
+        "properties": {
+          "evidenceSchemaVersion": {
+            "pattern": "^2\\."
+          }
+        }
+      }
+    }
+  ]
 }

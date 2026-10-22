@@ -1,0 +1,16 @@
+{
+  "schemaVersion": 1,
+  "node": "v24.19.0",
+  "platform": "linux",
+  "install": "Local project tarball in a fresh consumer; declared dependencies downloaded with install scripts disabled",
+  "runtimeNetwork": "No application network calls are required for CLI and stdio MCP checks",
+  "mcp": "stdio initialization, tools/list, list_gaps, prove_patch",
+  "publisher": "trusted rendering accepts matching receipt/head and rejects wrong head or tampered evidence; no publication performed",
+  "package": {
+    "filename": "patchprove-2.0.0.tgz",
+    "integrity": "sha512-e+cU35+sF+mC2/LPskWjfRuPwGjNowPHRX/NCx7/WJ9pBDDI8br9tqvSI64ubbJPdysFXbPGxQH51nGA+ishNg==",
+    "shasum": "b77f1096f6a9b991fa211532b8dfbc614160676d",
+    "version": "2.0.0"
+  },
+  "cli": "version, help, strict protocol-2 evidence, receipt verification, public module import"
+}

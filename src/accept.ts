@@ -1,15 +1,19 @@
 import { matchGlob } from "./glob.js";
 import type { AcceptGapRule, Gap } from "./types.js";
 
+function activeRule(rule: AcceptGapRule, now = Date.now()): boolean {
+  if (!rule.expiresAt) return true;
+  const expiresAt = Date.parse(rule.expiresAt);
+  return Number.isFinite(expiresAt) && expiresAt > now;
+}
+
 export function matchAcceptRule(gap: Gap, rule: AcceptGapRule): boolean {
+  if (!activeRule(rule)) return false;
   if (rule.id && (gap.id === rule.id || matchGlob(gap.id, rule.id))) {
     return true;
   }
   if (rule.path) {
-    if (gap.files?.some((file) => matchGlob(file, rule.path as string))) {
-      return true;
-    }
-    if (matchGlob(gap.id, rule.path)) return true;
+    return Boolean(gap.files?.length && gap.files.every((file) => matchGlob(file, rule.path!)));
   }
   return false;
 }
@@ -27,13 +31,22 @@ export function findAcceptMatch(
  */
 export function applyAcceptedGaps(gaps: Gap[], rules: readonly AcceptGapRule[]): Gap[] {
   if (rules.length === 0) return gaps;
+  const now = Date.now();
+  const active = rules.map((rule, index) => ({ rule, index })).filter(({ rule }) => activeRule(rule, now));
   return gaps.map((gap) => {
-    const match = findAcceptMatch(gap, rules);
-    if (!match) return gap;
+    const whole = active.filter(({ rule }) => rule.id && matchGlob(gap.id, rule.id));
+    const byPath = active.filter(({ rule }) => rule.path && gap.files?.some((file) => matchGlob(file, rule.path!)));
+    const covered = Boolean(gap.files?.length && gap.files.every((file) =>
+      byPath.some(({ rule }) => matchGlob(file, rule.path!)),
+    ));
+    const matches = whole.length ? whole : covered ? byPath : [];
+    if (matches.length === 0) return gap;
+    const reasons = [...new Set(matches.map(({ rule }) => rule.reason || "accepted"))];
     return {
       ...gap,
       accepted: true,
-      acceptedReason: match.reason || "accepted",
+      acceptedReason: reasons.join("; "),
+      acceptedBy: matches.map(({ rule, index }) => rule.ruleId ?? `accept-${index + 1}`),
     };
   });
 }

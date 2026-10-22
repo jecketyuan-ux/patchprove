@@ -2,6 +2,33 @@
 
 All notable changes to this project are documented here.
 
+## 2.0.0 — Unreleased implementation
+
+This section describes the current checkout. It does not announce an npm publication, release tag, executed hosted CI matrix, or live host validation. Earlier entries describe their historical version behavior.
+
+### Added
+
+- Protocol 2 evidence with required snapshot identity, verification plan, per-unit execution records, effective policy, and a shared `passed | failed | incomplete` decision. Strict verification is the default; `--protocol 1` emits compatibility evidence 1.3.0.
+- Final-working-tree and resolved-range capture, content/patch digests, drift detection, and optional isolated execution trees. Range evidence cannot silently claim verification of a different checkout.
+- Bounded subprocess output/deadlines, timeout/cancellation metadata, process-tree cleanup, tool-version evidence, and signing/authentication-variable filtering for child processes.
+- Semantic gap/finding fingerprints, separate baseline scope/severity changes and compatibility diagnostics, and shared versioned runtime readers that validate required structure while retaining additive optional fields.
+- Version 2 receipt envelopes binding evidence/execution digests, snapshot, policy, decision, and exit metadata; explicit `--require-signature` and Ed25519 `--trusted-key` policy. Unsigned integrity and signer trust remain distinct.
+- Digest manifests for artifact sets, explicit artifact controls across supported entry points, export-based Nx/Turbo/testmon evidence adapters, and an optional offline Cosign bundle verifier.
+- Schema-generated wire types and CI drift checks; independent `artifacts verify`; official SARIF Schema validation and real reviewdog/Cosign offline smoke evidence.
+
+### Fixed
+
+- Git state/path boundaries, changed-test selection, partial multilingual execution, conservative mapping unions, and missing-runner/zero-collection handling.
+- Invalid acceptance-policy types, external-plugin source classification in contracts, and aggregate gap acceptance requiring complete path coverage. Acceptance rules support identity, ownership, expiry, and ticket metadata; findings remain independent.
+- Protocol 2 unknown-config-key errors, explicit external-plugin permission, effective-policy provenance, and protocol 2 missing-key signing errors.
+- MCP parameter forwarding/package-bin launchers, scoped initialization merges, host response boundaries, and Action publication failures preserving the verification gate.
+
+### Migration and validation
+
+- Historical receipt 1.2 canonicalization/signatures remain evidence-only; CLI verification requires explicit `--allow-legacy`. Protocol 2 signatures cover the new envelope rather than changing the old algorithm silently.
+- Updated public claims distinguish mapped tests from branch assertions, stable canonical inputs from identical diffs, native validation from fixtures, and advisory host responses from enforcement. No cloud/telemetry capability was added.
+- See [migration](docs/migration-v2.md), [validation](docs/validation.md), and [ecosystem boundaries](docs/ecosystem.md). Publication and externally executed platform/host validation remain separate steps.
+
 ## 1.2.0 — 2026-09-03
 
 ### Added

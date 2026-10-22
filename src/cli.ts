@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import { Command } from "commander";
+import { verifyArtifactSet } from "./artifacts.js";
 import path from "node:path";
 import { DEFAULT_BASELINE_REL, writeBaseline } from "./baseline.js";
 import { isCheckId } from "./config.js";
@@ -10,7 +11,7 @@ import { readEvidenceFile } from "./mcp-tools.js";
 import { analyze, executeRun } from "./run.js";
 import { collectGitSnapshot } from "./git.js";
 import { defaultReceiptPath, readReceiptFile, verifyReceipt } from "./receipt.js";
-import { TOOL_VERSION, type CheckId, type FailOnLevel } from "./types.js";
+import { TOOL_VERSION, type CheckId, type FailOnLevel, type RunOptions } from "./types.js";
 
 function collect(value: string, previous: string[]): string[] {
   return [...previous, value];
@@ -29,7 +30,20 @@ function addPipelineOptions(cmd: Command): Command {
     .option("--config <file>", "Explicit .patchprove.yml / .yaml path")
     .option("--spec <file>", "Explicit SPEC.md or .patchprove/spec.yml")
     .option("--baseline <file>", "Compare open gaps against this evidence.json")
-    .option("--out <file>", "Write evidence JSON");
+    .option("--out <file>", "Write evidence JSON")
+    .option("--sarif <file>", "Write SARIF 2.1")
+    .option("--receipt [file]", "Write an evidence receipt")
+    .option("--no-receipt", "Do not write an evidence receipt")
+    .option("--sign", "Sign the receipt with PATCHPROVE_SIGNING_KEY")
+    .option("--protocol <version>", "Evidence protocol: 1 | 2 (default 2)")
+    .option("--strict", "Require complete verification (default for protocol 2)")
+    .option("--no-strict", "Allow incomplete verification coverage")
+    .option("--isolate", "Use an isolated snapshot for a --base/--head range (the default)")
+    .option("--timeout-ms <ms>", "Total execution budget in milliseconds")
+    .option("--max-output-bytes <bytes>", "Maximum captured tool output")
+    .option("--allow-plugins", "Allow explicitly configured local plugins")
+    .option("--strict-config", "Treat configuration diagnostics as errors")
+    .option("--adapter-input <kind:path>", "Import nx, turbo, or testmon execution evidence (repeatable)", collect, [] as string[]);
 }
 
 function parseLevel(
@@ -42,58 +56,59 @@ function parseLevel(
   return "invalid";
 }
 
-function parsePipelineOpts(opts: {
+interface PipelineCliOptions {
   cwd: string;
   failOn?: string;
   failOnNewGaps?: string;
-  base?: string;
-  head?: string;
-  accept?: string[];
-  ignore?: string[];
   disableGate?: string[];
-  config?: string;
-  spec?: string;
-  baseline?: string;
-  out?: string;
-}):
-  | {
-      cwd: string;
-      failOn?: FailOnLevel | "none";
-      failOnNewGaps?: FailOnLevel | "none";
-      base?: string;
-      head?: string;
-      accept?: string[];
-      ignore?: string[];
-      disableGate?: CheckId[];
-      config?: string;
-      spec?: string;
-      baseline?: string;
-      out?: string;
-    }
-  | "invalid" {
+  protocol?: string;
+  timeoutMs?: string;
+  maxOutputBytes?: string;
+  adapterInput?: string[];
+  [key: string]: unknown;
+}
+
+function parsePipelineOpts(opts: PipelineCliOptions): Omit<RunOptions, "json" | "format" | "out"> & { out?: string } | "invalid" {
   const failOn = parseLevel(opts.failOn, "--fail-on");
-  if (failOn === "invalid") return "invalid";
   const failOnNewGaps = parseLevel(opts.failOnNewGaps, "--fail-on-new-gaps");
-  if (failOnNewGaps === "invalid") return "invalid";
-  const disableGate = opts.disableGate ?? [];
-  if (disableGate.some((id) => !isCheckId(id))) {
-    process.stderr.write("patchprove: --disable-gate must be typecheck, lint, tests, or secrets\n");
+  const invalid = (message: string): "invalid" => {
+    process.stderr.write(`patchprove: ${message}\n`);
     return "invalid";
+  };
+  if (failOn === "invalid" || failOnNewGaps === "invalid") return "invalid";
+  if ((opts.disableGate ?? []).some((id) => !isCheckId(id))) {
+    return invalid("--disable-gate must be typecheck, lint, tests, or secrets");
   }
+  if (opts.protocol !== undefined && opts.protocol !== "1" && opts.protocol !== "2") {
+    return invalid("--protocol must be 1 or 2");
+  }
+  for (const flag of ["timeoutMs", "maxOutputBytes"] as const) {
+    if (opts[flag] !== undefined && (!/^\d+$/.test(opts[flag]!) || !Number.isSafeInteger(Number(opts[flag])) || Number(opts[flag]) <= 0)) {
+      return invalid(`${flag === "timeoutMs" ? "--timeout-ms" : "--max-output-bytes"} must be a positive integer`);
+    }
+  }
+  const adapterInputs: NonNullable<RunOptions["adapterInputs"]> = [];
+  for (const item of opts.adapterInput ?? []) {
+    const separator = item.indexOf(":");
+    const adapter = item.slice(0, separator);
+    const file = item.slice(separator + 1);
+    if (separator < 1 || !["nx", "turbo", "testmon"].includes(adapter) || !file) {
+      return invalid("--adapter-input must be nx:path, turbo:path, or testmon:path");
+    }
+    adapterInputs.push({ adapter: adapter as "nx" | "turbo" | "testmon", path: file });
+  }
+  const { protocol, timeoutMs, maxOutputBytes, disableGate, adapterInput, ...rest } = opts;
   return {
+    ...rest,
     cwd: opts.cwd,
     failOn,
     failOnNewGaps,
-    base: opts.base,
-    head: opts.head,
-    accept: opts.accept,
-    ignore: opts.ignore,
-    disableGate: disableGate as CheckId[],
-    config: opts.config,
-    spec: opts.spec,
-    baseline: opts.baseline,
-    out: opts.out,
-  };
+    disableGate: disableGate as CheckId[] | undefined,
+    protocol: protocol === undefined ? undefined : Number(protocol) as 1 | 2,
+    timeoutMs: timeoutMs === undefined ? undefined : Number(timeoutMs),
+    maxOutputBytes: maxOutputBytes === undefined ? undefined : Number(maxOutputBytes),
+    adapterInputs,
+  } as Omit<RunOptions, "json" | "format" | "out"> & { out?: string };
 }
 
 const program = new Command();
@@ -107,39 +122,11 @@ const run = program
   .command("run")
   .description("Analyze git diff and write an evidence pack")
   .option("--json", "Print evidence JSON to stdout", false)
-  .option("--format <fmt>", "Stdout format: human | json | markdown", "human")
-  .option("--sarif <file>", "Write SARIF 2.1 from findings, gaps, and failed contract clauses")
-  .option(
-    "--receipt [file]",
-    "Write a hashable receipt (default on: <out>.receipt.json). Use --no-receipt to skip.",
-  )
-  .option("--no-receipt", "Do not write an evidence receipt")
-  .option(
-    "--sign",
-    "Sign the receipt with PATCHPROVE_SIGNING_KEY (ed25519 or HMAC). Skips signing if the key is unset.",
-    false,
-  );
+  .option("--format <fmt>", "Stdout format: human | json | markdown", "human");
+
 
 addPipelineOptions(run).action(
-  async (opts: {
-    cwd: string;
-    json: boolean;
-    format: string;
-    out?: string;
-    failOn?: string;
-    failOnNewGaps?: string;
-    base?: string;
-    head?: string;
-    accept?: string[];
-    ignore?: string[];
-    disableGate?: string[];
-    sarif?: string;
-    config?: string;
-    spec?: string;
-    baseline?: string;
-    receipt?: string | boolean;
-    sign?: boolean;
-  }) => {
+  async (opts: PipelineCliOptions & { json: boolean; format: string; out?: string; sarif?: string; receipt?: string | boolean; sign?: boolean }) => {
     const format = opts.json ? "json" : opts.format;
     if (format !== "human" && format !== "json" && format !== "markdown") {
       process.stderr.write("patchprove: --format must be human, json, or markdown\n");
@@ -173,21 +160,8 @@ addPipelineOptions(
 ).action(
   async (
     event: string,
-    opts: {
-      cwd: string;
-      adapter: string;
-      failOn?: string;
-      failOnNewGaps?: string;
-      base?: string;
-      head?: string;
-      accept?: string[];
-      ignore?: string[];
-      disableGate?: string[];
-      config?: string;
-      spec?: string;
-      baseline?: string;
-      out?: string;
-    },
+    opts: PipelineCliOptions & { adapter: string },
+    command: Command,
   ) => {
     if (!isHookEvent(event)) {
       process.stderr.write("patchprove: hook event must be stop, post, session, or subagent-stop\n");
@@ -208,6 +182,7 @@ addPipelineOptions(
       ...parsed,
       adapter: opts.adapter,
       event,
+      cwdExplicit: command.getOptionValueSource("cwd") === "cli",
     });
   },
 );
@@ -223,7 +198,8 @@ program
   .option("--no-skill", "Skip writing .claude/skills/patchprove/SKILL.md")
   .option("--cursor", "Install Cursor rule pack + hooks (default: true)")
   .option("--no-cursor", "Skip Cursor rule pack and .cursor/hooks.json")
-  .option("--cli <cmd>", "CLI invocation to embed in hooks (default: npx patchprove)")
+  .option("--cli <cmd>", "Custom CLI invocation to embed in hooks")
+  .option("--local-cli <file>", "Absolute local CLI path for hooks and MCP")
   .action((opts: {
     cwd: string;
     force: boolean;
@@ -233,6 +209,7 @@ program
     skill: boolean;
     cursor?: boolean;
     cli?: string;
+    localCli?: string;
   }) => {
     try {
       const result = executeInitAgent({
@@ -244,6 +221,7 @@ program
         skill: opts.skill,
         cursor: opts.cursor,
         cli: opts.cli,
+        localCli: opts.localCli,
       });
       for (const line of result.messages) {
         process.stdout.write(`${line}\n`);
@@ -309,6 +287,23 @@ baseline
     }
   });
 
+const artifacts = program.command("artifacts").description("Verify an artifact set against its commit manifest");
+artifacts
+  .command("verify")
+  .description("Verify every artifact's exact bytes against a manifest")
+  .exitOverride((error) => { process.exit(error.exitCode === 0 ? 0 : 2); })
+  .argument("<manifest>", "Path to <evidence>.manifest.json")
+  .action((manifestPath: string) => {
+    try {
+      const result = verifyArtifactSet(manifestPath);
+      process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+      process.exitCode = result.ok ? 0 : result.errors.some((error) => error.startsWith("manifest:")) ? 2 : 1;
+    } catch (error) {
+      process.stderr.write(`patchprove: ${error instanceof Error ? error.message : String(error)}\n`);
+      process.exitCode = 2;
+    }
+  });
+
 const receipt = program.command("receipt").description("Verify or inspect an evidence receipt");
 
 receipt
@@ -316,12 +311,19 @@ receipt
   .description("Recompute the evidence content hash and check it against a receipt")
   .argument("<evidence>", "Path to evidence.json")
   .argument("[receipt]", "Receipt JSON (default: <evidence>.receipt.json)")
-  .action((evidencePath: string, receiptPath: string | undefined) => {
+  .option("--require-signature", "Reject unsigned receipts")
+  .option("--trusted-key <fingerprint>", "Trusted signing public-key fingerprint (repeatable)", collect, [] as string[])
+  .option("--allow-legacy", "Allow historical evidence and receipts")
+  .action((evidencePath: string, receiptPath: string | undefined, opts: { requireSignature?: boolean; trustedKey?: string[]; allowLegacy?: boolean }) => {
     try {
       const evidence = readEvidenceFile(evidencePath);
       const resolvedReceipt = path.resolve(receiptPath ?? defaultReceiptPath(evidencePath));
       const receiptDoc = readReceiptFile(resolvedReceipt);
-      const result = verifyReceipt(evidence, receiptDoc);
+      const result = verifyReceipt(evidence, receiptDoc, undefined, {
+        requireSignature: opts.requireSignature,
+        trustedKeyFingerprints: opts.trustedKey,
+        allowLegacy: Boolean(opts.allowLegacy),
+      });
       process.stdout.write(`${result.ok ? "ok" : "mismatch"}  ${result.message}\n`);
       process.exitCode = result.ok ? 0 : 1;
     } catch (err) {

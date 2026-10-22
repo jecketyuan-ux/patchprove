@@ -2,7 +2,12 @@
   "mcpServers": {
     "patchprove": {
       "command": "npx",
-      "args": ["-y", "patchprove-mcp"]
+      "args": [
+        "--yes",
+        "--package",
+        "patchprove@2.0.0",
+        "patchprove-mcp"
+      ]
     }
   }
 }

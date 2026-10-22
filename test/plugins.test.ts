@@ -2,10 +2,19 @@ import { describe, expect, it } from "vitest";
 import { goPlugin } from "../src/plugins/go.js";
 import { javaPlugin } from "../src/plugins/java.js";
 import { rustPlugin } from "../src/plugins/rust.js";
+import { pythonPlugin } from "../src/plugins/python.js";
 import { languageOf, mapTestsForFile, isTestFile, isMappableSource } from "../src/mapping.js";
 import { emptyDetectedTools } from "../src/types.js";
 
 describe("language plugins", () => {
+  it.each(["python", "python3", "/venv/bin/python3.12", "python.exe", "python3.12.exe"])("uses the pytest module when %s is the detected runner", (python) => {
+    expect(pythonPlugin.testCommand?.(".", ["tests/test_failure.py"], { ...emptyDetectedTools(), pytestBin: python })).toMatchObject({ command: python, args: ["-m", "pytest", "tests/test_failure.py"] });
+  });
+
+  it("executes pytest wrappers directly", () => {
+    expect(pythonPlugin.testCommand?.(".", ["tests/test_value.py"], { ...emptyDetectedTools(), pytestBin: "/venv/bin/pytest" })?.args).toEqual(["tests/test_value.py"]);
+  });
+
   it("classifies go/rust/java", () => {
     expect(languageOf("pkg/foo.go")).toBe("go");
     expect(languageOf("src/lib.rs")).toBe("rust");

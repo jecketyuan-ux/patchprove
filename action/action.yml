@@ -1,58 +1,135 @@
 name: patchprove
-description: Evidence pack for AI/agent patches — impact, checks, gaps, risk. Posts a sticky PR comment.
+description: Verify patch execution and provenance, publish an evidence pack and optional sticky PR comment.
 author: patchprove
 branding:
   icon: shield
   color: purple
 inputs:
   fail-on:
-    description: Exit non-zero when summary risk meets this threshold (high, critical, or none). Leave empty to use .patchprove.yml.
+    description: "Residual risk failure threshold: high, critical, or none."
+    required: false
+    default: ""
+  fail-on-new-gaps:
+    description: "New gap failure threshold: high, critical, or none."
     required: false
     default: ""
   cwd:
-    description: Repository path to analyze (defaults to the consumer workspace).
+    description: "Repository path to analyze."
     required: false
     default: ""
   github-token:
-    description: Token used to create or update the sticky PR comment.
+    description: "Token used only for comment publication."
     required: false
-    default: ${{ github.token }}
+    default: "${{ github.token }}"
+  comment:
+    description: "Publish a sticky PR comment. Use false in a read-only analysis workflow."
+    required: false
+    default: "true"
   out:
-    description: Evidence JSON output path.
+    description: "Evidence JSON output path, relative to cwd."
     required: false
-    default: evidence.json
+    default: "evidence.json"
+  config:
+    description: "Explicit configuration file."
+    required: false
+    default: ""
+  spec:
+    description: "Explicit verification contract."
+    required: false
+    default: ""
+  baseline:
+    description: "Evidence baseline file."
+    required: false
+    default: ""
+  base:
+    description: "Explicit diff base ref."
+    required: false
+    default: ""
+  head:
+    description: "Explicit diff head ref."
+    required: false
+    default: ""
   accept:
-    description: Comma-separated gap ids or path patterns to accept (in addition to acceptGaps in config).
+    description: "Comma-separated gap ids or path patterns to accept."
     required: false
     default: ""
   ignore:
-    description: Comma-separated path globs to exclude from impact/gaps/findings.
+    description: "Comma-separated ignored path patterns."
+    required: false
+    default: ""
+  disable-gate:
+    description: "Comma-separated disabled gates."
+    required: false
+    default: ""
+  protocol:
+    description: "Evidence protocol: 1 or 2."
+    required: false
+    default: "2"
+  strict:
+    description: "Require complete verification; empty uses protocol default."
+    required: false
+    default: ""
+  isolate:
+    description: "Run tools in an isolated snapshot."
+    required: false
+    default: "false"
+  timeout-ms:
+    description: "Total execution budget in milliseconds."
+    required: false
+    default: ""
+  max-output-bytes:
+    description: "Maximum captured tool output."
+    required: false
+    default: ""
+  allow-plugins:
+    description: "Allow configured local plugins."
+    required: false
+    default: "false"
+  strict-config:
+    description: "Treat config diagnostics as errors."
+    required: false
+    default: "false"
+  adapter-input:
+    description: "Comma-separated nx:path, turbo:path, or testmon:path inputs."
     required: false
     default: ""
   upload-sarif:
-    description: Generate SARIF from findings, gaps, and failed contract clauses; upload with github/codeql-action/upload-sarif. Requires security-events: write.
+    description: "Generate and upload SARIF. Requires security-events write."
     required: false
     default: "false"
   sarif-file:
-    description: SARIF output path (used when upload-sarif is true).
+    description: "SARIF output path, relative to cwd."
     required: false
-    default: patchprove.sarif
+    default: "patchprove.sarif"
   receipt:
-    description: Receipt JSON path. Empty writes <out>.receipt.json (default on). Set to "false" to skip.
+    description: "Receipt path; empty uses the evidence default, false disables."
     required: false
     default: ""
+  sign:
+    description: "Sign with PATCHPROVE_SIGNING_KEY."
+    required: false
+    default: "false"
   upload-artifacts:
-    description: Upload evidence.json and the receipt as workflow artifacts.
+    description: "Upload evidence, receipt, manifest, and SARIF artifacts."
     required: false
     default: "true"
+outputs:
+  status:
+    description: Verification CLI exit status (0 passed, 1 failed or incomplete).
+    value: ${{ steps.run.outputs.cli_status }}
+  evidence:
+    description: Absolute evidence JSON path.
+    value: ${{ steps.run.outputs.evidence }}
+  comment-file:
+    description: Markdown report path for a separate publisher.
+    value: ${{ steps.run.outputs.comment }}
 runs:
   using: composite
   steps:
     - name: Setup Node
-      uses: actions/setup-node@v4
+      uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
       with:
         node-version: "20"
-
     - name: Build patchprove from action repo
       shell: bash
       env:
@@ -60,119 +137,76 @@ runs:
       run: |
         set -euo pipefail
         REPO_ROOT="$(cd "$ACTION_PATH/.." && pwd)"
-        if [ ! -f "$REPO_ROOT/package.json" ]; then
-          echo "patchprove: could not find package.json next to action/" >&2
-          exit 2
-        fi
         cd "$REPO_ROOT"
         npm ci
         npm run build
         echo "PATCHPROVE_BIN=$REPO_ROOT/dist/cli.js" >> "$GITHUB_ENV"
-
     - name: Run patchprove
       id: run
       shell: bash
       env:
         INPUT_FAIL_ON: ${{ inputs.fail-on }}
+        INPUT_FAIL_ON_NEW_GAPS: ${{ inputs.fail-on-new-gaps }}
         INPUT_CWD: ${{ inputs.cwd }}
         INPUT_OUT: ${{ inputs.out }}
+        INPUT_CONFIG: ${{ inputs.config }}
+        INPUT_SPEC: ${{ inputs.spec }}
+        INPUT_BASELINE: ${{ inputs.baseline }}
+        INPUT_BASE: ${{ inputs.base }}
+        INPUT_HEAD: ${{ inputs.head }}
         INPUT_ACCEPT: ${{ inputs.accept }}
         INPUT_IGNORE: ${{ inputs.ignore }}
+        INPUT_DISABLE_GATE: ${{ inputs.disable-gate }}
+        INPUT_PROTOCOL: ${{ inputs.protocol }}
+        INPUT_STRICT: ${{ inputs.strict }}
+        INPUT_ISOLATE: ${{ inputs.isolate }}
+        INPUT_TIMEOUT_MS: ${{ inputs.timeout-ms }}
+        INPUT_MAX_OUTPUT_BYTES: ${{ inputs.max-output-bytes }}
+        INPUT_ALLOW_PLUGINS: ${{ inputs.allow-plugins }}
+        INPUT_STRICT_CONFIG: ${{ inputs.strict-config }}
+        INPUT_ADAPTER_INPUT: ${{ inputs.adapter-input }}
         INPUT_UPLOAD_SARIF: ${{ inputs.upload-sarif }}
         INPUT_SARIF_FILE: ${{ inputs.sarif-file }}
         INPUT_RECEIPT: ${{ inputs.receipt }}
-        EVENT_NAME: ${{ github.event_name }}
-        PR_BASE: ${{ github.event.pull_request.base.sha }}
-        PR_HEAD: ${{ github.event.pull_request.head.sha }}
-      run: |
-        set -euo pipefail
-        TARGET="${INPUT_CWD:-$GITHUB_WORKSPACE}"
-        ARGS=(run --cwd "$TARGET" --out "$INPUT_OUT" --format markdown)
-        if [ -n "$INPUT_FAIL_ON" ]; then
-          ARGS+=(--fail-on "$INPUT_FAIL_ON")
-        fi
-        if [ -n "$INPUT_ACCEPT" ]; then
-          IFS=',' read -ra ACCEPTS <<< "$INPUT_ACCEPT"
-          for item in "${ACCEPTS[@]}"; do
-            item="$(echo "$item" | xargs)"
-            if [ -n "$item" ]; then
-              ARGS+=(--accept "$item")
-            fi
-          done
-        fi
-        if [ -n "$INPUT_IGNORE" ]; then
-          IFS=',' read -ra IGNORES <<< "$INPUT_IGNORE"
-          for item in "${IGNORES[@]}"; do
-            item="$(echo "$item" | xargs)"
-            if [ -n "$item" ]; then
-              ARGS+=(--ignore "$item")
-            fi
-          done
-        fi
-        if [ "$INPUT_UPLOAD_SARIF" = "true" ]; then
-          ARGS+=(--sarif "$INPUT_SARIF_FILE")
-        fi
-        RECEIPT_PATH=""
-        if [ "$INPUT_RECEIPT" = "false" ]; then
-          ARGS+=(--no-receipt)
-        else
-          if [ -n "$INPUT_RECEIPT" ]; then
-            RECEIPT_PATH="$INPUT_RECEIPT"
-          elif [[ "$INPUT_OUT" == *.json ]]; then
-            RECEIPT_PATH="${INPUT_OUT%.json}.receipt.json"
-          else
-            RECEIPT_PATH="${INPUT_OUT}.receipt.json"
-          fi
-          ARGS+=(--receipt "$RECEIPT_PATH")
-        fi
-        if [ "$EVENT_NAME" = "pull_request" ] || [ "$EVENT_NAME" = "pull_request_target" ]; then
-          ARGS+=(--base "$PR_BASE" --head "$PR_HEAD")
-        fi
-        set +e
-        node "$PATCHPROVE_BIN" "${ARGS[@]}" > "$RUNNER_TEMP/patchprove-comment.md"
-        STATUS=$?
-        set -e
-        if [ "$STATUS" -eq 2 ]; then
-          echo "patchprove failed to run" >&2
-          cat "$RUNNER_TEMP/patchprove-comment.md" >&2 || true
-          exit 2
-        fi
-        echo "comment=$RUNNER_TEMP/patchprove-comment.md" >> "$GITHUB_OUTPUT"
-        echo "cli_status=$STATUS" >> "$GITHUB_OUTPUT"
-        echo "receipt=$RECEIPT_PATH" >> "$GITHUB_OUTPUT"
-        echo "evidence=$INPUT_OUT" >> "$GITHUB_OUTPUT"
-
+        INPUT_SIGN: ${{ inputs.sign }}
+      run: node "${{ github.action_path }}/run.mjs"
     - name: Sticky PR comment
-      if: github.event_name == 'pull_request' || github.event_name == 'pull_request_target'
+      id: publish
+      if: always() && inputs.comment != 'false' && steps.run.outputs.comment != '' && github.event_name == 'pull_request'
+      continue-on-error: true
       shell: bash
       env:
         GITHUB_TOKEN: ${{ inputs.github-token }}
         COMMENT_FILE: ${{ steps.run.outputs.comment }}
-        GH_EVENT_PATH: ${{ github.event_path }}
       run: node "${{ github.action_path }}/post-comment.mjs"
-
     - name: Upload evidence artifacts
       if: always() && inputs.upload-artifacts != 'false'
-      uses: actions/upload-artifact@v4
+      uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
       with:
         name: patchprove-evidence
         if-no-files-found: warn
         path: |
-          ${{ inputs.out }}
+          ${{ steps.run.outputs.evidence }}
           ${{ steps.run.outputs.receipt }}
-
+          ${{ steps.run.outputs.evidence }}.manifest.json
+          ${{ steps.run.outputs.sarif }}
+          ${{ steps.run.outputs.comment }}
     - name: Upload SARIF
-      if: inputs.upload-sarif == 'true'
-      uses: github/codeql-action/upload-sarif@v3
+      if: always() && inputs.upload-sarif == 'true' && steps.run.outputs.sarif != ''
+      uses: github/codeql-action/upload-sarif@5c8ea125689a2c5ae2672d1d914ac4bcd95d1b4b # v3
       with:
-        sarif_file: ${{ inputs.sarif-file }}
+        sarif_file: ${{ steps.run.outputs.sarif }}
         category: patchprove
-
-    - name: Honor fail-on
+    - name: Honor verification result
+      if: always()
       shell: bash
+      env:
+        STATUS: ${{ steps.run.outputs.cli_status }}
       run: |
-        STATUS="${{ steps.run.outputs.cli_status }}"
-        if [ "$STATUS" != "0" ]; then
-          echo "patchprove: fail-on threshold met (exit $STATUS)" >&2
-          exit "$STATUS"
+        if [ "$STATUS" = "0" ]; then exit 0; fi
+        if [ "$STATUS" = "1" ]; then
+          echo "patchprove: verification failed or incomplete" >&2
+          exit 1
         fi
+        echo "patchprove: analysis failed to produce a verification result" >&2
+        exit 2

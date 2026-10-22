@@ -1,0 +1,30 @@
+{
+  "format": "SARIF 2.1.0",
+  "jsonSchemaDraft": "draft-04",
+  "upstreamRepository": "https://github.com/oasis-tcs/sarif-spec",
+  "upstreamCommit": "1742a253eb654bf8a4ed7c60eaef7412b2c23553",
+  "retrievedOn": "2026-10-22",
+  "files": [
+    {
+      "file": "sarif-2.1.0.schema.json",
+      "sourcePath": "sarif-2.1/schema/sarif-schema-2.1.0.json",
+      "sourceUrl": "https://github.com/oasis-tcs/sarif-spec/blob/1742a253eb654bf8a4ed7c60eaef7412b2c23553/sarif-2.1/schema/sarif-schema-2.1.0.json",
+      "rawUrl": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/1742a253eb654bf8a4ed7c60eaef7412b2c23553/sarif-2.1/schema/sarif-schema-2.1.0.json",
+      "sha256": "c3b4bb2d6093897483348925aaa73af03b3e3f4bd4ca38cef26dcb4212a2682e",
+      "bytes": 112768
+    },
+    {
+      "file": "OASIS-LICENSE.md",
+      "sourcePath": "LICENSE.md",
+      "sourceUrl": "https://github.com/oasis-tcs/sarif-spec/blob/1742a253eb654bf8a4ed7c60eaef7412b2c23553/LICENSE.md",
+      "rawUrl": "https://raw.githubusercontent.com/oasis-tcs/sarif-spec/1742a253eb654bf8a4ed7c60eaef7412b2c23553/LICENSE.md",
+      "sha256": "1ee371a08c4bc2a64cf4382990271676835c3d75bc984560a181de54c88471c5",
+      "bytes": 1385
+    }
+  ],
+  "license": {
+    "noticeFile": "OASIS-LICENSE.md",
+    "description": "Retained unchanged upstream repository License Terms. Content is governed by OASIS policies, including IPR, TC Process, Bylaws, RF on RAND Terms Mode and applicable declarations. This fixture is not relicensed under the patchprove MIT license. See the notice and normative SARIF specification for applicable terms.",
+    "specificationUrl": "https://docs.oasis-open.org/sarif/sarif/v2.1.0/errata01/os/sarif-v2.1.0-errata01-os-complete.html"
+  }
+}

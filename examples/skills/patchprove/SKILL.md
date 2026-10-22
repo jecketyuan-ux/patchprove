@@ -20,7 +20,7 @@ Do **not** treat a green typecheck or a confident PR description as proof.
 
 ## Hard rule
 
-**Do not claim done while open (non-accepted) gaps remain.**
+**Do not claim done unless `verification.status` is `passed`.**
 
 Accepted gaps (`accepted: true`) stay in the pack for audit. They do not raise summary risk or trip `--fail-on`. Everything else in `gaps[]` is still unproven.
 
@@ -29,13 +29,13 @@ Accepted gaps (`accepted: true`) stay in the pack for audit. They do not raise s
 Prefer the CLI (deterministic, local):
 
 ```bash
-npx patchprove run --fail-on high
-npx patchprove run --base origin/main --head HEAD --fail-on high --out evidence.json
+npx --yes --package patchprove@2.0.0 patchprove run --fail-on high
+npx --yes --package patchprove@2.0.0 patchprove run --base origin/main --head HEAD --fail-on high --out evidence.json
 ```
 
 Or MCP tools (same pipeline as `patchprove run`):
 
-- `prove_patch` — `{ cwd?, base?, head?, failOn?, accept?, config?, out? }` → structured evidence + short summary
+- `prove_patch` — `{ cwd?, base?, head?, failOn?, accept?, config?, spec?, baseline?, failOnNewGaps?, protocol?, strict?, isolate?, timeoutMs?, maxOutputBytes?, allowPlugins?, strictConfig?, adapterInputs?, out?, sarif?, receipt?, sign? }` → structured evidence + short summary
 - `list_gaps` — same args, or `{ evidencePath }` to read an existing `evidence.json`
 
 If MCP is not configured, use the CLI. Do not invent evidence.
@@ -49,7 +49,7 @@ If MCP is not configured, use the CLI. Do not invent evidence.
 
 If the repo has `SPEC.md` or `.patchprove/spec.yml`, contract failures mean the patch is not done. If a baseline exists, new gaps are regressions — do not claim done. A receipt (`evidence.receipt.json`) hashes the pack so the same diff verifies as the same `contentHash`; run `patchprove receipt verify evidence.json` when you need to re-check.
 
-If `list_gaps.claimDone` is false or `summary.gapCount > 0`, keep working or get an explicit human accept (`--accept` / `acceptGaps` in `.patchprove.yml`).
+If `list_gaps.claimDone` is false or `verification.status` is `failed` or `incomplete`, keep working. Zero open gaps does not establish completion: failed checks, contracts, baseline thresholds, or missing execution provenance still prevent a passed decision. Human acceptance changes residual-risk policy; it does not turn a failed execution into a pass.
 
 ## Do not
 

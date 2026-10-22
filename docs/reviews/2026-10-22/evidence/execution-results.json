@@ -1,0 +1,92 @@
+{
+  "commitUnderReview": "188e07e03da3f3a21cd64f574f35a1fab0a384c7",
+  "runtime": {
+    "node": "v24.19.0",
+    "platform": "linux",
+    "vitest": "3.2.7"
+  },
+  "rangeMismatch": {
+    "fixtureBase": "cab10f43a117805faa51184b9358bdaff5f5fb4e",
+    "requestedHead": "ee9209f2079152aacd3f7d8aeb58f519c446b066",
+    "cleanBaseCheckout": true,
+    "reportedRange": {
+      "mode": "range",
+      "base": "cab10f43a117805faa51184b9358bdaff5f5fb4e",
+      "head": "ee9209f2079152aacd3f7d8aeb58f519c446b066"
+    },
+    "baseCheckoutTest": {
+      "id": "tests",
+      "name": "affected tests (vitest)",
+      "status": "passed",
+      "reason": "ok",
+      "command": "/tmp/patchprove-execution-audit-rwVwDt/node_modules/.bin/vitest run calc.test.js",
+      "exitCode": 0,
+      "durationMs": 554,
+      "detail": "RUN  v3.2.7 /tmp/patchprove-execution-audit-rwVwDt\n\n ✓ calc.test.js (1 test) 2ms\n\n Test Files  1 passed (1)\n      Tests  1 passed (1)\n   Start at  10:15:24\n   Duration  228ms (transform 23ms, setup 0ms, collect 19ms, tests 2ms, environment 0ms, prepare 62ms)"
+    },
+    "requestedHeadCheckoutTest": {
+      "id": "tests",
+      "name": "affected tests (vitest)",
+      "status": "failed",
+      "reason": "exit 1",
+      "command": "/tmp/patchprove-execution-audit-rwVwDt/node_modules/.bin/vitest run calc.test.js",
+      "exitCode": 1,
+      "durationMs": 553,
+      "detail": "RUN  v3.2.7 /tmp/patchprove-execution-audit-rwVwDt\n\n ❯ calc.test.js (1 test | 1 failed) 9ms\n   × returns 1 8ms\n     → expected 2 to be 1 // Object.is equality\n\n Test Files  1 failed (1)\n      Tests  1 failed (1)\n   Start at  10:15:25\n   Duration  216ms (transform 23ms, setup 0ms, collect 19ms, tests 9ms, environment 0ms, prepare 52ms)\n\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  calc.test.js > returns 1\nAssertionError: expected 2 to be 1 // Object.is equality\n\n- Expected\n+ Received\n\n- 1\n+ 2\n\n ❯ calc.test.js:3:35\n      1| import {it,expect} from \"vitest\";\n      2| import {Calc} from \"./calc.js\";\n      3| it(\"returns 1\",()=>expect(Calc()).toBe(1));\n       |                                   ^\n      4| \n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯"
+    },
+    "reproduced": true
+  },
+  "mcpFreshFailedTests": {
+    "claimDone": true,
+    "risk": "high",
+    "gapCount": 0,
+    "realTestStatus": "failed",
+    "reproduced": true
+  },
+  "receiptEffectiveOptions": {
+    "configuration": "failOn: high",
+    "cliExitCode": 1,
+    "receiptOptionsFailOn": null,
+    "failOnOutcome": {
+      "failed": true,
+      "reason": "fail-on"
+    },
+    "reproduced": true
+  },
+  "timeout": {
+    "configuredMs": 300,
+    "selfExitMs": 900,
+    "ignoresTerm": {
+      "durationMs": 927,
+      "exitCode": 0,
+      "sigtermReceived": true
+    },
+    "descendant": {
+      "durationMs": 954,
+      "exitCode": 1,
+      "survivedParentTermination": true
+    }
+  },
+  "outputCapture": {
+    "requestedBytes": 4194304,
+    "capturedBytes": 4194304,
+    "exitCode": 0,
+    "memoryExhaustionAttempted": false
+  },
+  "gitleaksScopeStub": {
+    "realGitleaksUsed": false,
+    "limitation": "Stub records arguments and models --staged using git diff --cached; no real gitleaks/version was executed.",
+    "arguments": [
+      "protect",
+      "--no-banner",
+      "--redact",
+      "--staged"
+    ],
+    "regexStatus": "failed",
+    "regexFindings": 1,
+    "stubStatus": "passed",
+    "fixtureUntrackedSecret": true,
+    "stagedDiffEmpty": true
+  },
+  "fixtureCleanedUp": true
+}

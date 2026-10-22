@@ -1,5 +1,6 @@
 import { isOpenGap } from "./accept.js";
 import { color } from "./color.js";
+import { evaluateVerification } from "./decision.js";
 import type { Evidence, Gap, RiskLevel, SummaryRisk } from "./types.js";
 
 function riskColor(level: SummaryRisk): (s: string) => string {
@@ -38,6 +39,7 @@ export function formatHumanReport(evidence: Evidence): string {
   const lines: string[] = [];
   const paint = riskColor(evidence.summary.risk);
   const { open, accepted } = splitGaps(evidence);
+  const verification = evaluateVerification(evidence);
   lines.push("");
   lines.push(color.bold("patchprove") + color.dim(`  v${evidence.toolVersion}`) + "  ·  impact → checks → gaps → risk");
   lines.push(color.dim("model-free evidence pack  ·  not a CI replacement"));
@@ -55,6 +57,12 @@ export function formatHumanReport(evidence: Evidence): string {
       color.dim(`  ·  mapping ${evidence.impact.mappingStrategy}`),
   );
   lines.push(`${color.dim("risk")}      ${paint(evidence.summary.risk.toUpperCase())}`);
+  lines.push(`${color.dim("verification")} ${verification.status.toUpperCase()}`);
+  for (const reason of verification.reasons) lines.push(color.dim(`  ${reason.code}: ${reason.message}`));
+  if (evidence.snapshot) {
+    lines.push(`${color.dim("snapshot")}  ${evidence.snapshot.contentHash} · ${evidence.snapshot.consistent ? "consistent" : "mismatch"}`);
+  } else lines.push(`${color.dim("snapshot")}  unavailable (historical evidence)`);
+  if (evidence.effectivePolicy) lines.push(`${color.dim("policy")}    ${evidence.effectivePolicy.hash} · strict ${evidence.effectivePolicy.strict}`);
   if (evidence.contract?.loaded) {
     const tag = evidence.contract.passed ? color.green("pass") : color.red("fail");
     lines.push(`${color.dim("contract")}  ${tag}${color.dim(`  ·  ${evidence.contract.clauses.length} clauses`)}`);
@@ -106,6 +114,10 @@ export function formatHumanReport(evidence: Evidence): string {
     if (check.status !== "passed" && check.reason) {
       lines.push(color.dim(`      ${check.reason}`));
     }
+    for (const record of (evidence.executionRecords ?? check.records ?? []).filter((item) => item.checkId === check.id)) {
+      lines.push(color.dim(`      ${record.status} · ${record.cwd} · scope ${record.scope.join(", ") || "(repository)"}`));
+      lines.push(color.dim(`      argv ${JSON.stringify([record.command, ...record.args])} · exit ${record.exitCode ?? "n/a"}${record.collectedTests !== undefined ? ` · ${record.collectedTests} tests collected` : ""}`));
+    }
   }
   lines.push("");
 
@@ -136,7 +148,7 @@ export function formatHumanReport(evidence: Evidence): string {
 
   lines.push(color.bold("GAPS"));
   if (open.length === 0) {
-    lines.push(color.dim("  (none — mapped tests and configured gates are present)"));
+    lines.push(color.dim("  (none)"));
   } else {
     for (const gap of open) {
       lines.push(`  • ${gap.message}  ${riskColor(gap.risk)(`[${gap.risk}]`)}`);
@@ -187,6 +199,7 @@ export function formatMarkdownReport(evidence: Evidence): string {
       ? `\`${evidence.range.base}...${evidence.range.head}\``
       : "working tree vs HEAD";
   const { open, accepted } = splitGaps(evidence);
+  const verification = evaluateVerification(evidence);
   const testMap = new Map(evidence.impact.mappedTests.map((m) => [m.source, m.tests]));
   const viaMap = new Map(evidence.impact.mappedTests.map((m) => [m.source, m.via]));
   const impactLines = evidence.impact.changedFiles.map((file) => {
@@ -263,6 +276,12 @@ export function formatMarkdownReport(evidence: Evidence): string {
     "<!-- patchprove-sticky -->",
     "## patchprove evidence pack",
     "",
+    `**Verification:** \`${verification.status.toUpperCase()}\``,
+    ...verification.reasons.map((reason) => `- ${reason.code}: ${reason.message}`),
+    "",
+    `**Snapshot:** ${evidence.snapshot ? `\`${evidence.snapshot.contentHash}\` (${evidence.snapshot.consistent ? "consistent" : "mismatch"})` : "unavailable; historical evidence cannot establish completion"}`,
+    `**Policy:** ${evidence.effectivePolicy ? `\`${evidence.effectivePolicy.hash}\` · strict ${evidence.effectivePolicy.strict}` : "unavailable"}`,
+    "",
     `**Summary risk:** ${riskBadge(evidence.summary.risk)} · range ${range} · mapping \`${evidence.impact.mappingStrategy}\`${evidence.impact.mappingFallbacks?.length ? ` (fallback ${evidence.impact.mappingFallbacks.join(", ")})` : ""}`,
     "",
     "| Passed | Failed | Skipped | Open gaps | Accepted | Findings |",
@@ -277,6 +296,12 @@ export function formatMarkdownReport(evidence: Evidence): string {
     "| Check | Status | Reason |",
     "| --- | --- | --- |",
     checkRows || "| — | — | — |",
+    "",
+    "### Executions",
+    "",
+    ...(evidence.executionRecords?.length ? evidence.executionRecords.map((record) =>
+      `- \`${record.checkId}\` ${record.status} · scope: ${record.scope.map((item) => `\`${item}\``).join(", ") || "repository"} · cwd \`${record.cwd}\` · argv \`${JSON.stringify([record.command, ...record.args])}\` · exit ${record.exitCode ?? "n/a"}${record.collectedTests !== undefined ? ` · ${record.collectedTests} tests collected` : ""}`,
+    ) : ["_No execution provenance recorded._"]),
     ...contractBlock,
     ...baselineBlock,
     ...receiptBlock,
@@ -306,6 +331,7 @@ export function formatShortSummary(
   extra?: { failOnMet?: boolean; failOn?: "high" | "critical" },
 ): string {
   const { open } = splitGaps(evidence);
+  const verification = evaluateVerification(evidence);
   const lines: string[] = [];
   lines.push(
     `patchprove v${evidence.toolVersion}  risk ${evidence.summary.risk.toUpperCase()}` +
@@ -315,6 +341,8 @@ export function formatShortSummary(
       `  ·  ${evidence.summary.acceptedGapCount} accepted` +
       `  ·  ${evidence.summary.findingCount} findings`,
   );
+  lines.push(`verification ${verification.status.toUpperCase()}`);
+  for (const reason of verification.reasons.slice(0, 8)) lines.push(`- ${reason.code}: ${reason.message}`);
   if (extra?.failOn) {
     lines.push(`fail-on ${extra.failOn}${extra.failOnMet ? " met" : " not met"}`);
   }
@@ -329,6 +357,7 @@ export function formatShortSummary(
   }
   if (open.length === 0) {
     lines.push("No open gaps.");
+    if (verification.status !== "passed") lines.push("Do not claim done until verification passes.");
     return lines.join("\n");
   }
   lines.push("Open gaps:");
