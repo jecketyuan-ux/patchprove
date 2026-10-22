@@ -4,7 +4,7 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import * as execution from "../src/exec.js";
-import { captureSnapshotIdentity, checkedGit, createExecutionSnapshot, listVersionedFiles, readVersionedFile } from "../src/snapshot.js";
+import { captureSnapshotIdentity, checkedGit, createExecutionSnapshot, listVersionedFiles, normalizedSnapshotExclusions, readVersionedFile } from "../src/snapshot.js";
 
 const roots: string[] = [];
 function git(root: string, ...args: string[]): string {
@@ -33,6 +33,15 @@ afterEach(() => {
 });
 
 describe("snapshot identity", () => {
+  it("normalizes native relative output paths to Git path separators", () => {
+    const relative = path.join("reports", "evidence.json");
+    expect(normalizedSnapshotExclusions(process.cwd(), [relative, `.${path.sep}${relative}`]))
+      .toEqual(["reports/evidence.json", "reports/evidence.json"]);
+    if (process.platform !== "win32") {
+      expect(normalizedSnapshotExclusions(process.cwd(), ["literal\\name.json"])).toEqual(["literal\\name.json"]);
+    }
+  });
+
   it("resolves refs and remains stable for unchanged contents", async () => {
     const root = repo({ "src/value.ts": "export const value = 1;\n", ".patchprove.yml": "failOn: high\n" });
     const head = git(root, "rev-parse", "HEAD").trim();
@@ -114,6 +123,19 @@ describe("snapshot identity", () => {
     expect(second.dirty).toBe(false);
     write(root, "src/value.ts", "changed\n");
     expect((await captureSnapshotIdentity(root, options)).contentHash).not.toBe(first.contentHash);
+  });
+
+  it("keeps native relative output files out of repeated content captures", async () => {
+    const root = repo({ "source.txt": "source\n" });
+    const options = { excludePaths: [path.join("reports", "evidence.json")] };
+    const first = await captureSnapshotIdentity(root, options);
+    write(root, "reports/evidence.json", "generated evidence\n");
+    const second = await captureSnapshotIdentity(root, options);
+    expect(second).toEqual(first);
+    write(root, "reports/source.json", "real input\n");
+    const third = await captureSnapshotIdentity(root, options);
+    expect(third.contentHash).not.toBe(first.contentHash);
+    expect(third.patchHash).not.toBe(first.patchHash);
   });
 
   it("includes versioned node_modules bytes by default and honors only the named exclusion", async () => {
