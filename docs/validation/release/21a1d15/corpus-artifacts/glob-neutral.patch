@@ -1,0 +1,10 @@
+diff --git a/src/lib.rs b/src/lib.rs
+index fef8090..7723c74 100644
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -1499,3 +1499,5 @@ mod test {
+         assert!(Pattern::new(pattern.to_str().unwrap()).is_ok());
+     }
+ }
++
++// corpus neutral source change

@@ -1,0 +1,255 @@
+{
+  "identity": {
+    "sourceCommit": "ff193b6481c7a530d10d5901a03298be66f57d56",
+    "sourceTree": "f2ff8d350e930652d59843978b465a3fae74c9cc",
+    "workingTreeDirty": false,
+    "runtimeDigest": "db5d7e7ce124b4a167a73529484549e2be93613bcb7f3b9c368621b4ff2555e8",
+    "inputs": [
+      {
+        "path": "dist/accept.js",
+        "sha256": "dd293f82097e2f8b0b925c3ef36fee436a421bb687192b35f45c89459ed0785e"
+      },
+      {
+        "path": "dist/adapters.js",
+        "sha256": "0c9d5ebdcfc9037f5670d77a9b452cdd038f74e01fbd7a642460953069d2b56b"
+      },
+      {
+        "path": "dist/artifacts.js",
+        "sha256": "605715c69bd8f441e1cc1143d67446c1cd5972534db6e06bed0fddb3f0878b5d"
+      },
+      {
+        "path": "dist/baseline.js",
+        "sha256": "bb149bb65fcaf51eb96a2dee77c39397bbd65314d4b27b4c43223d9c4ffc1ab4"
+      },
+      {
+        "path": "dist/cli.js",
+        "sha256": "cd79e559c6b2b053b38d29f97077470cd46483f2b40b9dde25da729f915651db"
+      },
+      {
+        "path": "dist/color.js",
+        "sha256": "24118e1a07940a736e75ad9f02f68abd15bf597912c8af3e8f6e7a4d308874a8"
+      },
+      {
+        "path": "dist/config.js",
+        "sha256": "e393096cea4cf64447d77a0ce6e9464f7fb63d4a0bb337d2296db2adc41159c0"
+      },
+      {
+        "path": "dist/coverage.js",
+        "sha256": "dace1e04073cbccf2f43a96eeb514172d94c49686bf6172a9ea6e4015a0e5915"
+      },
+      {
+        "path": "dist/decision.js",
+        "sha256": "194c8a18a5c02b08e56640c8a083414b3cc2873512bc0e458a582adb0c41e9e6"
+      },
+      {
+        "path": "dist/detect.js",
+        "sha256": "87f3644991d5295e9e7b1008fa96a80ed0bbec1a51ffeef546d9d730dfc65263"
+      },
+      {
+        "path": "dist/evidence.js",
+        "sha256": "441d15f89dc9b2f3040c64ecec30866dad9158719ff610b699152114ebeed7e0"
+      },
+      {
+        "path": "dist/exec.js",
+        "sha256": "b05bbac6823f4625d2770f0c8b4ea5993749de23e0c5b8bb1bbef1f8a8dfb0d4"
+      },
+      {
+        "path": "dist/execution-units.js",
+        "sha256": "04bd215ebfc3f90186b0d56a8df91854b6943ae590b6e6f737cffcf63623ead6"
+      },
+      {
+        "path": "dist/fingerprint.js",
+        "sha256": "249c311a10fa4cf7020bd1b213575e74dcf6675d62375db9275d96fa5bb23251"
+      },
+      {
+        "path": "dist/gates.js",
+        "sha256": "0f677d17812e01928dcc6decc7c3b279abf558bd47efa6b56b388d5c47272091"
+      },
+      {
+        "path": "dist/generated/evidence.js",
+        "sha256": "734cd7534879e30dcf5ebc256e939c3a204418b878219035772667e485d67ed9"
+      },
+      {
+        "path": "dist/generated/receipt.js",
+        "sha256": "4204767d5b5af9582521d443bbf60b1ab5e70611440a88d20d4eb69e55905d8e"
+      },
+      {
+        "path": "dist/git.js",
+        "sha256": "0927b076a06f43095bfd557a355c8245d7c70df4f7b53755f8546177805cea61"
+      },
+      {
+        "path": "dist/glob.js",
+        "sha256": "18290d8b8c589154080b12de80762e4976787ac4b3d03dd85d3d9312c2f8989a"
+      },
+      {
+        "path": "dist/graph.js",
+        "sha256": "e3cdca1505e407fde6927ce3698162f0fd305f8c35938d641dc1681b0503762e"
+      },
+      {
+        "path": "dist/hook-worker.js",
+        "sha256": "ae0394a3f546bd224f873cd664533b61b5fe3dddaf21d6d3b35b4a97ec57be41"
+      },
+      {
+        "path": "dist/hook.js",
+        "sha256": "9b33b870a8514d2f68dbaf596b031b62fbe8c58d6fb7a8f1b7d28cd4d26f7f98"
+      },
+      {
+        "path": "dist/index.js",
+        "sha256": "00f909b368a7e8f79afb647e328bfca7f8d38c45e39c6f951e88f2097ee04b32"
+      },
+      {
+        "path": "dist/init-agent.js",
+        "sha256": "dcca6f676e4f599a32b3b3a41c87423e0af94ec01e947ed48e979614dd871d70"
+      },
+      {
+        "path": "dist/input-budget.js",
+        "sha256": "51821e7ce4fa067179c2c4c53039d81a8e63fac6caf2a225ab1950b315542732"
+      },
+      {
+        "path": "dist/mapping.js",
+        "sha256": "acf0cc6c0ce4967fc3f46ba8b4812ce1c8abf2da442a2e559b892f1780097a9b"
+      },
+      {
+        "path": "dist/mcp-tools.js",
+        "sha256": "58e427332e8ba23665768ac47e44ec8ceef442ecb1aaedb1be4b0c8b76ad7922"
+      },
+      {
+        "path": "dist/mcp.js",
+        "sha256": "318c756983ecb04f0c431691569d5d11d356adbdaaa1ff3da9be987518968efc"
+      },
+      {
+        "path": "dist/paths.js",
+        "sha256": "240c6257e44dcb69c60ff5a1ed7a6ace7c9e903c25abd95b210aed9e32b69a1f"
+      },
+      {
+        "path": "dist/pkg.js",
+        "sha256": "f47d7845861818ae119865533b450243bda30e699e2037ce46d00b03ebee526d"
+      },
+      {
+        "path": "dist/plugins/builtin.js",
+        "sha256": "53899248fbe8832ce6768ae3d295be52a0aa946fddfd90443bb3716df97faba7"
+      },
+      {
+        "path": "dist/plugins/context.js",
+        "sha256": "961c64f5e550f0b00867453154b32f5f70d22a7b2cbe44fa164af8e893dfc69b"
+      },
+      {
+        "path": "dist/plugins/go.js",
+        "sha256": "b943c7a72427c0a9b39c73d444ee317ba58398a43a354d2eca2580eb6d751fd6"
+      },
+      {
+        "path": "dist/plugins/index.js",
+        "sha256": "7786fd3643f10d2546a361c318488f17991d8549beb63364939844c403085bca"
+      },
+      {
+        "path": "dist/plugins/java.js",
+        "sha256": "18a17286e8aadd6ca3eba79abd4aba61edf47665833e5fbdc0b1e6c8087f4abe"
+      },
+      {
+        "path": "dist/plugins/js.js",
+        "sha256": "70c7d2e7fdffe8fe542f839ed24ca895f73a3ec0f0d5b94e5fb546ae2a413e0e"
+      },
+      {
+        "path": "dist/plugins/load.js",
+        "sha256": "702f3bb4bc6c0b40b09992ed5ce03a9e31bc1f9dd12c99bc51d4b8050320be85"
+      },
+      {
+        "path": "dist/plugins/python.js",
+        "sha256": "0f3033663a29c68b6f5d1870f361ad8e487bae9b6e449efc4903def566c9034d"
+      },
+      {
+        "path": "dist/plugins/rust.js",
+        "sha256": "9d19a10bbf1515f503ac59790d17787c5dbdc40a1f46cdd2762959b812780961"
+      },
+      {
+        "path": "dist/plugins/types.js",
+        "sha256": "3661f77de6003453ba95ed741ffb4cc1683d26f2c590e5883d07e26d5c98b532"
+      },
+      {
+        "path": "dist/receipt.js",
+        "sha256": "abf2201d8eb57668414819273e62e5aab6868835d4b289f92e49c181892a4ce7"
+      },
+      {
+        "path": "dist/report.js",
+        "sha256": "908fe33149086f7453f64e29b46f91f29ff2c6070279991174dc305b6b03192f"
+      },
+      {
+        "path": "dist/risk.js",
+        "sha256": "7fb6fb0cd7f30d54f2c469ece8588be073cfedd3969a294ebf7d37e2133d65f9"
+      },
+      {
+        "path": "dist/run.js",
+        "sha256": "b1e0253a10b736a6630fbafb17ee187530e1b583abf7402a73415ff97f10a523"
+      },
+      {
+        "path": "dist/sarif.js",
+        "sha256": "c0410e6258d3121caeb5d6cd8b37ace5abe47a72c041772f3b133b34bb12d5a5"
+      },
+      {
+        "path": "dist/secrets.js",
+        "sha256": "8034a617292aff24858ed3603a11d9fa9c318510e8b828cb15b8f092c3febec1"
+      },
+      {
+        "path": "dist/snapshot.js",
+        "sha256": "8a76e466cc306908ffc8a76839ccd97a11046081dcf8101c1e668f4905342a41"
+      },
+      {
+        "path": "dist/spec.js",
+        "sha256": "03263f3c025afa878ca1f128cf24abc3ae31b201ad243a4e863fb82791501cf8"
+      },
+      {
+        "path": "dist/test-results.js",
+        "sha256": "00bab8837b3c089b0f9580993f96f29245642fbb31590c59f0b1f3e8d6803e10"
+      },
+      {
+        "path": "dist/types.js",
+        "sha256": "c082345dde23b1358f1028c100a89a83d3e90d3f1d48f1b8fddddcdcf7b7f064"
+      },
+      {
+        "path": "dist/validation.js",
+        "sha256": "770cc4b8d8947f42b2b2cb6755e663cf8c5fcc3e7d7fda31fdecc993a3d8617e"
+      },
+      {
+        "path": "package-lock.json",
+        "sha256": "9a26dc501c1b1ef623b5cdca83a05927aa786978547780ef04dbf146473994fb"
+      },
+      {
+        "path": "package.json",
+        "sha256": "aff0fe700422b687cde1426f56fb4c445fcca9025b6a2fb6d54c4bc27851d589"
+      },
+      {
+        "path": "schema/adapter.schema.json",
+        "sha256": "541fa8af2f1ed4911a667cc1a327630bcb293605e2ab02b90bb2815ccce2c103"
+      },
+      {
+        "path": "schema/evidence.schema.json",
+        "sha256": "88274f61ad414e809da042fd9d6d7f4d6355684bd0bd0b0d12d29725318b1c57"
+      },
+      {
+        "path": "schema/receipt.schema.json",
+        "sha256": "29e3894ae3d2d3472cea497d8f28dfdd649922a7358be029e49eca69c6bd6583"
+      },
+      {
+        "path": "schema/spec.schema.json",
+        "sha256": "beb06ddaa11be09d6cea3ce1a7fc39b8d67ffce5e36aa396339a6ba55d23a48f"
+      }
+    ],
+    "script": "scripts/test-package.mjs",
+    "scriptSha256": "35f9e614686359662dd9cab7719a8a5db42f763069ea0040390d226c09072ddb"
+  },
+  "schemaVersion": 1,
+  "node": "v24.19.0",
+  "platform": "linux",
+  "install": "Local project tarball in a fresh consumer; declared dependencies downloaded with install scripts disabled",
+  "runtimeNetwork": "No application network calls are required for CLI and stdio MCP checks",
+  "mcp": "stdio initialization, tools/list, list_gaps, prove_patch",
+  "publisher": "trusted rendering accepts matching receipt/head and rejects wrong head or tampered evidence; no publication performed",
+  "productionCases": 24,
+  "package": {
+    "filename": "patchprove-2.0.0.tgz",
+    "integrity": "sha512-GEXh8E9DuBOlz79eaaXpV2lC5tPsX7bsH1mzwmreI2awf6yijD0y33MD38ErUY1Dwx/hiNjb8g1FQxoZnatrZg==",
+    "shasum": "6ff520f4f8807d166e3b08d3f62e9e9b60b49d88",
+    "version": "2.0.0"
+  },
+  "cli": "version, help, strict protocol-2 evidence, receipt verification, public module import"
+}

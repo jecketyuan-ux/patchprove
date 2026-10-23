@@ -2,7 +2,7 @@
 import { Command } from "commander";
 import { verifyArtifactSet } from "./artifacts.js";
 import path from "node:path";
-import { resolveInputLimits, type InputLimits } from "./input-budget.js";
+import { resolveInputLimits, withInputBudget, type InputLimits } from "./input-budget.js";
 import { DEFAULT_BASELINE_REL, writeBaseline } from "./baseline.js";
 import { isCheckId } from "./config.js";
 import { executeHook, isHookAdapter, isHookEvent } from "./hook.js";
@@ -335,11 +335,16 @@ receipt
   .option("--require-signature", "Reject unsigned receipts")
   .option("--trusted-key <fingerprint>", "Trusted signing public-key fingerprint (repeatable)", collect, [] as string[])
   .option("--allow-legacy", "Allow historical evidence and receipts")
-  .action((evidencePath: string, receiptPath: string | undefined, opts: { requireSignature?: boolean; trustedKey?: string[]; allowLegacy?: boolean }) => {
+  .option("--max-json-bytes <bytes>", "Maximum bytes per input JSON")
+  .option("--max-json-depth <depth>", "Maximum JSON nesting depth")
+  .option("--max-json-nodes <count>", "Maximum JSON structural tokens")
+  .action((evidencePath: string, receiptPath: string | undefined, opts: { requireSignature?: boolean; trustedKey?: string[]; allowLegacy?: boolean; maxJsonBytes?: string; maxJsonDepth?: string; maxJsonNodes?: string }) => {
     try {
-      const evidence = readEvidenceFile(evidencePath);
       const resolvedReceipt = path.resolve(receiptPath ?? defaultReceiptPath(evidencePath));
-      const receiptDoc = readReceiptFile(resolvedReceipt);
+      const limits: InputLimits = {};
+      for (const key of ["maxJsonBytes", "maxJsonDepth", "maxJsonNodes"] as const) if (opts[key] !== undefined) limits[key] = Number(opts[key]);
+      resolveInputLimits(limits);
+      const [evidence, receiptDoc] = withInputBudget({ limits }, () => [readEvidenceFile(evidencePath), readReceiptFile(resolvedReceipt)] as const);
       const result = verifyReceipt(evidence, receiptDoc, undefined, {
         requireSignature: opts.requireSignature,
         trustedKeyFingerprints: opts.trustedKey,

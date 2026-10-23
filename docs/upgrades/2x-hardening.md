@@ -13,7 +13,7 @@
 | U07 依赖与账本 | Vitest 固定 4.1.12，Vite/worker/source map 链更新；逐公告处置和候选索引 | 完整与生产审计均为零，不等于所有依赖绝对安全；旧 PR #7 CI 仅作历史记录 |
 | U08 生产链 | 安装 tarball 后原始 detectTools/插件执行；修复 pytest 模块发现回退；真实扫描器矩阵；CI 扩展 | 本地安装链 24 场景、Gitleaks 8.24.3 十场景通过；本环境没有真实 Claude/Cursor，不将 stdin 替身当宿主验收 |
 | U09 资源与环境 | 文件/总字节/数量/JSON/图预算；流式快照；期限/取消；拒绝不可读取的大型产物；工具/锁/配置摘要及非密封标签 | 独立进程 64 MiB 拒绝、深度 1000 JSON、16 MiB 快照、32 MiB 取消测量。同步段轮询 deadline，异步取消在下个让出点处理 |
-| U10 项目与上游 | 共享执行单元；项目 required/optional/not-applicable、原因/到期、适用范围与 cwd；插件能力声明；真实 Turbo exporter | 项目必需门禁、独立 Vitest 配置、到期例外、密钥适用性回归；真实 reviewdog 本地 SARIF 消费。Cosign 既有合同历史记录保留 |
+| U10 项目与上游 | 共享执行单元；项目 required/optional/not-applicable、原因/到期、适用范围与 cwd；插件能力声明；真实 Turbo exporter | 项目必需门禁、独立 Vitest 配置、到期例外、密钥适用性回归；真实 reviewdog 本地 SARIF 消费。Cosign 固定版本 SDK 离线四场景通过 |
 | U11 真实语料 | 独立 native 全量真值、受控补丁、选择/执行、失败归因/unknown/额外选择/阻断/耗时、来源许可证 | 首批五项目/五语言/十补丁；八个已归因失败单元未观察到漏选；三例正常补丁因 skip/未知范围被严格策略阻断。不是历史 PR，不宣称零漏检或性能倍数 |
 
 构建、Schema 漂移检查、源码/测试类型检查和 Node 22/24 回归通过，具体计数、命令、版本及摘要以候选账本为准。安装包、真实 runner、外部服务和语料分别记录，不能互相替代。新 CI 增加原始安装链与资源/上游合同门禁；远程结果只能绑定实际运行的 PR head。

@@ -1,0 +1,10 @@
+diff --git a/src/_internal.ts b/src/_internal.ts
+index c7e5cb6..c4fed43 100644
+--- a/src/_internal.ts
++++ b/src/_internal.ts
+@@ -9,3 +9,5 @@ export function normalizeWindowsPath(input = "") {
+     .replace(/\\/g, "/")
+     .replace(_DRIVE_LETTER_START_RE, (r) => r.toUpperCase());
+ }
++
++// corpus neutral source change

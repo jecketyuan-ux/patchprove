@@ -4,8 +4,8 @@ import path from "node:path";
 import { afterEach, expect, it } from "vitest";
 import { readEvidenceFile } from "../src/mcp-tools.js";
 import { analyze } from "../src/run.js";
-import { execFileSync } from "node:child_process";
-import { analyzeAndWrite } from "../src/run.js";
+import { execFileSync, spawnSync } from "node:child_process";
+import { analyzeAndWrite, produceArtifacts } from "../src/run.js";
 
 const roots: string[] = [];
 afterEach(() => { for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true }); });
@@ -32,3 +32,19 @@ it("does not partially publish a pack its configured JSON reader would reject", 
   await expect(analyzeAndWrite({ cwd, out, json: true, format: "json", disableGate: ["typecheck", "lint", "tests", "secrets"], inputLimits: { maxJsonBytes: 256 } })).rejects.toThrow(/Artifact JSON exceeds/);
   expect(existsSync(out)).toBe(false); expect(existsSync(path.join(cwd, "evidence.receipt.json"))).toBe(false);
 });
+
+it("verifies a deliberately larger pack only when the CLI reader receives an explicit budget", async () => {
+  const cwd = mkdtempSync(path.join(tmpdir(), "patchprove-reader-budget-")); roots.push(cwd);
+  execFileSync("git", ["init", "-q"], { cwd });
+  writeFileSync(path.join(cwd, "README.md"), "Documented fixture\n");
+  const out = path.join(cwd, "evidence.json");
+  const options = { cwd, out, json: true, format: "json" as const, disableGate: ["typecheck", "lint", "tests", "secrets"] as import("../src/types.js").CheckId[], inputLimits: { maxJsonNodes: 500_000 } };
+  const evidence = await analyze(options);
+  Object.assign(evidence, { futureOptional: Array(250_000).fill(true) });
+  produceArtifacts(evidence, options);
+  const args = [path.resolve("dist/cli.js"), "receipt", "verify", out];
+  const defaults = spawnSync(process.execPath, args, { encoding: "utf8" });
+  expect(defaults.status).toBe(2); expect(defaults.stderr).toMatch(/maxJsonNodes/);
+  const explicit = spawnSync(process.execPath, [...args, "--max-json-nodes", "500000"], { encoding: "utf8" });
+  expect(explicit.status, explicit.stderr).toBe(0);
+}, 15_000);

@@ -1,0 +1,10 @@
+diff --git a/uuid.go b/uuid.go
+index 5232b48..8d15eaa 100644
+--- a/uuid.go
++++ b/uuid.go
+@@ -363,3 +363,5 @@ func (uuids UUIDs) Strings() []string {
+ 	}
+ 	return uuidStrs
+ }
++
++// corpus neutral source change

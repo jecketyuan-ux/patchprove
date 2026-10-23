@@ -1,0 +1,112 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-10-23T05:12:36.439658+00:00",
+  "candidateCodeCommit": "21a1d15c653f7076f3bc912a080a47304ef74c6b",
+  "candidateCodeTree": "f2ff8d350e930652d59843978b465a3fae74c9cc",
+  "localCodeCommit": "ff193b6481c7a530d10d5901a03298be66f57d56",
+  "runtimeDigest": "db5d7e7ce124b4a167a73529484549e2be93613bcb7f3b9c368621b4ff2555e8",
+  "identityRule": "GitHub tree f2ff8d350e930652d59843978b465a3fae74c9cc was verified equal to the local committed code tree; each harness records its actual local commit/tree/runtime digest. Subsequent ledger-only changes do not turn historical CI into current-head success.",
+  "pullRequest": "https://github.com/jecketyuan-ux/patchprove/pull/18",
+  "branch": "codex/patchprove-v2-hardening",
+  "remoteCI": {
+    "statusAtCapture": "failed",
+    "codeHead": "21a1d15c653f7076f3bc912a080a47304ef74c6b",
+    "runId": 39904290204,
+    "url": "https://github.com/jecketyuan-ux/patchprove/actions/runs/39904290204",
+    "mergeRule": "Re-read current PR head and all remote job/check conclusions immediately before merging; cancelled/skipped/not-triggered is not success.",
+    "failure": "Self-review artifact exceeded default JSON node budget; explicit producer/reader/publisher budgets required",
+    "additionalFailure": "Windows production Gradle execution failed in a path containing non-ASCII characters; native ASCII fixtures and other installed engines succeeded. Preserve failure and add diagnostic/real-failed-test assertions before investigating."
+  },
+  "checks": {
+    "runtimes": {
+      "status": "passed",
+      "report": "runtimes.json",
+      "sha256": "62b76264c6dd848f0e2f99ebb0707bd6276c7e8f05377b9cf05cde942f4a9ebe"
+    },
+    "production": {
+      "status": "passed",
+      "report": "production.json",
+      "sha256": "bbade44a2c93b88622a49fa9039755311aa7c63dfefceb970ad5939d0eb54a98"
+    },
+    "package": {
+      "status": "passed",
+      "report": "package.json",
+      "sha256": "f5453a9c3bf069a403c99515949ec9e1ed4a5fe9371c8bf6e3005da397520032"
+    },
+    "gitleaks": {
+      "status": "passed",
+      "report": "gitleaks.json",
+      "sha256": "6d4d3e6339df23654d972cc45bd9e3ac13e1ac5e78526aadd87c4f3e20a892e3"
+    },
+    "upstream": {
+      "status": "passed",
+      "report": "upstream.json",
+      "sha256": "54f08c5dfd925a3072b8bd151d1c5ebae193a9afffb4a5332970e0d954dc33ad"
+    },
+    "resources": {
+      "status": "passed",
+      "report": "resources.json",
+      "sha256": "f6078a321a17d2a1cb8a93eeab4ef1d6c5efa4064b676d5ff04215d522affefe"
+    },
+    "projects": {
+      "status": "passed",
+      "report": "projects.json",
+      "sha256": "050fb30b7301a23ffaebee99c720b6cec9b88debfc8b16996af8ba24ada3bdf2",
+      "interpretation": "Measured selection: eight attributed failing units, zero observed misses; eight unknown requested scope instances among ninety requests; three neutral native-success cases blocked by strict skip/unknown policy. No population recall claim."
+    },
+    "unit": {
+      "status": "passed",
+      "report": "unit.json",
+      "sha256": "f55a830ca0b801a5335172f679316f9c070c7a84ad574e1fbf3ba356398b86fb"
+    },
+    "build": {
+      "status": "passed",
+      "command": "npm run build"
+    },
+    "typecheck": {
+      "status": "passed",
+      "command": "npm run typecheck:test"
+    },
+    "schema-drift": {
+      "status": "passed",
+      "command": "npm run check:protocol"
+    },
+    "cosign": {
+      "status": "passed",
+      "report": "cosign.json",
+      "scope": "SDK offline bundle verifier, four pinned positive/negative cases; unchanged adapter/exec implementation"
+    },
+    "reviewdog": {
+      "status": "passed",
+      "report": "reviewdog.json",
+      "scope": "Local SARIF reporter, fixed binary and data"
+    }
+  },
+  "notRun": [
+    {
+      "id": "claude-live",
+      "status": "not-run",
+      "reason": "No installed interactive Claude Code host; protocol fixtures are separate"
+    },
+    {
+      "id": "cursor-live",
+      "status": "not-run",
+      "reason": "No installed Cursor host; advisory semantics are not enforcement"
+    },
+    {
+      "id": "github-publisher-full-matrix",
+      "status": "not-run",
+      "reason": "Local stale-head/run/attempt tests passed; real same-repository/fork/rerun/cancellation/permission matrix not completed; experimental"
+    },
+    {
+      "id": "ten-projects-fifty-historical-patches",
+      "status": "not-run",
+      "reason": "Expansion beyond the roadmap initial five-language corpus; current ten cases are controlled mutations/neutral controls"
+    }
+  ],
+  "publication": {
+    "npm": false,
+    "tag": false,
+    "release": false
+  }
+}

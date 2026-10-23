@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "1",
+  "generatedAt": "2026-10-23T05:17:50.839Z",
+  "platform": "linux",
+  "architecture": "x64",
+  "node": "v24.19.0",
+  "cases": [
+    {
+      "name": "representative-sarif",
+      "inputResults": 5,
+      "emittedDiagnostics": 4,
+      "inputHash": "sha256:1266fdbd99385ffa0d6972017c7efc0cd11b320403fe180d3fa8c42038b287a0",
+      "command": [
+        "/tmp/patchprove-reviewdog-0.21.2/reviewdog",
+        "-f=sarif",
+        "-reporter=local",
+        "-filter-mode=nofilter"
+      ],
+      "exitCode": 0,
+      "stdout": "{\"kind\":\"fail\",\"level\":\"warning\",\"locations\":[{\"physicalLocation\":{\"artifactLocation\":{\"uri\":\"src/a%20%23%E4%B8%AD%E6%96%87.ts\"}}}],\"message\":{\"text\":\"Open gap with special path\"},\"partialFingerprints\":{\"patchprove/v2\":\"0cfe5e2f040c04f1a6aec2b5df82d9b39e4676dd4a023c54a31651a146a8ac32\"},\"properties\":{},\"ruleId\":\"unmapped-test\"}\n{\"kind\":\"fail\",\"level\":\"error\",\"locations\":[{\"physicalLocation\":{\"artifactLocation\":{\"uri\":\"src/a%20%23%E4%B8%AD%E6%96%87.ts\"},\"region\":{\"startLine\":3}}}],\"message\":{\"text\":\"Synthetic secret diagnostic; no credential value\"},\"partialFingerprints\":{\"patchprove/v2\":\"9b2ce5ebd369ad91dab013cef0977f1f54b5db7ff0b4a9bdfc18080a9d509650\"},\"properties\":{},\"ruleId\":\"secret\"}\n{\"kind\":\"fail\",\"level\":\"error\",\"locations\":[{\"physicalLocation\":{\"artifactLocation\":{\"uri\":\"src/literal%5Cname.ts\"},\"region\":{\"startLine\":4}}}],\"message\":{\"text\":\"Literal Git backslash path\"},\"partialFingerprints\":{\"patchprove/v2\":\"1d2ae5f9bfc5ab464f2673b6e246022b8c9ec79db97995b85688b3a61c29a89d\"},\"properties\":{},\"ruleId\":\"high-risk-path\"}\n{\"kind\":\"fail\",\"level\":\"error\",\"locations\":[{\"physicalLocation\":{\"artifactLocation\":{\"uri\":\"src/helper.ts\"}}}],\"message\":{\"text\":\"Contract requires evidence for helper\"},\"partialFingerprints\":{\"patchprove/v2\":\"7b11dfabc77d6610a69b77847de0215f28930b8d7d0167faf2f8cc1aef4e4d49\"},\"properties\":{},\"ruleId\":\"forbidden-unproven\"}\n",
+      "stderr": ""
+    },
+    {
+      "name": "reviewdog-error-level",
+      "command": [
+        "/tmp/patchprove-reviewdog-0.21.2/reviewdog",
+        "-f=sarif",
+        "-reporter=local",
+        "-filter-mode=nofilter",
+        "-fail-level=error"
+      ],
+      "exitCode": 1,
+      "stdout": "{\"kind\":\"fail\",\"level\":\"warning\",\"locations\":[{\"physicalLocation\":{\"artifactLocation\":{\"uri\":\"src/a%20%23%E4%B8%AD%E6%96%87.ts\"}}}],\"message\":{\"text\":\"Open gap with special path\"},\"partialFingerprints\":{\"patchprove/v2\":\"0cfe5e2f040c04f1a6aec2b5df82d9b39e4676dd4a023c54a31651a146a8ac32\"},\"properties\":{},\"ruleId\":\"unmapped-test\"}\n{\"kind\":\"fail\",\"level\":\"error\",\"locations\":[{\"physicalLocation\":{\"artifactLocation\":{\"uri\":\"src/a%20%23%E4%B8%AD%E6%96%87.ts\"},\"region\":{\"startLine\":3}}}],\"message\":{\"text\":\"Synthetic secret diagnostic; no credential value\"},\"partialFingerprints\":{\"patchprove/v2\":\"9b2ce5ebd369ad91dab013cef0977f1f54b5db7ff0b4a9bdfc18080a9d509650\"},\"properties\":{},\"ruleId\":\"secret\"}\n{\"kind\":\"fail\",\"level\":\"error\",\"locations\":[{\"physicalLocation\":{\"artifactLocation\":{\"uri\":\"src/literal%5Cname.ts\"},\"region\":{\"startLine\":4}}}],\"message\":{\"text\":\"Literal Git backslash path\"},\"partialFingerprints\":{\"patchprove/v2\":\"1d2ae5f9bfc5ab464f2673b6e246022b8c9ec79db97995b85688b3a61c29a89d\"},\"properties\":{},\"ruleId\":\"high-risk-path\"}\n{\"kind\":\"fail\",\"level\":\"error\",\"locations\":[{\"physicalLocation\":{\"artifactLocation\":{\"uri\":\"src/helper.ts\"}}}],\"message\":{\"text\":\"Contract requires evidence for helper\"},\"partialFingerprints\":{\"patchprove/v2\":\"7b11dfabc77d6610a69b77847de0215f28930b8d7d0167faf2f8cc1aef4e4d49\"},\"properties\":{},\"ruleId\":\"forbidden-unproven\"}\n",
+      "stderr": "reviewdog: found at least one issue with severity greater than or equal to the given level: error\n"
+    },
+    {
+      "name": "empty-sarif",
+      "command": [
+        "/tmp/patchprove-reviewdog-0.21.2/reviewdog",
+        "-f=sarif",
+        "-reporter=local",
+        "-filter-mode=nofilter"
+      ],
+      "exitCode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "name": "producer-status-preserved",
+      "verification": "failed",
+      "producer": {
+        "command": [
+          "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+          "/workspace/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-reviewdog-smoke-b3ifzE",
+          "--json",
+          "--out",
+          "evidence.json",
+          "--sarif",
+          "report.sarif"
+        ],
+        "exitCode": 1,
+        "stdout": "{\n  \"schemaVersion\": \"2.0.0\",\n  \"generatedAt\": \"2026-10-23T05:17:51.380Z\",\n  \"toolVersion\": \"2.0.0\",\n  \"repo\": {\n    \"cwd\": \"/tmp/patchprove-reviewdog-smoke-b3ifzE\",\n    \"root\": \"/tmp/patchprove-reviewdog-smoke-b3ifzE\"\n  },\n  \"range\": {\n    \"mode\": \"working-tree\",\n    \"base\": \"12b50b3d76961adb664418c64f76b863e366e2d3\",\n    \"head\": null\n  },\n  \"impact\": {\n    \"changedFiles\": [\n      {\n        \"path\": \".patchprove/spec.yml\",\n        \"status\": \"untracked\",\n        \"additions\": 1,\n        \"deletions\": 0,\n        \"highRisk\": false,\n        \"riskKind\": null\n      },\n      {\n        \"path\": \"README.md\",\n        \"status\": \"modified\",\n        \"additions\": 1,\n        \"deletions\": 1,\n        \"highRisk\": false,\n        \"riskKind\": null\n      }\n    ],\n    \"mappedTests\": [],\n    \"unmappedSources\": [\n      \".patchprove/spec.yml\"\n    ],\n    \"languages\": [],\n    \"mappingStrategy\": \"naming\",\n    \"unmappedReasons\": {\n      \".patchprove/spec.yml\": \"Changed configuration or dependency manifest has no dependency mapping\"\n    }\n  },\n  \"checks\": [\n    {\n      \"id\": \"typecheck\",\n      \"name\": \"typecheck\",\n      \"status\": \"skipped\",\n      \"reason\": \"No typechecker configured\",\n      \"command\": null,\n      \"exitCode\": null,\n      \"durationMs\": 0,\n      \"records\": [\n        {\n          \"id\": \"typecheck:unconfigured\",\n          \"checkId\": \"typecheck\",\n          \"scope\": [\n            \".\"\n          ],\n          \"status\": \"skipped\",\n          \"command\": null,\n          \"args\": [],\n          \"cwd\": \"/tmp/patchprove-reviewdog-smoke-b3ifzE\",\n          \"exitCode\": null,\n          \"durationMs\": 0,\n          \"reason\": \"No typechecker configured\",\n          \"required\": false\n        }\n      ]\n    },\n    {\n      \"id\": \"lint\",\n      \"name\": \"lint\",\n      \"status\": \"skipped\",\n      \"reason\": \"No linter configured\",\n      \"command\": null,\n      \"exitCode\": null,\n      \"durationMs\": 0,\n      \"records\": [\n        {\n          \"id\": \"lint:unconfigured\",\n          \"checkId\": \"lint\",\n          \"scope\": [\n            \".\"\n          ],\n          \"status\": \"skipped\",\n          \"command\": null,\n          \"args\": [],\n          \"cwd\": \"/tmp/patchprove-reviewdog-smoke-b3ifzE\",\n          \"exitCode\": null,\n          \"durationMs\": 0,\n          \"reason\": \"No linter configured\",\n          \"required\": false\n        }\n      ]\n    },\n    {\n      \"id\": \"tests\",\n      \"name\": \"affected tests\",\n      \"status\": \"skipped\",\n      \"reason\": \"No mapped tests for this diff\",\n      \"command\": null,\n      \"exitCode\": null,\n      \"durationMs\": 0,\n      \"records\": [\n        {\n          \"id\": \"tests:unmapped\",\n          \"checkId\": \"tests\",\n          \"scope\": [],\n          \"status\": \"skipped\",\n          \"command\": null,\n          \"args\": [],\n          \"cwd\": \"/tmp/patchprove-reviewdog-smoke-b3ifzE\",\n          \"exitCode\": null,\n          \"durationMs\": 0,\n          \"reason\": \"No mapped tests for this diff\"\n        }\n      ]\n    },\n    {\n      \"id\": \"secrets\",\n      \"name\": \"secret scan (regex)\",\n      \"status\": \"passed\",\n      \"reason\": \"no known key patterns or high-entropy tokens in added lines\",\n      \"command\": null,\n      \"exitCode\": 0,\n      \"durationMs\": 0,\n      \"records\": [\n        {\n          \"id\": \"secrets:regex\",\n          \"checkId\": \"secrets\",\n          \"scope\": [\n            \".patchprove/spec.yml\",\n            \"README.md\"\n          ],\n          \"status\": \"passed\",\n          \"command\": null,\n          \"args\": [],\n          \"cwd\": \"/tmp/patchprove-reviewdog-smoke-b3ifzE\",\n          \"exitCode\": 0,\n          \"durationMs\": 0,\n          \"reason\": \"no known key patterns or high-entropy tokens in added lines\",\n          \"toolVersion\": \"builtin-regex-v1\",\n          \"outputHash\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"\n        }\n      ]\n    }\n  ],\n  \"gaps\": [\n    {\n      \"id\": \"gap-unmapped-.patchprove/spec.yml\",\n      \"kind\": \"unsupported-language\",\n      \"message\": \"Changed configuration or dependency manifest has no dependency mapping: .patchprove/spec.yml\",\n      \"risk\": \"medium\",\n      \"files\": [\n        \".patchprove/spec.yml\"\n      ],\n      \"fingerprint\": \"sha256:f5d43261af6e2799e4974280d4046ed13e9911d7b3f3b02a767852c942e821b4\"\n    },\n    {\n      \"id\": \"gap-no-tests-mapped\",\n      \"kind\": \"no-tests-mapped\",\n      \"message\": \"Affected-test gate not run: no mapped tests for this diff\",\n      \"risk\": \"medium\",\n      \"files\": [\n        \".patchprove/spec.yml\"\n      ],\n      \"fingerprint\": \"sha256:6357feee6aa6df4786a8e2d48f0aee04ab76ffeeff133414fa101d11471acd1e\"\n    }\n  ],\n  \"findings\": [],\n  \"summary\": {\n    \"risk\": \"medium\",\n    \"checksPassed\": 1,\n    \"checksFailed\": 0,\n    \"checksSkipped\": 3,\n    \"gapCount\": 2,\n    \"acceptedGapCount\": 0,\n    \"findingCount\": 0\n  },\n  \"contract\": {\n    \"loaded\": true,\n    \"passed\": false,\n    \"source\": \"/tmp/patchprove-reviewdog-smoke-b3ifzE/.patchprove/spec.yml\",\n    \"format\": \"yaml\",\n    \"clauses\": [\n      {\n        \"id\": \"required-gate-tests\",\n        \"kind\": \"required-gate\",\n        \"passed\": false,\n        \"message\": \"Required gate tests did not pass (skipped: No mapped tests for this diff)\"\n      },\n      {\n        \"id\": \"accepted-residual-risk\",\n        \"kind\": \"accepted-residual-risk\",\n        \"passed\": true,\n        \"message\": \"acceptedResidualRisk.policy is allow\"\n      }\n    ]\n  },\n  \"baselineComparison\": null,\n  \"snapshot\": {\n    \"algorithm\": \"sha256\",\n    \"version\": 1,\n    \"mode\": \"working-tree\",\n    \"base\": \"12b50b3d76961adb664418c64f76b863e366e2d3\",\n    \"head\": null,\n    \"mergeBase\": null,\n    \"currentHead\": \"12b50b3d76961adb664418c64f76b863e366e2d3\",\n    \"tree\": \"337dc9433fad6f2f6bde4d20c63ae81de996855b\",\n    \"contentHash\": \"fffa80e52ea80352b196bfe56917dd4b0a337bbaaf373bec7a3f8de82ff80a46\",\n    \"patchHash\": \"b904d2a062adb25985d72c46a307f524a7b11e95e3efe3cb7606be76a0fbb158\",\n    \"dirty\": true,\n    \"consistent\": true,\n    \"excludedPaths\": [\n      \"evidence.json\",\n      \"evidence.json.patchprove-lock\",\n      \"evidence.receipt.json\",\n      \"evidence.receipt.json.patchprove-lock\",\n      \"report.sarif\",\n      \"report.sarif.patchprove-lock\",\n      \"evidence.json.manifest.json\",\n      \"evidence.json.manifest.json.patchprove-lock\"\n    ]\n  },\n  \"executionRecords\": [\n    {\n      \"id\": \"typecheck:unconfigured\",\n      \"checkId\": \"typecheck\",\n      \"scope\": [\n        \".\"\n      ],\n      \"status\": \"skipped\",\n      \"command\": null,\n      \"args\": [],\n      \"cwd\": \"/tmp/patchprove-reviewdog-smoke-b3ifzE\",\n      \"exitCode\": null,\n      \"durationMs\": 0,\n      \"reason\": \"No typechecker configured\",\n      \"required\": false\n    },\n    {\n      \"id\": \"lint:unconfigured\",\n      \"checkId\": \"lint\",\n      \"scope\": [\n        \".\"\n      ],\n      \"status\": \"skipped\",\n      \"command\": null,\n      \"args\": [],\n      \"cwd\": \"/tmp/patchprove-reviewdog-smoke-b3ifzE\",\n      \"exitCode\": null,\n      \"durationMs\": 0,\n      \"reason\": \"No linter configured\",\n      \"required\": false\n    },\n    {\n      \"id\": \"tests:unmapped\",\n      \"checkId\": \"tests\",\n      \"scope\": [],\n      \"status\": \"skipped\",\n      \"command\": null,\n      \"args\": [],\n      \"cwd\": \"/tmp/patchprove-reviewdog-smoke-b3ifzE\",\n      \"exitCode\": null,\n      \"durationMs\": 0,\n      \"reason\": \"No mapped tests for this diff\"\n    },\n    {\n      \"id\": \"secrets:regex\",\n      \"checkId\": \"secrets\",\n      \"scope\": [\n        \".patchprove/spec.yml\",\n        \"README.md\"\n      ],\n      \"status\": \"passed\",\n      \"command\": null,\n      \"args\": [],\n      \"cwd\": \"/tmp/patchprove-reviewdog-smoke-b3ifzE\",\n      \"exitCode\": 0,\n      \"durationMs\": 0,\n      \"reason\": \"no known key patterns or high-entropy tokens in added lines\",\n      \"toolVersion\": \"builtin-regex-v1\",\n      \"outputHash\": \"4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945\"\n    }\n  ],\n  \"verificationPlan\": [\n    {\n      \"id\": \"plan:typecheck:unconfigured\",\n      \"unitId\": \"typecheck:unconfigured\",\n      \"checkId\": \"typecheck\",\n      \"scope\": [\n        \".\"\n      ],\n      \"required\": false,\n      \"reason\": \"No typechecker configured\",\n      \"granularity\": \"repository\"\n    },\n    {\n      \"id\": \"plan:lint:unconfigured\",\n      \"unitId\": \"lint:unconfigured\",\n      \"checkId\": \"lint\",\n      \"scope\": [\n        \".\"\n      ],\n      \"required\": false,\n      \"reason\": \"No linter configured\",\n      \"granularity\": \"repository\"\n    },\n    {\n      \"id\": \"plan:secrets\",\n      \"checkId\": \"secrets\",\n      \"scope\": [\n        \".patchprove/spec.yml\",\n        \"README.md\"\n      ],\n      \"required\": true,\n      \"reason\": \"All selected added lines must be scanned\"\n    }\n  ],\n  \"effectivePolicy\": {\n    \"protocol\": 2,\n    \"strict\": true,\n    \"failOn\": null,\n    \"failOnNewGaps\": null,\n    \"gates\": {\n      \"typecheck\": true,\n      \"lint\": true,\n      \"tests\": true,\n      \"secrets\": true\n    },\n    \"ignorePaths\": [],\n    \"acceptGaps\": [],\n    \"plugins\": [],\n    \"config\": null,\n    \"spec\": {\n      \"path\": \"/tmp/patchprove-reviewdog-smoke-b3ifzE/.patchprove/spec.yml\",\n      \"hash\": \"sha256:167768483f727e1df0f606c4b83a21b2f511d8e900c134171c13deef9558fb84\",\n      \"inputs\": [\n        {\n          \"path\": \"/tmp/patchprove-reviewdog-smoke-b3ifzE/.patchprove/spec.yml\",\n          \"hash\": \"sha256:167768483f727e1df0f606c4b83a21b2f511d8e900c134171c13deef9558fb84\"\n        }\n      ]\n    },\n    \"baseline\": null,\n    \"hash\": \"sha256:f188dd5da4ef3950e79a60e0b2cc8c7e8968fb474d9ae31db0c9e99a482a8a98\"\n  },\n  \"environment\": {\n    \"platform\": \"linux\",\n    \"arch\": \"x64\",\n    \"nodeVersion\": \"v24.19.0\",\n    \"gitVersion\": \"git version 2.52.0\",\n    \"tools\": [],\n    \"dependencyLocks\": [],\n    \"inputLimits\": {\n      \"maxFileBytes\": 33554432,\n      \"maxTotalBytes\": 268435456,\n      \"maxFiles\": 50000,\n      \"maxJsonBytes\": 8388608,\n      \"maxJsonDepth\": 64,\n      \"maxJsonNodes\": 200000,\n      \"maxGraphEdges\": 500000\n    },\n    \"hermetic\": false,\n    \"configurations\": []\n  },\n  \"resolutionProvenance\": {\n    \"parserVersion\": \"2\",\n    \"inputHash\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\",\n    \"configurations\": [],\n    \"resolutions\": []\n  },\n  \"diagnostics\": [],\n  \"mappingEvidence\": [],\n  \"verification\": {\n    \"status\": \"failed\",\n    \"strict\": true,\n    \"reasons\": [\n      {\n        \"code\": \"contract-failed\",\n        \"message\": \"The verification contract did not pass\"\n      },\n      {\n        \"code\": \"required-gate-failed\",\n        \"message\": \"Required gate tests did not pass\",\n        \"checkId\": \"tests\"\n      },\n      {\n        \"code\": \"open-verification-gap\",\n        \"message\": \"Changed configuration or dependency manifest has no dependency mapping: .patchprove/spec.yml\",\n        \"scope\": [\n          \".patchprove/spec.yml\"\n        ]\n      },\n      {\n        \"code\": \"open-verification-gap\",\n        \"message\": \"Affected-test gate not run: no mapped tests for this diff\",\n        \"scope\": [\n          \".patchprove/spec.yml\"\n        ]\n      }\n    ]\n  },\n  \"receipt\": {\n    \"algorithm\": \"sha256\",\n    \"contentHash\": \"sha256:6342f7a63e3080623c1618b63ee06590221685e47dec5c397ce29308a7220aaa\",\n    \"path\": \"evidence.receipt.json\"\n  }\n}\n",
+        "stderr": ""
+      },
+      "consumer": {
+        "command": [
+          "/tmp/patchprove-reviewdog-0.21.2/reviewdog",
+          "-f=sarif",
+          "-reporter=local",
+          "-filter-mode=nofilter"
+        ],
+        "exitCode": 0,
+        "stdout": "{\"kind\":\"fail\",\"level\":\"warning\",\"locations\":[{\"physicalLocation\":{\"artifactLocation\":{\"uri\":\".patchprove/spec.yml\"}}}],\"message\":{\"text\":\"Changed configuration or dependency manifest has no dependency mapping: .patchprove/spec.yml\"},\"partialFingerprints\":{\"patchprove/v2\":\"sha256:f5d43261af6e2799e4974280d4046ed13e9911d7b3f3b02a767852c942e821b4\"},\"properties\":{},\"ruleId\":\"unsupported-language\"}\n{\"kind\":\"fail\",\"level\":\"warning\",\"locations\":[{\"physicalLocation\":{\"artifactLocation\":{\"uri\":\".patchprove/spec.yml\"}}}],\"message\":{\"text\":\"Affected-test gate not run: no mapped tests for this diff\"},\"partialFingerprints\":{\"patchprove/v2\":\"sha256:6357feee6aa6df4786a8e2d48f0aee04ab76ffeeff133414fa101d11471acd1e\"},\"properties\":{},\"ruleId\":\"no-tests-mapped\"}\n",
+        "stderr": ""
+      },
+      "combinedExitCode": 1
+    }
+  ],
+  "reviewdog": {
+    "version": "0.21.2",
+    "binaryHash": "sha256:b0c2ceed45468850f9922784ffd90147a3e74246f19686ceec8a1ca95ec390fc",
+    "sourceCommit": "a431794dd959800d59924993457dc58b32f03cad",
+    "releaseUrl": "https://github.com/reviewdog/reviewdog/releases/tag/v0.21.2",
+    "checksumsUrl": "https://github.com/reviewdog/reviewdog/releases/download/v0.21.2/checksums.txt",
+    "upstreamAsset": {
+      "url": "https://github.com/reviewdog/reviewdog/releases/download/v0.21.2/reviewdog_0.21.2_Linux_x86_64.tar.gz",
+      "archiveHash": "sha256:30413aa3c7443e9c3c157fe5766cad40e3bb39a32e210ee69b710a8d5c4b8e51"
+    }
+  },
+  "passed": true
+}

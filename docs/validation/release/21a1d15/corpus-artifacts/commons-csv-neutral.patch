@@ -1,0 +1,10 @@
+diff --git a/src/main/java/org/apache/commons/csv/CSVFormat.java b/src/main/java/org/apache/commons/csv/CSVFormat.java
+index dd5416e..e828f84 100644
+--- a/src/main/java/org/apache/commons/csv/CSVFormat.java
++++ b/src/main/java/org/apache/commons/csv/CSVFormat.java
+@@ -3148,3 +3148,5 @@ public final class CSVFormat implements Serializable {
+         return builder().setTrim(trim).build();
+     }
+ }
++
++// corpus neutral source change

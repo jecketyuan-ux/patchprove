@@ -21,6 +21,7 @@ export async function verifyProductionChain(installed, engines) {
   for (const item of manifest.cases.filter((item) => engines.includes(item.engine) && item.scenario !== "missing")) {
     const cwd = await mkdtemp(path.join(os.tmpdir(), "patchprove-installed-测试 space-"));
     const artifacts = await mkdtemp(path.join(os.tmpdir(), "patchprove-installed-result-"));
+    let observed;
     const command = async (program, args) => {
       const result = await runCommand(program, args, { cwd, timeoutMs: 180_000, maxOutputBytes: 2 * 1024 * 1024 });
       assert(!result.timedOut && !result.aborted && !result.truncated, `Unusable command result: ${result.command}`); return result;
@@ -39,12 +40,14 @@ export async function verifyProductionChain(installed, engines) {
       assert([0, 1].includes(result.exitCode), `${result.stdout}\n${result.stderr}`);
       const evidence = JSON.parse(await readFile(output, "utf8"));
       const check = evidence.checks.find((check) => check.id === "tests");
-      assert.equal(check.status, item.expected, `${item.id}: ${check.reason}\n${JSON.stringify(check.records)}`);
+      observed = { cli: { exitCode: result.exitCode, args, outputHash: result.outputHash, durationMs: result.durationMs }, verification: evidence.verification, environment: evidence.environment, tests: check };
+      assert.equal(check.status, item.expected, `${item.id}: ${check.reason}\n${check.detail ?? ""}\n${JSON.stringify(check.records)}`);
       if (item.expected === "passed") assert(check.records.some((record) => record.status === "passed" && record.toolVersion && record.testExecution?.counts.executed > 0), "Actual execution and detected tool version required");
+      if (item.scenario === "failure") assert(check.records.some((record) => record.testExecution?.counts.failed > 0), `Expected an attributed failing test, not infrastructure failure\n${check.detail ?? ""}`);
       report.cases.push({ id: item.id, status: "passed", cli: { exitCode: result.exitCode, args, outputHash: result.outputHash, durationMs: result.durationMs },
         verification: evidence.verification, environment: evidence.environment, tests: check });
       console.log(`PASS installed ${item.id}`);
-    } catch (error) { report.cases.push({ id: item.id, status: "failed", error: String(error) }); console.error(`FAIL installed ${item.id}: ${error}`); }
+    } catch (error) { report.cases.push({ id: item.id, status: "failed", error: String(error), ...(observed ? { observed } : {}) }); console.error(`FAIL installed ${item.id}: ${error}`); }
     finally { await rm(cwd, { recursive: true, force: true }); await rm(artifacts, { recursive: true, force: true }); }
   }
   const output = process.env.PATCHPROVE_PRODUCTION_REPORT ?? path.join(os.tmpdir(), "patchprove-production-report.json");

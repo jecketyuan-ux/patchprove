@@ -2,7 +2,7 @@
 import { validationIdentity } from "./validation-identity.mjs";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { mkdir, readFile, readdir, writeFile } from "node:fs/promises";
+import { cp, mkdir, readFile, readdir, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import path from "node:path";
 import { runCommand } from "../dist/exec.js";
@@ -89,7 +89,17 @@ for (const project of manifest.projects) {
     await writeFile(path.join(artifacts, `${project.id}-${id}.log`), `${result.stdout}\n${result.stderr}`);
     let observed;
     try { observed = await truth(project, result, machine); } catch (error) { observed = { failedUnits: [], passedUnits: [], cases: 0, skipped: 0, unknown: String(error) }; }
-    return { command: project.full.command, args, exitCode: result.exitCode, durationMs: result.durationMs, outputHash: result.outputHash, ...observed };
+    const machineReports = [];
+    if (project.engine === "maven") {
+      const reports = await walk(path.join(cwd, "target/surefire-reports"));
+      for (const file of reports) {
+        const relative = `${project.id}-${id}-junit/${path.basename(file)}`;
+        await mkdir(path.join(artifacts, `${project.id}-${id}-junit`), { recursive: true });
+        await cp(file, path.join(artifacts, relative));
+        machineReports.push({ path: relative, sha256: digest(await readFile(file)) });
+      }
+    } else if (["node", "python"].includes(project.engine) && existsSync(machine)) machineReports.push({ path: path.basename(machine), sha256: digest(await readFile(machine)) });
+    return { command: project.full.command, args, exitCode: result.exitCode, durationMs: result.durationMs, outputHash: result.outputHash, machineReports, ...observed };
   };
   entry.baseline = await full("baseline");
   if (entry.baseline.exitCode !== 0 || entry.baseline.unknown) { entry.status = "unknown"; continue; }
