@@ -24,6 +24,8 @@
 
 本次公开 registry 只读查询返回 `1.0.0`、`1.1.0`，未发现 `2.0.0`，因此保留未发布候选版本；查询不构成发布授权。没有发布 npm 包、tag 或 release。
 
-后续 CI 暴露并保留两项条件：大型自审报告需显式匹配生成/reader/publisher 的 JSON 预算；Windows Gradle 8.12.1/JDK17 的中文路径验收使用明确的 UTF-8 JVM 配置，默认 ANSI 环境的 ClassNotFound 失败不计作断言执行。旧 2.0 无机器事实的数据可按原签名字节读取，但新的完成判定保持 incomplete，收据兼容验证需显式 allow-legacy。
+后续 CI 暴露并保留两项条件：大型自审报告需显式匹配生成/reader/publisher 的 JSON 预算；Windows Gradle 8.12.1/JDK17 的中文路径在默认编码和仅安装步骤设置 UTF-8 的两次尝试中均出现 ClassNotFound，不能计作断言执行。Windows 验收改用 JDK 21，并在任何 Gradle daemon 启动前明确声明 UTF-8 JVM 配置；Linux/macOS 仍用 JDK 17。旧 2.0 无机器事实的数据可按原签名字节读取，但新的完成判定保持 incomplete，收据兼容验证需显式 allow-legacy。
 
 最终核心代码候选与本地全套记录见 [fbaa4cb 账本](../validation/release/fbaa4cb/candidate.json)。CI 自审显式忽略自己的存档数据，Git 快照身份仍绑定全部存档字节；源码、测试和正常门禁不在该忽略范围。最终 PR head 需重新通过完整远程 CI。
+
+干净 checkout 首次暴露通用 `evidence.json` 忽略规则遗漏旧版 producer 夹具，已补入精确例外及原始签名证据；干净导出后旧版兼容三项测试通过。Windows JDK17 的失败尝试保留在 PR CI 历史，不能从早期账本中的待验 UTF-8 条件推导其已受支持；当前支持条件以候选索引和当前 PR head 的实际检查为准。

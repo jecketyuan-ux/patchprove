@@ -40,6 +40,9 @@ jobs:
     name: Real runtime fixtures / ${{ matrix.os }}
     runs-on: ${{ matrix.os }}
     timeout-minutes: 30
+    env:
+      # Apply before any daemon is started, including the executor harness.
+      JAVA_TOOL_OPTIONS: ${{ matrix.os == 'windows-latest' && '-Dfile.encoding=UTF-8' || '' }}
     strategy:
       fail-fast: false
       matrix:
@@ -65,7 +68,7 @@ jobs:
       - uses: actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3 # v4
         with:
           distribution: temurin
-          java-version: "17"
+          java-version: ${{ matrix.os == 'windows-latest' && '21' || '17' }}
       - uses: gradle/actions/setup-gradle@748248ddd2a24f49513d8f472f81c3a07d4d50e1 # v4.4.4
         with:
           gradle-version: "8.12.1"
@@ -87,9 +90,6 @@ jobs:
           PATCHPROVE_PRODUCTION_ENGINES: node,python,go,cargo,maven,gradle
           PATCHPROVE_PRODUCTION_REPORT: artifacts/production-chain.json
           PATCHPROVE_PACKAGE_REPORT: artifacts/installed-package.json
-          # JDK 17's Windows default encoding cannot round-trip non-ASCII
-          # Gradle worker classpaths. Keep the tested JVM setting explicit.
-          JAVA_TOOL_OPTIONS: ${{ matrix.os == 'windows-latest' && '-Dfile.encoding=UTF-8' || '' }}
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:

@@ -9,5 +9,10 @@
   "historicalRecords": [
     "21a1d15/candidate.json"
   ],
-  "ciPolicy": "Use current PR head checks, not an earlier green run."
+  "ciPolicy": "Use current PR head checks, not an earlier green run.",
+  "supportConditions": {
+    "windowsJava": "Current runtime CI uses Gradle 8.12.1 with JDK21 and explicit UTF-8 before daemon startup. Windows JDK17 non-ASCII production attempts failed, including step-only UTF-8; the archived pending condition is superseded. Check current PR head results.",
+    "otherJavaPlatforms": "Linux/macOS use JDK17.",
+    "fixtureDelivery": "Historical signed evidence fixture is tracked through a precise ignore exception and passed three compatibility tests in a clean export."
+  }
 }
