@@ -91,7 +91,8 @@ export function readJsonInput(file: string): unknown {
 }
 
 /** Stop serialization before accumulating an artifact too large for its reader. */
-export function stringifyBoundedJson(value: unknown, maxBytes = inputLimits().maxJsonBytes): string {
+export function stringifyBoundedJson(value: unknown, maxBytes = inputLimits().maxJsonBytes, format: "pretty" | "compact" = "pretty"): string {
+  if (format === "compact") return stringifyCompactBoundedJson(value, maxBytes);
   let bytes = 0, nodes = 0, root = true;
   const limits = inputLimits();
   const depth = new WeakMap<object, number>(), started = new WeakSet<object>();
@@ -109,7 +110,7 @@ export function stringifyBoundedJson(value: unknown, maxBytes = inputLimits().ma
       if (!Array.isArray(this)) { bytes += Buffer.byteLength(JSON.stringify(key)) + 2; nodes++; }
     }
     if (item !== null && typeof item === "object") {
-      bytes += 2; nodes++; depth.set(item, parentDepth + 1);
+      bytes += 2; nodes++; depth.set(item, parentDepth + 1); started.delete(item);
       if (parentDepth + 2 > limits.maxJsonDepth) throw new InputBudgetError(`Artifact JSON exceeds maxJsonDepth budget (${limits.maxJsonDepth})`);
     }
     else bytes += Buffer.byteLength(JSON.stringify(item));
@@ -118,6 +119,59 @@ export function stringifyBoundedJson(value: unknown, maxBytes = inputLimits().ma
     if (bytes + 1 > maxBytes) throw new InputBudgetError(`Artifact JSON exceeds maxJsonBytes budget (${maxBytes})`);
     return item;
   }, 2);
+  if (json === undefined || Buffer.byteLength(json) + 1 > maxBytes) throw new InputBudgetError(`Artifact JSON exceeds maxJsonBytes budget (${maxBytes})`);
+  return `${json}\n`;
+}
+
+/** Private machine transport: count the compact wire syntax before it is emitted. */
+function stringifyCompactBoundedJson(value: unknown, maxBytes: number): string {
+  const limits = inputLimits();
+  let bytes = 0, nodes = 0, root = true;
+  const stack: Array<{ value: object; depth: number; members: number }> = [];
+  const check = () => {
+    if (nodes > limits.maxJsonNodes) throw new InputBudgetError(`Artifact JSON exceeds maxJsonNodes budget (${limits.maxJsonNodes})`);
+    if (bytes + 1 > maxBytes) throw new InputBudgetError(`Artifact JSON exceeds maxJsonBytes budget (${maxBytes})`);
+  };
+  const stringBytes = (text: string) => {
+    bytes += 2;
+    for (let index = 0; index < text.length; index++) {
+      if ((index & 4095) === 0) assertInputActive();
+      const code = text.charCodeAt(index);
+      if (code === 34 || code === 92) bytes += 2;
+      else if (code < 32) bytes += [8, 9, 10, 12, 13].includes(code) ? 2 : 6;
+      else if (code >= 0xd800 && code <= 0xdbff && index + 1 < text.length && text.charCodeAt(index + 1) >= 0xdc00 && text.charCodeAt(index + 1) <= 0xdfff) { bytes += 4; index++; }
+      else if (code >= 0xd800 && code <= 0xdfff) bytes += 6;
+      else bytes += code < 128 ? 1 : code < 2048 ? 2 : 3;
+      check();
+    }
+  };
+  const json = JSON.stringify(value, function (key, item: unknown) {
+    assertInputActive();
+    if (item === undefined || typeof item === "function" || typeof item === "symbol") {
+      if (!Array.isArray(this)) return item;
+      item = null;
+    }
+    if (!root) while (stack.length && stack[stack.length - 1]!.value !== this) stack.pop();
+    const parent = root ? undefined : stack[stack.length - 1];
+    if (parent) {
+      if (parent.members++) { bytes++; nodes++; }
+      if (!Array.isArray(this)) { stringBytes(key); bytes++; nodes++; }
+    }
+    if (item !== null && typeof item === "object") {
+      // JSON.stringify unboxes these after the replacer; rejecting them keeps
+      // oversized boxed strings from bypassing the pre-allocation byte guard.
+      if (["[object String]", "[object Number]", "[object Boolean]", "[object BigInt]"].includes(Object.prototype.toString.call(item))) throw new InputBudgetError("Artifact JSON contains a boxed primitive");
+      if (stack.some(frame => frame.value === item)) throw new InputBudgetError("Artifact JSON contains a cycle");
+      const depth = (parent?.depth ?? 0) + 1;
+      if (depth > limits.maxJsonDepth) throw new InputBudgetError(`Artifact JSON exceeds maxJsonDepth budget (${limits.maxJsonDepth})`);
+      bytes += 2; nodes++;
+      stack.push({ value: item, depth, members: 0 });
+    } else if (typeof item === "string") stringBytes(item);
+    else bytes += Buffer.byteLength(JSON.stringify(item));
+    root = false;
+    check();
+    return item;
+  });
   if (json === undefined || Buffer.byteLength(json) + 1 > maxBytes) throw new InputBudgetError(`Artifact JSON exceeds maxJsonBytes budget (${maxBytes})`);
   return `${json}\n`;
 }

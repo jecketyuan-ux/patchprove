@@ -15,7 +15,7 @@ process.env.TMP = temporaryRoot;
 try {
   const input = readJsonInput(request) as RunOptions;
   const evidence = await analyzeInCurrentProcess(input, temporaryRoot);
-  const content = withInputBudget({ limits: resolveInputLimits(input.inputLimits) }, () => stringifyBoundedJson({ ok: true, evidence }));
+  const content = withInputBudget({ limits: resolveInputLimits(input.inputLimits) }, () => stringifyBoundedJson({ ok: true, evidence }, undefined, "compact"));
   writeFileSync(response, content, { flag: "wx", mode: 0o600 });
 } catch (error) {
   writeFileSync(response, JSON.stringify({ ok: false, error: error instanceof Error ? error.message : String(error) }), { flag: "wx", mode: 0o600 });

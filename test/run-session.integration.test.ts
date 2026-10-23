@@ -97,6 +97,25 @@ describe("analysis run sessions", () => {
     expect(result.impact.mappedTests.find(item => item.source === "thing.widget")?.tests).toEqual(["old.test.js"]);
   });
 
+  it("uses bounded compact private transport when evidence fits but a pretty envelope would exceed the budget", async () => {
+    const root = fixture();
+    const tests = Array.from({ length: 100 }, (_, index) => `test/mapped-${index}-${"value".repeat(6)}.test.js`);
+    for (const test of tests) write(root, test, "export {};\n");
+    write(root, ".patchprove/plugins/select.mjs", `export default {id:'session-fixture',languages:['other'],extensions:['.widget'],isTestFile:()=>false,testCandidates:()=>${JSON.stringify(tests)}};\n`);
+    execFileSync("git", ["add", "test", ".patchprove"], { cwd: root, stdio: "pipe" });
+    execFileSync("git", ["-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "-c", "commit.gpgsign=false", "commit", "-qm", "mapping transport fixture"], { cwd: root, stdio: "pipe" });
+    const evidence = await analyze(options(root));
+    const prettyBytes = Buffer.byteLength(JSON.stringify(evidence, null, 2) + "\n");
+    const envelopeBytes = Buffer.byteLength(JSON.stringify({ ok: true, evidence }, null, 2) + "\n");
+    const limit = Math.floor((prettyBytes + envelopeBytes) / 2);
+    expect(limit).toBeGreaterThan(prettyBytes);
+    expect(limit).toBeLessThan(envelopeBytes);
+    const repeated = await analyze({ ...options(root), inputLimits: { maxJsonBytes: limit } });
+    expect(Buffer.byteLength(JSON.stringify(repeated, null, 2) + "\n")).toBeLessThan(limit);
+    expect(repeated.impact.mappedTests.find(item => item.source === "thing.widget")?.tests).toEqual(tests.sort());
+    await expect(analyze({ ...options(root), inputLimits: { maxJsonBytes: Math.floor(prettyBytes / 3) } })).rejects.toThrow(/Artifact JSON exceeds maxJsonBytes/);
+  }, 30_000);
+
   it("rejects completion when an observed plugin dependency changes during the run", async () => {
     const root = fixture();
     const helper = path.join(root, ".patchprove/deps/selection.mjs");

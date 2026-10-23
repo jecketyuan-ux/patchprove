@@ -6,6 +6,7 @@ import { readEvidenceFile } from "../src/mcp-tools.js";
 import { analyze } from "../src/run.js";
 import { execFileSync, spawnSync } from "node:child_process";
 import { analyzeAndWrite, produceArtifacts } from "../src/run.js";
+import { parseBoundedJson, stringifyBoundedJson, withInputBudget } from "../src/input-budget.js";
 
 const roots: string[] = [];
 afterEach(() => { for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true }); });
@@ -48,3 +49,31 @@ it("verifies a deliberately larger pack only when the CLI reader receives an exp
   const explicit = spawnSync(process.execPath, [...args, "--max-json-nodes", "500000"], { encoding: "utf8" });
   expect(explicit.status, explicit.stderr).toBe(0);
 }, 15_000);
+
+it.each(["pretty", "compact"] as const)("counts %s bytes exactly for repeated objects, escaped keys and sparse arrays", format => {
+  const shared = { 'key"\\\n': ["中文💥\ud800x\udfff\u0001\b\t\n\f\r", null, NaN, Infinity], empty: {} };
+  const value = { first: shared, skipped: undefined, nested: { repeated: shared }, sparse: Array(2) };
+  const expected = JSON.stringify(value, null, format === "pretty" ? 2 : undefined) + "\n";
+  const bytes = Buffer.byteLength(expected);
+  expect(withInputBudget({ limits: { maxJsonBytes: bytes } }, () => stringifyBoundedJson(value, undefined, format))).toBe(expected);
+  expect(() => withInputBudget({ limits: { maxJsonBytes: bytes - 1 } }, () => stringifyBoundedJson(value, undefined, format))).toThrow(/maxJsonBytes/);
+});
+
+it("rejects compact output before traversing fields after an oversized string", () => {
+  let visited = false;
+  const value = { text: "💥".repeat(16_000), get later() { visited = true; return "unused"; } };
+  expect(() => withInputBudget({ limits: { maxJsonBytes: 128 } }, () => stringifyBoundedJson(value, undefined, "compact"))).toThrow(/maxJsonBytes/);
+  expect(visited).toBe(false);
+});
+
+it("uses the reader's node and depth bounds for compact output", () => {
+  const value = { items: [{}, {}] };
+  const encoded = JSON.stringify(value) + "\n";
+  const limits = { maxJsonNodes: 6, maxJsonDepth: 3 };
+  expect(withInputBudget({ limits }, () => stringifyBoundedJson(value, undefined, "compact"))).toBe(encoded);
+  expect(withInputBudget({ limits }, () => parseBoundedJson(encoded))).toEqual(value);
+  for (const narrowed of [{ maxJsonNodes: 5 }, { maxJsonDepth: 2 }]) {
+    expect(() => withInputBudget({ limits: { ...limits, ...narrowed } }, () => stringifyBoundedJson(value, undefined, "compact"))).toThrow(/budget/);
+    expect(() => withInputBudget({ limits: { ...limits, ...narrowed } }, () => parseBoundedJson(encoded))).toThrow(/budget/);
+  }
+});
