@@ -8,6 +8,8 @@ import { writeBaseline } from "../src/baseline.js";
 import type { RunOptions } from "../src/types.js";
 
 const temporary: string[] = [];
+// These are policy semantics checks; Windows Git/process startup needs host headroom.
+const hostTestTimeout = process.platform === "win32" ? 90_000 : undefined;
 afterEach(() => { for (const root of temporary.splice(0)) rmSync(root, { recursive: true, force: true }); });
 function directory(): string {
   const root = mkdtempSync(path.join(tmpdir(), "pp-baseline-sdk-"));
@@ -33,7 +35,7 @@ function clone(source: string): string {
   return checkout;
 }
 function options(root: string, out: string): RunOptions {
-  return { cwd: root, out, json: true, format: "json", receipt: false, protocol: 2, timeoutMs: 15_000 };
+  return { cwd: root, out, json: true, format: "json", receipt: false, protocol: 2, timeoutMs: process.platform === "win32" ? 30_000 : 15_000 };
 }
 
 describe("portable baselines through SDK analysis", () => {
@@ -54,7 +56,7 @@ describe("portable baselines through SDK analysis", () => {
     expect(current.effectivePolicy!.pluginSetHash).not.toBe(first.effectivePolicy!.pluginSetHash);
     expect(current.baselineComparison!.compatibility).toMatchObject({ compatible: false, reasons: expect.arrayContaining(["Effective policies differ"]) });
     expect(current.verification!.status).toBe("incomplete");
-  });
+  }, hostTestTimeout);
   it("preserves repository identity and semantic policy across a real clone", async () => {
     const source = repository();
     const outputs = directory();
@@ -67,7 +69,7 @@ describe("portable baselines through SDK analysis", () => {
     expect(current.effectivePolicy!.hash).toBe(baseline.effectivePolicy!.hash);
     expect(current.baselineComparison!.compatibility).toMatchObject({ compatible: true, reasons: [] });
     expect(current.verification!.status).toBe("passed");
-  });
+  }, hostTestTimeout);
 
   it("keeps different absolute external policy inputs incompatible even when their bytes match", async () => {
     const source = repository();
@@ -82,5 +84,5 @@ describe("portable baselines through SDK analysis", () => {
     expect(current.effectivePolicy!.config!.path).toBe(secondConfig);
     expect(current.baselineComparison!.compatibility).toMatchObject({ compatible: false, reasons: expect.arrayContaining(["Effective policies differ"]) });
     expect(current.verification!.status).toBe("incomplete");
-  });
+  }, hostTestTimeout);
 });
