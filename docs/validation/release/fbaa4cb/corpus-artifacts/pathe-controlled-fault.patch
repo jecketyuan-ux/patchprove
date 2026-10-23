@@ -1,0 +1,11 @@
+diff --git a/src/_internal.ts b/src/_internal.ts
+index c7e5cb6..3d30c06 100644
+--- a/src/_internal.ts
++++ b/src/_internal.ts
+@@ -7,5 +7,5 @@ export function normalizeWindowsPath(input = "") {
+   }
+   return input
+     .replace(/\\/g, "/")
+-    .replace(_DRIVE_LETTER_START_RE, (r) => r.toUpperCase());
++    .replace(_DRIVE_LETTER_START_RE, (r) => r.toLowerCase());
+ }

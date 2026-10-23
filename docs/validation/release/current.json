@@ -1,10 +1,13 @@
 {
   "schemaVersion": 1,
-  "candidateCodeCommit": "21a1d15c653f7076f3bc912a080a47304ef74c6b",
-  "candidateCodeTree": "f2ff8d350e930652d59843978b465a3fae74c9cc",
-  "runtimeDigest": "db5d7e7ce124b4a167a73529484549e2be93613bcb7f3b9c368621b4ff2555e8",
-  "record": "21a1d15/candidate.json",
+  "candidateCodeCommit": "fbaa4cbe8bd436dc67026d6cbdf5f3d8d5bb4740",
+  "candidateCodeTree": "3f3939c0a7c77b06828874b6466d01ddf6bfcddf",
+  "runtimeDigest": "22b315219c13ae0c25810318f12dd78a9158974c2f2ec3f7ec5957221f1f008e",
+  "record": "fbaa4cb/candidate.json",
   "pullRequest": "https://github.com/jecketyuan-ux/patchprove/pull/18",
-  "releaseStatus": "unreleased; live integrations experimental",
-  "historicalRecords": "Earlier validation JSONs and PR7 CI are retained, not assigned to this candidate."
+  "releaseStatus": "unreleased; live host/publisher acceptance remains experimental",
+  "historicalRecords": [
+    "21a1d15/candidate.json"
+  ],
+  "ciPolicy": "Use current PR head checks, not an earlier green run."
 }

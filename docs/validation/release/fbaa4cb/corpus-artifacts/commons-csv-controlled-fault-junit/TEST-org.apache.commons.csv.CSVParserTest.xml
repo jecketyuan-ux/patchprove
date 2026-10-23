@@ -1,0 +1,197 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="org.apache.commons.csv.CSVParserTest" time="0.123" tests="128" errors="0" skipped="4" failures="0">
+  <properties>
+    <property name="java.specification.version" value="17"/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="java.class.path" value="/tmp/patchprove-real-projects/commons-csv/target/test-classes:/tmp/patchprove-real-projects/commons-csv/target/classes:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter/5.11.0/junit-jupiter-5.11.0.jar:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter-api/5.11.0/junit-jupiter-api-5.11.0.jar:/tmp/patchprove-maven-repo/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/tmp/patchprove-maven-repo/org/junit/platform/junit-platform-commons/1.11.0/junit-platform-commons-1.11.0.jar:/tmp/patchprove-maven-repo/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter-params/5.11.0/junit-jupiter-params-5.11.0.jar:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter-engine/5.11.0/junit-jupiter-engine-5.11.0.jar:/tmp/patchprove-maven-repo/org/junit/platform/junit-platform-engine/1.11.0/junit-platform-engine-1.11.0.jar:/tmp/patchprove-maven-repo/org/hamcrest/hamcrest/3.0/hamcrest-3.0.jar:/tmp/patchprove-maven-repo/org/mockito/mockito-core/4.11.0/mockito-core-4.11.0.jar:/tmp/patchprove-maven-repo/net/bytebuddy/byte-buddy/1.12.19/byte-buddy-1.12.19.jar:/tmp/patchprove-maven-repo/net/bytebuddy/byte-buddy-agent/1.12.19/byte-buddy-agent-1.12.19.jar:/tmp/patchprove-maven-repo/org/objenesis/objenesis/3.3/objenesis-3.3.jar:/tmp/patchprove-maven-repo/commons-io/commons-io/2.17.0/commons-io-2.17.0.jar:/tmp/patchprove-maven-repo/commons-codec/commons-codec/1.17.1/commons-codec-1.17.1.jar:/tmp/patchprove-maven-repo/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar:/tmp/patchprove-maven-repo/com/h2database/h2/2.2.224/h2-2.2.224.jar:/tmp/patchprove-maven-repo/org/openjdk/jmh/jmh-core/1.37/jmh-core-1.37.jar:/tmp/patchprove-maven-repo/net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar:/tmp/patchprove-maven-repo/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar:"/>
+    <property name="java.vm.vendor" value="Eclipse Adoptium"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="java.vendor.url" value="https://adoptium.net/"/>
+    <property name="user.timezone" value="Etc/UTC"/>
+    <property name="os.name" value="Linux"/>
+    <property name="java.vm.specification.version" value="17"/>
+    <property name="rat.skip" value="true"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.boot.library.path" value="/tmp/patchprove-toolchains/jdk-17.0.13+11/lib"/>
+    <property name="sun.java.command" value="/tmp/patchprove-real-projects/commons-csv/target/surefire/surefirebooter-20261023060650205_3.jar /tmp/patchprove-real-projects/commons-csv/target/surefire 2026-10-23T06-06-50_157-jvmRun1 surefire-20261023060650205_1tmp surefire_0-20261023060650205_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="/tmp/patchprove-real-projects/commons-csv/target/test-classes:/tmp/patchprove-real-projects/commons-csv/target/classes:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter/5.11.0/junit-jupiter-5.11.0.jar:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter-api/5.11.0/junit-jupiter-api-5.11.0.jar:/tmp/patchprove-maven-repo/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/tmp/patchprove-maven-repo/org/junit/platform/junit-platform-commons/1.11.0/junit-platform-commons-1.11.0.jar:/tmp/patchprove-maven-repo/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter-params/5.11.0/junit-jupiter-params-5.11.0.jar:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter-engine/5.11.0/junit-jupiter-engine-5.11.0.jar:/tmp/patchprove-maven-repo/org/junit/platform/junit-platform-engine/1.11.0/junit-platform-engine-1.11.0.jar:/tmp/patchprove-maven-repo/org/hamcrest/hamcrest/3.0/hamcrest-3.0.jar:/tmp/patchprove-maven-repo/org/mockito/mockito-core/4.11.0/mockito-core-4.11.0.jar:/tmp/patchprove-maven-repo/net/bytebuddy/byte-buddy/1.12.19/byte-buddy-1.12.19.jar:/tmp/patchprove-maven-repo/net/bytebuddy/byte-buddy-agent/1.12.19/byte-buddy-agent-1.12.19.jar:/tmp/patchprove-maven-repo/org/objenesis/objenesis/3.3/objenesis-3.3.jar:/tmp/patchprove-maven-repo/commons-io/commons-io/2.17.0/commons-io-2.17.0.jar:/tmp/patchprove-maven-repo/commons-codec/commons-codec/1.17.1/commons-codec-1.17.1.jar:/tmp/patchprove-maven-repo/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar:/tmp/patchprove-maven-repo/com/h2database/h2/2.2.224/h2-2.2.224.jar:/tmp/patchprove-maven-repo/org/openjdk/jmh/jmh-core/1.37/jmh-core-1.37.jar:/tmp/patchprove-maven-repo/net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar:/tmp/patchprove-maven-repo/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar:"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="/home/agent"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2024-10-15"/>
+    <property name="java.home" value="/tmp/patchprove-toolchains/jdk-17.0.13+11"/>
+    <property name="jacoco.skip" value="true"/>
+    <property name="file.separator" value="/"/>
+    <property name="basedir" value="/tmp/patchprove-real-projects/commons-csv"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="checkstyle.skip" value="true"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="surefire.real.class.path" value="/tmp/patchprove-real-projects/commons-csv/target/surefire/surefirebooter-20261023060650205_3.jar"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="17.0.13+11"/>
+    <property name="user.name" value="agent"/>
+    <property name="path.separator" value=":"/>
+    <property name="os.version" value="6.18.55"/>
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
+    <property name="java.vendor.version" value="Temurin-17.0.13+11"/>
+    <property name="localRepository" value="/tmp/patchprove-maven-repo"/>
+    <property name="java.vendor.url.bug" value="https://github.com/adoptium/adoptium-support/issues"/>
+    <property name="java.io.tmpdir" value="/tmp"/>
+    <property name="java.version" value="17.0.13"/>
+    <property name="user.dir" value="/tmp/patchprove-real-projects/commons-csv"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="pmd.skip" value="true"/>
+    <property name="native.encoding" value="UTF-8"/>
+    <property name="spotbugs.skip" value="true"/>
+    <property name="java.library.path" value="/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib"/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="java.vendor" value="Eclipse Adoptium"/>
+    <property name="java.vm.version" value="17.0.13+11"/>
+    <property name="java.specification.maintenance.version" value="1"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="61.0"/>
+  </properties>
+  <testcase name="testGetHeaderComment_HeaderComment1" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testGetHeaderComment_HeaderComment2" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testGetHeaderComment_HeaderComment3" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testBackslashEscapingOld" classname="org.apache.commons.csv.CSVParserTest" time="0.0">
+    <skipped message="public void org.apache.commons.csv.CSVParserTest.testBackslashEscapingOld() throws java.io.IOException is @Disabled"/>
+  </testcase>
+  <testcase name="testParseWithDelimiterWithQuote" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testCSV141CSVFormat_DEFAULT" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testStartWithEmptyLinesThenHeaders" classname="org.apache.commons.csv.CSVParserTest" time="0.0">
+    <skipped message="public void org.apache.commons.csv.CSVParserTest.testStartWithEmptyLinesThenHeaders() throws java.lang.Exception is @Disabled"/>
+  </testcase>
+  <testcase name="testExcelHeaderCountLessThanData" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testHeadersWithNullColumnName" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testMultipleIterators" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testHeaderComment" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testGetHeaderComment_HeaderTrailerComment" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testDefaultFormat" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testCSV141CSVFormat_INFORMIX_UNLOAD_CSV" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testEndOfFileBehaviorExcel" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testGetRecordPositionWithCRLF" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testHeaderMissing" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testGetHeaderComment_NoComment1" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testGetHeaderComment_NoComment2" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testGetHeaderComment_NoComment3" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testTrailingDelimiter" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testNotValueCSV" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testGetTrailerComment_MultilineComment" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testParseWithDelimiterStringWithQuote" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testBOM" classname="org.apache.commons.csv.CSVParserTest" time="0.0">
+    <skipped message="CSV-107"/>
+  </testcase>
+  <testcase name="testFirstEndOfLineCrLf" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testProvidedHeaderAuto" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testGetRecordWithMultiLineValues" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testParseWithDelimiterStringWithEscape" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testParseNullStringFormat" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testParseWithDelimiterWithEscape" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testSkipSetAltHeaders" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testGetRecordNumberWithCR" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testGetRecordNumberWithLF" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testCSV57" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testClose" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testParse" classname="org.apache.commons.csv.CSVParserTest" time="0.003"/>
+  <testcase name="testTrim" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testGetLineNumberWithCR" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testGetLineNumberWithLF" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testParserUrlNullCharsetFormat" classname="org.apache.commons.csv.CSVParserTest" time="0.002"/>
+  <testcase name="testForEach" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testGetOneLine" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testGetLineNumberWithCRLF" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testCarriageReturnLineFeedEndings" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testMongoDbCsv" classname="org.apache.commons.csv.CSVParserTest" time="0.0">
+    <skipped message="public void org.apache.commons.csv.CSVParserTest.testMongoDbCsv() throws java.lang.Exception is @Disabled"/>
+  </testcase>
+  <testcase name="testGetRecordNumberWithCRLF" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testParseUrlCharsetNullFormat" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testEmptyFile" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testGetHeaderNames" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testCarriageReturnEndings" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testParseWithQuoteThrowsException" classname="org.apache.commons.csv.CSVParserTest" time="0.002"/>
+  <testcase name="testGetLine" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testIgnoreCaseHeaderMapping" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testGetRecordPositionWithLF" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testGetOneLineOneParser" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testHeadersMissingException" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testBOMInputStreamParseWithReader" classname="org.apache.commons.csv.CSVParserTest" time="0.008"/>
+  <testcase name="testGetHeaderNamesReadOnly" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testCSV141CSVFormat_INFORMIX_UNLOAD" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testDuplicateHeadersAllowedByDefault" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testGetRecordsFromBrokenInputStream" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testProvidedHeader" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testBOMInputStreamParserWithInputStream" classname="org.apache.commons.csv.CSVParserTest" time="0.003"/>
+  <testcase name="testCSV141CSVFormat_ORACLE" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testIteratorSequenceBreaking" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testSkipHeaderOverrideDuplicateHeaders" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testRepeatedHeadersAreReturnedInCSVRecordHeaderNames" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testEmptyLineBehaviorCSV" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testParseNullUrlCharsetFormat" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testInvalidFormat" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testCSV141CSVFormat_POSTGRESQL_CSV" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testBackslashEscaping2" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testExcelFormat1" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testExcelFormat2" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testDuplicateHeadersNotAllowed" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testEmptyString" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testBOMInputStreamParserWithReader" classname="org.apache.commons.csv.CSVParserTest" time="0.002"/>
+  <testcase name="testRoundtrip" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testNoHeaderMap" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testParseFileNullFormat" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testParseWithQuoteWithEscape" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testGetTrailerComment_HeaderComment1" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testGetTrailerComment_HeaderComment2" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testGetTrailerComment_HeaderComment3" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testGetHeaderMap" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testBackslashEscaping" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testThrowExceptionWithLineAndPosition" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testLineFeedEndings" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testGetTrailerComment_HeaderTrailerComment1" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testGetTrailerComment_HeaderTrailerComment2" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testGetTrailerComment_HeaderTrailerComment3" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testParseNullPathFormat" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testMappedButNotSetAsOutlook2007ContactExport" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testSkipSetHeader" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testHeaderMissingWithNull" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testIgnoreEmptyLines" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testCSV235" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testEndOfFileBehaviorCSV" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testNewCSVParserNullReaderFormat" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testEmptyLineBehaviorExcel" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testParseStringNullFormat" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testHeader" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testGetRecords" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testHeadersMissing" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testCSV141RFC4180" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testFirstEndOfLineCr" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testFirstEndOfLineLf" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testEmptyFileHeaderParsing" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testStream" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testCSV141Excel" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testIterator" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testHeadersMissingOneColumnException" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testParseNullFileFormat" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testSkipAutoHeader" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testParsingPrintedEmptyFirstColumn(Predefined)[1]" classname="org.apache.commons.csv.CSVParserTest" time="0.005"/>
+  <testcase name="testParsingPrintedEmptyFirstColumn(Predefined)[2]" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testParsingPrintedEmptyFirstColumn(Predefined)[3]" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testParsingPrintedEmptyFirstColumn(Predefined)[4]" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testParsingPrintedEmptyFirstColumn(Predefined)[5]" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testParsingPrintedEmptyFirstColumn(Predefined)[6]" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testParsingPrintedEmptyFirstColumn(Predefined)[7]" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testParsingPrintedEmptyFirstColumn(Predefined)[8]" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testParsingPrintedEmptyFirstColumn(Predefined)[9]" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testParsingPrintedEmptyFirstColumn(Predefined)[10]" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testParsingPrintedEmptyFirstColumn(Predefined)[11]" classname="org.apache.commons.csv.CSVParserTest" time="0.0"/>
+  <testcase name="testParsingPrintedEmptyFirstColumn(Predefined)[12]" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+  <testcase name="testNewCSVParserReaderNullFormat" classname="org.apache.commons.csv.CSVParserTest" time="0.001"/>
+</testsuite>

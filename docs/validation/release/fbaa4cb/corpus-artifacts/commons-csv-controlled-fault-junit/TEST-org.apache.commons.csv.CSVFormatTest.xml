@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="org.apache.commons.csv.CSVFormatTest" time="0.067" tests="104" errors="0" skipped="0" failures="7">
+  <properties>
+    <property name="java.specification.version" value="17"/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="java.class.path" value="/tmp/patchprove-real-projects/commons-csv/target/test-classes:/tmp/patchprove-real-projects/commons-csv/target/classes:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter/5.11.0/junit-jupiter-5.11.0.jar:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter-api/5.11.0/junit-jupiter-api-5.11.0.jar:/tmp/patchprove-maven-repo/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/tmp/patchprove-maven-repo/org/junit/platform/junit-platform-commons/1.11.0/junit-platform-commons-1.11.0.jar:/tmp/patchprove-maven-repo/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter-params/5.11.0/junit-jupiter-params-5.11.0.jar:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter-engine/5.11.0/junit-jupiter-engine-5.11.0.jar:/tmp/patchprove-maven-repo/org/junit/platform/junit-platform-engine/1.11.0/junit-platform-engine-1.11.0.jar:/tmp/patchprove-maven-repo/org/hamcrest/hamcrest/3.0/hamcrest-3.0.jar:/tmp/patchprove-maven-repo/org/mockito/mockito-core/4.11.0/mockito-core-4.11.0.jar:/tmp/patchprove-maven-repo/net/bytebuddy/byte-buddy/1.12.19/byte-buddy-1.12.19.jar:/tmp/patchprove-maven-repo/net/bytebuddy/byte-buddy-agent/1.12.19/byte-buddy-agent-1.12.19.jar:/tmp/patchprove-maven-repo/org/objenesis/objenesis/3.3/objenesis-3.3.jar:/tmp/patchprove-maven-repo/commons-io/commons-io/2.17.0/commons-io-2.17.0.jar:/tmp/patchprove-maven-repo/commons-codec/commons-codec/1.17.1/commons-codec-1.17.1.jar:/tmp/patchprove-maven-repo/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar:/tmp/patchprove-maven-repo/com/h2database/h2/2.2.224/h2-2.2.224.jar:/tmp/patchprove-maven-repo/org/openjdk/jmh/jmh-core/1.37/jmh-core-1.37.jar:/tmp/patchprove-maven-repo/net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar:/tmp/patchprove-maven-repo/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar:"/>
+    <property name="java.vm.vendor" value="Eclipse Adoptium"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="java.vendor.url" value="https://adoptium.net/"/>
+    <property name="user.timezone" value="Etc/UTC"/>
+    <property name="os.name" value="Linux"/>
+    <property name="java.vm.specification.version" value="17"/>
+    <property name="rat.skip" value="true"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.boot.library.path" value="/tmp/patchprove-toolchains/jdk-17.0.13+11/lib"/>
+    <property name="sun.java.command" value="/tmp/patchprove-real-projects/commons-csv/target/surefire/surefirebooter-20261023060650205_3.jar /tmp/patchprove-real-projects/commons-csv/target/surefire 2026-10-23T06-06-50_157-jvmRun1 surefire-20261023060650205_1tmp surefire_0-20261023060650205_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="/tmp/patchprove-real-projects/commons-csv/target/test-classes:/tmp/patchprove-real-projects/commons-csv/target/classes:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter/5.11.0/junit-jupiter-5.11.0.jar:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter-api/5.11.0/junit-jupiter-api-5.11.0.jar:/tmp/patchprove-maven-repo/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/tmp/patchprove-maven-repo/org/junit/platform/junit-platform-commons/1.11.0/junit-platform-commons-1.11.0.jar:/tmp/patchprove-maven-repo/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter-params/5.11.0/junit-jupiter-params-5.11.0.jar:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter-engine/5.11.0/junit-jupiter-engine-5.11.0.jar:/tmp/patchprove-maven-repo/org/junit/platform/junit-platform-engine/1.11.0/junit-platform-engine-1.11.0.jar:/tmp/patchprove-maven-repo/org/hamcrest/hamcrest/3.0/hamcrest-3.0.jar:/tmp/patchprove-maven-repo/org/mockito/mockito-core/4.11.0/mockito-core-4.11.0.jar:/tmp/patchprove-maven-repo/net/bytebuddy/byte-buddy/1.12.19/byte-buddy-1.12.19.jar:/tmp/patchprove-maven-repo/net/bytebuddy/byte-buddy-agent/1.12.19/byte-buddy-agent-1.12.19.jar:/tmp/patchprove-maven-repo/org/objenesis/objenesis/3.3/objenesis-3.3.jar:/tmp/patchprove-maven-repo/commons-io/commons-io/2.17.0/commons-io-2.17.0.jar:/tmp/patchprove-maven-repo/commons-codec/commons-codec/1.17.1/commons-codec-1.17.1.jar:/tmp/patchprove-maven-repo/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar:/tmp/patchprove-maven-repo/com/h2database/h2/2.2.224/h2-2.2.224.jar:/tmp/patchprove-maven-repo/org/openjdk/jmh/jmh-core/1.37/jmh-core-1.37.jar:/tmp/patchprove-maven-repo/net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar:/tmp/patchprove-maven-repo/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar:"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="/home/agent"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2024-10-15"/>
+    <property name="java.home" value="/tmp/patchprove-toolchains/jdk-17.0.13+11"/>
+    <property name="jacoco.skip" value="true"/>
+    <property name="file.separator" value="/"/>
+    <property name="basedir" value="/tmp/patchprove-real-projects/commons-csv"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="checkstyle.skip" value="true"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="surefire.real.class.path" value="/tmp/patchprove-real-projects/commons-csv/target/surefire/surefirebooter-20261023060650205_3.jar"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="17.0.13+11"/>
+    <property name="user.name" value="agent"/>
+    <property name="path.separator" value=":"/>
+    <property name="os.version" value="6.18.55"/>
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
+    <property name="java.vendor.version" value="Temurin-17.0.13+11"/>
+    <property name="localRepository" value="/tmp/patchprove-maven-repo"/>
+    <property name="java.vendor.url.bug" value="https://github.com/adoptium/adoptium-support/issues"/>
+    <property name="java.io.tmpdir" value="/tmp"/>
+    <property name="java.version" value="17.0.13"/>
+    <property name="user.dir" value="/tmp/patchprove-real-projects/commons-csv"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="pmd.skip" value="true"/>
+    <property name="native.encoding" value="UTF-8"/>
+    <property name="spotbugs.skip" value="true"/>
+    <property name="java.library.path" value="/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib"/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="java.vendor" value="Eclipse Adoptium"/>
+    <property name="java.vm.version" value="17.0.13+11"/>
+    <property name="java.specification.maintenance.version" value="1"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="61.0"/>
+  </properties>
+  <testcase name="testEqualsIgnoreSurroundingSpaces" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testDelimiterSameAsEscapeThrowsException_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testPrintWithQuoteModeIsNONE" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testEqualsCommentStart" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testQuoteCharSameAsDelimiterThrowsException_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.003"/>
+  <testcase name="testJiraCsv236" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testEscapeSameAsCommentStartThrowsExceptionForWrapperType_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testWithDelimiter" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testEscapeSameAsCommentStartThrowsException_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testToStringAndWithCommentMarkerTakingCharacter" classname="org.apache.commons.csv.CSVFormatTest" time="0.007">
+    <failure message="expected: &lt;,&gt; but was: &lt;!&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: expected: <,> but was: <!>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:54)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:49)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1041)
+	at org.apache.commons.csv.CSVFormatTest.testToStringAndWithCommentMarkerTakingCharacter(CSVFormatTest.java:1053)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+]]></failure>
+  </testcase>
+  <testcase name="testQuotePolicyNoneWithoutEscapeThrowsException" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testWithQuoteLFThrowsException" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testWithFirstRecordAsHeader" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testEqualsNullString_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testJiraCsv236__Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testSerialization" classname="org.apache.commons.csv.CSVFormatTest" time="0.003"/>
+  <testcase name="testNullRecordSeparatorCsv106" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testGetDuplicateHeaderMode" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testEqualsQuoteChar" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testTrim" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testNullRecordSeparatorCsv106__Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testToString" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testWithEmptyDuplicates" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testWithHeaderComments" classname="org.apache.commons.csv.CSVFormatTest" time="0.001">
+    <failure message="expected: &lt;,&gt; but was: &lt;!&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: expected: <,> but was: <!>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:54)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:49)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1041)
+	at org.apache.commons.csv.CSVFormatTest.testWithHeaderComments(CSVFormatTest.java:1303)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+]]></failure>
+  </testcase>
+  <testcase name="testPrintRecord" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testGetAllowDuplicateHeaderNames" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testPrintRecordEmpty" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testEqualsQuoteChar_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testQuoteCharSameAsCommentStartThrowsException" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testWithRecordSeparatorCR" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testWithRecordSeparatorLF" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testDelimiterSameAsCommentStartThrowsException_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testPrintWithEscapesEndWithoutCRLF" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testWithEscapeCRThrowsExceptions" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testWithSystemRecordSeparator" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testWithIgnoreEmptyLines" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testEqualsNoQuotes" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testHashCodeAndWithIgnoreHeaderCase" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testDelimiterEmptyStringThrowsException1" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testDuplicateHeaderElementsTrue" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testEqualsSkipHeaderRecord_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testEqualsIgnoreSurroundingSpaces_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testEqualsEscape" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testEqualsHeader" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testEqualsIgnoreEmptyLines" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testDuplicateHeaderElementsTrueContainsEmpty1" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testDuplicateHeaderElementsTrueContainsEmpty2" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testDuplicateHeaderElementsTrueContainsEmpty3" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testEqualsHash" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testDuplicateHeaderElementsTrue_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testWithCommentStart" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testNewFormat" classname="org.apache.commons.csv.CSVFormatTest" time="0.001">
+    <failure message="expected: &lt;X&gt; but was: &lt;!&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: expected: <X> but was: <!>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:54)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:49)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1041)
+	at org.apache.commons.csv.CSVFormatTest.testNewFormat(CSVFormatTest.java:820)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+]]></failure>
+  </testcase>
+  <testcase name="testWithIgnoreSurround" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testRFC4180" classname="org.apache.commons.csv.CSVFormatTest" time="0.001">
+    <failure message="expected: &lt;,&gt; but was: &lt;!&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: expected: <,> but was: <!>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:54)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:49)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1041)
+	at org.apache.commons.csv.CSVFormatTest.testRFC4180(CSVFormatTest.java:1000)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+]]></failure>
+  </testcase>
+  <testcase name="testDelimiterSameAsRecordSeparatorThrowsException" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testEscapeSameAsCommentStartThrowsException" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testFormatThrowsNullPointerException" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testEqualsDelimiter" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testEqualsRecordSeparator_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testDelimiterSameAsCommentStartThrowsException1" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testWithHeaderResultSetNull" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testDuplicateHeaderElements_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testQuoteCharSameAsCommentStartThrowsExceptionForWrapperType" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testDelimiterSameAsEscapeThrowsException1" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testEqualsQuotePolicy_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testQuoteCharSameAsCommentStartThrowsException_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testEqualsNullString" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testEqualsHeader_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testEqualsCommentStart_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testWithQuotePolicy" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testDuplicateHeaderElementsFalse" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testEqualsQuotePolicy" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testEscapeSameAsCommentStartThrowsExceptionForWrapperType" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testEqualsNoQuotes_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testEqualsRecordSeparator" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testWithCommentStartCRThrowsException" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testQuoteModeNoneShouldReturnMeaningfulExceptionMessage" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testQuoteCharSameAsDelimiterThrowsException" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testPrintWithoutQuotes" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testWithDelimiterLFThrowsException" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testEqualsLeftNoQuoteRightQuote_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testWithEscape" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testWithHeader" classname="org.apache.commons.csv.CSVFormatTest" time="0.003"/>
+  <testcase name="testGetHeader" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testEqualsLeftNoQuoteRightQuote" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testFormatToString" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testWithQuoteChar" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testEquals" classname="org.apache.commons.csv.CSVFormatTest" time="0.001">
+    <failure message="expected: &lt;Delimiter=&lt;,&gt; QuoteChar=&lt;&quot;&gt; RecordSeparator=&lt;&#10;&gt; EmptyLines:ignored SkipHeaderRecord:false&gt; but was: &lt;Delimiter=&lt;!&gt; QuoteChar=&lt;&quot;&gt; RecordSeparator=&lt;&#10;&gt; EmptyLines:ignored SkipHeaderRecord:false&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: 
+expected: <Delimiter=<,> QuoteChar=<"> RecordSeparator=<
+> EmptyLines:ignored SkipHeaderRecord:false> but was: <Delimiter=<!> QuoteChar=<"> RecordSeparator=<
+> EmptyLines:ignored SkipHeaderRecord:false>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:182)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:177)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1145)
+	at org.apache.commons.csv.CSVFormatTest.testEquals(CSVFormatTest.java:178)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+]]></failure>
+  </testcase>
+  <testcase name="testWithEmptyEnum" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testFormat" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testWithRecordSeparatorCRLF" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testPrintWithEscapesEndWithCRLF" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testEqualsIgnoreEmptyLines_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testEqualsOne" classname="org.apache.commons.csv.CSVFormatTest" time="0.001">
+    <failure message="expected: &lt;|&gt; but was: &lt;!&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: expected: <|> but was: <!>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:54)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:49)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1041)
+	at org.apache.commons.csv.CSVFormatTest.testEqualsOne(CSVFormatTest.java:428)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+]]></failure>
+  </testcase>
+  <testcase name="testEqualsEscape_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testDuplicateHeaderElementsFalse_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testDuplicateHeaderElements" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testPrintWithQuotes" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testWithHeaderEnumNull" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testWithNullString" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testWithHeaderEnum" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testQuoteCharSameAsCommentStartThrowsExceptionForWrapperType_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.001"/>
+  <testcase name="testQuotePolicyNoneWithoutEscapeThrowsException_Deprecated" classname="org.apache.commons.csv.CSVFormatTest" time="0.0"/>
+  <testcase name="testEqualsWithNull" classname="org.apache.commons.csv.CSVFormatTest" time="0.001">
+    <failure message="expected: &lt;	&gt; but was: &lt;!&gt;" type="org.opentest4j.AssertionFailedError"><![CDATA[org.opentest4j.AssertionFailedError: expected: <	> but was: <!>
+	at org.junit.jupiter.api.AssertionFailureBuilder.build(AssertionFailureBuilder.java:151)
+	at org.junit.jupiter.api.AssertionFailureBuilder.buildAndThrow(AssertionFailureBuilder.java:132)
+	at org.junit.jupiter.api.AssertEquals.failNotEqual(AssertEquals.java:197)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:54)
+	at org.junit.jupiter.api.AssertEquals.assertEquals(AssertEquals.java:49)
+	at org.junit.jupiter.api.Assertions.assertEquals(Assertions.java:1041)
+	at org.apache.commons.csv.CSVFormatTest.testEqualsWithNull(CSVFormatTest.java:633)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:569)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+]]></failure>
+  </testcase>
+</testsuite>

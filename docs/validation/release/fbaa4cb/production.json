@@ -1,0 +1,3797 @@
+{
+  "identity": {
+    "sourceCommit": "6df6a2f8a547cb3010f9d08f3e739b3e2e75155b",
+    "sourceTree": "3f3939c0a7c77b06828874b6466d01ddf6bfcddf",
+    "workingTreeDirty": false,
+    "runtimeDigest": "22b315219c13ae0c25810318f12dd78a9158974c2f2ec3f7ec5957221f1f008e",
+    "inputs": [
+      {
+        "path": "dist/accept.js",
+        "sha256": "dd293f82097e2f8b0b925c3ef36fee436a421bb687192b35f45c89459ed0785e"
+      },
+      {
+        "path": "dist/adapters.js",
+        "sha256": "0c9d5ebdcfc9037f5670d77a9b452cdd038f74e01fbd7a642460953069d2b56b"
+      },
+      {
+        "path": "dist/artifacts.js",
+        "sha256": "605715c69bd8f441e1cc1143d67446c1cd5972534db6e06bed0fddb3f0878b5d"
+      },
+      {
+        "path": "dist/baseline.js",
+        "sha256": "bb149bb65fcaf51eb96a2dee77c39397bbd65314d4b27b4c43223d9c4ffc1ab4"
+      },
+      {
+        "path": "dist/cli.js",
+        "sha256": "07cb54278b7d360a9829c002ecdc24a5c55ab089b82f9a637c7c055972d33303"
+      },
+      {
+        "path": "dist/color.js",
+        "sha256": "24118e1a07940a736e75ad9f02f68abd15bf597912c8af3e8f6e7a4d308874a8"
+      },
+      {
+        "path": "dist/config.js",
+        "sha256": "e393096cea4cf64447d77a0ce6e9464f7fb63d4a0bb337d2296db2adc41159c0"
+      },
+      {
+        "path": "dist/coverage.js",
+        "sha256": "dace1e04073cbccf2f43a96eeb514172d94c49686bf6172a9ea6e4015a0e5915"
+      },
+      {
+        "path": "dist/decision.js",
+        "sha256": "441fbe289389f859a07ec6d2b3ecd77a9be200dfd30c6b7769dccf88b66f84bf"
+      },
+      {
+        "path": "dist/detect.js",
+        "sha256": "87f3644991d5295e9e7b1008fa96a80ed0bbec1a51ffeef546d9d730dfc65263"
+      },
+      {
+        "path": "dist/evidence.js",
+        "sha256": "441d15f89dc9b2f3040c64ecec30866dad9158719ff610b699152114ebeed7e0"
+      },
+      {
+        "path": "dist/exec.js",
+        "sha256": "b05bbac6823f4625d2770f0c8b4ea5993749de23e0c5b8bb1bbef1f8a8dfb0d4"
+      },
+      {
+        "path": "dist/execution-units.js",
+        "sha256": "04bd215ebfc3f90186b0d56a8df91854b6943ae590b6e6f737cffcf63623ead6"
+      },
+      {
+        "path": "dist/fingerprint.js",
+        "sha256": "249c311a10fa4cf7020bd1b213575e74dcf6675d62375db9275d96fa5bb23251"
+      },
+      {
+        "path": "dist/gates.js",
+        "sha256": "0f677d17812e01928dcc6decc7c3b279abf558bd47efa6b56b388d5c47272091"
+      },
+      {
+        "path": "dist/generated/evidence.js",
+        "sha256": "e46f613296e2f5b760d98a08df0a42e1ff15053f4f3ddbbf7690856f6ea18219"
+      },
+      {
+        "path": "dist/generated/receipt.js",
+        "sha256": "4204767d5b5af9582521d443bbf60b1ab5e70611440a88d20d4eb69e55905d8e"
+      },
+      {
+        "path": "dist/git.js",
+        "sha256": "0927b076a06f43095bfd557a355c8245d7c70df4f7b53755f8546177805cea61"
+      },
+      {
+        "path": "dist/glob.js",
+        "sha256": "18290d8b8c589154080b12de80762e4976787ac4b3d03dd85d3d9312c2f8989a"
+      },
+      {
+        "path": "dist/graph.js",
+        "sha256": "e3cdca1505e407fde6927ce3698162f0fd305f8c35938d641dc1681b0503762e"
+      },
+      {
+        "path": "dist/hook-worker.js",
+        "sha256": "ae0394a3f546bd224f873cd664533b61b5fe3dddaf21d6d3b35b4a97ec57be41"
+      },
+      {
+        "path": "dist/hook.js",
+        "sha256": "9b33b870a8514d2f68dbaf596b031b62fbe8c58d6fb7a8f1b7d28cd4d26f7f98"
+      },
+      {
+        "path": "dist/index.js",
+        "sha256": "00f909b368a7e8f79afb647e328bfca7f8d38c45e39c6f951e88f2097ee04b32"
+      },
+      {
+        "path": "dist/init-agent.js",
+        "sha256": "dcca6f676e4f599a32b3b3a41c87423e0af94ec01e947ed48e979614dd871d70"
+      },
+      {
+        "path": "dist/input-budget.js",
+        "sha256": "51821e7ce4fa067179c2c4c53039d81a8e63fac6caf2a225ab1950b315542732"
+      },
+      {
+        "path": "dist/mapping.js",
+        "sha256": "acf0cc6c0ce4967fc3f46ba8b4812ce1c8abf2da442a2e559b892f1780097a9b"
+      },
+      {
+        "path": "dist/mcp-tools.js",
+        "sha256": "58e427332e8ba23665768ac47e44ec8ceef442ecb1aaedb1be4b0c8b76ad7922"
+      },
+      {
+        "path": "dist/mcp.js",
+        "sha256": "318c756983ecb04f0c431691569d5d11d356adbdaaa1ff3da9be987518968efc"
+      },
+      {
+        "path": "dist/paths.js",
+        "sha256": "240c6257e44dcb69c60ff5a1ed7a6ace7c9e903c25abd95b210aed9e32b69a1f"
+      },
+      {
+        "path": "dist/pkg.js",
+        "sha256": "f47d7845861818ae119865533b450243bda30e699e2037ce46d00b03ebee526d"
+      },
+      {
+        "path": "dist/plugins/builtin.js",
+        "sha256": "53899248fbe8832ce6768ae3d295be52a0aa946fddfd90443bb3716df97faba7"
+      },
+      {
+        "path": "dist/plugins/context.js",
+        "sha256": "961c64f5e550f0b00867453154b32f5f70d22a7b2cbe44fa164af8e893dfc69b"
+      },
+      {
+        "path": "dist/plugins/go.js",
+        "sha256": "b943c7a72427c0a9b39c73d444ee317ba58398a43a354d2eca2580eb6d751fd6"
+      },
+      {
+        "path": "dist/plugins/index.js",
+        "sha256": "7786fd3643f10d2546a361c318488f17991d8549beb63364939844c403085bca"
+      },
+      {
+        "path": "dist/plugins/java.js",
+        "sha256": "18a17286e8aadd6ca3eba79abd4aba61edf47665833e5fbdc0b1e6c8087f4abe"
+      },
+      {
+        "path": "dist/plugins/js.js",
+        "sha256": "70c7d2e7fdffe8fe542f839ed24ca895f73a3ec0f0d5b94e5fb546ae2a413e0e"
+      },
+      {
+        "path": "dist/plugins/load.js",
+        "sha256": "702f3bb4bc6c0b40b09992ed5ce03a9e31bc1f9dd12c99bc51d4b8050320be85"
+      },
+      {
+        "path": "dist/plugins/python.js",
+        "sha256": "0f3033663a29c68b6f5d1870f361ad8e487bae9b6e449efc4903def566c9034d"
+      },
+      {
+        "path": "dist/plugins/rust.js",
+        "sha256": "9d19a10bbf1515f503ac59790d17787c5dbdc40a1f46cdd2762959b812780961"
+      },
+      {
+        "path": "dist/plugins/types.js",
+        "sha256": "3661f77de6003453ba95ed741ffb4cc1683d26f2c590e5883d07e26d5c98b532"
+      },
+      {
+        "path": "dist/receipt.js",
+        "sha256": "b3c7659779d04bdacae0b06fc9c5a6e4ab497385d3570d33993121ba254fb653"
+      },
+      {
+        "path": "dist/report.js",
+        "sha256": "908fe33149086f7453f64e29b46f91f29ff2c6070279991174dc305b6b03192f"
+      },
+      {
+        "path": "dist/risk.js",
+        "sha256": "7fb6fb0cd7f30d54f2c469ece8588be073cfedd3969a294ebf7d37e2133d65f9"
+      },
+      {
+        "path": "dist/run.js",
+        "sha256": "8b33441716ddd30dac842ddd6950aece76ce7370109048388ffda09ead7a1e45"
+      },
+      {
+        "path": "dist/sarif.js",
+        "sha256": "c0410e6258d3121caeb5d6cd8b37ace5abe47a72c041772f3b133b34bb12d5a5"
+      },
+      {
+        "path": "dist/secrets.js",
+        "sha256": "8034a617292aff24858ed3603a11d9fa9c318510e8b828cb15b8f092c3febec1"
+      },
+      {
+        "path": "dist/snapshot.js",
+        "sha256": "8a76e466cc306908ffc8a76839ccd97a11046081dcf8101c1e668f4905342a41"
+      },
+      {
+        "path": "dist/spec.js",
+        "sha256": "03263f3c025afa878ca1f128cf24abc3ae31b201ad243a4e863fb82791501cf8"
+      },
+      {
+        "path": "dist/test-results.js",
+        "sha256": "00bab8837b3c089b0f9580993f96f29245642fbb31590c59f0b1f3e8d6803e10"
+      },
+      {
+        "path": "dist/types.js",
+        "sha256": "c082345dde23b1358f1028c100a89a83d3e90d3f1d48f1b8fddddcdcf7b7f064"
+      },
+      {
+        "path": "dist/validation.js",
+        "sha256": "e76b9d7be32dfd0e52aebaea790c6a2eefcb773e44e4c00957f9ff591e83d3be"
+      },
+      {
+        "path": "package-lock.json",
+        "sha256": "9a26dc501c1b1ef623b5cdca83a05927aa786978547780ef04dbf146473994fb"
+      },
+      {
+        "path": "package.json",
+        "sha256": "aff0fe700422b687cde1426f56fb4c445fcca9025b6a2fb6d54c4bc27851d589"
+      },
+      {
+        "path": "schema/adapter.schema.json",
+        "sha256": "541fa8af2f1ed4911a667cc1a327630bcb293605e2ab02b90bb2815ccce2c103"
+      },
+      {
+        "path": "schema/evidence.schema.json",
+        "sha256": "5da3d8468802141051f5d6e050edee9a3b97988dc2dbf2a944cde4d4adcb4bf4"
+      },
+      {
+        "path": "schema/receipt.schema.json",
+        "sha256": "29e3894ae3d2d3472cea497d8f28dfdd649922a7358be029e49eca69c6bd6583"
+      },
+      {
+        "path": "schema/spec.schema.json",
+        "sha256": "beb06ddaa11be09d6cea3ce1a7fc39b8d67ffce5e36aa396339a6ba55d23a48f"
+      }
+    ],
+    "script": "scripts/test-production.mjs",
+    "scriptSha256": "fb56587ce7ca778763d7cbb6368a98232f2c287d8496bf7c4a5359cb3347e293"
+  },
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-23T06:09:55.371Z",
+  "node": "v24.19.0",
+  "platform": "linux",
+  "cliSha256": "07cb54278b7d360a9829c002ecdc24a5c55ab089b82f9a637c7c055972d33303",
+  "cases": [
+    {
+      "id": "node-success",
+      "status": "passed",
+      "cli": {
+        "exitCode": 0,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-CXPSCQ",
+          "--out",
+          "/tmp/patchprove-installed-result-2Z6PQj/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "db96ac2550acc2b5c61478415d12c7bd239f7afa1c42ca6e7264d399f77ac53d",
+        "durationMs": 1071
+      },
+      "verification": {
+        "status": "passed",
+        "strict": true,
+        "reasons": []
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "vitest",
+            "version": "vitest/4.1.12",
+            "path": "/workspace/patchprove/node_modules/vitest/vitest.mjs"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "package.json",
+            "hash": "0919f16391045ef9f190c51f487e8a3a0c094930e2c43b76a193bb20e4ccf182"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (vitest)",
+        "status": "passed",
+        "reason": "ok",
+        "command": "/tmp/patchprove-installed-测试 space-CXPSCQ/node_modules/.bin/vitest run src/value.test.js --reporter=json --outputFile /tmp/patchprove-test-report-ARoe26/results.json",
+        "exitCode": 0,
+        "durationMs": 416,
+        "detail": "JSON report written to /tmp/patchprove-test-report-ARoe26/results.json",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:javascript",
+            "checkId": "tests",
+            "scope": [
+              "src/value.test.js"
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-installed-测试 space-CXPSCQ/node_modules/.bin/vitest",
+            "args": [
+              "run",
+              "src/value.test.js",
+              "--reporter=json",
+              "--outputFile",
+              "/tmp/patchprove-test-report-ARoe26/results.json"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-CXPSCQ",
+            "exitCode": 0,
+            "durationMs": 416,
+            "reason": "ok",
+            "toolVersion": "vitest/4.1.12",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "67d7b0c56f51651bf6be060a672f092e3a1e2096abe0cd3614f5acdf7a509153",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "vitest-json",
+              "reportStatus": "validated",
+              "granularity": "file",
+              "requestedScope": [
+                "src/value.test.js"
+              ],
+              "collectedScope": [
+                "src/value.test.js"
+              ],
+              "executedScope": [
+                "src/value.test.js"
+              ],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 1,
+                "executed": 1,
+                "passed": 1,
+                "failed": 0,
+                "skipped": 0
+              },
+              "reportHash": "949fa7873e573996ea98569ae0cd2a601f34eecb1b23a79761808fc125949c0f",
+              "reportPath": "/tmp/patchprove-test-report-ARoe26/results.json",
+              "sourceFiles": [
+                "src/value.test.js"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "node-failure",
+      "status": "passed",
+      "cli": {
+        "exitCode": 1,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-vXJKgr",
+          "--out",
+          "/tmp/patchprove-installed-result-OmZSg4/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "58e57f5f6245539f80667fe02e64e44885e815a3f88ce196ac72cbdb2a58346e",
+        "durationMs": 1110
+      },
+      "verification": {
+        "status": "failed",
+        "strict": true,
+        "reasons": [
+          {
+            "code": "check-failed",
+            "message": "affected tests (vitest) failed",
+            "checkId": "tests"
+          },
+          {
+            "code": "execution-failed",
+            "message": "Execution tests:javascript did not succeed",
+            "checkId": "tests",
+            "scope": [
+              "src/value.test.js"
+            ]
+          },
+          {
+            "code": "planned-scope-unverified",
+            "message": "Planned tests scope has no successful execution",
+            "checkId": "tests",
+            "scope": [
+              "src/value.test.js"
+            ]
+          }
+        ]
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "vitest",
+            "version": "vitest/4.1.12",
+            "path": "/workspace/patchprove/node_modules/vitest/vitest.mjs"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "package.json",
+            "hash": "0919f16391045ef9f190c51f487e8a3a0c094930e2c43b76a193bb20e4ccf182"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (vitest)",
+        "status": "failed",
+        "reason": "exit 1",
+        "command": "/tmp/patchprove-installed-测试 space-vXJKgr/node_modules/.bin/vitest run src/value.test.js --reporter=json --outputFile /tmp/patchprove-test-report-VtgNx1/results.json",
+        "exitCode": 1,
+        "durationMs": 456,
+        "detail": "JSON report written to /tmp/patchprove-test-report-VtgNx1/results.json",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:javascript",
+            "checkId": "tests",
+            "scope": [
+              "src/value.test.js"
+            ],
+            "status": "failed",
+            "command": "/tmp/patchprove-installed-测试 space-vXJKgr/node_modules/.bin/vitest",
+            "args": [
+              "run",
+              "src/value.test.js",
+              "--reporter=json",
+              "--outputFile",
+              "/tmp/patchprove-test-report-VtgNx1/results.json"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-vXJKgr",
+            "exitCode": 1,
+            "durationMs": 456,
+            "reason": "exit 1",
+            "toolVersion": "vitest/4.1.12",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "fb27ff557d4f1389e563954751348b4f99bdb04bcb394241e963315bd5a6b9f6",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "vitest-json",
+              "reportStatus": "validated",
+              "granularity": "file",
+              "requestedScope": [
+                "src/value.test.js"
+              ],
+              "collectedScope": [
+                "src/value.test.js"
+              ],
+              "executedScope": [
+                "src/value.test.js"
+              ],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 1,
+                "executed": 1,
+                "passed": 0,
+                "failed": 1,
+                "skipped": 0
+              },
+              "reportHash": "10937a5a7e09df50b1aff1763d9a3d2c75275aef125e4ad0f0aed1cb29aa042a",
+              "reportPath": "/tmp/patchprove-test-report-VtgNx1/results.json",
+              "sourceFiles": [
+                "src/value.test.js"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "node-zero",
+      "status": "passed",
+      "cli": {
+        "exitCode": 1,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-zCCkl8",
+          "--out",
+          "/tmp/patchprove-installed-result-eeK6Sb/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "0726827f4fc38a72ed07e179283423d118b3534bafd8d8b5d8d5e33b008e67de",
+        "durationMs": 1154
+      },
+      "verification": {
+        "status": "failed",
+        "strict": true,
+        "reasons": [
+          {
+            "code": "check-failed",
+            "message": "affected tests (vitest) failed",
+            "checkId": "tests"
+          },
+          {
+            "code": "execution-failed",
+            "message": "Execution tests:javascript did not succeed",
+            "checkId": "tests",
+            "scope": []
+          },
+          {
+            "code": "zero-tests-collected",
+            "message": "Execution tests:javascript collected no tests",
+            "checkId": "tests",
+            "scope": []
+          },
+          {
+            "code": "test-scope-unknown",
+            "message": "Execution tests:javascript could not establish every selected scope",
+            "checkId": "tests",
+            "scope": [
+              "src/value.test.js"
+            ]
+          },
+          {
+            "code": "planned-scope-unverified",
+            "message": "Planned tests scope has no successful execution",
+            "checkId": "tests",
+            "scope": [
+              "src/value.test.js"
+            ]
+          }
+        ]
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "vitest",
+            "version": "vitest/4.1.12",
+            "path": "/workspace/patchprove/node_modules/vitest/vitest.mjs"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "package.json",
+            "hash": "0919f16391045ef9f190c51f487e8a3a0c094930e2c43b76a193bb20e4ccf182"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (vitest)",
+        "status": "failed",
+        "reason": "Test runner collected zero tests",
+        "command": "/tmp/patchprove-installed-测试 space-zCCkl8/node_modules/.bin/vitest run src/value.test.js --reporter=json --outputFile /tmp/patchprove-test-report-8Tt2qd/results.json",
+        "exitCode": 1,
+        "durationMs": 431,
+        "detail": "JSON report written to /tmp/patchprove-test-report-8Tt2qd/results.json",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:javascript",
+            "checkId": "tests",
+            "scope": [],
+            "status": "failed",
+            "command": "/tmp/patchprove-installed-测试 space-zCCkl8/node_modules/.bin/vitest",
+            "args": [
+              "run",
+              "src/value.test.js",
+              "--reporter=json",
+              "--outputFile",
+              "/tmp/patchprove-test-report-8Tt2qd/results.json"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-zCCkl8",
+            "exitCode": 1,
+            "durationMs": 431,
+            "reason": "Test runner collected zero tests",
+            "toolVersion": "vitest/4.1.12",
+            "collectedTests": 0,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "a2f5af56dd24ab4f00b1cf584409dbf76fc536146a5274d2be5266639399743e",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "vitest-json",
+              "reportStatus": "validated",
+              "granularity": "file",
+              "requestedScope": [
+                "src/value.test.js"
+              ],
+              "collectedScope": [],
+              "executedScope": [],
+              "skippedScope": [],
+              "unknownScope": [
+                "src/value.test.js"
+              ],
+              "counts": {
+                "collected": 0,
+                "executed": 0,
+                "passed": 0,
+                "failed": 0,
+                "skipped": 0
+              },
+              "reportHash": "c96bd7adb9d5bfd6d782d665fb4f10517cefeb470f4ffe425498e285a42d9117",
+              "reportPath": "/tmp/patchprove-test-report-8Tt2qd/results.json",
+              "sourceFiles": [
+                "src/value.test.js"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "node-multimodule",
+      "status": "passed",
+      "cli": {
+        "exitCode": 0,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-CuP4WV",
+          "--out",
+          "/tmp/patchprove-installed-result-z3s1ib/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "6a0ebd7cab512dc5ff80dfdc94807ba8efd8c8d15a25cf9df9b7e97d26fdf412",
+        "durationMs": 1165
+      },
+      "verification": {
+        "status": "passed",
+        "strict": true,
+        "reasons": []
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "vitest",
+            "version": "vitest/4.1.12",
+            "path": "/workspace/patchprove/node_modules/vitest/vitest.mjs"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "package.json",
+            "hash": "0919f16391045ef9f190c51f487e8a3a0c094930e2c43b76a193bb20e4ccf182"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (vitest)",
+        "status": "passed",
+        "reason": "ok",
+        "command": "/tmp/patchprove-installed-测试 space-CuP4WV/node_modules/.bin/vitest run alpha/src/value.test.js beta/src/value.test.js --reporter=json --outputFile /tmp/patchprove-test-report-mfOLig/results.json",
+        "exitCode": 0,
+        "durationMs": 461,
+        "detail": "JSON report written to /tmp/patchprove-test-report-mfOLig/results.json",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:javascript",
+            "checkId": "tests",
+            "scope": [
+              "alpha/src/value.test.js",
+              "beta/src/value.test.js"
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-installed-测试 space-CuP4WV/node_modules/.bin/vitest",
+            "args": [
+              "run",
+              "alpha/src/value.test.js",
+              "beta/src/value.test.js",
+              "--reporter=json",
+              "--outputFile",
+              "/tmp/patchprove-test-report-mfOLig/results.json"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-CuP4WV",
+            "exitCode": 0,
+            "durationMs": 461,
+            "reason": "ok",
+            "toolVersion": "vitest/4.1.12",
+            "collectedTests": 2,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "7a4ee23c365d8f11ff4258ad178f59321bb1353394cffec9b3f0d1e15a93aa1d",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "vitest-json",
+              "reportStatus": "validated",
+              "granularity": "file",
+              "requestedScope": [
+                "alpha/src/value.test.js",
+                "beta/src/value.test.js"
+              ],
+              "collectedScope": [
+                "alpha/src/value.test.js",
+                "beta/src/value.test.js"
+              ],
+              "executedScope": [
+                "alpha/src/value.test.js",
+                "beta/src/value.test.js"
+              ],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 2,
+                "executed": 2,
+                "passed": 2,
+                "failed": 0,
+                "skipped": 0
+              },
+              "reportHash": "fd79e1bcb6a31da67b9d4427138a71f89eb258c23021c4d936f1a4b7de0de4ca",
+              "reportPath": "/tmp/patchprove-test-report-mfOLig/results.json",
+              "sourceFiles": [
+                "alpha/src/value.test.js",
+                "beta/src/value.test.js"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "python-success",
+      "status": "passed",
+      "cli": {
+        "exitCode": 0,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-KpSs0B",
+          "--out",
+          "/tmp/patchprove-installed-result-RMGij1/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "5032a47f8fab755b0f5449c99ae01b09115de689c3c220b49985c213aa66849e",
+        "durationMs": 1339
+      },
+      "verification": {
+        "status": "passed",
+        "strict": true,
+        "reasons": []
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "pytest",
+            "version": "pytest 8.3.5",
+            "path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "pyproject.toml",
+            "hash": "16713d02c4751fb02221a274d20fe9f3be7ffaffd1a3031af82cd37f3a6456f3"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (pytest)",
+        "status": "passed",
+        "reason": "ok",
+        "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m pytest test_value.py --junitxml=/tmp/patchprove-test-report-6bNKvr/results.xml -o junit_family=xunit1",
+        "exitCode": 0,
+        "durationMs": 355,
+        "detail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.14, pytest-8.3.5, pluggy-1.7.0\nrootdir: /tmp/patchprove-installed-测试 space-KpSs0B\nconfigfile: pyproject.toml\nplugins: anyio-4.14.2\ncollected 1 item\n\ntest_value.py .                                                          [100%]\n\n------ generated xml file: /tmp/patchprove-test-report-6bNKvr/results.xml ------\n============================== 1 passed in 0.01s ===============================",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:python",
+            "checkId": "tests",
+            "scope": [
+              "test_value.py"
+            ],
+            "status": "passed",
+            "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+            "args": [
+              "-m",
+              "pytest",
+              "test_value.py",
+              "--junitxml=/tmp/patchprove-test-report-6bNKvr/results.xml",
+              "-o",
+              "junit_family=xunit1"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-KpSs0B",
+            "exitCode": 0,
+            "durationMs": 355,
+            "reason": "ok",
+            "toolVersion": "pytest 8.3.5",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "93fe1eaee27f6424905fc5799425e8520fdb61485d2e15ca4a6e88bd40ffc545",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "pytest-junit",
+              "reportStatus": "validated",
+              "granularity": "file",
+              "requestedScope": [
+                "test_value.py"
+              ],
+              "collectedScope": [
+                "test_value.py"
+              ],
+              "executedScope": [
+                "test_value.py"
+              ],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 1,
+                "executed": 1,
+                "passed": 1,
+                "failed": 0,
+                "skipped": 0
+              },
+              "reportHash": "12f4f713b611e7b46a954d767da5d059b19a1b444594485d1994d8e90908e930",
+              "reportPath": "/tmp/patchprove-test-report-6bNKvr/results.xml",
+              "sourceFiles": [
+                "test_value.py"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "python-failure",
+      "status": "passed",
+      "cli": {
+        "exitCode": 1,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-nEili6",
+          "--out",
+          "/tmp/patchprove-installed-result-9vb4ab/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "0eb3e7f6d62df95978269a61ac4c55ffce3138970cb16e085e242725b3cf0827",
+        "durationMs": 1375
+      },
+      "verification": {
+        "status": "failed",
+        "strict": true,
+        "reasons": [
+          {
+            "code": "check-failed",
+            "message": "affected tests (pytest) failed",
+            "checkId": "tests"
+          },
+          {
+            "code": "execution-failed",
+            "message": "Execution tests:python did not succeed",
+            "checkId": "tests",
+            "scope": [
+              "test_value.py"
+            ]
+          },
+          {
+            "code": "planned-scope-unverified",
+            "message": "Planned tests scope has no successful execution",
+            "checkId": "tests",
+            "scope": [
+              "test_value.py"
+            ]
+          }
+        ]
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "pytest",
+            "version": "pytest 8.3.5",
+            "path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "pyproject.toml",
+            "hash": "16713d02c4751fb02221a274d20fe9f3be7ffaffd1a3031af82cd37f3a6456f3"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (pytest)",
+        "status": "failed",
+        "reason": "exit 1",
+        "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m pytest test_value.py --junitxml=/tmp/patchprove-test-report-X0CmhC/results.xml -o junit_family=xunit1",
+        "exitCode": 1,
+        "durationMs": 424,
+        "detail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.14, pytest-8.3.5, pluggy-1.7.0\nrootdir: /tmp/patchprove-installed-测试 space-nEili6\nconfigfile: pyproject.toml\nplugins: anyio-4.14.2\ncollected 1 item\n\ntest_value.py F                                                          [100%]\n\n=================================== FAILURES ===================================\n__________________________________ test_value __________________________________\n\n    def test_value():\n>       assert value() == 3\nE       assert 2 == 3\nE        +  where 2 = value()\n\ntest_value.py:4: AssertionError\n------ generated xml file: /tmp/patchprove-test-report-X0CmhC/results.xml ------\n=========================== short test summary info ============================\nFAILED test_value.py::test_value - assert 2 == 3\n============================== 1 failed in 0.02s ===============================",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:python",
+            "checkId": "tests",
+            "scope": [
+              "test_value.py"
+            ],
+            "status": "failed",
+            "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+            "args": [
+              "-m",
+              "pytest",
+              "test_value.py",
+              "--junitxml=/tmp/patchprove-test-report-X0CmhC/results.xml",
+              "-o",
+              "junit_family=xunit1"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-nEili6",
+            "exitCode": 1,
+            "durationMs": 424,
+            "reason": "exit 1",
+            "toolVersion": "pytest 8.3.5",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "e13af0672bb423a99a16777a985f02bb8ff5a15104b3e15ca055e87d9509876e",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "pytest-junit",
+              "reportStatus": "validated",
+              "granularity": "file",
+              "requestedScope": [
+                "test_value.py"
+              ],
+              "collectedScope": [
+                "test_value.py"
+              ],
+              "executedScope": [
+                "test_value.py"
+              ],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 1,
+                "executed": 1,
+                "passed": 0,
+                "failed": 1,
+                "skipped": 0
+              },
+              "reportHash": "b6a6f956962badb34c5b230becb2b02d1fd82cbc15953959ceae9439c42c3799",
+              "reportPath": "/tmp/patchprove-test-report-X0CmhC/results.xml",
+              "sourceFiles": [
+                "test_value.py"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "python-zero",
+      "status": "passed",
+      "cli": {
+        "exitCode": 1,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-LlxCOV",
+          "--out",
+          "/tmp/patchprove-installed-result-gotTxJ/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "f033debe7128dac695d3948920cb537442b902ea6f5c285c4d3d9ad7fa402e74",
+        "durationMs": 1429
+      },
+      "verification": {
+        "status": "failed",
+        "strict": true,
+        "reasons": [
+          {
+            "code": "check-failed",
+            "message": "affected tests (pytest) failed",
+            "checkId": "tests"
+          },
+          {
+            "code": "execution-failed",
+            "message": "Execution tests:python did not succeed",
+            "checkId": "tests",
+            "scope": []
+          },
+          {
+            "code": "zero-tests-collected",
+            "message": "Execution tests:python collected no tests",
+            "checkId": "tests",
+            "scope": []
+          },
+          {
+            "code": "test-scope-unknown",
+            "message": "Execution tests:python could not establish every selected scope",
+            "checkId": "tests",
+            "scope": [
+              "test_value.py"
+            ]
+          },
+          {
+            "code": "planned-scope-unverified",
+            "message": "Planned tests scope has no successful execution",
+            "checkId": "tests",
+            "scope": [
+              "test_value.py"
+            ]
+          }
+        ]
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "pytest",
+            "version": "pytest 8.3.5",
+            "path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "pyproject.toml",
+            "hash": "16713d02c4751fb02221a274d20fe9f3be7ffaffd1a3031af82cd37f3a6456f3"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (pytest)",
+        "status": "failed",
+        "reason": "Test runner collected zero tests",
+        "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m pytest test_value.py --junitxml=/tmp/patchprove-test-report-If87cn/results.xml -o junit_family=xunit1",
+        "exitCode": 5,
+        "durationMs": 329,
+        "detail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.14, pytest-8.3.5, pluggy-1.7.0\nrootdir: /tmp/patchprove-installed-测试 space-LlxCOV\nconfigfile: pyproject.toml\nplugins: anyio-4.14.2\ncollected 0 items\n\n------ generated xml file: /tmp/patchprove-test-report-If87cn/results.xml ------\n============================ no tests ran in 0.00s =============================",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:python",
+            "checkId": "tests",
+            "scope": [],
+            "status": "failed",
+            "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+            "args": [
+              "-m",
+              "pytest",
+              "test_value.py",
+              "--junitxml=/tmp/patchprove-test-report-If87cn/results.xml",
+              "-o",
+              "junit_family=xunit1"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-LlxCOV",
+            "exitCode": 5,
+            "durationMs": 329,
+            "reason": "Test runner collected zero tests",
+            "toolVersion": "pytest 8.3.5",
+            "collectedTests": 0,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "5781d0075d6c35fd87efc05a17389ba193febf0e58dffaaa6e22faae50832398",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "pytest-junit",
+              "reportStatus": "validated",
+              "granularity": "file",
+              "requestedScope": [
+                "test_value.py"
+              ],
+              "collectedScope": [],
+              "executedScope": [],
+              "skippedScope": [],
+              "unknownScope": [
+                "test_value.py"
+              ],
+              "counts": {
+                "collected": 0,
+                "executed": 0,
+                "passed": 0,
+                "failed": 0,
+                "skipped": 0
+              },
+              "reportHash": "5626a3277108b8bde64dc9e1fd75e0868e03b623fad658ae644115a865f4b357",
+              "reportPath": "/tmp/patchprove-test-report-If87cn/results.xml",
+              "sourceFiles": [
+                "test_value.py"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "python-multimodule",
+      "status": "passed",
+      "cli": {
+        "exitCode": 0,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-hxmY3A",
+          "--out",
+          "/tmp/patchprove-installed-result-48UeUx/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "dc428e2797ffa550647602956a4280ce3970419e12eb4f270250501cabb39468",
+        "durationMs": 1456
+      },
+      "verification": {
+        "status": "passed",
+        "strict": true,
+        "reasons": []
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "pytest",
+            "version": "pytest 8.3.5",
+            "path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "pyproject.toml",
+            "hash": "16713d02c4751fb02221a274d20fe9f3be7ffaffd1a3031af82cd37f3a6456f3"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (pytest)",
+        "status": "passed",
+        "reason": "ok",
+        "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3 -m pytest alpha/test_value.py beta/test_value.py --junitxml=/tmp/patchprove-test-report-uLkRPL/results.xml -o junit_family=xunit1",
+        "exitCode": 0,
+        "durationMs": 390,
+        "detail": "============================= test session starts ==============================\nplatform linux -- Python 3.12.14, pytest-8.3.5, pluggy-1.7.0\nrootdir: /tmp/patchprove-installed-测试 space-hxmY3A\nconfigfile: pyproject.toml\nplugins: anyio-4.14.2\ncollected 2 items\n\nalpha/test_value.py .                                                    [ 50%]\nbeta/test_value.py .                                                     [100%]\n\n------ generated xml file: /tmp/patchprove-test-report-uLkRPL/results.xml ------\n============================== 2 passed in 0.01s ===============================",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:python",
+            "checkId": "tests",
+            "scope": [
+              "alpha/test_value.py",
+              "beta/test_value.py"
+            ],
+            "status": "passed",
+            "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3",
+            "args": [
+              "-m",
+              "pytest",
+              "alpha/test_value.py",
+              "beta/test_value.py",
+              "--junitxml=/tmp/patchprove-test-report-uLkRPL/results.xml",
+              "-o",
+              "junit_family=xunit1"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-hxmY3A",
+            "exitCode": 0,
+            "durationMs": 390,
+            "reason": "ok",
+            "toolVersion": "pytest 8.3.5",
+            "collectedTests": 2,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "98b988d5998d7de4a5a77d80355c314ba563febfb29a710ac7cd15220b201ad8",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "pytest-junit",
+              "reportStatus": "validated",
+              "granularity": "file",
+              "requestedScope": [
+                "alpha/test_value.py",
+                "beta/test_value.py"
+              ],
+              "collectedScope": [
+                "alpha/test_value.py",
+                "beta/test_value.py"
+              ],
+              "executedScope": [
+                "alpha/test_value.py",
+                "beta/test_value.py"
+              ],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 2,
+                "executed": 2,
+                "passed": 2,
+                "failed": 0,
+                "skipped": 0
+              },
+              "reportHash": "02fc2535463d4528777b5b3a825c1c03e3acf386a7912759e0ad761ed439aa21",
+              "reportPath": "/tmp/patchprove-test-report-uLkRPL/results.xml",
+              "sourceFiles": [
+                "alpha/test_value.py",
+                "beta/test_value.py"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "go-success",
+      "status": "passed",
+      "cli": {
+        "exitCode": 0,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-8Y2wD7",
+          "--out",
+          "/tmp/patchprove-installed-result-vfr7sr/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "0b93132b83533e365f3e3edd3a74dadc3326817e6a09c4462a9cef7c80b08f87",
+        "durationMs": 943
+      },
+      "verification": {
+        "status": "passed",
+        "strict": true,
+        "reasons": []
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "go",
+            "version": "go version go1.23.6",
+            "path": "/tmp/patchprove-toolchains/go/bin/go"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "go.mod",
+            "hash": "97ab0e6b17e4d4d65aff82160cb8c84598300e83569078d77fda516a94aa3fa4"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (go test)",
+        "status": "passed",
+        "reason": "ok",
+        "command": "/tmp/patchprove-toolchains/go/bin/go test -json .",
+        "exitCode": 0,
+        "durationMs": 182,
+        "detail": "{\"Time\":\"2026-10-23T06:10:06.311658529Z\",\"Action\":\"start\",\"Package\":\"example.invalid/patchprove/runtimefixture\"}\n{\"Time\":\"2026-10-23T06:10:06.314526347Z\",\"Action\":\"run\",\"Package\":\"example.invalid/patchprove/runtimefixture\",\"Test\":\"TestValue\"}\n{\"Time\":\"2026-10-23T06:10:06.314557995Z\",\"Action\":\"output\",\"Package\":\"example.invalid/patchprove/runtimefixture\",\"Test\":\"TestValue\",\"Output\":\"=== RUN   TestValue\\n\"}\n{\"Time\":\"2026-10-23T06:10:06.314581821Z\",\"Action\":\"output\",\"Package\":\"example.invalid/patchprove/runtimefixture\",\"Test\":\"TestValue\",\"Output\":\"--- PASS: TestValue (0.00s)\\n\"}\n{\"Time\":\"2026-10-23T06:10:06.314585136Z\",\"Action\":\"pass\",\"Package\":\"example.invalid/patchprove/runtimefixture\",\"Test\":\"TestValue\",\"Elapsed\":0}\n{\"Time\":\"2026-10-23T06:10:06.314589252Z\",\"Action\":\"output\",\"Package\":\"example.invalid/patchprove/runtimefixture\",\"Output\":\"PASS\\n\"}\n{\"Time\":\"2026-10-23T06:10:06.314745757Z\",\"Action\":\"output\",\"Package\":\"example.invalid/patchprove/runtimefixture\",\"Output\":\"ok  \\texample.invalid/patchprove/runtimefixture\\t0.001s\\n\"}\n{\"Time\":\"2026-10-23T06:10:06.314952477Z\",\"Action\":\"pass\",\"Package\":\"example.invalid/patchprove/runtimefixture\",\"Elapsed\":0.003}",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:go:.",
+            "checkId": "tests",
+            "scope": [
+              "package:."
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-toolchains/go/bin/go",
+            "args": [
+              "test",
+              "-json",
+              "."
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-8Y2wD7",
+            "exitCode": 0,
+            "durationMs": 182,
+            "reason": "ok",
+            "toolVersion": "go version go1.23.6",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "7e6e5cee8e932e7661518188c5f6067ba60906d0393815092a5d9d82bca9d142",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "go-json",
+              "reportStatus": "validated",
+              "granularity": "package",
+              "requestedScope": [
+                "package:."
+              ],
+              "collectedScope": [
+                "package:."
+              ],
+              "executedScope": [
+                "package:."
+              ],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 1,
+                "executed": 1,
+                "passed": 1,
+                "failed": 0,
+                "skipped": 0
+              },
+              "reportHash": "c760ce2151eb0fa7e8eb2cbad4665cb8d887da561755ef3cb6a016d87c4cb484",
+              "eligibleSourceFiles": [
+                "value_test.go"
+              ],
+              "sourceFiles": [
+                "value_test.go"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "go-failure",
+      "status": "passed",
+      "cli": {
+        "exitCode": 1,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-teRWPD",
+          "--out",
+          "/tmp/patchprove-installed-result-1IuwMe/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "3014fcfb5b94cfe99a23526b6f3b5b12db60c9a716279ecc2df26d2d7afe6755",
+        "durationMs": 845
+      },
+      "verification": {
+        "status": "failed",
+        "strict": true,
+        "reasons": [
+          {
+            "code": "check-failed",
+            "message": "affected tests (go test) failed",
+            "checkId": "tests"
+          },
+          {
+            "code": "execution-failed",
+            "message": "Execution tests:go:. did not succeed",
+            "checkId": "tests",
+            "scope": [
+              "package:."
+            ]
+          },
+          {
+            "code": "planned-scope-unverified",
+            "message": "Planned tests scope has no successful execution",
+            "checkId": "tests",
+            "scope": [
+              "package:."
+            ]
+          }
+        ]
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "go",
+            "version": "go version go1.23.6",
+            "path": "/tmp/patchprove-toolchains/go/bin/go"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "go.mod",
+            "hash": "97ab0e6b17e4d4d65aff82160cb8c84598300e83569078d77fda516a94aa3fa4"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (go test)",
+        "status": "failed",
+        "reason": "exit 1",
+        "command": "/tmp/patchprove-toolchains/go/bin/go test -json .",
+        "exitCode": 1,
+        "durationMs": 179,
+        "detail": "{\"Time\":\"2026-10-23T06:10:07.196457482Z\",\"Action\":\"start\",\"Package\":\"example.invalid/patchprove/runtimefixture\"}\n{\"Time\":\"2026-10-23T06:10:07.197906218Z\",\"Action\":\"run\",\"Package\":\"example.invalid/patchprove/runtimefixture\",\"Test\":\"TestValue\"}\n{\"Time\":\"2026-10-23T06:10:07.197937324Z\",\"Action\":\"output\",\"Package\":\"example.invalid/patchprove/runtimefixture\",\"Test\":\"TestValue\",\"Output\":\"=== RUN   TestValue\\n\"}\n{\"Time\":\"2026-10-23T06:10:07.197965176Z\",\"Action\":\"output\",\"Package\":\"example.invalid/patchprove/runtimefixture\",\"Test\":\"TestValue\",\"Output\":\"    value_test.go:5: unexpected value\\n\"}\n{\"Time\":\"2026-10-23T06:10:07.197972447Z\",\"Action\":\"output\",\"Package\":\"example.invalid/patchprove/runtimefixture\",\"Test\":\"TestValue\",\"Output\":\"--- FAIL: TestValue (0.00s)\\n\"}\n{\"Time\":\"2026-10-23T06:10:07.197975702Z\",\"Action\":\"fail\",\"Package\":\"example.invalid/patchprove/runtimefixture\",\"Test\":\"TestValue\",\"Elapsed\":0}\n{\"Time\":\"2026-10-23T06:10:07.197979818Z\",\"Action\":\"output\",\"Package\":\"example.invalid/patchprove/runtimefixture\",\"Output\":\"FAIL\\n\"}\n{\"Time\":\"2026-10-23T06:10:07.198193344Z\",\"Action\":\"output\",\"Package\":\"example.invalid/patchprove/runtimefixture\",\"Output\":\"FAIL\\texample.invalid/patchprove/runtimefixture\\t0.001s\\n\"}\n{\"Time\":\"2026-10-23T06:10:07.198219333Z\",\"Action\":\"fail\",\"Package\":\"example.invalid/patchprove/runtimefixture\",\"Elapsed\":0.002}",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:go:.",
+            "checkId": "tests",
+            "scope": [
+              "package:."
+            ],
+            "status": "failed",
+            "command": "/tmp/patchprove-toolchains/go/bin/go",
+            "args": [
+              "test",
+              "-json",
+              "."
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-teRWPD",
+            "exitCode": 1,
+            "durationMs": 179,
+            "reason": "exit 1",
+            "toolVersion": "go version go1.23.6",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "f546b7a63028b67471d5d4ab62a20e6f67e5859983ef2853a185436ea0b79721",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "go-json",
+              "reportStatus": "validated",
+              "granularity": "package",
+              "requestedScope": [
+                "package:."
+              ],
+              "collectedScope": [
+                "package:."
+              ],
+              "executedScope": [
+                "package:."
+              ],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 1,
+                "executed": 1,
+                "passed": 0,
+                "failed": 1,
+                "skipped": 0
+              },
+              "reportHash": "e653e752d810c7262063ba53100dd1c1ef445aa02047069231d7b2ac82ec13f6",
+              "eligibleSourceFiles": [
+                "value_test.go"
+              ],
+              "sourceFiles": [
+                "value_test.go"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "go-zero",
+      "status": "passed",
+      "cli": {
+        "exitCode": 1,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-edd94N",
+          "--out",
+          "/tmp/patchprove-installed-result-BPIXDP/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "041810ffa9dbcc77d52d1dcc201fc99e50e329c5459e71dbfb8bc1b977189d64",
+        "durationMs": 765
+      },
+      "verification": {
+        "status": "incomplete",
+        "strict": true,
+        "reasons": [
+          {
+            "code": "zero-tests-collected",
+            "message": "Execution tests:go:. collected no tests",
+            "checkId": "tests",
+            "scope": []
+          },
+          {
+            "code": "planned-scope-unverified",
+            "message": "Planned tests scope has no successful execution",
+            "checkId": "tests",
+            "scope": [
+              "package:."
+            ]
+          },
+          {
+            "code": "open-verification-gap",
+            "message": "Test runner collected zero tests"
+          }
+        ]
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "go",
+            "version": "go version go1.23.6",
+            "path": "/tmp/patchprove-toolchains/go/bin/go"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "go.mod",
+            "hash": "97ab0e6b17e4d4d65aff82160cb8c84598300e83569078d77fda516a94aa3fa4"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (go test)",
+        "status": "skipped",
+        "reason": "Test runner collected zero tests",
+        "command": "/tmp/patchprove-toolchains/go/bin/go test -json .",
+        "exitCode": 0,
+        "durationMs": 132,
+        "detail": "{\"Time\":\"2026-10-23T06:10:07.981221494Z\",\"Action\":\"start\",\"Package\":\"example.invalid/patchprove/runtimefixture\"}\n{\"Time\":\"2026-10-23T06:10:07.981384619Z\",\"Action\":\"output\",\"Package\":\"example.invalid/patchprove/runtimefixture\",\"Output\":\"testing: warning: no tests to run\\n\"}\n{\"Time\":\"2026-10-23T06:10:07.981394353Z\",\"Action\":\"output\",\"Package\":\"example.invalid/patchprove/runtimefixture\",\"Output\":\"PASS\\n\"}\n{\"Time\":\"2026-10-23T06:10:07.981397258Z\",\"Action\":\"output\",\"Package\":\"example.invalid/patchprove/runtimefixture\",\"Output\":\"ok  \\texample.invalid/patchprove/runtimefixture\\t(cached) [no tests to run]\\n\"}\n{\"Time\":\"2026-10-23T06:10:07.981402245Z\",\"Action\":\"pass\",\"Package\":\"example.invalid/patchprove/runtimefixture\",\"Elapsed\":0}",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:go:.",
+            "checkId": "tests",
+            "scope": [],
+            "status": "skipped",
+            "command": "/tmp/patchprove-toolchains/go/bin/go",
+            "args": [
+              "test",
+              "-json",
+              "."
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-edd94N",
+            "exitCode": 0,
+            "durationMs": 132,
+            "reason": "Test runner collected zero tests",
+            "toolVersion": "go version go1.23.6",
+            "collectedTests": 0,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "5ec8fc1f5c0776d4ed754590eb2e9dd1c0ce08ae04d83c605c31a432f2acd0a2",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "go-json",
+              "reportStatus": "validated",
+              "granularity": "package",
+              "requestedScope": [
+                "package:."
+              ],
+              "collectedScope": [],
+              "executedScope": [],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 0,
+                "executed": 0,
+                "passed": 0,
+                "failed": 0,
+                "skipped": 0
+              },
+              "reportHash": "4883df2368b747cbee8b5c9fd2a2a5f982d7fb8dd345a316ef131ac9b3bc01f4",
+              "eligibleSourceFiles": [
+                "value_test.go"
+              ],
+              "sourceFiles": [
+                "value_test.go"
+              ]
+            }
+          },
+          {
+            "id": "tests:go:.:unverified",
+            "checkId": "tests",
+            "scope": [
+              "package:."
+            ],
+            "status": "skipped",
+            "command": null,
+            "args": [],
+            "cwd": "/tmp/patchprove-installed-测试 space-edd94N",
+            "exitCode": null,
+            "durationMs": 0,
+            "reason": "Test runner collected zero tests"
+          }
+        ]
+      }
+    },
+    {
+      "id": "go-multimodule",
+      "status": "passed",
+      "cli": {
+        "exitCode": 0,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-uKvztX",
+          "--out",
+          "/tmp/patchprove-installed-result-5HDStO/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "163abe2440d1acaf021dcc4112fe60c8485e1fa980b4a2c1d22ae449bde6b4f2",
+        "durationMs": 978
+      },
+      "verification": {
+        "status": "passed",
+        "strict": true,
+        "reasons": []
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "go",
+            "version": "go version go1.23.6",
+            "path": "/tmp/patchprove-toolchains/go/bin/go"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "go.mod",
+            "hash": "97ab0e6b17e4d4d65aff82160cb8c84598300e83569078d77fda516a94aa3fa4"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests",
+        "status": "passed",
+        "reason": "ok",
+        "command": "/tmp/patchprove-toolchains/go/bin/go test -json ./alpha && /tmp/patchprove-toolchains/go/bin/go test -json ./beta",
+        "exitCode": 0,
+        "durationMs": 330,
+        "detail": "{\"Time\":\"2026-10-23T06:10:08.833094328Z\",\"Action\":\"start\",\"Package\":\"example.invalid/patchprove/runtimefixture/alpha\"}\n{\"Time\":\"2026-10-23T06:10:08.834779009Z\",\"Action\":\"run\",\"Package\":\"example.invalid/patchprove/runtimefixture/alpha\",\"Test\":\"TestValue\"}\n{\"Time\":\"2026-10-23T06:10:08.834818238Z\",\"Action\":\"output\",\"Package\":\"example.invalid/patchprove/runtimefixture/alpha\",\"Test\":\"TestValue\",\"Output\":\"=== RUN   TestValue\\n\"}\n{\"Time\":\"2026-10-23T06:10:08.834850156Z\",\"Action\":\"output\",\"Package\":\"example.invalid/patchprove/runtimefixture/alpha\",\"Test\":\"TestValue\",\"Output\":\"--- PASS: TestValue (0.00s)\\n\"}\n{\"Time\":\"2026-10-23T06:10:08.834855013Z\",\"Action\":\"pass\",\"Package\":\"example.invalid/patchprove/runtimefixture/alpha\",\"Test\":\"TestValue\",\"Elapsed\":0}\n{\"Time\":\"2026-10-23T06:10:08.834861012Z\",\"Action\":\"output\",\"Package\":\"example.invalid/patchprove/runtimefixture/alpha\",\"Output\":\"PASS\\n\"}\n{\"Time\":\"2026-10-23T06:10:08.835029285Z\",\"Action\":\"output\",\"Package\":\"example.invalid/patchprove/runtimefixture/alpha\",\"Output\":\"ok  \\texample.invalid/patchprove/runtimefixture/alpha\\t0.001s\\n\"}\n{\"Time\":\"2026-10-23T06:10:08.835160201Z\",\"Action\":\"pass\",\"Package\":\"example.invalid/patchprove/runtimefixture/alpha\",\"Elapsed\":0.002}\n{\"Time\":\"2026-10-23T06:10:08.996079216Z\",\"Action\":\"start\",\"Package\":\"example.invalid/patchprove/runtimefixture/beta\"}\n{\"Time\":\"2026-10-23T06:10:08.99775301Z\",\"Action\":\"run\",\"Package\":\"example.invalid/patchprove/runtimefixture/beta\",\"Test\":\"TestValue\"}\n{\"Time\":\"2026-10-23T06:10:08.997772409Z\",\"Action\":\"output\",\"Package\":\"example.invalid/patchprove/runtimefixture/beta\",\"Test\":\"TestValue\",\"Output\":\"=== RUN   TestValue\\n\"}\n{\"Time\":\"2026-10-23T06:10:08.99779975Z\",\"Action\":\"output\",\"Package\":\"example.invalid/patchprove/runtimefixture/beta\",\"Test\":\"TestValue\",\"Output\":\"--- PASS: TestValue (0.00s)\\n\"}\n{\"Time\":\"2026-10-23T06:10:08.997804617Z\",\"Action\":\"pass\",\"Package\":\"example.invalid/patchprove/runtimefixture/beta\",\"Test\":\"TestValue\",\"Elapsed\":0}\n{\"Time\":\"2026-10-23T06:10:08\n… (434 more chars)",
+        "records": [
+          {
+            "id": "tests:go:alpha",
+            "checkId": "tests",
+            "scope": [
+              "package:alpha"
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-toolchains/go/bin/go",
+            "args": [
+              "test",
+              "-json",
+              "./alpha"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-uKvztX",
+            "exitCode": 0,
+            "durationMs": 180,
+            "reason": "ok",
+            "toolVersion": "go version go1.23.6",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "e595a40a4974decccd37f6af5301177bdb966444fc7ed5b7504b458fe25af63b",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "go-json",
+              "reportStatus": "validated",
+              "granularity": "package",
+              "requestedScope": [
+                "package:alpha"
+              ],
+              "collectedScope": [
+                "package:alpha"
+              ],
+              "executedScope": [
+                "package:alpha"
+              ],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 1,
+                "executed": 1,
+                "passed": 1,
+                "failed": 0,
+                "skipped": 0
+              },
+              "reportHash": "4ac37b9d0364d438b6798b653e8cd9c45a0c1d2ea9edc67cf8e2e9170150f8c8",
+              "eligibleSourceFiles": [
+                "alpha/value_test.go"
+              ],
+              "sourceFiles": [
+                "alpha/value_test.go"
+              ]
+            }
+          },
+          {
+            "id": "tests:go:beta",
+            "checkId": "tests",
+            "scope": [
+              "package:beta"
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-toolchains/go/bin/go",
+            "args": [
+              "test",
+              "-json",
+              "./beta"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-uKvztX",
+            "exitCode": 0,
+            "durationMs": 150,
+            "reason": "ok",
+            "toolVersion": "go version go1.23.6",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "1006b448cb497f129e4f1a15724c8e0846855cadcbfbd701789854818d7c4160",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "go-json",
+              "reportStatus": "validated",
+              "granularity": "package",
+              "requestedScope": [
+                "package:beta"
+              ],
+              "collectedScope": [
+                "package:beta"
+              ],
+              "executedScope": [
+                "package:beta"
+              ],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 1,
+                "executed": 1,
+                "passed": 1,
+                "failed": 0,
+                "skipped": 0
+              },
+              "reportHash": "d2221344dfa8e3ad727486b07898b62e6617d63e6fdf0e508a83e89a75ea74b5",
+              "eligibleSourceFiles": [
+                "beta/value_test.go"
+              ],
+              "sourceFiles": [
+                "beta/value_test.go"
+              ]
+            }
+          }
+        ],
+        "timedOut": false,
+        "truncated": false
+      }
+    },
+    {
+      "id": "cargo-success",
+      "status": "passed",
+      "cli": {
+        "exitCode": 0,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-pEmLYy",
+          "--out",
+          "/tmp/patchprove-installed-result-UzZ6ec/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "bc9502dc8df9af2c2624a417848a9ce0dea5581f4aa2e286f682523f768b5069",
+        "durationMs": 1131
+      },
+      "verification": {
+        "status": "passed",
+        "strict": true,
+        "reasons": []
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "cargo",
+            "version": "cargo 1.85.0",
+            "path": "/tmp/patchprove-toolchains/cargo/bin/rustup"
+          },
+          {
+            "name": "pytest",
+            "version": "pytest 8.3.5",
+            "path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "Cargo.toml",
+            "hash": "f168d5884868a858206914e169087463c621dc12ccc3381c14ea210379fccc00"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (cargo test)",
+        "status": "passed",
+        "reason": "ok",
+        "command": "/tmp/patchprove-toolchains/cargo/bin/cargo test -p fixture",
+        "exitCode": 0,
+        "durationMs": 223,
+        "detail": "running 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 1 test\ntest value_test ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\n   Compiling fixture v0.1.0 (/tmp/patchprove-installed-测试 space-pEmLYy)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.19s\n     Running unittests src/lib.rs (target/debug/deps/fixture-f3bb3bfbbb52c48b)\n     Running tests/value.rs (target/debug/deps/value-8b0f29177a0a9099)\n   Doc-tests fixture",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:rust:.",
+            "checkId": "tests",
+            "scope": [
+              "crate:."
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-toolchains/cargo/bin/cargo",
+            "args": [
+              "test",
+              "-p",
+              "fixture"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-pEmLYy",
+            "exitCode": 0,
+            "durationMs": 223,
+            "reason": "ok",
+            "toolVersion": "cargo 1.85.0",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "db13dcfce10de4f2a5596a933399c387e4f7dd50f2f69d6bf74cb05ea37bab2d",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "cargo-harness",
+              "reportStatus": "validated",
+              "granularity": "crate",
+              "requestedScope": [
+                "crate:."
+              ],
+              "collectedScope": [
+                "crate:."
+              ],
+              "executedScope": [
+                "crate:."
+              ],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 1,
+                "executed": 1,
+                "passed": 1,
+                "failed": 0,
+                "skipped": 0
+              },
+              "reportHash": "2ff0c3a01939f8c864d35c8df212ef0b7c145a49dfea13e0d2d7213e7b0d80f8",
+              "sourceFiles": [
+                "tests/value.rs"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "cargo-failure",
+      "status": "passed",
+      "cli": {
+        "exitCode": 1,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-3sMpJJ",
+          "--out",
+          "/tmp/patchprove-installed-result-0np2bK/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "411969610d24f06c455e2c2567c3281ceeb851f2230549eaf1bcf316f6b3e2de",
+        "durationMs": 1215
+      },
+      "verification": {
+        "status": "failed",
+        "strict": true,
+        "reasons": [
+          {
+            "code": "check-failed",
+            "message": "affected tests (cargo test) failed",
+            "checkId": "tests"
+          },
+          {
+            "code": "execution-failed",
+            "message": "Execution tests:rust:. did not succeed",
+            "checkId": "tests",
+            "scope": [
+              "crate:."
+            ]
+          },
+          {
+            "code": "planned-scope-unverified",
+            "message": "Planned tests scope has no successful execution",
+            "checkId": "tests",
+            "scope": [
+              "crate:."
+            ]
+          }
+        ]
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "cargo",
+            "version": "cargo 1.85.0",
+            "path": "/tmp/patchprove-toolchains/cargo/bin/rustup"
+          },
+          {
+            "name": "pytest",
+            "version": "pytest 8.3.5",
+            "path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "Cargo.toml",
+            "hash": "f168d5884868a858206914e169087463c621dc12ccc3381c14ea210379fccc00"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (cargo test)",
+        "status": "failed",
+        "reason": "exit 101",
+        "command": "/tmp/patchprove-toolchains/cargo/bin/cargo test -p fixture",
+        "exitCode": 101,
+        "durationMs": 221,
+        "detail": "running 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 1 test\ntest value_test ... FAILED\n\nfailures:\n\n---- value_test stdout ----\n\nthread 'value_test' panicked at tests/value.rs:2:19:\nassertion `left == right` failed\n  left: 2\n right: 3\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n\n\nfailures:\n    value_test\n\ntest result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\n   Compiling fixture v0.1.0 (/tmp/patchprove-installed-测试 space-3sMpJJ)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.20s\n     Running unittests src/lib.rs (target/debug/deps/fixture-f3bb3bfbbb52c48b)\n     Running tests/value.rs (target/debug/deps/value-8b0f29177a0a9099)\nerror: test failed, to rerun pass `-p fixture --test value`",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:rust:.",
+            "checkId": "tests",
+            "scope": [
+              "crate:."
+            ],
+            "status": "failed",
+            "command": "/tmp/patchprove-toolchains/cargo/bin/cargo",
+            "args": [
+              "test",
+              "-p",
+              "fixture"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-3sMpJJ",
+            "exitCode": 101,
+            "durationMs": 221,
+            "reason": "exit 101",
+            "toolVersion": "cargo 1.85.0",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "f708959a5a97d30ca3c4a6001d3018f8c4141183fae99a736e84b05f5d688198",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "cargo-harness",
+              "reportStatus": "validated",
+              "granularity": "crate",
+              "requestedScope": [
+                "crate:."
+              ],
+              "collectedScope": [
+                "crate:."
+              ],
+              "executedScope": [
+                "crate:."
+              ],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 1,
+                "executed": 1,
+                "passed": 0,
+                "failed": 1,
+                "skipped": 0
+              },
+              "reportHash": "8bfed20032dc93859457231d59ca6d9480add08177f45941bff9c0b47db17a93",
+              "sourceFiles": [
+                "tests/value.rs"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "cargo-zero",
+      "status": "passed",
+      "cli": {
+        "exitCode": 1,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-kLYpkE",
+          "--out",
+          "/tmp/patchprove-installed-result-TDgAkb/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "346a9b0e7f5cf959cb70c8da3e2be13f9719f67792f30ebc5d4d0600e9a31bb7",
+        "durationMs": 1215
+      },
+      "verification": {
+        "status": "incomplete",
+        "strict": true,
+        "reasons": [
+          {
+            "code": "zero-tests-collected",
+            "message": "Execution tests:rust:. collected no tests",
+            "checkId": "tests",
+            "scope": []
+          },
+          {
+            "code": "planned-scope-unverified",
+            "message": "Planned tests scope has no successful execution",
+            "checkId": "tests",
+            "scope": [
+              "crate:."
+            ]
+          },
+          {
+            "code": "open-verification-gap",
+            "message": "Test runner collected zero tests"
+          }
+        ]
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "cargo",
+            "version": "cargo 1.85.0",
+            "path": "/tmp/patchprove-toolchains/cargo/bin/rustup"
+          },
+          {
+            "name": "pytest",
+            "version": "pytest 8.3.5",
+            "path": "/opt/codex/runtimes/codex-primary-runtime/dependencies/python/bin/python3.12"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "Cargo.toml",
+            "hash": "f168d5884868a858206914e169087463c621dc12ccc3381c14ea210379fccc00"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (cargo test)",
+        "status": "skipped",
+        "reason": "Test runner collected zero tests",
+        "command": "/tmp/patchprove-toolchains/cargo/bin/cargo test -p fixture",
+        "exitCode": 0,
+        "durationMs": 199,
+        "detail": "running 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\n   Compiling fixture v0.1.0 (/tmp/patchprove-installed-测试 space-kLYpkE)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.17s\n     Running unittests src/lib.rs (target/debug/deps/fixture-f3bb3bfbbb52c48b)\n     Running tests/value.rs (target/debug/deps/value-8b0f29177a0a9099)\n   Doc-tests fixture",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:rust:.",
+            "checkId": "tests",
+            "scope": [],
+            "status": "skipped",
+            "command": "/tmp/patchprove-toolchains/cargo/bin/cargo",
+            "args": [
+              "test",
+              "-p",
+              "fixture"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-kLYpkE",
+            "exitCode": 0,
+            "durationMs": 199,
+            "reason": "Test runner collected zero tests",
+            "toolVersion": "cargo 1.85.0",
+            "collectedTests": 0,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "3e37bcbceeb949a706f27b6c6edcb29e083c95be245cc25cd06d9306dc990590",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "cargo-harness",
+              "reportStatus": "validated",
+              "granularity": "crate",
+              "requestedScope": [
+                "crate:."
+              ],
+              "collectedScope": [],
+              "executedScope": [],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 0,
+                "executed": 0,
+                "passed": 0,
+                "failed": 0,
+                "skipped": 0
+              },
+              "reportHash": "e24be7d05fb45a9ee2c5a0726239728fbbf858f3126cf60b771b45d14b77d8b8",
+              "sourceFiles": [
+                "tests/value.rs"
+              ]
+            }
+          },
+          {
+            "id": "tests:rust:.:unverified",
+            "checkId": "tests",
+            "scope": [
+              "crate:."
+            ],
+            "status": "skipped",
+            "command": null,
+            "args": [],
+            "cwd": "/tmp/patchprove-installed-测试 space-kLYpkE",
+            "exitCode": null,
+            "durationMs": 0,
+            "reason": "Test runner collected zero tests"
+          }
+        ]
+      }
+    },
+    {
+      "id": "cargo-multimodule",
+      "status": "passed",
+      "cli": {
+        "exitCode": 0,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-CSHOGT",
+          "--out",
+          "/tmp/patchprove-installed-result-WF97N6/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "4f7c865a3e6b4f7dd815fff86c008b408ecb3f133c3e24d53b90506781368f02",
+        "durationMs": 1085
+      },
+      "verification": {
+        "status": "passed",
+        "strict": true,
+        "reasons": []
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "cargo",
+            "version": "cargo 1.85.0",
+            "path": "/tmp/patchprove-toolchains/cargo/bin/rustup"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "Cargo.toml",
+            "hash": "30a3396ad1efc76ac42c63d33f015fe8f453b0b5ce13e099fb18bf8647734626"
+          },
+          {
+            "path": "alpha/Cargo.toml",
+            "hash": "7952cf92cf174a94fe88092697617552f6f8c3d522e6b6ca13ca846e489d2219"
+          },
+          {
+            "path": "beta/Cargo.toml",
+            "hash": "80554bd1a3fdd1f39ea7ec2a8cfccd0f6322044899308cfe2dc9e8f264151e17"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests",
+        "status": "passed",
+        "reason": "ok",
+        "command": "/tmp/patchprove-toolchains/cargo/bin/cargo test -p alpha && /tmp/patchprove-toolchains/cargo/bin/cargo test -p beta",
+        "exitCode": 0,
+        "durationMs": 450,
+        "detail": "running 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 1 test\ntest value_test ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\n   Compiling alpha v0.1.0 (/tmp/patchprove-installed-测试 space-CSHOGT/alpha)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.20s\n     Running unittests src/lib.rs (target/debug/deps/alpha-b908478eef4aa83f)\n     Running tests/value.rs (target/debug/deps/value-62e3e454b3e542d2)\n   Doc-tests alpha\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 1 test\ntest value_test ... ok\n\ntest result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\nrunning 0 tests\n\ntest result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s\n\n\n   Compiling beta v0.1.0 (/tmp/patchprove-installed-测试 space-CSHOGT/beta)\n    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.18s\n     Running unittests src/lib.rs (target/debug/deps/beta-8cf1bb5a5a2d0a52)\n     Running tests/value.rs (target/debug/deps/value-b82f1b2bdacacbfd)\n   Doc-tests beta",
+        "records": [
+          {
+            "id": "tests:rust:alpha",
+            "checkId": "tests",
+            "scope": [
+              "crate:alpha"
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-toolchains/cargo/bin/cargo",
+            "args": [
+              "test",
+              "-p",
+              "alpha"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-CSHOGT",
+            "exitCode": 0,
+            "durationMs": 235,
+            "reason": "ok",
+            "toolVersion": "cargo 1.85.0",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "bacaa69bdc93096bc84bb29ade47548aa99dd4deaa297ccdba16e9c158429593",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "cargo-harness",
+              "reportStatus": "validated",
+              "granularity": "crate",
+              "requestedScope": [
+                "crate:alpha"
+              ],
+              "collectedScope": [
+                "crate:alpha"
+              ],
+              "executedScope": [
+                "crate:alpha"
+              ],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 1,
+                "executed": 1,
+                "passed": 1,
+                "failed": 0,
+                "skipped": 0
+              },
+              "reportHash": "2ff0c3a01939f8c864d35c8df212ef0b7c145a49dfea13e0d2d7213e7b0d80f8",
+              "sourceFiles": [
+                "alpha/tests/value.rs"
+              ]
+            }
+          },
+          {
+            "id": "tests:rust:beta",
+            "checkId": "tests",
+            "scope": [
+              "crate:beta"
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-toolchains/cargo/bin/cargo",
+            "args": [
+              "test",
+              "-p",
+              "beta"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-CSHOGT",
+            "exitCode": 0,
+            "durationMs": 215,
+            "reason": "ok",
+            "toolVersion": "cargo 1.85.0",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "218be6722f6e0ca38338795a51f1a4eba457a798663e0948addf770f119bc268",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "cargo-harness",
+              "reportStatus": "validated",
+              "granularity": "crate",
+              "requestedScope": [
+                "crate:beta"
+              ],
+              "collectedScope": [
+                "crate:beta"
+              ],
+              "executedScope": [
+                "crate:beta"
+              ],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 1,
+                "executed": 1,
+                "passed": 1,
+                "failed": 0,
+                "skipped": 0
+              },
+              "reportHash": "2ff0c3a01939f8c864d35c8df212ef0b7c145a49dfea13e0d2d7213e7b0d80f8",
+              "sourceFiles": [
+                "beta/tests/value.rs"
+              ]
+            }
+          }
+        ],
+        "timedOut": false,
+        "truncated": false
+      }
+    },
+    {
+      "id": "maven-success",
+      "status": "passed",
+      "cli": {
+        "exitCode": 0,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-jdRs4h",
+          "--out",
+          "/tmp/patchprove-installed-result-gGdug3/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "8eee18e696cbc31fe8872f62592c5ca1760df5e1956af3de2670f4271806b772",
+        "durationMs": 3244
+      },
+      "verification": {
+        "status": "passed",
+        "strict": true,
+        "reasons": []
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "maven",
+            "version": "Apache Maven 3.9.9",
+            "path": "/tmp/patchprove-toolchains/apache-maven-3.9.9/bin/mvn"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "pom.xml",
+            "hash": "d5419270a2540d722034ec716e9a8b35fcc3b0583176ec9cbee4dfb0c6c62782"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (mvn test)",
+        "status": "passed",
+        "reason": "ok",
+        "command": "/tmp/patchprove-toolchains/apache-maven-3.9.9/bin/mvn test -Dtest=fixture.ValueTest",
+        "exitCode": 0,
+        "durationMs": 2450,
+        "detail": "[INFO] Scanning for projects...\n[INFO] \n[INFO] ----------------------< example.invalid:fixture >-----------------------\n[INFO] Building fixture 1.0\n[INFO]   from pom.xml\n[INFO] --------------------------------[ jar ]---------------------------------\n[INFO] \n[INFO] --- resources:3.3.1:resources (default-resources) @ fixture ---\n[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!\n[INFO] skip non existing resourceDirectory /tmp/patchprove-installed-测试 space-jdRs4h/src/main/resources\n[INFO] \n[INFO] --- compiler:3.13.0:compile (default-compile) @ fixture ---\n[INFO] Recompiling the module because of changed source code.\n[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!\n[INFO] Compiling 1 source file with javac [debug release 17] to target/classes\n[INFO] \n[INFO] --- resources:3.3.1:testResources (default-testResources) @ fixture ---\n[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!\n[INFO] skip non existing resourceDirectory /tmp/patchprove-installed-测试 space-jdRs4h/src/test/resources\n[INFO] \n[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ fixture ---\n[INFO] Recompiling the module because of changed dependency.\n[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!\n[INFO] Compiling 1 source file with javac [debug release 17] to target/test-classes\n[INFO] \n[INFO] --- surefire:3.5.2:test (default-test) @ fixture ---\n[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider\n[INFO] \n[INFO] -------------------------------------------------------\n[INFO]  T E S T S\n[INFO] -------------------------------------------------------\n[INFO] Running fixture.ValueTest\n[INFO] Tests run: 1, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.036 s -- in fixture.ValueTest\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO]\n… (387 more chars)",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:java",
+            "checkId": "tests",
+            "scope": [
+              "src/test/java/fixture/ValueTest.java"
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-toolchains/apache-maven-3.9.9/bin/mvn",
+            "args": [
+              "test",
+              "-Dtest=fixture.ValueTest"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-jdRs4h",
+            "exitCode": 0,
+            "durationMs": 2450,
+            "reason": "ok",
+            "toolVersion": "Apache Maven 3.9.9",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "ea7bb89c215432fe02e4dfc40032f4452d6b101b962f34c9a69cf5201684f26e",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "java-junit",
+              "reportStatus": "validated",
+              "granularity": "file",
+              "requestedScope": [
+                "src/test/java/fixture/ValueTest.java"
+              ],
+              "collectedScope": [
+                "src/test/java/fixture/ValueTest.java"
+              ],
+              "executedScope": [
+                "src/test/java/fixture/ValueTest.java"
+              ],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 1,
+                "executed": 1,
+                "passed": 1,
+                "failed": 0,
+                "skipped": 0
+              },
+              "reportHash": "411c8f2e2cc5f53d21eaacdc4250706dfc7a8607056a3c767fad4860051320ef",
+              "sourceFiles": [
+                "src/test/java/fixture/ValueTest.java"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "maven-failure",
+      "status": "passed",
+      "cli": {
+        "exitCode": 1,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-7H9yBW",
+          "--out",
+          "/tmp/patchprove-installed-result-ygkz0a/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "0dad47bcc3f6738b041abe66d590a76e1b5ccb9bf81f72ed5b3734bfddf343bc",
+        "durationMs": 3763
+      },
+      "verification": {
+        "status": "failed",
+        "strict": true,
+        "reasons": [
+          {
+            "code": "check-failed",
+            "message": "affected tests (mvn test) failed",
+            "checkId": "tests"
+          },
+          {
+            "code": "execution-failed",
+            "message": "Execution tests:java did not succeed",
+            "checkId": "tests",
+            "scope": [
+              "src/test/java/fixture/ValueTest.java"
+            ]
+          },
+          {
+            "code": "planned-scope-unverified",
+            "message": "Planned tests scope has no successful execution",
+            "checkId": "tests",
+            "scope": [
+              "src/test/java/fixture/ValueTest.java"
+            ]
+          }
+        ]
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "maven",
+            "version": "Apache Maven 3.9.9",
+            "path": "/tmp/patchprove-toolchains/apache-maven-3.9.9/bin/mvn"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "pom.xml",
+            "hash": "d5419270a2540d722034ec716e9a8b35fcc3b0583176ec9cbee4dfb0c6c62782"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (mvn test)",
+        "status": "failed",
+        "reason": "exit 1",
+        "command": "/tmp/patchprove-toolchains/apache-maven-3.9.9/bin/mvn test -Dtest=fixture.ValueTest",
+        "exitCode": 1,
+        "durationMs": 2784,
+        "detail": "[INFO] Scanning for projects...\n[INFO] \n[INFO] ----------------------< example.invalid:fixture >-----------------------\n[INFO] Building fixture 1.0\n[INFO]   from pom.xml\n[INFO] --------------------------------[ jar ]---------------------------------\n[INFO] \n[INFO] --- resources:3.3.1:resources (default-resources) @ fixture ---\n[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!\n[INFO] skip non existing resourceDirectory /tmp/patchprove-installed-测试 space-7H9yBW/src/main/resources\n[INFO] \n[INFO] --- compiler:3.13.0:compile (default-compile) @ fixture ---\n[INFO] Recompiling the module because of changed source code.\n[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!\n[INFO] Compiling 1 source file with javac [debug release 17] to target/classes\n[INFO] \n[INFO] --- resources:3.3.1:testResources (default-testResources) @ fixture ---\n[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!\n[INFO] skip non existing resourceDirectory /tmp/patchprove-installed-测试 space-7H9yBW/src/test/resources\n[INFO] \n[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ fixture ---\n[INFO] Recompiling the module because of changed dependency.\n[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!\n[INFO] Compiling 1 source file with javac [debug release 17] to target/test-classes\n[INFO] \n[INFO] --- surefire:3.5.2:test (default-test) @ fixture ---\n[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider\n[INFO] \n[INFO] -------------------------------------------------------\n[INFO]  T E S T S\n[INFO] -------------------------------------------------------\n[INFO] Running fixture.ValueTest\n[ERROR] Tests run: 1, Failures: 1, Errors: 0, Skipped: 0, Time elapsed: 0.050 s <<< FAILURE! -- in fixture.ValueTest\n[ERROR] fixture.ValueTes\n… (2089 more chars)",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:java",
+            "checkId": "tests",
+            "scope": [
+              "src/test/java/fixture/ValueTest.java"
+            ],
+            "status": "failed",
+            "command": "/tmp/patchprove-toolchains/apache-maven-3.9.9/bin/mvn",
+            "args": [
+              "test",
+              "-Dtest=fixture.ValueTest"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-7H9yBW",
+            "exitCode": 1,
+            "durationMs": 2784,
+            "reason": "exit 1",
+            "toolVersion": "Apache Maven 3.9.9",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "257249769f3b5bf40da68316948c52211a2c82146c4b736175f2ae6d4e4045ff",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "java-junit",
+              "reportStatus": "validated",
+              "granularity": "file",
+              "requestedScope": [
+                "src/test/java/fixture/ValueTest.java"
+              ],
+              "collectedScope": [
+                "src/test/java/fixture/ValueTest.java"
+              ],
+              "executedScope": [
+                "src/test/java/fixture/ValueTest.java"
+              ],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 1,
+                "executed": 1,
+                "passed": 0,
+                "failed": 1,
+                "skipped": 0
+              },
+              "reportHash": "c7235bda3ed7cdfbb01da5e81265f949a3e14fab00b1e15cc57961ccf8b9b174",
+              "sourceFiles": [
+                "src/test/java/fixture/ValueTest.java"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "maven-zero",
+      "status": "passed",
+      "cli": {
+        "exitCode": 1,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-GzqGe5",
+          "--out",
+          "/tmp/patchprove-installed-result-Kg47ux/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "8f32c462b85ecde193c56fde7265d7eabd0e078ccc32d1262a9ebdb05c7adc76",
+        "durationMs": 3234
+      },
+      "verification": {
+        "status": "incomplete",
+        "strict": true,
+        "reasons": [
+          {
+            "code": "test-scope-unknown",
+            "message": "No tests execution report was produced for the selected Java scope",
+            "checkId": "tests",
+            "scope": [
+              "src/test/java/fixture/ValueTest.java"
+            ]
+          },
+          {
+            "code": "planned-scope-unverified",
+            "message": "Planned tests scope has no successful execution",
+            "checkId": "tests",
+            "scope": [
+              "src/test/java/fixture/ValueTest.java"
+            ]
+          },
+          {
+            "code": "open-verification-gap",
+            "message": "No tests execution report was produced for the selected Java scope"
+          }
+        ]
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "maven",
+            "version": "Apache Maven 3.9.9",
+            "path": "/tmp/patchprove-toolchains/apache-maven-3.9.9/bin/mvn"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "pom.xml",
+            "hash": "d5419270a2540d722034ec716e9a8b35fcc3b0583176ec9cbee4dfb0c6c62782"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (mvn test)",
+        "status": "skipped",
+        "reason": "No tests execution report was produced for the selected Java scope",
+        "command": "/tmp/patchprove-toolchains/apache-maven-3.9.9/bin/mvn test -Dtest=fixture.ValueTest",
+        "exitCode": 0,
+        "durationMs": 2429,
+        "detail": "[INFO] Scanning for projects...\n[INFO] \n[INFO] ----------------------< example.invalid:fixture >-----------------------\n[INFO] Building fixture 1.0\n[INFO]   from pom.xml\n[INFO] --------------------------------[ jar ]---------------------------------\n[INFO] \n[INFO] --- resources:3.3.1:resources (default-resources) @ fixture ---\n[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!\n[INFO] skip non existing resourceDirectory /tmp/patchprove-installed-测试 space-GzqGe5/src/main/resources\n[INFO] \n[INFO] --- compiler:3.13.0:compile (default-compile) @ fixture ---\n[INFO] Recompiling the module because of changed source code.\n[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!\n[INFO] Compiling 1 source file with javac [debug release 17] to target/classes\n[INFO] \n[INFO] --- resources:3.3.1:testResources (default-testResources) @ fixture ---\n[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!\n[INFO] skip non existing resourceDirectory /tmp/patchprove-installed-测试 space-GzqGe5/src/test/resources\n[INFO] \n[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ fixture ---\n[INFO] Recompiling the module because of changed dependency.\n[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!\n[INFO] Compiling 1 source file with javac [debug release 17] to target/test-classes\n[INFO] \n[INFO] --- surefire:3.5.2:test (default-test) @ fixture ---\n[INFO] Using auto detected provider org.apache.maven.surefire.junitplatform.JUnitPlatformProvider\n[INFO] \n[INFO] -------------------------------------------------------\n[INFO]  T E S T S\n[INFO] -------------------------------------------------------\n[INFO] \n[INFO] Results:\n[INFO] \n[INFO] Tests run: 0, Failures: 0, Errors: 0, Skipped: 0\n[INFO] \n[INFO] -----------------------------------------------------------------------\n… (251 more chars)",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:java",
+            "checkId": "tests",
+            "scope": [],
+            "status": "skipped",
+            "command": "/tmp/patchprove-toolchains/apache-maven-3.9.9/bin/mvn",
+            "args": [
+              "test",
+              "-Dtest=fixture.ValueTest"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-GzqGe5",
+            "exitCode": 0,
+            "durationMs": 2429,
+            "reason": "ok",
+            "toolVersion": "Apache Maven 3.9.9",
+            "signal": null,
+            "truncated": false,
+            "outputHash": "5de91cbfc51cfd51cdd96bb6c210b9cfd3c8dd3da8decf45db203343172f94a0",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "java-junit",
+              "reportStatus": "missing",
+              "granularity": "file",
+              "requestedScope": [
+                "src/test/java/fixture/ValueTest.java"
+              ],
+              "collectedScope": [],
+              "executedScope": [],
+              "skippedScope": [],
+              "unknownScope": [
+                "src/test/java/fixture/ValueTest.java"
+              ],
+              "counts": {
+                "collected": 0,
+                "executed": 0,
+                "passed": 0,
+                "failed": 0,
+                "skipped": 0
+              },
+              "reason": "No tests execution report was produced for the selected Java scope",
+              "sourceFiles": [
+                "src/test/java/fixture/ValueTest.java"
+              ]
+            }
+          },
+          {
+            "id": "tests:java:unverified",
+            "checkId": "tests",
+            "scope": [
+              "src/test/java/fixture/ValueTest.java"
+            ],
+            "status": "skipped",
+            "command": null,
+            "args": [],
+            "cwd": "/tmp/patchprove-installed-测试 space-GzqGe5",
+            "exitCode": null,
+            "durationMs": 0,
+            "reason": "No tests execution report was produced for the selected Java scope"
+          }
+        ]
+      }
+    },
+    {
+      "id": "maven-multimodule",
+      "status": "passed",
+      "cli": {
+        "exitCode": 0,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-Qz1PGg",
+          "--out",
+          "/tmp/patchprove-installed-result-3L53LH/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "79d9be0e7a15cc5454f7ae29f4861ea19ed09a369fc9dd87199127e7abe5e179",
+        "durationMs": 4069
+      },
+      "verification": {
+        "status": "passed",
+        "strict": true,
+        "reasons": []
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "maven",
+            "version": "Apache Maven 3.9.9",
+            "path": "/tmp/patchprove-toolchains/apache-maven-3.9.9/bin/mvn"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "alpha/pom.xml",
+            "hash": "3ed7530ab43eb27c50e13e07bff45a6d43a8fa574a0485897623e0599cce7686"
+          },
+          {
+            "path": "beta/pom.xml",
+            "hash": "40bf139897cd922d9982c88d25206cfaff2f79aa8b06812154336dde588d0c90"
+          },
+          {
+            "path": "pom.xml",
+            "hash": "93ee263a10ef5d6de48d7d044d3333e7c1f9462a9ea2159176ac809ccb99a5e6"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (mvn test)",
+        "status": "passed",
+        "reason": "ok",
+        "command": "/tmp/patchprove-toolchains/apache-maven-3.9.9/bin/mvn -pl alpha,beta -am test -Dtest=fixture.ValueTest",
+        "exitCode": 0,
+        "durationMs": 3207,
+        "detail": "[INFO] Scanning for projects...\n[INFO] ------------------------------------------------------------------------\n[INFO] Reactor Build Order:\n[INFO] \n[INFO] fixture-parent                                                     [pom]\n[INFO] alpha                                                              [jar]\n[INFO] beta                                                               [jar]\n[INFO] \n[INFO] -------------------< example.invalid:fixture-parent >-------------------\n[INFO] Building fixture-parent 1.0                                        [1/3]\n[INFO]   from pom.xml\n[INFO] --------------------------------[ pom ]---------------------------------\n[INFO] \n[INFO] -----------------------< example.invalid:alpha >------------------------\n[INFO] Building alpha 1.0                                                 [2/3]\n[INFO]   from alpha/pom.xml\n[INFO] --------------------------------[ jar ]---------------------------------\n[INFO] \n[INFO] --- resources:3.3.1:resources (default-resources) @ alpha ---\n[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!\n[INFO] skip non existing resourceDirectory /tmp/patchprove-installed-测试 space-Qz1PGg/alpha/src/main/resources\n[INFO] \n[INFO] --- compiler:3.13.0:compile (default-compile) @ alpha ---\n[INFO] Recompiling the module because of changed source code.\n[WARNING] File encoding has not been set, using platform encoding UTF-8, i.e. build is platform dependent!\n[INFO] Compiling 1 source file with javac [debug release 17] to target/classes\n[INFO] \n[INFO] --- resources:3.3.1:testResources (default-testResources) @ alpha ---\n[WARNING] Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!\n[INFO] skip non existing resourceDirectory /tmp/patchprove-installed-测试 space-Qz1PGg/alpha/src/test/resources\n[INFO] \n[INFO] --- compiler:3.13.0:testCompile (default-testCompile) @ alpha ---\n[INFO] Recompiling the module because of changed depende\n… (3526 more chars)",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:java",
+            "checkId": "tests",
+            "scope": [
+              "alpha/src/test/java/fixture/ValueTest.java",
+              "beta/src/test/java/fixture/ValueTest.java"
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-toolchains/apache-maven-3.9.9/bin/mvn",
+            "args": [
+              "-pl",
+              "alpha,beta",
+              "-am",
+              "test",
+              "-Dtest=fixture.ValueTest"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-Qz1PGg",
+            "exitCode": 0,
+            "durationMs": 3207,
+            "reason": "ok",
+            "toolVersion": "Apache Maven 3.9.9",
+            "collectedTests": 2,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "2d205ac4a461ad5acc58b089016ff98a779d3d2cde26e8d85c8f016a8284651b",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "java-junit",
+              "reportStatus": "validated",
+              "granularity": "file",
+              "requestedScope": [
+                "alpha/src/test/java/fixture/ValueTest.java",
+                "beta/src/test/java/fixture/ValueTest.java"
+              ],
+              "collectedScope": [
+                "alpha/src/test/java/fixture/ValueTest.java",
+                "beta/src/test/java/fixture/ValueTest.java"
+              ],
+              "executedScope": [
+                "alpha/src/test/java/fixture/ValueTest.java",
+                "beta/src/test/java/fixture/ValueTest.java"
+              ],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 2,
+                "executed": 2,
+                "passed": 2,
+                "failed": 0,
+                "skipped": 0
+              },
+              "reportHash": "95f70ab86406afb37abe846704354ebd28e0f5f789e21b011f65ca0474673dc3",
+              "sourceFiles": [
+                "alpha/src/test/java/fixture/ValueTest.java",
+                "beta/src/test/java/fixture/ValueTest.java"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "gradle-success",
+      "status": "passed",
+      "cli": {
+        "exitCode": 0,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-VesoJR",
+          "--out",
+          "/tmp/patchprove-installed-result-bIvMj7/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "80be02bfafb48b2adaf903ec8ec0924d1ec770809a7d6d9fb682b9930a85839a",
+        "durationMs": 2313
+      },
+      "verification": {
+        "status": "passed",
+        "strict": true,
+        "reasons": []
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "gradle",
+            "version": "Gradle 8.12.1",
+            "path": "/tmp/patchprove-toolchains/gradle-8.12.1/bin/gradle"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "build.gradle",
+            "hash": "de3bbb09e053e316bfefd676c74bd37c7534cc84a120bd581cad120f180394f8"
+          },
+          {
+            "path": "settings.gradle",
+            "hash": "cf93e11e241973e5ac44b4910f8e8fb46489ff1d5b0c14ff4f0602d935646d2d"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (gradle test)",
+        "status": "passed",
+        "reason": "ok",
+        "command": "/tmp/patchprove-toolchains/gradle-8.12.1/bin/gradle test --tests fixture.ValueTest",
+        "exitCode": 0,
+        "durationMs": 1207,
+        "detail": "> Task :compileJava\n> Task :processResources NO-SOURCE\n> Task :classes\n> Task :compileTestJava\n> Task :processTestResources NO-SOURCE\n> Task :testClasses\n\n> Task :test\n\nValueTest > value() PASSED\nTests run: 1\n\n[Incubating] Problems report is available at: file:///tmp/patchprove-installed-%E6%B5%8B%E8%AF%95%20space-VesoJR/build/reports/problems/problems-report.html\n\nDeprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.\n\nYou can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.\n\nFor more on this, please refer to https://docs.gradle.org/8.12.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.\n\nBUILD SUCCESSFUL in 1s\n3 actionable tasks: 3 executed",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:java",
+            "checkId": "tests",
+            "scope": [
+              "src/test/java/fixture/ValueTest.java"
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-toolchains/gradle-8.12.1/bin/gradle",
+            "args": [
+              "test",
+              "--tests",
+              "fixture.ValueTest"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-VesoJR",
+            "exitCode": 0,
+            "durationMs": 1207,
+            "reason": "ok",
+            "toolVersion": "Gradle 8.12.1",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "b5a75eb5c0eaa4fba5a257be0aa7556ad223303eecb1e7feb63140f5ad5bb7ca",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "java-junit",
+              "reportStatus": "validated",
+              "granularity": "file",
+              "requestedScope": [
+                "src/test/java/fixture/ValueTest.java"
+              ],
+              "collectedScope": [
+                "src/test/java/fixture/ValueTest.java"
+              ],
+              "executedScope": [
+                "src/test/java/fixture/ValueTest.java"
+              ],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 1,
+                "executed": 1,
+                "passed": 1,
+                "failed": 0,
+                "skipped": 0
+              },
+              "reportHash": "3a8192650311412d35d7de6043c6edb9b3ca22e0d3400aa873633c51c76c7f05",
+              "sourceFiles": [
+                "src/test/java/fixture/ValueTest.java"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "gradle-failure",
+      "status": "passed",
+      "cli": {
+        "exitCode": 1,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-7ABuEP",
+          "--out",
+          "/tmp/patchprove-installed-result-lstQ2I/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "ff984edaaf552ba4260c25a82c59365467276288a222f9e208ef2c9c89eef801",
+        "durationMs": 2372
+      },
+      "verification": {
+        "status": "failed",
+        "strict": true,
+        "reasons": [
+          {
+            "code": "check-failed",
+            "message": "affected tests (gradle test) failed",
+            "checkId": "tests"
+          },
+          {
+            "code": "execution-failed",
+            "message": "Execution tests:java did not succeed",
+            "checkId": "tests",
+            "scope": [
+              "src/test/java/fixture/ValueTest.java"
+            ]
+          },
+          {
+            "code": "planned-scope-unverified",
+            "message": "Planned tests scope has no successful execution",
+            "checkId": "tests",
+            "scope": [
+              "src/test/java/fixture/ValueTest.java"
+            ]
+          }
+        ]
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "gradle",
+            "version": "Gradle 8.12.1",
+            "path": "/tmp/patchprove-toolchains/gradle-8.12.1/bin/gradle"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "build.gradle",
+            "hash": "de3bbb09e053e316bfefd676c74bd37c7534cc84a120bd581cad120f180394f8"
+          },
+          {
+            "path": "settings.gradle",
+            "hash": "cf93e11e241973e5ac44b4910f8e8fb46489ff1d5b0c14ff4f0602d935646d2d"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (gradle test)",
+        "status": "failed",
+        "reason": "exit 1",
+        "command": "/tmp/patchprove-toolchains/gradle-8.12.1/bin/gradle test --tests fixture.ValueTest",
+        "exitCode": 1,
+        "durationMs": 1263,
+        "detail": "> Task :compileJava\n> Task :processResources NO-SOURCE\n> Task :classes\n> Task :compileTestJava\n> Task :processTestResources NO-SOURCE\n> Task :testClasses\n\n> Task :test FAILED\n\nValueTest > value() FAILED\n    org.opentest4j.AssertionFailedError at ValueTest.java:4\nTests run: 1\n\n[Incubating] Problems report is available at: file:///tmp/patchprove-installed-%E6%B5%8B%E8%AF%95%20space-7ABuEP/build/reports/problems/problems-report.html\n\nDeprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.\n\nYou can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.\n\nFor more on this, please refer to https://docs.gradle.org/8.12.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.\n3 actionable tasks: 3 executed\n\n\n1 test completed, 1 failed\n\nFAILURE: Build failed with an exception.\n\n* What went wrong:\nExecution failed for task ':test'.\n> There were failing tests. See the report at: file:///tmp/patchprove-installed-%E6%B5%8B%E8%AF%95%20space-7ABuEP/build/reports/tests/test/index.html\n\n* Try:\n> Run with --scan to get full insights.\n\nBUILD FAILED in 1s",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:java",
+            "checkId": "tests",
+            "scope": [
+              "src/test/java/fixture/ValueTest.java"
+            ],
+            "status": "failed",
+            "command": "/tmp/patchprove-toolchains/gradle-8.12.1/bin/gradle",
+            "args": [
+              "test",
+              "--tests",
+              "fixture.ValueTest"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-7ABuEP",
+            "exitCode": 1,
+            "durationMs": 1263,
+            "reason": "exit 1",
+            "toolVersion": "Gradle 8.12.1",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "fb37a05bf459548bc2124b07742830bdbac6e381864feee30669677d8e1cd4b9",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "java-junit",
+              "reportStatus": "validated",
+              "granularity": "file",
+              "requestedScope": [
+                "src/test/java/fixture/ValueTest.java"
+              ],
+              "collectedScope": [
+                "src/test/java/fixture/ValueTest.java"
+              ],
+              "executedScope": [
+                "src/test/java/fixture/ValueTest.java"
+              ],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 1,
+                "executed": 1,
+                "passed": 0,
+                "failed": 1,
+                "skipped": 0
+              },
+              "reportHash": "76dd2f75b30e8ef6c5ab57ec5dc3c4b7941a6b65fe94be3cfb995c9b8a7cef7c",
+              "sourceFiles": [
+                "src/test/java/fixture/ValueTest.java"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "gradle-zero",
+      "status": "passed",
+      "cli": {
+        "exitCode": 1,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-WrMGMS",
+          "--out",
+          "/tmp/patchprove-installed-result-LqaYYf/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "8519b76df1dc386ca6285a133b6a3c4bfd36010b7f17f48e45ee2df2fba1a81f",
+        "durationMs": 2239
+      },
+      "verification": {
+        "status": "failed",
+        "strict": true,
+        "reasons": [
+          {
+            "code": "check-failed",
+            "message": "affected tests (gradle test) failed",
+            "checkId": "tests"
+          },
+          {
+            "code": "execution-failed",
+            "message": "Execution tests:java did not succeed",
+            "checkId": "tests",
+            "scope": []
+          },
+          {
+            "code": "test-scope-unknown",
+            "message": "No tests execution report was produced for the selected Java scope",
+            "checkId": "tests",
+            "scope": [
+              "src/test/java/fixture/ValueTest.java"
+            ]
+          },
+          {
+            "code": "planned-scope-unverified",
+            "message": "Planned tests scope has no successful execution",
+            "checkId": "tests",
+            "scope": [
+              "src/test/java/fixture/ValueTest.java"
+            ]
+          }
+        ]
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "gradle",
+            "version": "Gradle 8.12.1",
+            "path": "/tmp/patchprove-toolchains/gradle-8.12.1/bin/gradle"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "build.gradle",
+            "hash": "de3bbb09e053e316bfefd676c74bd37c7534cc84a120bd581cad120f180394f8"
+          },
+          {
+            "path": "settings.gradle",
+            "hash": "cf93e11e241973e5ac44b4910f8e8fb46489ff1d5b0c14ff4f0602d935646d2d"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (gradle test)",
+        "status": "failed",
+        "reason": "exit 1",
+        "command": "/tmp/patchprove-toolchains/gradle-8.12.1/bin/gradle test --tests fixture.ValueTest",
+        "exitCode": 1,
+        "durationMs": 1121,
+        "detail": "> Task :compileJava\n> Task :processResources NO-SOURCE\n> Task :classes\n> Task :compileTestJava\n> Task :processTestResources NO-SOURCE\n> Task :testClasses\n\n> Task :test FAILED\nTests run: 0\n\n[Incubating] Problems report is available at: file:///tmp/patchprove-installed-%E6%B5%8B%E8%AF%95%20space-WrMGMS/build/reports/problems/problems-report.html\n\nDeprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.\n\nYou can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.\n\nFor more on this, please refer to https://docs.gradle.org/8.12.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.\n3 actionable tasks: 3 executed\n\n\nFAILURE: Build failed with an exception.\n\n* What went wrong:\nExecution failed for task ':test'.\n> No tests found for given includes: [fixture.ValueTest](--tests filter)\n\n* Try:\n> Run with --stacktrace option to get the stack trace.\n> Run with --info or --debug option to get more log output.\n> Run with --scan to get full insights.\n> Get more help at https://help.gradle.org.\n\nBUILD FAILED in 1s",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:java",
+            "checkId": "tests",
+            "scope": [],
+            "status": "failed",
+            "command": "/tmp/patchprove-toolchains/gradle-8.12.1/bin/gradle",
+            "args": [
+              "test",
+              "--tests",
+              "fixture.ValueTest"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-WrMGMS",
+            "exitCode": 1,
+            "durationMs": 1121,
+            "reason": "exit 1",
+            "toolVersion": "Gradle 8.12.1",
+            "signal": null,
+            "truncated": false,
+            "outputHash": "810324cb011904c85b8844afd8712d2f17ff1416076c11f4ae0928a8e6edf517",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "java-junit",
+              "reportStatus": "missing",
+              "granularity": "file",
+              "requestedScope": [
+                "src/test/java/fixture/ValueTest.java"
+              ],
+              "collectedScope": [],
+              "executedScope": [],
+              "skippedScope": [],
+              "unknownScope": [
+                "src/test/java/fixture/ValueTest.java"
+              ],
+              "counts": {
+                "collected": 0,
+                "executed": 0,
+                "passed": 0,
+                "failed": 0,
+                "skipped": 0
+              },
+              "reason": "No tests execution report was produced for the selected Java scope",
+              "sourceFiles": [
+                "src/test/java/fixture/ValueTest.java"
+              ]
+            }
+          }
+        ]
+      }
+    },
+    {
+      "id": "gradle-multimodule",
+      "status": "passed",
+      "cli": {
+        "exitCode": 0,
+        "args": [
+          "/tmp/patchprove-package-aN8teZ/consumer/node_modules/patchprove/dist/cli.js",
+          "run",
+          "--cwd",
+          "/tmp/patchprove-installed-测试 space-m04o2r",
+          "--out",
+          "/tmp/patchprove-installed-result-jELSGO/evidence.json",
+          "--disable-gate",
+          "typecheck",
+          "--disable-gate",
+          "lint",
+          "--disable-gate",
+          "secrets",
+          "--timeout-ms",
+          "180000"
+        ],
+        "outputHash": "bdf8fae4cecb4dbf292a2addcfa8ba62c12192cca4fa69837d20c513ebb9d3ad",
+        "durationMs": 2813
+      },
+      "verification": {
+        "status": "passed",
+        "strict": true,
+        "reasons": []
+      },
+      "environment": {
+        "platform": "linux",
+        "arch": "x64",
+        "nodeVersion": "v24.19.0",
+        "gitVersion": "git version 2.52.0",
+        "tools": [
+          {
+            "name": "gradle",
+            "version": "Gradle 8.12.1",
+            "path": "/tmp/patchprove-toolchains/gradle-8.12.1/bin/gradle"
+          }
+        ],
+        "dependencyLocks": [],
+        "inputLimits": {
+          "maxFileBytes": 33554432,
+          "maxTotalBytes": 268435456,
+          "maxFiles": 50000,
+          "maxJsonBytes": 8388608,
+          "maxJsonDepth": 64,
+          "maxJsonNodes": 200000,
+          "maxGraphEdges": 500000
+        },
+        "hermetic": false,
+        "configurations": [
+          {
+            "path": "alpha/build.gradle",
+            "hash": "de3bbb09e053e316bfefd676c74bd37c7534cc84a120bd581cad120f180394f8"
+          },
+          {
+            "path": "beta/build.gradle",
+            "hash": "de3bbb09e053e316bfefd676c74bd37c7534cc84a120bd581cad120f180394f8"
+          },
+          {
+            "path": "settings.gradle",
+            "hash": "d9911ad80a263a13d19200704d84a943c64ceea92824afc36812aaff9300d2c8"
+          }
+        ]
+      },
+      "tests": {
+        "id": "tests",
+        "name": "affected tests (gradle test)",
+        "status": "passed",
+        "reason": "ok",
+        "command": "/tmp/patchprove-toolchains/gradle-8.12.1/bin/gradle :alpha:test --tests fixture.ValueTest :beta:test --tests fixture.ValueTest",
+        "exitCode": 0,
+        "durationMs": 1703,
+        "detail": "> Task :alpha:compileJava\n> Task :alpha:processResources NO-SOURCE\n> Task :alpha:classes\n> Task :alpha:compileTestJava\n> Task :alpha:processTestResources NO-SOURCE\n> Task :alpha:testClasses\n\n> Task :alpha:test\n\nValueTest > value() PASSED\nTests run: 1\n\n> Task :beta:compileJava\n> Task :beta:processResources NO-SOURCE\n> Task :beta:classes\n> Task :beta:compileTestJava\n> Task :beta:processTestResources NO-SOURCE\n> Task :beta:testClasses\n\n> Task :beta:test\n\nValueTest > value() PASSED\nTests run: 1\n\n[Incubating] Problems report is available at: file:///tmp/patchprove-installed-%E6%B5%8B%E8%AF%95%20space-m04o2r/build/reports/problems/problems-report.html\n\nDeprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.\n\nYou can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.\n\nFor more on this, please refer to https://docs.gradle.org/8.12.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.\n\nBUILD SUCCESSFUL in 1s\n6 actionable tasks: 6 executed",
+        "timedOut": false,
+        "truncated": false,
+        "records": [
+          {
+            "id": "tests:java",
+            "checkId": "tests",
+            "scope": [
+              "alpha/src/test/java/fixture/ValueTest.java",
+              "beta/src/test/java/fixture/ValueTest.java"
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-toolchains/gradle-8.12.1/bin/gradle",
+            "args": [
+              ":alpha:test",
+              "--tests",
+              "fixture.ValueTest",
+              ":beta:test",
+              "--tests",
+              "fixture.ValueTest"
+            ],
+            "cwd": "/tmp/patchprove-installed-测试 space-m04o2r",
+            "exitCode": 0,
+            "durationMs": 1703,
+            "reason": "ok",
+            "toolVersion": "Gradle 8.12.1",
+            "collectedTests": 2,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "84439ce5117ebe5720a48b1009864a8f7d51fb19ab1dbe229aec6f3cfe856e9e",
+            "required": true,
+            "testExecution": {
+              "parserVersion": "1",
+              "format": "java-junit",
+              "reportStatus": "validated",
+              "granularity": "file",
+              "requestedScope": [
+                "alpha/src/test/java/fixture/ValueTest.java",
+                "beta/src/test/java/fixture/ValueTest.java"
+              ],
+              "collectedScope": [
+                "alpha/src/test/java/fixture/ValueTest.java",
+                "beta/src/test/java/fixture/ValueTest.java"
+              ],
+              "executedScope": [
+                "alpha/src/test/java/fixture/ValueTest.java",
+                "beta/src/test/java/fixture/ValueTest.java"
+              ],
+              "skippedScope": [],
+              "unknownScope": [],
+              "counts": {
+                "collected": 2,
+                "executed": 2,
+                "passed": 2,
+                "failed": 0,
+                "skipped": 0
+              },
+              "reportHash": "dcde50ac686e6a2f9df683d4a1404e7e34d85f3f8d9ba76e7bd70a3843e65a79",
+              "sourceFiles": [
+                "alpha/src/test/java/fixture/ValueTest.java",
+                "beta/src/test/java/fixture/ValueTest.java"
+              ]
+            }
+          }
+        ]
+      }
+    }
+  ],
+  "limitations": [
+    "Real engines in minimal fixtures, not mapping accuracy on real projects.",
+    "Node runner dependency is explicitly linked from the build workspace; no plugin or tool detection is replaced.",
+    "Missing-tool cases remain in the executor harness; this suite uses the caller's real installed tools."
+  ]
+}

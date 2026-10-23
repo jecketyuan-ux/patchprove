@@ -1,0 +1,1156 @@
+﻿2026-10-23T05:38:10.3756672Z Current runner version: '2.338.0'
+2026-10-23T05:38:10.3785423Z ##[group]Runner Image Provisioner
+2026-10-23T05:38:10.3786316Z Hosted Compute Agent
+2026-10-23T05:38:10.3786950Z Version: 20261002.596
+2026-10-23T05:38:10.3787601Z Commit: c3d12f3313a95f25162a1503be624f3b0617f8c0
+2026-10-23T05:38:10.3788441Z Build Date: 2026-10-02T22:28:27Z
+2026-10-23T05:38:10.3789187Z Worker ID: {b863fb49-c15a-4c18-a5df-eef8f111bfdf}
+2026-10-23T05:38:10.3789956Z Region: eastus
+2026-10-23T05:38:10.3790549Z Cloud: Azure
+2026-10-23T05:38:10.3791188Z ##[endgroup]
+2026-10-23T05:38:10.3793417Z ##[group]Operating System
+2026-10-23T05:38:10.3794201Z Microsoft Windows Server 2025
+2026-10-23T05:38:10.3794878Z 10.0.26100
+2026-10-23T05:38:10.3795442Z Datacenter
+2026-10-23T05:38:10.3795981Z ##[endgroup]
+2026-10-23T05:38:10.3796579Z ##[group]Runner Image
+2026-10-23T05:38:10.3797201Z Image: windows-2025-vs2026
+2026-10-23T05:38:10.3797834Z Version: 20261007.264.1
+2026-10-23T05:38:10.3799865Z Included Software: https://github.com/actions/runner-images/blob/win25-vs2026/20261007.264/images/windows/Windows2025-VS2026-Readme.md
+2026-10-23T05:38:10.3801243Z Image Release: https://github.com/actions/runner-images/releases/tag/win25-vs2026%2F20261007.264
+2026-10-23T05:38:10.3802003Z ##[endgroup]
+2026-10-23T05:38:10.3803177Z ##[group]GITHUB_TOKEN Permissions
+2026-10-23T05:38:10.3804883Z Contents: read
+2026-10-23T05:38:10.3805496Z Metadata: read
+2026-10-23T05:38:10.3806132Z ##[endgroup]
+2026-10-23T05:38:10.3808641Z Secret source: Actions
+2026-10-23T05:38:10.3809627Z Cache mode: write
+2026-10-23T05:38:10.3810390Z Prepare workflow directory
+2026-10-23T05:38:10.4097642Z Prepare all required actions
+2026-10-23T05:38:10.4136954Z Getting action download info
+2026-10-23T05:38:10.6327010Z Download action repository 'actions/checkout@11d5960a326750d5838078e36cf38b85af677262' (SHA:11d5960a326750d5838078e36cf38b85af677262)
+2026-10-23T05:38:10.7418354Z Download action repository 'actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020' (SHA:49933ea5288caeca8642d1e84afbd3f7d6820020)
+2026-10-23T05:38:11.0092970Z Download action repository 'actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065' (SHA:a26af69be951a213d495a4c3e4e4022e16d87065)
+2026-10-23T05:38:11.2041524Z Download action repository 'actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff' (SHA:40f1582b2485089dde7abd97c1529aa768e1baff)
+2026-10-23T05:38:11.4418089Z Download action repository 'dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec' (SHA:b725eda525362e7cf34af9a7243cac1e3f01a7ec)
+2026-10-23T05:38:11.5094477Z Download action repository 'actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3' (SHA:cf277c60eb25467037889841efdb72551f06f6c3)
+2026-10-23T05:38:11.9543621Z Download action repository 'gradle/actions@748248ddd2a24f49513d8f472f81c3a07d4d50e1' (SHA:748248ddd2a24f49513d8f472f81c3a07d4d50e1)
+2026-10-23T05:38:14.9187333Z Download action repository 'actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2026-10-23T05:38:15.9130294Z Complete job name: Real runtime fixtures / windows-latest
+2026-10-23T05:38:17.0754456Z ##[group]Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+2026-10-23T05:38:17.0755127Z with:
+2026-10-23T05:38:17.0755300Z   persist-credentials: false
+2026-10-23T05:38:17.0755514Z   repository: jecketyuan-ux/patchprove
+2026-10-23T05:38:17.0757369Z   token: ***
+2026-10-23T05:38:17.0757526Z   ssh-strict: true
+2026-10-23T05:38:17.0757694Z   ssh-user: git
+2026-10-23T05:38:17.0757834Z   clean: true
+2026-10-23T05:38:17.0758001Z   sparse-checkout-cone-mode: true
+2026-10-23T05:38:17.0758192Z   fetch-depth: 1
+2026-10-23T05:38:17.0758340Z   fetch-tags: false
+2026-10-23T05:38:17.0758492Z   show-progress: true
+2026-10-23T05:38:17.0758646Z   lfs: false
+2026-10-23T05:38:17.0758785Z   submodules: false
+2026-10-23T05:38:17.0758946Z   set-safe-directory: true
+2026-10-23T05:38:17.0759144Z   allow-unsafe-pr-checkout: false
+2026-10-23T05:38:17.0759467Z ##[endgroup]
+2026-10-23T05:38:17.2803134Z Syncing repository: jecketyuan-ux/patchprove
+2026-10-23T05:38:17.2804204Z ##[group]Getting Git version info
+2026-10-23T05:38:17.2804462Z Working directory is 'D:\a\patchprove\patchprove'
+2026-10-23T05:38:17.4475815Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-10-23T05:38:20.1823097Z git version 2.56.0.windows.2
+2026-10-23T05:38:20.1863851Z ##[endgroup]
+2026-10-23T05:38:20.1880306Z Temporarily overriding HOME='D:\a\_temp\6f72aa88-1d4d-4878-b1dd-004b7c254aa8' before making global git config changes
+2026-10-23T05:38:20.1880932Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-23T05:38:20.1888893Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\patchprove\patchprove
+2026-10-23T05:38:20.4346308Z Deleting the contents of 'D:\a\patchprove\patchprove'
+2026-10-23T05:38:20.4350989Z ##[group]Initializing the repository
+2026-10-23T05:38:20.4360237Z [command]"C:\Program Files\Git\bin\git.exe" init D:\a\patchprove\patchprove
+2026-10-23T05:38:20.8212959Z Initialized empty Git repository in D:/a/patchprove/patchprove/.git/
+2026-10-23T05:38:20.8258882Z [command]"C:\Program Files\Git\bin\git.exe" remote add origin https://github.com/jecketyuan-ux/patchprove
+2026-10-23T05:38:20.9589239Z ##[endgroup]
+2026-10-23T05:38:20.9589728Z ##[group]Disabling automatic garbage collection
+2026-10-23T05:38:20.9599849Z [command]"C:\Program Files\Git\bin\git.exe" config --local gc.auto 0
+2026-10-23T05:38:20.9934846Z ##[endgroup]
+2026-10-23T05:38:20.9935273Z ##[group]Setting up auth
+2026-10-23T05:38:20.9947716Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-10-23T05:38:21.0275796Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-10-23T05:38:24.0389738Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-23T05:38:24.0699816Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-10-23T05:38:24.5307654Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-23T05:38:24.5639351Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-10-23T05:38:25.0345364Z [command]"C:\Program Files\Git\bin\git.exe" config --local http.https://github.com/.extraheader "AUTHORIZATION: basic ***"
+2026-10-23T05:38:25.0676067Z ##[endgroup]
+2026-10-23T05:38:25.0676622Z ##[group]Fetching the repository
+2026-10-23T05:38:25.0687865Z [command]"C:\Program Files\Git\bin\git.exe" -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +d17b563362adcc0bab9fe3e1a5546f33cf6ab94b:refs/remotes/pull/18/merge
+2026-10-23T05:38:31.3645342Z From https://github.com/jecketyuan-ux/patchprove
+2026-10-23T05:38:31.3646336Z  * [new ref]         d17b563362adcc0bab9fe3e1a5546f33cf6ab94b -> pull/18/merge
+2026-10-23T05:38:31.3685399Z ##[endgroup]
+2026-10-23T05:38:31.3685806Z ##[group]Determining the checkout info
+2026-10-23T05:38:31.3687918Z ##[endgroup]
+2026-10-23T05:38:31.3701163Z [command]"C:\Program Files\Git\bin\git.exe" sparse-checkout disable
+2026-10-23T05:38:31.4947678Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all extensions.worktreeConfig
+2026-10-23T05:38:31.5277134Z ##[group]Checking out the ref
+2026-10-23T05:38:31.5286545Z [command]"C:\Program Files\Git\bin\git.exe" checkout --progress --force refs/remotes/pull/18/merge
+2026-10-23T05:38:32.0089317Z Note: switching to 'refs/remotes/pull/18/merge'.
+2026-10-23T05:38:32.0090769Z 
+2026-10-23T05:38:32.0091086Z You are in 'detached HEAD' state. You can look around, make experimental
+2026-10-23T05:38:32.0091808Z changes and commit them, and you can discard any commits you make in this
+2026-10-23T05:38:32.0092460Z state without impacting any branches by switching back to a branch.
+2026-10-23T05:38:32.0092791Z 
+2026-10-23T05:38:32.0093105Z If you want to create a new branch to retain commits you create, you may
+2026-10-23T05:38:32.0093670Z do so (now or later) by using -c with the switch command. Example:
+2026-10-23T05:38:32.0094014Z 
+2026-10-23T05:38:32.0094215Z   git switch -c <new-branch-name>
+2026-10-23T05:38:32.0094490Z 
+2026-10-23T05:38:32.0094616Z Or undo this operation with:
+2026-10-23T05:38:32.0094884Z 
+2026-10-23T05:38:32.0094994Z   git switch -
+2026-10-23T05:38:32.0095226Z 
+2026-10-23T05:38:32.0095504Z Turn off this advice by setting config variable advice.detachedHead to false
+2026-10-23T05:38:32.0095959Z 
+2026-10-23T05:38:32.0948673Z HEAD is now at d17b563 Merge dd410dd25e248904e23dd88a4997580a3cd317d9 into dc79f449f0d919a395c9132d44575267066b34ad
+2026-10-23T05:38:32.1253868Z ##[endgroup]
+2026-10-23T05:38:32.1746100Z [command]"C:\Program Files\Git\bin\git.exe" log -1 --format=%H
+2026-10-23T05:38:32.2033682Z d17b563362adcc0bab9fe3e1a5546f33cf6ab94b
+2026-10-23T05:38:32.2073793Z ##[group]Removing auth
+2026-10-23T05:38:32.2081541Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-10-23T05:38:32.2381192Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-10-23T05:38:33.6895164Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-23T05:38:33.7172503Z http.https://github.com/.extraheader
+2026-10-23T05:38:33.7210846Z [command]"C:\Program Files\Git\bin\git.exe" config --local --unset-all http.https://github.com/.extraheader
+2026-10-23T05:38:33.7533623Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-10-23T05:38:34.4198903Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-23T05:38:34.4503420Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-10-23T05:38:35.4629507Z ##[endgroup]
+2026-10-23T05:38:36.1691738Z ##[group]Run actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020
+2026-10-23T05:38:36.1692439Z with:
+2026-10-23T05:38:36.1692605Z   node-version: 22
+2026-10-23T05:38:36.1692762Z   cache: npm
+2026-10-23T05:38:36.1692911Z   always-auth: false
+2026-10-23T05:38:36.1693080Z   check-latest: false
+2026-10-23T05:38:36.1696013Z   token: ***
+2026-10-23T05:38:36.1696341Z ##[endgroup]
+2026-10-23T05:38:38.5852117Z Found in cache @ C:\hostedtoolcache\windows\node\22.23.3\x64
+2026-10-23T05:38:38.5858165Z (node:6756) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-23T05:38:38.5858675Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-23T05:38:38.5860929Z ##[group]Environment details
+2026-10-23T05:38:53.5690642Z node: v22.23.3
+2026-10-23T05:38:53.5690874Z npm: 10.9.9
+2026-10-23T05:38:53.5691022Z yarn: 1.22.22
+2026-10-23T05:38:53.5691439Z ##[endgroup]
+2026-10-23T05:38:53.6163641Z [command]C:\Windows\system32\cmd.exe /D /S /C "C:\hostedtoolcache\windows\node\22.23.3\x64\npm.cmd config get cache"
+2026-10-23T05:38:54.1334749Z C:\npm\cache
+2026-10-23T05:38:54.3458141Z Cache hit for: node-cache-Windows-x64-npm-cfd9ba18b8231cee63127db76e06c9411c661a9600d30e9bce082a4a58d4f1ac
+2026-10-23T05:38:54.3553031Z (node:6756) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-23T05:38:54.6584211Z Received 26665805 of 26665805 (100.0%), 96.3 MBs/sec
+2026-10-23T05:38:54.6585987Z Cache Size: ~25 MB (26665805 B)
+2026-10-23T05:38:54.6689195Z [command]"C:\Program Files\Git\usr\bin\tar.exe" -xf D:/a/_temp/f8e5ca9b-121f-469f-9daa-9a8a2a0657cb/cache.tzst -P -C D:/a/patchprove/patchprove --force-local --use-compress-program "zstd -d"
+2026-10-23T05:38:55.7646304Z Cache restored successfully
+2026-10-23T05:38:55.7673120Z Cache restored from key: node-cache-Windows-x64-npm-cfd9ba18b8231cee63127db76e06c9411c661a9600d30e9bce082a4a58d4f1ac
+2026-10-23T05:38:55.7974085Z ##[group]Run actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+2026-10-23T05:38:55.7974458Z with:
+2026-10-23T05:38:55.7974617Z   python-version: 3.12
+2026-10-23T05:38:55.7974815Z   check-latest: false
+2026-10-23T05:38:55.7976618Z   token: ***
+2026-10-23T05:38:55.7976786Z   update-environment: true
+2026-10-23T05:38:55.7976973Z   allow-prereleases: false
+2026-10-23T05:38:55.7977137Z   freethreaded: false
+2026-10-23T05:38:55.7977297Z ##[endgroup]
+2026-10-23T05:38:55.9272420Z ##[group]Installed versions
+2026-10-23T05:38:56.8270763Z (node:8444) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-23T05:38:56.8271613Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-23T05:38:56.8272048Z Successfully set up CPython (3.12.10)
+2026-10-23T05:38:56.8272420Z ##[endgroup]
+2026-10-23T05:38:56.8508727Z ##[group]Run python -m pip install --disable-pip-version-check pytest==8.3.5
+2026-10-23T05:38:56.8509243Z [36;1mpython -m pip install --disable-pip-version-check pytest==8.3.5[0m
+2026-10-23T05:38:56.9203257Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-23T05:38:56.9203576Z env:
+2026-10-23T05:38:56.9203808Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:38:56.9204197Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:38:56.9204555Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:38:56.9205227Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:38:56.9205542Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:38:56.9205799Z ##[endgroup]
+2026-10-23T05:39:03.1328413Z Collecting pytest==8.3.5
+2026-10-23T05:39:03.3783340Z   Downloading pytest-8.3.5-py3-none-any.whl.metadata (7.6 kB)
+2026-10-23T05:39:03.4104110Z Requirement already satisfied: colorama in C:\hostedtoolcache\windows\Python\3.12.10\x64\Lib\site-packages (from pytest==8.3.5) (0.4.6)
+2026-10-23T05:39:03.4438237Z Collecting iniconfig (from pytest==8.3.5)
+2026-10-23T05:39:03.4812340Z   Downloading iniconfig-2.3.1-py3-none-any.whl.metadata (2.8 kB)
+2026-10-23T05:39:03.5471109Z Requirement already satisfied: packaging in C:\hostedtoolcache\windows\Python\3.12.10\x64\Lib\site-packages (from pytest==8.3.5) (26.3)
+2026-10-23T05:39:03.5779607Z Collecting pluggy<2,>=1.5 (from pytest==8.3.5)
+2026-10-23T05:39:03.6148700Z   Downloading pluggy-1.7.0-py3-none-any.whl.metadata (5.0 kB)
+2026-10-23T05:39:03.7486407Z Downloading pytest-8.3.5-py3-none-any.whl (343 kB)
+2026-10-23T05:39:03.9061849Z Downloading pluggy-1.7.0-py3-none-any.whl (27 kB)
+2026-10-23T05:39:03.9662540Z Downloading iniconfig-2.3.1-py3-none-any.whl (7.6 kB)
+2026-10-23T05:39:04.2701264Z Installing collected packages: pluggy, iniconfig, pytest
+2026-10-23T05:39:04.9260066Z 
+2026-10-23T05:39:04.9273466Z Successfully installed iniconfig-2.3.1 pluggy-1.7.0 pytest-8.3.5
+2026-10-23T05:39:05.1029867Z ##[group]Run actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff
+2026-10-23T05:39:05.1030229Z with:
+2026-10-23T05:39:05.1030391Z   go-version: 1.23.6
+2026-10-23T05:39:05.1030565Z   check-latest: false
+2026-10-23T05:39:05.1032540Z   token: ***
+2026-10-23T05:39:05.1032691Z   cache: true
+2026-10-23T05:39:05.1032839Z env:
+2026-10-23T05:39:05.1033055Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:05.1033420Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:39:05.1033780Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:05.1034138Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:05.1034453Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:05.1034700Z ##[endgroup]
+2026-10-23T05:39:05.2358367Z Setup go version spec 1.23.6
+2026-10-23T05:39:05.2367896Z Attempting to download 1.23.6...
+2026-10-23T05:39:05.2514129Z (node:8068) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-23T05:39:05.2514775Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-23T05:39:05.6989966Z matching 1.23.6...
+2026-10-23T05:39:05.7034316Z Acquiring 1.23.6 from https://github.com/actions/go-versions/releases/download/1.23.6-13149487101/go-1.23.6-win32-x64.zip
+2026-10-23T05:39:06.1491547Z Extracting Go...
+2026-10-23T05:39:06.1983154Z [command]"C:\Program Files\PowerShell\7\pwsh.exe" -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Unrestricted -Command "$ErrorActionPreference = 'Stop' ; try { Add-Type -AssemblyName System.IO.Compression.ZipFile } catch { } ; try { [System.IO.Compression.ZipFile]::ExtractToDirectory('D:\a\_temp\go-1.23.6-win32-x64.zip', 'D:\a\_temp\18d12ba0-3cd5-45c7-9c11-ea040884f249', $true) } catch { if (($_.Exception.GetType().FullName -eq 'System.Management.Automation.MethodException') -or ($_.Exception.GetType().FullName -eq 'System.Management.Automation.RuntimeException') ){ Expand-Archive -LiteralPath 'D:\a\_temp\go-1.23.6-win32-x64.zip' -DestinationPath 'D:\a\_temp\18d12ba0-3cd5-45c7-9c11-ea040884f249' -Force } else { throw $_ } } ;"
+2026-10-23T05:39:09.7282479Z Successfully extracted go to D:\a\_temp\18d12ba0-3cd5-45c7-9c11-ea040884f249
+2026-10-23T05:39:09.7282859Z Adding to the cache ...
+2026-10-23T05:39:17.1466501Z Created link C:\hostedtoolcache\windows\go\1.23.6\x64 => D:\hostedtoolcache\windows\go\1.23.6\x64
+2026-10-23T05:39:17.1470184Z Created link C:\hostedtoolcache\windows\go\1.23.6\x64.complete => D:\hostedtoolcache\windows\go\1.23.6\x64.complete
+2026-10-23T05:39:17.1470837Z Successfully cached go to C:\hostedtoolcache\windows\go\1.23.6\x64
+2026-10-23T05:39:17.1475832Z Added go to the path
+2026-10-23T05:39:17.1478090Z Successfully set up Go version 1.23.6
+2026-10-23T05:39:17.4285447Z [command]C:\hostedtoolcache\windows\go\1.23.6\x64\bin\go.exe env GOCACHE
+2026-10-23T05:39:17.4328503Z [command]C:\hostedtoolcache\windows\go\1.23.6\x64\bin\go.exe env GOMODCACHE
+2026-10-23T05:39:17.4608322Z C:\Users\runneradmin\AppData\Local\go-build
+2026-10-23T05:39:17.4630959Z C:\Users\runneradmin\go\pkg\mod
+2026-10-23T05:39:17.4663092Z ##[warning]Restore cache failed: Dependencies file is not found in D:\a\patchprove\patchprove. Supported file pattern: go.sum
+2026-10-23T05:39:17.4672369Z go version go1.23.6 windows/amd64
+2026-10-23T05:39:17.4672538Z 
+2026-10-23T05:39:17.4672764Z ##[group]go env
+2026-10-23T05:39:21.7736669Z set GO111MODULE=
+2026-10-23T05:39:21.7737025Z set GOARCH=amd64
+2026-10-23T05:39:21.7737257Z set GOBIN=
+2026-10-23T05:39:21.7737697Z set GOCACHE=C:\Users\runneradmin\AppData\Local\go-build
+2026-10-23T05:39:21.7738545Z set GOENV=C:\Users\runneradmin\AppData\Roaming\go\env
+2026-10-23T05:39:21.7738800Z set GOEXE=.exe
+2026-10-23T05:39:21.7738972Z set GOEXPERIMENT=
+2026-10-23T05:39:21.7739130Z set GOFLAGS=
+2026-10-23T05:39:21.7739303Z set GOHOSTARCH=amd64
+2026-10-23T05:39:21.7785694Z set GOHOSTOS=windows
+2026-10-23T05:39:21.7786848Z set GOINSECURE=
+2026-10-23T05:39:21.7787260Z set GOMODCACHE=C:\Users\runneradmin\go\pkg\mod
+2026-10-23T05:39:21.7787606Z set GONOPROXY=
+2026-10-23T05:39:21.7788692Z set GONOSUMDB=
+2026-10-23T05:39:21.7788927Z set GOOS=windows
+2026-10-23T05:39:21.7789244Z set GOPATH=C:\Users\runneradmin\go
+2026-10-23T05:39:21.7789530Z set GOPRIVATE=
+2026-10-23T05:39:21.7789866Z set GOPROXY=https://proxy.golang.org,direct
+2026-10-23T05:39:21.7790250Z set GOROOT=C:\hostedtoolcache\windows\go\1.23.6\x64
+2026-10-23T05:39:21.7790509Z set GOSUMDB=sum.golang.org
+2026-10-23T05:39:21.7790686Z set GOTMPDIR=
+2026-10-23T05:39:21.7790929Z set GOTOOLCHAIN=auto
+2026-10-23T05:39:21.7791428Z set GOTOOLDIR=C:\hostedtoolcache\windows\go\1.23.6\x64\pkg\tool\windows_amd64
+2026-10-23T05:39:21.7791882Z set GOVCS=
+2026-10-23T05:39:21.7792108Z set GOVERSION=go1.23.6
+2026-10-23T05:39:21.7792357Z set GODEBUG=
+2026-10-23T05:39:21.7795406Z set GOTELEMETRY=local
+2026-10-23T05:39:21.7796018Z set GOTELEMETRYDIR=C:\Users\runneradmin\AppData\Roaming\go\telemetry
+2026-10-23T05:39:21.7796492Z set GCCGO=gccgo
+2026-10-23T05:39:21.7796691Z set GOAMD64=v1
+2026-10-23T05:39:21.7796846Z set AR=ar
+2026-10-23T05:39:21.7796996Z set CC=gcc
+2026-10-23T05:39:21.7797187Z set CXX=g++
+2026-10-23T05:39:21.7797463Z set CGO_ENABLED=1
+2026-10-23T05:39:21.7797732Z set GOMOD=D:\a\patchprove\patchprove\go.mod
+2026-10-23T05:39:21.7798161Z set GOWORK=
+2026-10-23T05:39:21.7798373Z set CGO_CFLAGS=-O2 -g
+2026-10-23T05:39:21.7798683Z set CGO_CPPFLAGS=
+2026-10-23T05:39:21.7798873Z set CGO_CXXFLAGS=-O2 -g
+2026-10-23T05:39:21.7799061Z set CGO_FFLAGS=-O2 -g
+2026-10-23T05:39:21.7799235Z set CGO_LDFLAGS=-O2 -g
+2026-10-23T05:39:21.7799432Z set PKG_CONFIG=pkg-config
+2026-10-23T05:39:21.7801945Z set GOGCCFLAGS=-m64 -mthreads -Wl,--no-gc-sections -fmessage-length=0 -ffile-prefix-map=C:\Users\RUNNER~1\AppData\Local\Temp\go-build1858021956=/tmp/go-build -gno-record-gcc-switches
+2026-10-23T05:39:21.7802580Z 
+2026-10-23T05:39:21.7802928Z ##[endgroup]
+2026-10-23T05:39:21.8187242Z ##[group]Run dtolnay/rust-toolchain@b725eda525362e7cf34af9a7243cac1e3f01a7ec
+2026-10-23T05:39:21.8187625Z with:
+2026-10-23T05:39:21.8187780Z   toolchain: 1.85.0
+2026-10-23T05:39:21.8187954Z env:
+2026-10-23T05:39:21.8188402Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:21.8188768Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:39:21.8189125Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:21.8189445Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:21.8189751Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:21.8189998Z ##[endgroup]
+2026-10-23T05:39:21.8251235Z ##[start-action display=Parse toolchain version;id=__dtolnay_rust-toolchain.parse]
+2026-10-23T05:39:21.8384428Z ##[group]Run if [[ -z $toolchain ]]; then
+2026-10-23T05:39:21.8384739Z [36;1mif [[ -z $toolchain ]]; then[0m
+2026-10-23T05:39:21.8385173Z [36;1m  # GitHub does not enforce `required: true` inputs itself. https://github.com/actions/runner/issues/1070[0m
+2026-10-23T05:39:21.8385602Z [36;1m  echo "'toolchain' is a required input" >&2[0m
+2026-10-23T05:39:21.8385838Z [36;1m  exit 1[0m
+2026-10-23T05:39:21.8386102Z [36;1melif [[ $toolchain =~ ^stable' '[0-9]+' '(year|month|week|day)s?' 'ago$ ]]; then[0m
+2026-10-23T05:39:21.8386805Z [36;1m  if [[ Windows == macOS ]]; then[0m
+2026-10-23T05:39:21.8387221Z [36;1m    echo "toolchain=1.$((($(date -v-$(sed 's/stable \([0-9]*\) \(.\).*/\1\2/' <<< $toolchain) +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-10-23T05:39:21.8387601Z [36;1m  else[0m
+2026-10-23T05:39:21.8387910Z [36;1m    echo "toolchain=1.$((($(date --date "${toolchain#stable }" +%s)/60/60/24-16569)/7/6))" >> $GITHUB_OUTPUT[0m
+2026-10-23T05:39:21.8388243Z [36;1m  fi[0m
+2026-10-23T05:39:21.8388473Z [36;1melif [[ $toolchain =~ ^stable' 'minus' '[0-9]+' 'releases?$ ]]; then[0m
+2026-10-23T05:39:21.8388876Z [36;1m  echo "toolchain=1.$((($(date +%s)/60/60/24-16569)/7/6-${toolchain//[^0-9]/}))" >> $GITHUB_OUTPUT[0m
+2026-10-23T05:39:21.8389222Z [36;1melif [[ $toolchain =~ ^1\.[0-9]+$ ]]; then[0m
+2026-10-23T05:39:21.8389776Z [36;1m  echo "toolchain=1.$((i=${toolchain#1.}, c=($(date +%s)/60/60/24-16569)/7/6, i+9*i*(10*i<=c)+90*i*(100*i<=c)))" >> $GITHUB_OUTPUT[0m
+2026-10-23T05:39:21.8390133Z [36;1melse[0m
+2026-10-23T05:39:21.8390291Z [36;1m  delimiter=EOF[0m
+2026-10-23T05:39:21.8390519Z [36;1m  while [[ $toolchain == *$delimiter* ]]; do delimiter+=_; done[0m
+2026-10-23T05:39:21.8390897Z [36;1m  printf 'toolchain<<%s\n%s\n%s\n' "$delimiter" "$toolchain" "$delimiter" >> $GITHUB_OUTPUT[0m
+2026-10-23T05:39:21.8391202Z [36;1mfi[0m
+2026-10-23T05:39:21.8404764Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-10-23T05:39:21.8405082Z env:
+2026-10-23T05:39:21.8405297Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:21.8405672Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:39:21.8406025Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:21.8406344Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:21.8407019Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:21.8407267Z   toolchain: 1.85.0
+2026-10-23T05:39:21.8407423Z ##[endgroup]
+2026-10-23T05:39:22.3499933Z ##[end-action id=__dtolnay_rust-toolchain.parse;outcome=success;conclusion=success;duration_ms=524]
+2026-10-23T05:39:22.3503921Z ##[start-action display=Set $CARGO_HOME;id=__dtolnay_rust-toolchain.__run]
+2026-10-23T05:39:22.3617397Z ##[group]Run echo CARGO_HOME=${CARGO_HOME:-"$USERPROFILE\.cargo"} >> $GITHUB_ENV
+2026-10-23T05:39:22.3617820Z [36;1mecho CARGO_HOME=${CARGO_HOME:-"$USERPROFILE\.cargo"} >> $GITHUB_ENV[0m
+2026-10-23T05:39:22.3632251Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-10-23T05:39:22.3632627Z env:
+2026-10-23T05:39:22.3632868Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:22.3633245Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:39:22.3633624Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:22.3633941Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:22.3634260Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:22.3634506Z ##[endgroup]
+2026-10-23T05:39:22.4001731Z ##[end-action id=__dtolnay_rust-toolchain.__run;outcome=success;conclusion=success;duration_ms=49]
+2026-10-23T05:39:22.4003967Z ##[start-action display=Install rustup if needed;id=__dtolnay_rust-toolchain.__run_2]
+2026-10-23T05:39:22.4013157Z ##[end-action id=__dtolnay_rust-toolchain.__run_2;outcome=skipped;conclusion=skipped;duration_ms=0]
+2026-10-23T05:39:22.4042042Z ##[start-action display=Install rustup if needed on windows;id=__dtolnay_rust-toolchain.__run_3]
+2026-10-23T05:39:22.4158143Z ##[group]Run if ! command -v rustup &>/dev/null; then
+2026-10-23T05:39:22.4158444Z [36;1mif ! command -v rustup &>/dev/null; then[0m
+2026-10-23T05:39:22.4159053Z [36;1m  curl --proto '=https' --tlsv1.2 --retry 10 --retry-connrefused --location --silent --show-error --fail https://win.rustup.rs/x86_64 --output 'D:\a\_temp\rustup-init.exe'[0m
+2026-10-23T05:39:22.4159865Z [36;1m  'D:\a\_temp\rustup-init.exe' --default-toolchain none --no-modify-path -y[0m
+2026-10-23T05:39:22.4160198Z [36;1m  echo "$CARGO_HOME\bin" >> $GITHUB_PATH[0m
+2026-10-23T05:39:22.4160404Z [36;1mfi[0m
+2026-10-23T05:39:22.4172756Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-10-23T05:39:22.4173065Z env:
+2026-10-23T05:39:22.4173281Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:22.4173650Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:39:22.4174018Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:22.4174329Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:22.4174809Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:22.4175066Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-10-23T05:39:22.4175273Z ##[endgroup]
+2026-10-23T05:39:22.4639047Z ##[end-action id=__dtolnay_rust-toolchain.__run_3;outcome=success;conclusion=success;duration_ms=59]
+2026-10-23T05:39:22.4651107Z ##[start-action display=rustup toolchain install 1.85.0;id=__dtolnay_rust-toolchain.__run_4]
+2026-10-23T05:39:22.4758080Z ##[group]Run set -f  # split targets and components on commas and whitespace, without glob expansion
+2026-10-23T05:39:22.4758602Z [36;1mset -f  # split targets and components on commas and whitespace, without glob expansion[0m
+2026-10-23T05:39:22.4758935Z [36;1mflags=()[0m
+2026-10-23T05:39:22.4759176Z [36;1mfor t in ${targets//,/ }; do flags+=(--target "$t"); done[0m
+2026-10-23T05:39:22.4759489Z [36;1mfor c in ${components//,/ }; do flags+=(--component "$c"); done[0m
+2026-10-23T05:39:22.4759881Z [36;1mif [[ $toolchain == nightly && -n $components ]]; then flags+=(--allow-downgrade); fi[0m
+2026-10-23T05:39:22.4760222Z [36;1mlog=$(mktemp)[0m
+2026-10-23T05:39:22.4760400Z [36;1mtrap 'rm -f "$log"' EXIT[0m
+2026-10-23T05:39:22.4760595Z [36;1mfor attempt in 1 2 3 4 5; do[0m
+2026-10-23T05:39:22.4761026Z [36;1m  if rustup toolchain install "$toolchain" "${flags[@]}" --profile minimal --no-self-update --force-non-host 2>&1 | tee "$log"; then[0m
+2026-10-23T05:39:22.4761446Z [36;1m    break[0m
+2026-10-23T05:39:22.4761598Z [36;1m  else[0m
+2026-10-23T05:39:22.4761744Z [36;1m    status=$?[0m
+2026-10-23T05:39:22.4761901Z [36;1m  fi[0m
+2026-10-23T05:39:22.4762124Z [36;1m  if [[ $attempt == 5 ]] || ! grep -Fq 'checksum failed for ' "$log" \[0m
+2026-10-23T05:39:22.4763122Z [36;1m      || ! grep -Fq 'this is likely due to an ongoing update of the official release server' "$log"; then[0m
+2026-10-23T05:39:22.4763480Z [36;1m    exit "$status"[0m
+2026-10-23T05:39:22.4763652Z [36;1m  fi[0m
+2026-10-23T05:39:22.4763939Z [36;1m  echo "Retrying rustup toolchain install in 30 seconds (retry $attempt of 4)" >&2[0m
+2026-10-23T05:39:22.4764250Z [36;1m  sleep 30[0m
+2026-10-23T05:39:22.4764416Z [36;1mdone[0m
+2026-10-23T05:39:22.4778279Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-10-23T05:39:22.4778592Z env:
+2026-10-23T05:39:22.4778815Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:22.4779171Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:39:22.4779515Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:22.4779822Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:22.4780143Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:22.4780410Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-10-23T05:39:22.4780617Z   toolchain: 1.85.0
+2026-10-23T05:39:22.4780766Z   targets: 
+2026-10-23T05:39:22.4780917Z   components: 
+2026-10-23T05:39:22.4781118Z   RUSTUP_PERMIT_COPY_RENAME: 1
+2026-10-23T05:39:22.4781304Z ##[endgroup]
+2026-10-23T05:39:23.9563335Z info: syncing channel updates for 1.85.0-x86_64-pc-windows-msvc
+2026-10-23T05:39:25.1106871Z info: latest update on 2025-02-20 for version 1.85.0 (4d91de4e4 2025-02-17)
+2026-10-23T05:39:25.1263871Z info: downloading 3 components
+2026-10-23T05:39:32.2989437Z 
+2026-10-23T05:39:32.3473979Z   1.85.0-x86_64-pc-windows-msvc installed - rustc 1.85.0 (4d91de4e4 2025-02-17)
+2026-10-23T05:39:32.3474857Z 
+2026-10-23T05:39:32.3750276Z ##[end-action id=__dtolnay_rust-toolchain.__run_4;outcome=success;conclusion=success;duration_ms=9909]
+2026-10-23T05:39:32.3754946Z ##[start-action display=rustup default 1.85.0;id=__dtolnay_rust-toolchain.__run_5]
+2026-10-23T05:39:32.3857469Z ##[group]Run rustup default "$toolchain" --force-non-host
+2026-10-23T05:39:32.3857776Z [36;1mrustup default "$toolchain" --force-non-host[0m
+2026-10-23T05:39:32.3870796Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-10-23T05:39:32.3871096Z env:
+2026-10-23T05:39:32.3871304Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:32.3871662Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:39:32.3872003Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:32.3872307Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:32.3872633Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:32.3873294Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-10-23T05:39:32.3873498Z   toolchain: 1.85.0
+2026-10-23T05:39:32.3873652Z ##[endgroup]
+2026-10-23T05:39:32.4775782Z info: using existing install for 1.85.0-x86_64-pc-windows-msvc
+2026-10-23T05:39:32.5085837Z info: default toolchain set to 1.85.0-x86_64-pc-windows-msvc
+2026-10-23T05:39:32.5086256Z 
+2026-10-23T05:39:32.5269653Z   1.85.0-x86_64-pc-windows-msvc unchanged - rustc 1.85.0 (4d91de4e4 2025-02-17)
+2026-10-23T05:39:32.5270002Z 
+2026-10-23T05:39:32.5340228Z ##[end-action id=__dtolnay_rust-toolchain.__run_5;outcome=success;conclusion=success;duration_ms=158]
+2026-10-23T05:39:32.5343347Z ##[start-action display=Create cachekey;id=__dtolnay_rust-toolchain.rustc-version]
+2026-10-23T05:39:32.5445768Z ##[group]Run DATE=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')
+2026-10-23T05:39:32.5446431Z [36;1mDATE=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-date: \(20[0-9][0-9]\)-\([01][0-9]\)-\([0-3][0-9]\)$/\1\2\3/p')[0m
+2026-10-23T05:39:32.5446924Z [36;1mHASH=$(rustc +"$toolchain" --version --verbose | sed -ne 's/^commit-hash: //p')[0m
+2026-10-23T05:39:32.5447479Z [36;1mecho "cachekey=$(echo $DATE$HASH | head -c12)" >> $GITHUB_OUTPUT[0m
+2026-10-23T05:39:32.5458963Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-10-23T05:39:32.5459280Z env:
+2026-10-23T05:39:32.5459501Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:32.5459851Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:39:32.5460479Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:32.5460796Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:32.5461094Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:32.5461349Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-10-23T05:39:32.5461544Z   toolchain: 1.85.0
+2026-10-23T05:39:32.5461710Z ##[endgroup]
+2026-10-23T05:39:33.0522817Z ##[end-action id=__dtolnay_rust-toolchain.rustc-version;outcome=success;conclusion=success;duration_ms=517]
+2026-10-23T05:39:33.0526342Z ##[start-action display=Disable incremental compilation;id=__dtolnay_rust-toolchain.__run_6]
+2026-10-23T05:39:33.0654243Z ##[group]Run if [ -z "${CARGO_INCREMENTAL+set}" ]; then
+2026-10-23T05:39:33.0654735Z [36;1mif [ -z "${CARGO_INCREMENTAL+set}" ]; then[0m
+2026-10-23T05:39:33.0655143Z [36;1m  echo CARGO_INCREMENTAL=0 >> $GITHUB_ENV[0m
+2026-10-23T05:39:33.0655488Z [36;1mfi[0m
+2026-10-23T05:39:33.0671182Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-10-23T05:39:33.0671685Z env:
+2026-10-23T05:39:33.0672021Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.0672624Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:39:33.0673210Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.0673730Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.0674250Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.0674694Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-10-23T05:39:33.0675023Z ##[endgroup]
+2026-10-23T05:39:33.1034804Z ##[end-action id=__dtolnay_rust-toolchain.__run_6;outcome=success;conclusion=success;duration_ms=50]
+2026-10-23T05:39:33.1037956Z ##[start-action display=Enable colors in Cargo output;id=__dtolnay_rust-toolchain.__run_7]
+2026-10-23T05:39:33.1144265Z ##[group]Run if [ -z "${CARGO_TERM_COLOR+set}" ]; then
+2026-10-23T05:39:33.1144622Z [36;1mif [ -z "${CARGO_TERM_COLOR+set}" ]; then[0m
+2026-10-23T05:39:33.1144891Z [36;1m  echo CARGO_TERM_COLOR=always >> $GITHUB_ENV[0m
+2026-10-23T05:39:33.1153075Z [36;1mfi[0m
+2026-10-23T05:39:33.1168027Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-10-23T05:39:33.1168321Z env:
+2026-10-23T05:39:33.1168540Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.1168921Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:39:33.1169273Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.1169595Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.1169926Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.1170181Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-10-23T05:39:33.1170382Z   CARGO_INCREMENTAL: 0
+2026-10-23T05:39:33.1170553Z ##[endgroup]
+2026-10-23T05:39:33.1508971Z ##[end-action id=__dtolnay_rust-toolchain.__run_7;outcome=success;conclusion=success;duration_ms=47]
+2026-10-23T05:39:33.1513038Z ##[start-action display=Enable Cargo sparse registry;id=__dtolnay_rust-toolchain.__run_8]
+2026-10-23T05:39:33.1615729Z ##[group]Run # implemented in 1.66, stabilized in 1.68, made default in 1.70
+2026-10-23T05:39:33.1616127Z [36;1m# implemented in 1.66, stabilized in 1.68, made default in 1.70[0m
+2026-10-23T05:39:33.1616795Z [36;1mif [ -z "${CARGO_REGISTRIES_CRATES_IO_PROTOCOL+set}" -o -f "D:\a\_temp"/.implicit_cargo_registries_crates_io_protocol ]; then[0m
+2026-10-23T05:39:33.1617321Z [36;1m  if rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.6[89]\.'; then[0m
+2026-10-23T05:39:33.1617730Z [36;1m    touch "D:\a\_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-10-23T05:39:33.1618088Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=sparse >> $GITHUB_ENV[0m
+2026-10-23T05:39:33.1618473Z [36;1m  elif rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.6[67]\.'; then[0m
+2026-10-23T05:39:33.1618862Z [36;1m    touch "D:\a\_temp"/.implicit_cargo_registries_crates_io_protocol || true[0m
+2026-10-23T05:39:33.1619205Z [36;1m    echo CARGO_REGISTRIES_CRATES_IO_PROTOCOL=git >> $GITHUB_ENV[0m
+2026-10-23T05:39:33.1619469Z [36;1m  fi[0m
+2026-10-23T05:39:33.1619613Z [36;1mfi[0m
+2026-10-23T05:39:33.1631615Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-10-23T05:39:33.1631931Z env:
+2026-10-23T05:39:33.1632171Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.1632535Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:39:33.1632896Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.1633214Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.1633510Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.1633776Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-10-23T05:39:33.1633979Z   CARGO_INCREMENTAL: 0
+2026-10-23T05:39:33.1634148Z   CARGO_TERM_COLOR: always
+2026-10-23T05:39:33.1634315Z   toolchain: 1.85.0
+2026-10-23T05:39:33.1634469Z ##[endgroup]
+2026-10-23T05:39:33.3228988Z ##[end-action id=__dtolnay_rust-toolchain.__run_8;outcome=success;conclusion=success;duration_ms=171]
+2026-10-23T05:39:33.3233127Z ##[start-action display=Work around spurious network errors in curl 8.0;id=__dtolnay_rust-toolchain.__run_9]
+2026-10-23T05:39:33.3349768Z ##[group]Run # https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation
+2026-10-23T05:39:33.3350673Z [36;1m# https://rust-lang.zulipchat.com/#narrow/stream/246057-t-cargo/topic/timeout.20investigation[0m
+2026-10-23T05:39:33.3351714Z [36;1mif rustc +"$toolchain" --version --verbose | grep -q '^release: 1\.7[01]\.'; then[0m
+2026-10-23T05:39:33.3352296Z [36;1m  echo CARGO_HTTP_MULTIPLEXING=false >> $GITHUB_ENV[0m
+2026-10-23T05:39:33.3352680Z [36;1mfi[0m
+2026-10-23T05:39:33.3367346Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-10-23T05:39:33.3367669Z env:
+2026-10-23T05:39:33.3367884Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.3368242Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:39:33.3368586Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.3368921Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.3369228Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.3369511Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-10-23T05:39:33.3369732Z   CARGO_INCREMENTAL: 0
+2026-10-23T05:39:33.3369903Z   CARGO_TERM_COLOR: always
+2026-10-23T05:39:33.3370068Z   toolchain: 1.85.0
+2026-10-23T05:39:33.3370223Z ##[endgroup]
+2026-10-23T05:39:33.4321314Z ##[end-action id=__dtolnay_rust-toolchain.__run_9;outcome=success;conclusion=success;duration_ms=108]
+2026-10-23T05:39:33.4326057Z ##[start-action display=rustc +1.85.0 --version --verbose;id=__dtolnay_rust-toolchain.__run_10]
+2026-10-23T05:39:33.4431935Z ##[group]Run rustc +"$toolchain" --version --verbose
+2026-10-23T05:39:33.4432223Z [36;1mrustc +"$toolchain" --version --verbose[0m
+2026-10-23T05:39:33.4445201Z shell: C:\Program Files\Git\bin\bash.EXE --noprofile --norc -e -o pipefail {0}
+2026-10-23T05:39:33.4445493Z env:
+2026-10-23T05:39:33.4446384Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.4446749Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:39:33.4447106Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.4447412Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.4447715Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.4447971Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-10-23T05:39:33.4448172Z   CARGO_INCREMENTAL: 0
+2026-10-23T05:39:33.4448331Z   CARGO_TERM_COLOR: always
+2026-10-23T05:39:33.4448501Z   toolchain: 1.85.0
+2026-10-23T05:39:33.4448654Z ##[endgroup]
+2026-10-23T05:39:33.5144825Z rustc 1.85.0 (4d91de4e4 2025-02-17)
+2026-10-23T05:39:33.5145143Z binary: rustc
+2026-10-23T05:39:33.5145414Z commit-hash: 4d91de4e48198da2e33413efdcd9cd2cc0c46688
+2026-10-23T05:39:33.5145683Z commit-date: 2025-02-17
+2026-10-23T05:39:33.5145925Z host: x86_64-pc-windows-msvc
+2026-10-23T05:39:33.5146127Z release: 1.85.0
+2026-10-23T05:39:33.5146703Z LLVM version: 19.1.7
+2026-10-23T05:39:33.5253979Z ##[end-action id=__dtolnay_rust-toolchain.__run_10;outcome=success;conclusion=success;duration_ms=92]
+2026-10-23T05:39:33.5429808Z ##[group]Run actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3
+2026-10-23T05:39:33.5430190Z with:
+2026-10-23T05:39:33.5430345Z   distribution: temurin
+2026-10-23T05:39:33.5430521Z   java-version: 17
+2026-10-23T05:39:33.5430679Z   java-package: jdk
+2026-10-23T05:39:33.5430844Z   check-latest: false
+2026-10-23T05:39:33.5431001Z   server-id: github
+2026-10-23T05:39:33.5431161Z   server-username: GITHUB_ACTOR
+2026-10-23T05:39:33.5431353Z   server-password: GITHUB_TOKEN
+2026-10-23T05:39:33.5431543Z   overwrite-settings: true
+2026-10-23T05:39:33.5431713Z   job-status: success
+2026-10-23T05:39:33.5433597Z   token: ***
+2026-10-23T05:39:33.5433751Z env:
+2026-10-23T05:39:33.5433966Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.5434347Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:39:33.5434722Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.5435274Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.5435583Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.5435843Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-10-23T05:39:33.5436048Z   CARGO_INCREMENTAL: 0
+2026-10-23T05:39:33.5436217Z   CARGO_TERM_COLOR: always
+2026-10-23T05:39:33.5436394Z ##[endgroup]
+2026-10-23T05:39:33.7685911Z ##[warning]setup-java v4 is deprecated and will no longer receive updates. Please migrate to actions/setup-java@v5.
+2026-10-23T05:39:33.7687507Z ##[group]Installed distributions
+2026-10-23T05:39:33.8235859Z Resolved Java 17.0.20+101 from tool-cache
+2026-10-23T05:39:33.8236263Z Setting Java 17.0.20+101 as the default
+2026-10-23T05:39:33.8255576Z (node:840) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-23T05:39:33.8256209Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-23T05:39:33.8259069Z Creating toolchains.xml for JDK version 17 from temurin
+2026-10-23T05:39:33.8347155Z Writing to C:\Users\runneradmin\.m2\toolchains.xml
+2026-10-23T05:39:33.8349941Z 
+2026-10-23T05:39:33.8350265Z Java configuration:
+2026-10-23T05:39:33.8350591Z   Distribution: temurin
+2026-10-23T05:39:33.8351145Z   Version: 17.0.20+101
+2026-10-23T05:39:33.8351596Z   Path: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-10-23T05:39:33.8352010Z 
+2026-10-23T05:39:33.8352332Z ##[endgroup]
+2026-10-23T05:39:33.8356681Z Creating settings.xml with server-id: github
+2026-10-23T05:39:33.8369153Z Writing to C:\Users\runneradmin\.m2\settings.xml
+2026-10-23T05:39:33.8735663Z ##[group]Run gradle/actions/setup-gradle@748248ddd2a24f49513d8f472f81c3a07d4d50e1
+2026-10-23T05:39:33.8736274Z with:
+2026-10-23T05:39:33.8736434Z   gradle-version: 8.12.1
+2026-10-23T05:39:33.8736629Z   cache-disabled: false
+2026-10-23T05:39:33.8736798Z   cache-read-only: true
+2026-10-23T05:39:33.8736990Z   cache-write-only: false
+2026-10-23T05:39:33.8737176Z   cache-overwrite-existing: false
+2026-10-23T05:39:33.8737388Z   cache-cleanup: on-success
+2026-10-23T05:39:33.8737610Z   gradle-home-cache-includes: caches
+notifications
+
+2026-10-23T05:39:33.8738013Z   add-job-summary: always
+2026-10-23T05:39:33.8738202Z   add-job-summary-as-pr-comment: never
+2026-10-23T05:39:33.8738435Z   dependency-graph: disabled
+2026-10-23T05:39:33.8738686Z   dependency-graph-report-dir: dependency-graph-reports
+2026-10-23T05:39:33.8738975Z   dependency-graph-continue-on-failure: true
+2026-10-23T05:39:33.8739219Z   build-scan-publish: false
+2026-10-23T05:39:33.8739471Z   validate-wrappers: true
+2026-10-23T05:39:33.8739681Z   allow-snapshot-wrappers: false
+2026-10-23T05:39:33.8739905Z   gradle-home-cache-strict-match: false
+2026-10-23T05:39:33.8740175Z   workflow-job-context: {
+  "os": "windows-latest"
+}
+2026-10-23T05:39:33.8742143Z   github-token: ***
+2026-10-23T05:39:33.8742321Z env:
+2026-10-23T05:39:33.8742562Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.8742917Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:39:33.8743261Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.8743583Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.8743885Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:33.8744142Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-10-23T05:39:33.8744345Z   CARGO_INCREMENTAL: 0
+2026-10-23T05:39:33.8744518Z   CARGO_TERM_COLOR: always
+2026-10-23T05:39:33.8744796Z   JAVA_HOME: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-10-23T05:39:33.8745197Z   JAVA_HOME_17_X64: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-10-23T05:39:33.8745504Z ##[endgroup]
+2026-10-23T05:39:35.8238796Z Setting GRADLE_USER_HOME to D:\a\.gradle to leverage (potentially) faster drive.
+2026-10-23T05:39:35.8291849Z Merged default JDK locations into C:\Users\runneradmin\.m2\toolchains.xml
+2026-10-23T05:39:35.8295685Z ##[group]Restore Gradle state from cache
+2026-10-23T05:39:35.9823730Z Cache hit for restore-key: gradle-home-v1|Windows-X64|runtimes[db068ce488b1c4f103d3e4050dfe96ba]-dc79f449f0d919a395c9132d44575267066b34ad
+2026-10-23T05:39:36.0783227Z Received 114445 of 114445 (100.0%), 2.2 MBs/sec
+2026-10-23T05:39:36.0785371Z Cache Size: ~0 MB (114445 B)
+2026-10-23T05:39:36.0805664Z [command]"C:\Program Files\Git\usr\bin\tar.exe" -xf D:/a/_temp/310b28b6-21d7-4c55-97d8-49e6c3f6b2fe/cache.tzst -P -C D:/a/patchprove/patchprove --force-local --use-compress-program "zstd -d"
+2026-10-23T05:39:36.1684067Z Cache restored successfully
+2026-10-23T05:39:36.1688864Z Restored cache entry with key gradle-home-v1|Windows-X64|runtimes[db068ce488b1c4f103d3e4050dfe96ba]-d17b563362adcc0bab9fe3e1a5546f33cf6ab94b to D:\a\.gradle\caches,D:\a\.gradle\notifications,D:\a\.gradle\.setup-gradle in 339ms
+2026-10-23T05:39:36.2875990Z Cache hit for: gradle-groovy-dsl-v1-3f78ed8247cafde8e02edfed26f1acdc
+2026-10-23T05:39:36.2902786Z Cache hit for: gradle-instrumented-jars-v1-797f0083d71050a4b8ca429bcc5fce43
+2026-10-23T05:39:36.2962186Z Cache hit for: gradle-dependencies-v1-32d4a238935cc14665c01a7790ac8874
+2026-10-23T05:39:36.3412755Z Received 118761 of 118761 (100.0%), 3.5 MBs/sec
+2026-10-23T05:39:36.3413795Z Cache Size: ~0 MB (118761 B)
+2026-10-23T05:39:36.3434775Z [command]"C:\Program Files\Git\usr\bin\tar.exe" -xf D:/a/_temp/767fc9fa-99fb-4727-8ced-e583f90e433b/cache.tzst -P -C D:/a/patchprove/patchprove --force-local --use-compress-program "zstd -d"
+2026-10-23T05:39:36.3551771Z Received 83138 of 83138 (100.0%), 2.0 MBs/sec
+2026-10-23T05:39:36.3552418Z Cache Size: ~0 MB (83138 B)
+2026-10-23T05:39:36.3566834Z [command]"C:\Program Files\Git\usr\bin\tar.exe" -xf D:/a/_temp/bbce79d7-a59e-49d7-a3ed-c234f1040c23/cache.tzst -P -C D:/a/patchprove/patchprove --force-local --use-compress-program "zstd -d"
+2026-10-23T05:39:36.4338966Z Received 1287681 of 1287681 (100.0%), 12.4 MBs/sec
+2026-10-23T05:39:36.4340705Z Cache Size: ~1 MB (1287681 B)
+2026-10-23T05:39:36.4354780Z [command]"C:\Program Files\Git\usr\bin\tar.exe" -xf D:/a/_temp/f77c2564-556c-475c-bf58-7c85d7006906/cache.tzst -P -C D:/a/patchprove/patchprove --force-local --use-compress-program "zstd -d"
+2026-10-23T05:39:36.4383091Z Cache restored successfully
+2026-10-23T05:39:36.4388331Z Restored cache entry with key gradle-instrumented-jars-v1-797f0083d71050a4b8ca429bcc5fce43 to D:\a\.gradle\caches\jars-*\*/ in 269ms
+2026-10-23T05:39:36.4503317Z Cache restored successfully
+2026-10-23T05:39:36.4506536Z Restored cache entry with key gradle-groovy-dsl-v1-3f78ed8247cafde8e02edfed26f1acdc to D:\a\.gradle\caches\*\groovy-dsl\*/ in 280ms
+2026-10-23T05:39:36.4782096Z Cache restored successfully
+2026-10-23T05:39:36.4785767Z Restored cache entry with key gradle-dependencies-v1-32d4a238935cc14665c01a7790ac8874 to D:\a\.gradle\caches\modules-*\files-*\*\*\*\* in 308ms
+2026-10-23T05:39:36.4941532Z ##[endgroup]
+2026-10-23T05:39:36.5099733Z ##[group]All Gradle Wrapper jars are valid
+2026-10-23T05:39:36.5100461Z 
+2026-10-23T05:39:36.5100656Z ##[endgroup]
+2026-10-23T05:39:36.5501344Z ##[group]Provision Gradle 8.12.1
+2026-10-23T05:39:43.4870305Z Cache hit for: gradle-8.12.1
+2026-10-23T05:39:44.5735670Z Received 134217728 of 136497462 (98.3%), 122.3 MBs/sec
+2026-10-23T05:39:44.6161779Z Received 136497462 of 136497462 (100.0%), 119.4 MBs/sec
+2026-10-23T05:39:44.6165560Z Cache Size: ~130 MB (136497462 B)
+2026-10-23T05:39:44.6186865Z [command]"C:\Program Files\Git\usr\bin\tar.exe" -xf D:/a/_temp/9c5e7e73-19ae-4f23-95bd-30bd086f85c2/cache.tzst -P -C D:/a/patchprove/patchprove --force-local --use-compress-program "zstd -d"
+2026-10-23T05:39:44.8092127Z Cache restored successfully
+2026-10-23T05:39:44.8162999Z Restored Gradle distribution gradle-8.12.1 from cache to D:\a\_temp\.gradle-actions\gradle-installations\downloads\gradle-8.12.1-bin.zip
+2026-10-23T05:39:44.8599512Z [command]"C:\Program Files\PowerShell\7\pwsh.exe" -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Unrestricted -Command "$ErrorActionPreference = 'Stop' ; try { Add-Type -AssemblyName System.IO.Compression.ZipFile } catch { } ; try { [System.IO.Compression.ZipFile]::ExtractToDirectory('D:\a\_temp\.gradle-actions\gradle-installations\downloads\gradle-8.12.1-bin.zip', 'D:\a\_temp\.gradle-actions\gradle-installations\installs', $true) } catch { if (($_.Exception.GetType().FullName -eq 'System.Management.Automation.MethodException') -or ($_.Exception.GetType().FullName -eq 'System.Management.Automation.RuntimeException') ){ Expand-Archive -LiteralPath 'D:\a\_temp\.gradle-actions\gradle-installations\downloads\gradle-8.12.1-bin.zip' -DestinationPath 'D:\a\_temp\.gradle-actions\gradle-installations\installs' -Force } else { throw $_ } } ;"
+2026-10-23T05:39:45.9735779Z Extracted Gradle 8.12.1 to D:\a\_temp\.gradle-actions\gradle-installations\installs\gradle-8.12.1
+2026-10-23T05:39:45.9738625Z Provisioned Gradle executable D:\a\_temp\.gradle-actions\gradle-installations\installs\gradle-8.12.1\bin\gradle.bat
+2026-10-23T05:39:45.9739666Z ##[endgroup]
+2026-10-23T05:39:46.0034077Z ##[group]Run npm ci
+2026-10-23T05:39:46.0034351Z [36;1mnpm ci[0m
+2026-10-23T05:39:46.0092639Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-23T05:39:46.0092940Z env:
+2026-10-23T05:39:46.0093174Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:46.0093562Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:39:46.0093943Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:46.0094564Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:46.0094943Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:39:46.0095336Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-10-23T05:39:46.0095564Z   CARGO_INCREMENTAL: 0
+2026-10-23T05:39:46.0095770Z   CARGO_TERM_COLOR: always
+2026-10-23T05:39:46.0096204Z   JAVA_HOME: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-10-23T05:39:46.0096677Z   JAVA_HOME_17_X64: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-10-23T05:39:46.0097044Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+2026-10-23T05:39:46.0097294Z   GRADLE_USER_HOME: D:\a\.gradle
+2026-10-23T05:39:46.0097523Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+2026-10-23T05:39:46.0097771Z   GRADLE_BUILD_ACTION_CACHE_RESTORED: true
+2026-10-23T05:39:46.0098147Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+2026-10-23T05:39:46.0098530Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+2026-10-23T05:39:46.0098786Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+2026-10-23T05:39:46.0099017Z ##[endgroup]
+2026-10-23T05:40:04.1496081Z 
+2026-10-23T05:40:04.1496764Z added 156 packages, and audited 157 packages in 18s
+2026-10-23T05:40:04.1497049Z 
+2026-10-23T05:40:04.1497222Z 58 packages are looking for funding
+2026-10-23T05:40:04.1497499Z   run `npm fund` for details
+2026-10-23T05:40:04.1504265Z 
+2026-10-23T05:40:04.1504444Z found 0 vulnerabilities
+2026-10-23T05:40:12.2627875Z ##[group]Run npm run build
+2026-10-23T05:40:12.2628381Z [36;1mnpm run build[0m
+2026-10-23T05:40:12.2694759Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-23T05:40:12.2695070Z env:
+2026-10-23T05:40:12.2695321Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:40:12.2695709Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:40:12.2696091Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:40:12.2696432Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:40:12.2696763Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:40:12.2697048Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-10-23T05:40:12.2697459Z   CARGO_INCREMENTAL: 0
+2026-10-23T05:40:12.2697644Z   CARGO_TERM_COLOR: always
+2026-10-23T05:40:12.2697977Z   JAVA_HOME: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-10-23T05:40:12.2698403Z   JAVA_HOME_17_X64: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-10-23T05:40:12.2698765Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+2026-10-23T05:40:12.2699014Z   GRADLE_USER_HOME: D:\a\.gradle
+2026-10-23T05:40:12.2699242Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+2026-10-23T05:40:12.2699493Z   GRADLE_BUILD_ACTION_CACHE_RESTORED: true
+2026-10-23T05:40:12.2699847Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+2026-10-23T05:40:12.2700222Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+2026-10-23T05:40:12.2700472Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+2026-10-23T05:40:12.2700695Z ##[endgroup]
+2026-10-23T05:40:12.8446373Z 
+2026-10-23T05:40:12.8447460Z > patchprove@2.0.0 build
+2026-10-23T05:40:12.8447939Z > tsc
+2026-10-23T05:40:12.8448094Z 
+2026-10-23T05:40:16.0285496Z ##[group]Run git config --global core.autocrlf false
+2026-10-23T05:40:16.0285894Z [36;1mgit config --global core.autocrlf false[0m
+2026-10-23T05:40:16.0343329Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-23T05:40:16.0343637Z env:
+2026-10-23T05:40:16.0343877Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:40:16.0344273Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:40:16.0344660Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:40:16.0345005Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:40:16.0345334Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:40:16.0345617Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-10-23T05:40:16.0345848Z   CARGO_INCREMENTAL: 0
+2026-10-23T05:40:16.0346039Z   CARGO_TERM_COLOR: always
+2026-10-23T05:40:16.0346374Z   JAVA_HOME: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-10-23T05:40:16.0346811Z   JAVA_HOME_17_X64: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-10-23T05:40:16.0347172Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+2026-10-23T05:40:16.0347418Z   GRADLE_USER_HOME: D:\a\.gradle
+2026-10-23T05:40:16.0347641Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+2026-10-23T05:40:16.0347885Z   GRADLE_BUILD_ACTION_CACHE_RESTORED: true
+2026-10-23T05:40:16.0348242Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+2026-10-23T05:40:16.0348635Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+2026-10-23T05:40:16.0348890Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+2026-10-23T05:40:16.0349112Z ##[endgroup]
+2026-10-23T05:40:16.4015377Z ##[group]Run npm run test:runtimes -- --require
+2026-10-23T05:40:16.4016010Z [36;1mnpm run test:runtimes -- --require[0m
+2026-10-23T05:40:16.4079171Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-23T05:40:16.4079489Z env:
+2026-10-23T05:40:16.4079730Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:40:16.4080121Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:40:16.4080504Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:40:16.4080851Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:40:16.4081182Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:40:16.4081464Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-10-23T05:40:16.4081696Z   CARGO_INCREMENTAL: 0
+2026-10-23T05:40:16.4081888Z   CARGO_TERM_COLOR: always
+2026-10-23T05:40:16.4082377Z   JAVA_HOME: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-10-23T05:40:16.4082847Z   JAVA_HOME_17_X64: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-10-23T05:40:16.4083207Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+2026-10-23T05:40:16.4083887Z   GRADLE_USER_HOME: D:\a\.gradle
+2026-10-23T05:40:16.4084116Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+2026-10-23T05:40:16.4084366Z   GRADLE_BUILD_ACTION_CACHE_RESTORED: true
+2026-10-23T05:40:16.4084755Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+2026-10-23T05:40:16.4085228Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+2026-10-23T05:40:16.4085491Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+2026-10-23T05:40:16.4085772Z   PATCHPROVE_RUNTIME_REPORT: artifacts/runtime-report.json
+2026-10-23T05:40:16.4086039Z ##[endgroup]
+2026-10-23T05:40:17.1616199Z 
+2026-10-23T05:40:17.1616877Z > patchprove@2.0.0 test:runtimes
+2026-10-23T05:40:17.1619875Z > node scripts/test-runtimes.mjs --require
+2026-10-23T05:40:17.1620229Z 
+2026-10-23T05:40:21.4912042Z PASS node-success: passed
+2026-10-23T05:40:22.9114990Z PASS node-failure: failed
+2026-10-23T05:40:24.2475717Z PASS node-zero: failed
+2026-10-23T05:40:25.8543081Z PASS node-multimodule: passed
+2026-10-23T05:40:25.8640919Z PASS node-missing: skipped
+2026-10-23T05:40:27.5567308Z PASS python-success: passed
+2026-10-23T05:40:28.1029056Z PASS python-failure: failed
+2026-10-23T05:40:28.5643092Z PASS python-zero: failed
+2026-10-23T05:40:29.1397160Z PASS python-multimodule: passed
+2026-10-23T05:40:29.1511898Z PASS python-missing: skipped
+2026-10-23T05:40:39.0865411Z PASS go-success: passed
+2026-10-23T05:40:40.4813177Z PASS go-failure: failed
+2026-10-23T05:40:41.5068227Z PASS go-zero: skipped
+2026-10-23T05:40:43.2778341Z PASS go-multimodule: passed
+2026-10-23T05:40:43.2861134Z PASS go-missing: skipped
+2026-10-23T05:40:47.7516178Z PASS cargo-success: passed
+2026-10-23T05:40:49.1371431Z PASS cargo-failure: failed
+2026-10-23T05:40:49.9108877Z PASS cargo-zero: skipped
+2026-10-23T05:40:50.8434104Z PASS cargo-multimodule: passed
+2026-10-23T05:40:50.8595874Z PASS cargo-missing: skipped
+2026-10-23T05:41:09.2065173Z PASS maven-success: passed
+2026-10-23T05:41:16.8058349Z PASS maven-failure: failed
+2026-10-23T05:41:24.3237113Z PASS maven-zero: skipped
+2026-10-23T05:41:34.6162730Z PASS maven-multimodule: passed
+2026-10-23T05:41:34.6419286Z PASS maven-missing: skipped
+2026-10-23T05:41:55.9791129Z PASS gradle-success: passed
+2026-10-23T05:42:05.2219589Z PASS gradle-failure: failed
+2026-10-23T05:42:13.9382629Z PASS gradle-zero: failed
+2026-10-23T05:42:24.2696274Z PASS gradle-multimodule: passed
+2026-10-23T05:42:24.3032761Z PASS gradle-missing: skipped
+2026-10-23T05:42:24.3731907Z Runtime report: artifacts/runtime-report.json
+2026-10-23T05:42:24.4240502Z ##[group]Run npm run test:corpus
+2026-10-23T05:42:24.4240834Z [36;1mnpm run test:corpus[0m
+2026-10-23T05:42:24.4298845Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-23T05:42:24.4299156Z env:
+2026-10-23T05:42:24.4299405Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:42:24.4299798Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:42:24.4300198Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:42:24.4300550Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:42:24.4300894Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:42:24.4301186Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-10-23T05:42:24.4301427Z   CARGO_INCREMENTAL: 0
+2026-10-23T05:42:24.4301622Z   CARGO_TERM_COLOR: always
+2026-10-23T05:42:24.4301958Z   JAVA_HOME: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-10-23T05:42:24.4302399Z   JAVA_HOME_17_X64: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-10-23T05:42:24.4302770Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+2026-10-23T05:42:24.4303023Z   GRADLE_USER_HOME: D:\a\.gradle
+2026-10-23T05:42:24.4303255Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+2026-10-23T05:42:24.4303513Z   GRADLE_BUILD_ACTION_CACHE_RESTORED: true
+2026-10-23T05:42:24.4304071Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+2026-10-23T05:42:24.4304605Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+2026-10-23T05:42:24.4304947Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+2026-10-23T05:42:24.4305310Z   PATCHPROVE_CORPUS_REPORT: artifacts/corpus-report.json
+2026-10-23T05:42:24.4305649Z ##[endgroup]
+2026-10-23T05:42:24.9793385Z 
+2026-10-23T05:42:24.9793928Z > patchprove@2.0.0 test:corpus
+2026-10-23T05:42:24.9794300Z > node scripts/benchmark-corpus.mjs
+2026-10-23T05:42:24.9794479Z 
+2026-10-23T05:42:29.3324135Z static-and-dynamic: selected=failed full=failed misses=0 extra=1 unknown=0
+2026-10-23T05:42:44.2861496Z static-only: selected=failed full=failed misses=0 extra=2 unknown=0
+2026-10-23T05:43:00.3631484Z documentation: selected=not-applicable full=passed misses=0 extra=0 unknown=0
+2026-10-23T05:43:00.3712760Z Corpus report: artifacts/corpus-report.json
+2026-10-23T05:43:00.4186918Z ##[group]Run npm run test:package
+2026-10-23T05:43:00.4187253Z [36;1mnpm run test:package[0m
+2026-10-23T05:43:00.4248300Z shell: C:\Program Files\PowerShell\7\pwsh.EXE -command ". '{0}'"
+2026-10-23T05:43:00.4248612Z env:
+2026-10-23T05:43:00.4248863Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:43:00.4249277Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:43:00.4249669Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:43:00.4250014Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:43:00.4250361Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:43:00.4250657Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-10-23T05:43:00.4250897Z   CARGO_INCREMENTAL: 0
+2026-10-23T05:43:00.4251098Z   CARGO_TERM_COLOR: always
+2026-10-23T05:43:00.4251453Z   JAVA_HOME: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-10-23T05:43:00.4251917Z   JAVA_HOME_17_X64: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-10-23T05:43:00.4252301Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+2026-10-23T05:43:00.4252560Z   GRADLE_USER_HOME: D:\a\.gradle
+2026-10-23T05:43:00.4252791Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+2026-10-23T05:43:00.4253043Z   GRADLE_BUILD_ACTION_CACHE_RESTORED: true
+2026-10-23T05:43:00.4253402Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+2026-10-23T05:43:00.4253813Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+2026-10-23T05:43:00.4254088Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+2026-10-23T05:43:00.4254409Z   PATCHPROVE_PRODUCTION_ENGINES: node,python,go,cargo,maven,gradle
+2026-10-23T05:43:00.4254785Z   PATCHPROVE_PRODUCTION_REPORT: artifacts/production-chain.json
+2026-10-23T05:43:00.4255139Z   PATCHPROVE_PACKAGE_REPORT: artifacts/installed-package.json
+2026-10-23T05:43:00.4255425Z ##[endgroup]
+2026-10-23T05:43:01.2107106Z 
+2026-10-23T05:43:01.2107829Z > patchprove@2.0.0 test:package
+2026-10-23T05:43:01.2108372Z > node scripts/test-package.mjs
+2026-10-23T05:43:01.2108614Z 
+2026-10-23T05:44:46.3378105Z PASS installed node-success
+2026-10-23T05:44:51.1496656Z PASS installed node-failure
+2026-10-23T05:44:55.8336397Z PASS installed node-zero
+2026-10-23T05:45:00.7628438Z PASS installed node-multimodule
+2026-10-23T05:45:04.9851688Z PASS installed python-success
+2026-10-23T05:45:11.0660999Z PASS installed python-failure
+2026-10-23T05:45:18.7100154Z PASS installed python-zero
+2026-10-23T05:45:23.9577153Z PASS installed python-multimodule
+2026-10-23T05:45:29.9712449Z PASS installed go-success
+2026-10-23T05:45:34.5509573Z PASS installed go-failure
+2026-10-23T05:45:39.0299343Z PASS installed go-zero
+2026-10-23T05:45:44.3883305Z PASS installed go-multimodule
+2026-10-23T05:45:48.7972581Z PASS installed cargo-success
+2026-10-23T05:45:53.7246801Z PASS installed cargo-failure
+2026-10-23T05:45:58.1842957Z PASS installed cargo-zero
+2026-10-23T05:46:03.3876356Z PASS installed cargo-multimodule
+2026-10-23T05:46:14.1516477Z PASS installed maven-success
+2026-10-23T05:46:27.1845369Z PASS installed maven-failure
+2026-10-23T05:46:37.6797673Z PASS installed maven-zero
+2026-10-23T05:46:49.1730918Z PASS installed maven-multimodule
+2026-10-23T05:46:56.5209380Z Runner failure report build\test-results\test\TEST-Gradle#20Test#20Executor#206.xml:
+2026-10-23T05:46:56.5211462Z <failure message="org.gradle.api.internal.tasks.testing.TestSuiteExecutionException: Could not execute test class 'fixture.ValueTest'." type="org.gradle.api.internal.tasks.testing.TestSuiteExecutionException">org.gradle.api.internal.tasks.testing.TestSuiteExecutionException: Could not execute test class 'fixture.ValueTest'.
+2026-10-23T05:46:56.5212976Z 	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:55)
+2026-10-23T05:46:56.5221371Z 	at java.base@17.0.20.1/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+2026-10-23T05:46:56.5222663Z 	at java.base@17.0.20.1/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+2026-10-23T05:46:56.5223890Z 	at java.base@17.0.20.1/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+2026-10-23T05:46:56.5224872Z 	at java.base@17.0.20.1/java.lang.reflect.Method.invoke(Method.java:569)
+2026-10-23T05:46:56.5225705Z 	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+2026-10-23T05:46:56.5226690Z 	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+2026-10-23T05:46:56.5228141Z 	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33)
+2026-10-23T05:46:56.5231684Z 	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:92)
+2026-10-23T05:46:56.5232855Z 	at jdk.proxy1/jdk.proxy1.$Proxy4.processTestClass(Unknown Source)
+2026-10-23T05:46:56.5239340Z 	at org.gradle.api.internal.tasks.testing.worker.TestWorker$2.run(TestWorker.java:183)
+2026-10-23T05:46:56.5240831Z 	at org.gradle.api.internal.tasks.testing.worker.TestWorker.executeAndMaintainThreadName(TestWorker.java:132)
+2026-10-23T05:46:56.5242715Z 	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:103)
+2026-10-23T05:46:56.5243714Z 	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:63)
+2026-10-23T05:46:56.5244837Z 	at org.gradle.process.internal.worker.child.ActionExecutionWorker.execute(ActionExecutionWorker.java:56)
+2026-10-23T05:46:56.5246128Z 	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:121)
+2026-10-23T05:46:56.5247702Z 	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:71)
+2026-10-23T05:46:56.5249543Z 	at app//worker.org.gradle.process.internal.worker.GradleWorkerMain.run(GradleWorkerMain.java:69)
+2026-10-23T05:46:56.5250948Z 	at app//worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java:74)
+2026-10-23T05:46:56.5252178Z Caused by: org.gradle.internal.UncheckedException: java.lang.ClassNotFoundException: fixture.ValueTest
+2026-10-23T05:46:56.5253295Z 	at org.gradle.internal.UncheckedException.throwAsUncheckedException(UncheckedException.java:69)
+2026-10-23T05:46:56.5254360Z 	at org.gradle.internal.UncheckedException.throwAsUncheckedException(UncheckedException.java:42)
+2026-10-23T05:46:56.5255797Z 	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor.loadClass(JUnitPlatformTestClassProcessor.java:175)
+2026-10-23T05:46:56.5257502Z 	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor.access$100(JUnitPlatformTestClassProcessor.java:62)
+2026-10-23T05:46:56.5259330Z 	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.execute(JUnitPlatformTestClassProcessor.java:109)
+2026-10-23T05:46:56.5261589Z 	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.execute(JUnitPlatformTestClassProcessor.java:99)
+2026-10-23T05:46:56.5263426Z 	at org.gradle.api.internal.tasks.testing.junit.AbstractJUnitTestClassProcessor.processTestClass(AbstractJUnitTestClassProcessor.java:54)
+2026-10-23T05:46:56.5265025Z 	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:53)
+2026-10-23T05:46:56.5265848Z 	... 18 more
+2026-10-23T05:46:56.5266359Z Caused by: java.lang.ClassNotFoundException: fixture.ValueTest
+2026-10-23T05:46:56.5267286Z 	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641)
+2026-10-23T05:46:56.5268287Z 	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188)
+2026-10-23T05:46:56.5270055Z 	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:525)
+2026-10-23T05:46:56.5270771Z 	at java.base/java.lang.Class.forName0(Native Method)
+2026-10-23T05:46:56.5271302Z 	at java.base/java.lang.Class.forName(Class.java:469)
+2026-10-23T05:46:56.5272467Z 	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor.loadClass(JUnitPlatformTestClassProcessor.java:173)
+2026-10-23T05:46:56.5273434Z 	... 23 more
+2026-10-23T05:46:56.5273711Z </failure>
+2026-10-23T05:46:56.5274323Z FAIL installed gradle-success: AssertionError [ERR_ASSERTION]: gradle-success: exit 1
+2026-10-23T05:46:56.5274910Z > Task :compileJava
+2026-10-23T05:46:56.5275265Z > Task :processResources NO-SOURCE
+2026-10-23T05:46:56.5275683Z > Task :classes
+2026-10-23T05:46:56.5275975Z > Task :compileTestJava
+2026-10-23T05:46:56.5276368Z > Task :processTestResources NO-SOURCE
+2026-10-23T05:46:56.5276802Z > Task :testClasses
+2026-10-23T05:46:56.5276984Z 
+2026-10-23T05:46:56.5277127Z > Task :test FAILED
+2026-10-23T05:46:56.5277405Z Tests run: 0
+2026-10-23T05:46:56.5278125Z gradle/actions: Writing build results to D:\a\_temp\.gradle-actions\build-results\__run_7-1792734413845.json
+2026-10-23T05:46:56.5278674Z 
+2026-10-23T05:46:56.5279775Z [Incubating] Problems report is available at: file:///C:/Users/runneradmin/AppData/Local/Temp/patchprove-installed-%E6%B5%8B%E8%AF%95%20space-EB96AE/build/reports/problems/problems-report.html
+2026-10-23T05:46:56.5280702Z 
+2026-10-23T05:46:56.5281162Z Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+2026-10-23T05:46:56.5281659Z 
+2026-10-23T05:46:56.5282391Z You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+2026-10-23T05:46:56.5284070Z 
+2026-10-23T05:46:56.5285602Z For more on this, please refer to https://docs.gradle.org/8.12.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+2026-10-23T05:46:56.5288223Z 3 actionable tasks: 3 executed
+2026-10-23T05:46:56.5288512Z 
+2026-10-23T05:46:56.5288521Z 
+2026-10-23T05:46:56.5288764Z FAILURE: Build failed with an exception.
+2026-10-23T05:46:56.5290258Z 
+2026-10-23T05:46:56.5290473Z * What went wrong:
+2026-10-23T05:46:56.5290863Z Execution failed for task ':test'.
+2026-10-23T05:46:56.5292136Z > There were failing tests. See the report at: file:///C:/Users/runneradmin/AppData/Local/Temp/patchprove-installed-%E6%B5%8B%E8%AF%95%20space-EB96AE/build/reports/tests/test/index.html
+2026-10-23T05:46:56.5293016Z 
+2026-10-23T05:46:56.5293146Z * Try:
+2026-10-23T05:46:56.5295433Z > Run with --scan to get full insights.
+2026-10-23T05:46:56.5297047Z 
+2026-10-23T05:46:56.5297215Z BUILD FAILED in 1s
+2026-10-23T05:46:56.5307814Z [{"id":"tests:java","checkId":"tests","scope":[],"status":"failed","command":"D:\\a\\_temp\\.gradle-actions\\gradle-installations\\installs\\gradle-8.12.1\\bin\\gradle.bat","args":["test","--tests","fixture.ValueTest"],"cwd":"C:/Users/runneradmin/AppData/Local/Temp/patchprove-installed-测试 space-EB96AE","exitCode":1,"durationMs":1982,"reason":"exit 1","toolVersion":"Gradle 8.12.1","signal":null,"truncated":false,"outputHash":"83d2adc3a4e72336ad8ef1828e0a36955be4dcac65b85e1760ed7f5deced57ef","required":true,"testExecution":{"parserVersion":"1","format":"java-junit","reportStatus":"missing","granularity":"file","requestedScope":["src/test/java/fixture/ValueTest.java"],"collectedScope":[],"executedScope":[],"skippedScope":[],"unknownScope":["src/test/java/fixture/ValueTest.java"],"counts":{"collected":0,"executed":0,"passed":0,"failed":0,"skipped":0},"reason":"No tests execution report was produced for the selected Java scope","sourceFiles":["src/test/java/fixture/ValueTest.java"]}}]
+2026-10-23T05:46:56.5316731Z 
+2026-10-23T05:46:56.5316929Z 'failed' !== 'passed'
+2026-10-23T05:46:56.5317141Z 
+2026-10-23T05:47:03.9193444Z Runner failure report build\test-results\test\TEST-Gradle#20Test#20Executor#207.xml:
+2026-10-23T05:47:03.9195254Z <failure message="org.gradle.api.internal.tasks.testing.TestSuiteExecutionException: Could not execute test class 'fixture.ValueTest'." type="org.gradle.api.internal.tasks.testing.TestSuiteExecutionException">org.gradle.api.internal.tasks.testing.TestSuiteExecutionException: Could not execute test class 'fixture.ValueTest'.
+2026-10-23T05:47:03.9198372Z 	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:55)
+2026-10-23T05:47:03.9201297Z 	at java.base@17.0.20.1/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+2026-10-23T05:47:03.9225639Z 	at java.base@17.0.20.1/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+2026-10-23T05:47:03.9231752Z 	at java.base@17.0.20.1/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+2026-10-23T05:47:03.9236588Z 	at java.base@17.0.20.1/java.lang.reflect.Method.invoke(Method.java:569)
+2026-10-23T05:47:03.9242521Z 	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+2026-10-23T05:47:03.9277838Z 	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+2026-10-23T05:47:03.9335261Z 	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33)
+2026-10-23T05:47:03.9371257Z 	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:92)
+2026-10-23T05:47:03.9373715Z 	at jdk.proxy1/jdk.proxy1.$Proxy4.processTestClass(Unknown Source)
+2026-10-23T05:47:03.9375359Z 	at org.gradle.api.internal.tasks.testing.worker.TestWorker$2.run(TestWorker.java:183)
+2026-10-23T05:47:03.9376728Z 	at org.gradle.api.internal.tasks.testing.worker.TestWorker.executeAndMaintainThreadName(TestWorker.java:132)
+2026-10-23T05:47:03.9377898Z 	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:103)
+2026-10-23T05:47:03.9380563Z 	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:63)
+2026-10-23T05:47:03.9382811Z 	at org.gradle.process.internal.worker.child.ActionExecutionWorker.execute(ActionExecutionWorker.java:56)
+2026-10-23T05:47:03.9384300Z 	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:121)
+2026-10-23T05:47:03.9385694Z 	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:71)
+2026-10-23T05:47:03.9387084Z 	at app//worker.org.gradle.process.internal.worker.GradleWorkerMain.run(GradleWorkerMain.java:69)
+2026-10-23T05:47:03.9388247Z 	at app//worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java:74)
+2026-10-23T05:47:03.9389761Z Caused by: org.gradle.internal.UncheckedException: java.lang.ClassNotFoundException: fixture.ValueTest
+2026-10-23T05:47:03.9390549Z 	at org.gradle.internal.UncheckedException.throwAsUncheckedException(UncheckedException.java:69)
+2026-10-23T05:47:03.9391296Z 	at org.gradle.internal.UncheckedException.throwAsUncheckedException(UncheckedException.java:42)
+2026-10-23T05:47:03.9393799Z 	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor.loadClass(JUnitPlatformTestClassProcessor.java:175)
+2026-10-23T05:47:03.9395799Z 	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor.access$100(JUnitPlatformTestClassProcessor.java:62)
+2026-10-23T05:47:03.9397426Z 	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.execute(JUnitPlatformTestClassProcessor.java:109)
+2026-10-23T05:47:03.9399160Z 	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.execute(JUnitPlatformTestClassProcessor.java:99)
+2026-10-23T05:47:03.9401145Z 	at org.gradle.api.internal.tasks.testing.junit.AbstractJUnitTestClassProcessor.processTestClass(AbstractJUnitTestClassProcessor.java:54)
+2026-10-23T05:47:03.9402338Z 	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:53)
+2026-10-23T05:47:03.9402971Z 	... 18 more
+2026-10-23T05:47:03.9403656Z Caused by: java.lang.ClassNotFoundException: fixture.ValueTest
+2026-10-23T05:47:03.9404252Z 	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641)
+2026-10-23T05:47:03.9405122Z 	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188)
+2026-10-23T05:47:03.9405840Z 	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:525)
+2026-10-23T05:47:03.9406421Z 	at java.base/java.lang.Class.forName0(Native Method)
+2026-10-23T05:47:03.9406808Z 	at java.base/java.lang.Class.forName(Class.java:469)
+2026-10-23T05:47:03.9407823Z 	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor.loadClass(JUnitPlatformTestClassProcessor.java:173)
+2026-10-23T05:47:03.9408920Z 	... 23 more
+2026-10-23T05:47:03.9409312Z </failure>
+2026-10-23T05:47:03.9410268Z FAIL installed gradle-failure: AssertionError [ERR_ASSERTION]: Expected an attributed failing test, not infrastructure failure
+2026-10-23T05:47:03.9411147Z > Task :compileJava
+2026-10-23T05:47:03.9411643Z > Task :processResources NO-SOURCE
+2026-10-23T05:47:03.9412103Z > Task :classes
+2026-10-23T05:47:03.9412423Z > Task :compileTestJava
+2026-10-23T05:47:03.9412837Z > Task :processTestResources NO-SOURCE
+2026-10-23T05:47:03.9413380Z > Task :testClasses
+2026-10-23T05:47:03.9413660Z 
+2026-10-23T05:47:03.9413805Z > Task :test FAILED
+2026-10-23T05:47:03.9414042Z Tests run: 0
+2026-10-23T05:47:03.9414642Z gradle/actions: Writing build results to D:\a\_temp\.gradle-actions\build-results\__run_7-1792734421104.json
+2026-10-23T05:47:03.9415447Z 
+2026-10-23T05:47:03.9416623Z [Incubating] Problems report is available at: file:///C:/Users/runneradmin/AppData/Local/Temp/patchprove-installed-%E6%B5%8B%E8%AF%95%20space-rUa70r/build/reports/problems/problems-report.html
+2026-10-23T05:47:03.9417574Z 
+2026-10-23T05:47:03.9417930Z Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+2026-10-23T05:47:03.9418267Z 
+2026-10-23T05:47:03.9418746Z You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+2026-10-23T05:47:03.9419182Z 
+2026-10-23T05:47:03.9419873Z For more on this, please refer to https://docs.gradle.org/8.12.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+2026-10-23T05:47:03.9420992Z 3 actionable tasks: 3 executed
+2026-10-23T05:47:03.9421288Z 
+2026-10-23T05:47:03.9421297Z 
+2026-10-23T05:47:03.9421503Z FAILURE: Build failed with an exception.
+2026-10-23T05:47:03.9421782Z 
+2026-10-23T05:47:03.9421974Z * What went wrong:
+2026-10-23T05:47:03.9422453Z Execution failed for task ':test'.
+2026-10-23T05:47:03.9423678Z > There were failing tests. See the report at: file:///C:/Users/runneradmin/AppData/Local/Temp/patchprove-installed-%E6%B5%8B%E8%AF%95%20space-rUa70r/build/reports/tests/test/index.html
+2026-10-23T05:47:03.9424689Z 
+2026-10-23T05:47:03.9424863Z * Try:
+2026-10-23T05:47:03.9425515Z > Run with --scan to get full insights.
+2026-10-23T05:47:03.9425725Z 
+2026-10-23T05:47:03.9425862Z BUILD FAILED in 1s
+2026-10-23T05:47:12.0986987Z PASS installed gradle-zero
+2026-10-23T05:47:19.9034905Z Runner failure report alpha\build\test-results\test\TEST-Gradle#20Test#20Executor#209.xml:
+2026-10-23T05:47:19.9037685Z <failure message="org.gradle.api.internal.tasks.testing.TestSuiteExecutionException: Could not execute test class 'fixture.ValueTest'." type="org.gradle.api.internal.tasks.testing.TestSuiteExecutionException">org.gradle.api.internal.tasks.testing.TestSuiteExecutionException: Could not execute test class 'fixture.ValueTest'.
+2026-10-23T05:47:19.9081092Z 	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:55)
+2026-10-23T05:47:19.9257289Z 	at java.base@17.0.20.1/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+2026-10-23T05:47:19.9259172Z 	at java.base@17.0.20.1/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:77)
+2026-10-23T05:47:19.9262379Z 	at java.base@17.0.20.1/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+2026-10-23T05:47:19.9263842Z 	at java.base@17.0.20.1/java.lang.reflect.Method.invoke(Method.java:569)
+2026-10-23T05:47:19.9266043Z 	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:36)
+2026-10-23T05:47:19.9267444Z 	at org.gradle.internal.dispatch.ReflectionDispatch.dispatch(ReflectionDispatch.java:24)
+2026-10-23T05:47:19.9268805Z 	at org.gradle.internal.dispatch.ContextClassLoaderDispatch.dispatch(ContextClassLoaderDispatch.java:33)
+2026-10-23T05:47:19.9272775Z 	at org.gradle.internal.dispatch.ProxyDispatchAdapter$DispatchingInvocationHandler.invoke(ProxyDispatchAdapter.java:92)
+2026-10-23T05:47:19.9274009Z 	at jdk.proxy1/jdk.proxy1.$Proxy4.processTestClass(Unknown Source)
+2026-10-23T05:47:19.9274979Z 	at org.gradle.api.internal.tasks.testing.worker.TestWorker$2.run(TestWorker.java:183)
+2026-10-23T05:47:19.9276264Z 	at org.gradle.api.internal.tasks.testing.worker.TestWorker.executeAndMaintainThreadName(TestWorker.java:132)
+2026-10-23T05:47:19.9277531Z 	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:103)
+2026-10-23T05:47:19.9278639Z 	at org.gradle.api.internal.tasks.testing.worker.TestWorker.execute(TestWorker.java:63)
+2026-10-23T05:47:19.9279862Z 	at org.gradle.process.internal.worker.child.ActionExecutionWorker.execute(ActionExecutionWorker.java:56)
+2026-10-23T05:47:19.9281390Z 	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:121)
+2026-10-23T05:47:19.9283096Z 	at org.gradle.process.internal.worker.child.SystemApplicationClassLoaderWorker.call(SystemApplicationClassLoaderWorker.java:71)
+2026-10-23T05:47:19.9284546Z 	at app//worker.org.gradle.process.internal.worker.GradleWorkerMain.run(GradleWorkerMain.java:69)
+2026-10-23T05:47:19.9285759Z 	at app//worker.org.gradle.process.internal.worker.GradleWorkerMain.main(GradleWorkerMain.java:74)
+2026-10-23T05:47:19.9287104Z Caused by: org.gradle.internal.UncheckedException: java.lang.ClassNotFoundException: fixture.ValueTest
+2026-10-23T05:47:19.9288385Z 	at org.gradle.internal.UncheckedException.throwAsUncheckedException(UncheckedException.java:69)
+2026-10-23T05:47:19.9289640Z 	at org.gradle.internal.UncheckedException.throwAsUncheckedException(UncheckedException.java:42)
+2026-10-23T05:47:19.9291478Z 	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor.loadClass(JUnitPlatformTestClassProcessor.java:175)
+2026-10-23T05:47:19.9293340Z 	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor.access$100(JUnitPlatformTestClassProcessor.java:62)
+2026-10-23T05:47:19.9295402Z 	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.execute(JUnitPlatformTestClassProcessor.java:109)
+2026-10-23T05:47:19.9297845Z 	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor$CollectAllTestClassesExecutor.execute(JUnitPlatformTestClassProcessor.java:99)
+2026-10-23T05:47:19.9299853Z 	at org.gradle.api.internal.tasks.testing.junit.AbstractJUnitTestClassProcessor.processTestClass(AbstractJUnitTestClassProcessor.java:54)
+2026-10-23T05:47:19.9306866Z 	at org.gradle.api.internal.tasks.testing.SuiteTestClassProcessor.processTestClass(SuiteTestClassProcessor.java:53)
+2026-10-23T05:47:19.9318424Z 	... 18 more
+2026-10-23T05:47:19.9327616Z Caused by: java.lang.ClassNotFoundException: fixture.ValueTest
+2026-10-23T05:47:19.9636172Z 	at java.base/jdk.internal.loader.BuiltinClassLoader.loadClass(BuiltinClassLoader.java:641)
+2026-10-23T05:47:19.9642095Z 	at java.base/jdk.internal.loader.ClassLoaders$AppClassLoader.loadClass(ClassLoaders.java:188)
+2026-10-23T05:47:19.9646610Z 	at java.base/java.lang.ClassLoader.loadClass(ClassLoader.java:525)
+2026-10-23T05:47:19.9647534Z 	at java.base/java.lang.Class.forName0(Native Method)
+2026-10-23T05:47:19.9649692Z 	at java.base/java.lang.Class.forName(Class.java:469)
+2026-10-23T05:47:19.9653353Z 	at org.gradle.api.internal.tasks.testing.junitplatform.JUnitPlatformTestClassProcessor.loadClass(JUnitPlatformTestClassProcessor.java:173)
+2026-10-23T05:47:19.9657773Z 	... 23 more
+2026-10-23T05:47:19.9659468Z </failure>
+2026-10-23T05:47:19.9662585Z FAIL installed gradle-multimodule: AssertionError [ERR_ASSERTION]: gradle-multimodule: exit 1
+2026-10-23T05:47:19.9663196Z > Task :alpha:compileJava
+2026-10-23T05:47:19.9664336Z > Task :alpha:processResources NO-SOURCE
+2026-10-23T05:47:19.9665640Z > Task :alpha:classes
+2026-10-23T05:47:19.9666350Z > Task :alpha:compileTestJava
+2026-10-23T05:47:19.9667709Z > Task :alpha:processTestResources NO-SOURCE
+2026-10-23T05:47:19.9668160Z > Task :alpha:testClasses
+2026-10-23T05:47:19.9668804Z 
+2026-10-23T05:47:19.9669268Z > Task :alpha:test FAILED
+2026-10-23T05:47:19.9670683Z Tests run: 0
+2026-10-23T05:47:19.9671945Z gradle/actions: Writing build results to D:\a\_temp\.gradle-actions\build-results\__run_7-1792734437164.json
+2026-10-23T05:47:19.9673257Z 
+2026-10-23T05:47:19.9676736Z [Incubating] Problems report is available at: file:///C:/Users/runneradmin/AppData/Local/Temp/patchprove-installed-%E6%B5%8B%E8%AF%95%20space-SZx5be/build/reports/problems/problems-report.html
+2026-10-23T05:47:19.9681393Z 
+2026-10-23T05:47:19.9682041Z Deprecated Gradle features were used in this build, making it incompatible with Gradle 9.0.
+2026-10-23T05:47:19.9684057Z 
+2026-10-23T05:47:19.9686296Z You can use '--warning-mode all' to show the individual deprecation warnings and determine if they come from your own scripts or plugins.
+2026-10-23T05:47:19.9688828Z 
+2026-10-23T05:47:19.9690073Z For more on this, please refer to https://docs.gradle.org/8.12.1/userguide/command_line_interface.html#sec:command_line_warnings in the Gradle documentation.
+2026-10-23T05:47:19.9693881Z 3 actionable tasks: 3 executed
+2026-10-23T05:47:19.9695493Z 
+2026-10-23T05:47:19.9695501Z 
+2026-10-23T05:47:19.9695823Z FAILURE: Build failed with an exception.
+2026-10-23T05:47:19.9697050Z 
+2026-10-23T05:47:19.9697268Z * What went wrong:
+2026-10-23T05:47:19.9698825Z Execution failed for task ':alpha:test'.
+2026-10-23T05:47:19.9704208Z > There were failing tests. See the report at: file:///C:/Users/runneradmin/AppData/Local/Temp/patchprove-installed-%E6%B5%8B%E8%AF%95%20space-SZx5be/alpha/build/reports/tests/test/index.html
+2026-10-23T05:47:19.9709517Z 
+2026-10-23T05:47:19.9711497Z * Try:
+2026-10-23T05:47:19.9719543Z > Run with --scan to get full insights.
+2026-10-23T05:47:19.9721580Z 
+2026-10-23T05:47:19.9722606Z BUILD FAILED in 1s
+2026-10-23T05:47:19.9743203Z [{"id":"tests:java","checkId":"tests","scope":[],"status":"failed","command":"D:\\a\\_temp\\.gradle-actions\\gradle-installations\\installs\\gradle-8.12.1\\bin\\gradle.bat","args":[":alpha:test","--tests","fixture.ValueTest",":beta:test","--tests","fixture.ValueTest"],"cwd":"C:/Users/runneradmin/AppData/Local/Temp/patchprove-installed-测试 space-SZx5be","exitCode":1,"durationMs":1834,"reason":"exit 1","toolVersion":"Gradle 8.12.1","signal":null,"truncated":false,"outputHash":"f4f2487ae9a34a1249094e152c6aa185ff378d813661a4292abb0868eb1d5857","required":true,"testExecution":{"parserVersion":"1","format":"java-junit","reportStatus":"missing","granularity":"file","requestedScope":["alpha/src/test/java/fixture/ValueTest.java","beta/src/test/java/fixture/ValueTest.java"],"collectedScope":[],"executedScope":[],"skippedScope":[],"unknownScope":["alpha/src/test/java/fixture/ValueTest.java","beta/src/test/java/fixture/ValueTest.java"],"counts":{"collected":0,"executed":0,"passed":0,"failed":0,"skipped":0},"reason":"No tests execution report was produced for the selected Java scope","sourceFiles":["alpha/src/test/java/fixture/ValueTest.java","beta/src/test/java/fixture/ValueTest.java"]}}]
+2026-10-23T05:47:19.9762611Z 
+2026-10-23T05:47:19.9763174Z 'failed' !== 'passed'
+2026-10-23T05:47:19.9764575Z 
+2026-10-23T05:47:21.3041756Z node:internal/modules/run_main:123
+2026-10-23T05:47:21.3043600Z     triggerUncaughtException(
+2026-10-23T05:47:21.3044122Z     ^
+2026-10-23T05:47:21.3044229Z 
+2026-10-23T05:47:21.3044614Z AssertionError [ERR_ASSERTION]: Installed production chain failed; see artifacts/production-chain.json
+2026-10-23T05:47:21.3045604Z     at verifyProductionChain (file:///D:/a/patchprove/patchprove/scripts/test-production.mjs:81:3)
+2026-10-23T05:47:21.3046498Z     at async file:///D:/a/patchprove/patchprove/scripts/test-package.mjs:87:24 {
+2026-10-23T05:47:21.3065602Z   generatedMessage: false,
+2026-10-23T05:47:21.3066029Z   code: 'ERR_ASSERTION',
+2026-10-23T05:47:21.3066346Z   actual: false,
+2026-10-23T05:47:21.3066622Z   expected: true,
+2026-10-23T05:47:21.3066895Z   operator: '==',
+2026-10-23T05:47:21.3067181Z   diff: 'simple'
+2026-10-23T05:47:21.3067448Z }
+2026-10-23T05:47:21.3067573Z 
+2026-10-23T05:47:21.3067686Z Node.js v22.23.3
+2026-10-23T05:47:21.3508517Z ##[error]Process completed with exit code 1.
+2026-10-23T05:47:21.3657172Z ##[group]Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+2026-10-23T05:47:21.3657671Z with:
+2026-10-23T05:47:21.3657934Z   name: runtime-corpus-windows-latest
+2026-10-23T05:47:21.3658229Z   path: artifacts/
+2026-10-23T05:47:21.3658482Z   if-no-files-found: error
+2026-10-23T05:47:21.3658761Z   compression-level: 6
+2026-10-23T05:47:21.3659022Z   overwrite: false
+2026-10-23T05:47:21.3659281Z   include-hidden-files: false
+2026-10-23T05:47:21.3659550Z env:
+2026-10-23T05:47:21.3659822Z   pythonLocation: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:47:21.3660286Z   PKG_CONFIG_PATH: C:\hostedtoolcache\windows\Python\3.12.10\x64/lib/pkgconfig
+2026-10-23T05:47:21.3660753Z   Python_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:47:21.3661139Z   Python2_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:47:21.3661497Z   Python3_ROOT_DIR: C:\hostedtoolcache\windows\Python\3.12.10\x64
+2026-10-23T05:47:21.3661939Z   CARGO_HOME: C:\Users\runneradmin\.cargo
+2026-10-23T05:47:21.3662256Z   CARGO_INCREMENTAL: 0
+2026-10-23T05:47:21.3662521Z   CARGO_TERM_COLOR: always
+2026-10-23T05:47:21.3662902Z   JAVA_HOME: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-10-23T05:47:21.3663403Z   JAVA_HOME_17_X64: C:\hostedtoolcache\windows\Java_Temurin-Hotspot_jdk\17.0.20-101\x64
+2026-10-23T05:47:21.3663834Z   GRADLE_ACTION_ID: gradle/actions/setup-gradle
+2026-10-23T05:47:21.3664177Z   GRADLE_USER_HOME: D:\a\.gradle
+2026-10-23T05:47:21.3664445Z   GRADLE_BUILD_ACTION_SETUP_COMPLETED: true
+2026-10-23T05:47:21.3664753Z   GRADLE_BUILD_ACTION_CACHE_RESTORED: true
+2026-10-23T05:47:21.3665169Z   DEVELOCITY_INJECTION_INIT_SCRIPT_NAME: gradle-actions.inject-develocity.init.gradle
+2026-10-23T05:47:21.3665621Z   DEVELOCITY_INJECTION_CUSTOM_VALUE: gradle-actions
+2026-10-23T05:47:21.3666202Z   GITHUB_DEPENDENCY_GRAPH_ENABLED: false
+2026-10-23T05:47:21.3666493Z ##[endgroup]
+2026-10-23T05:47:21.5155369Z (node:7516) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-23T05:47:21.5156591Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-23T05:47:21.5281939Z With the provided path, there will be 6 files uploaded
+2026-10-23T05:47:21.5285796Z Artifact name is valid!
+2026-10-23T05:47:21.5287229Z Root directory input is valid!
+2026-10-23T05:47:21.7195141Z Beginning upload of artifact content to blob storage
+2026-10-23T05:47:21.7464591Z (node:7516) [DEP0169] DeprecationWarning: `url.parse()` behavior is not standardized and prone to errors that have security implications. Use the WHATWG URL API instead. CVEs are not issued for `url.parse()` vulnerabilities.
+2026-10-23T05:47:21.7727765Z Uploaded bytes 35480
+2026-10-23T05:47:21.7874802Z Finished uploading artifact content to blob storage!
+2026-10-23T05:47:21.7875770Z SHA256 digest of uploaded artifact zip is a1afc6edfef66400e86ba6e44c209fb2b39a27a251d6089f30a63b74026e8a91
+2026-10-23T05:47:21.7877544Z Finalizing artifact upload
+2026-10-23T05:47:22.1901868Z Artifact runtime-corpus-windows-latest.zip successfully finalized. Artifact ID 12481182694
+2026-10-23T05:47:22.1902810Z Artifact runtime-corpus-windows-latest has been successfully uploaded! Final size is 35480 bytes. Artifact ID is 12481182694
+2026-10-23T05:47:22.1910387Z Artifact download URL: https://github.com/jecketyuan-ux/patchprove/actions/runs/39906844360/artifacts/12481182694
+2026-10-23T05:47:22.2233218Z Post job cleanup.
+2026-10-23T05:47:22.4349942Z In post-action step
+2026-10-23T05:47:22.4365417Z Cache is read-only: will not save state for use in subsequent builds.
+2026-10-23T05:47:22.4372085Z Generating Job Summary
+2026-10-23T05:47:22.4402306Z Completed post-action step
+2026-10-23T05:47:22.4689651Z Post job cleanup.
+2026-10-23T05:47:22.6001366Z (node:4152) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+2026-10-23T05:47:22.6002158Z (Use `node --trace-deprecation ...` to show where the warning was created)
+2026-10-23T05:47:22.6269361Z Post job cleanup.
+2026-10-23T05:47:22.7616982Z [command]"C:\Program Files\Git\bin\git.exe" version
+2026-10-23T05:47:22.7904435Z git version 2.56.0.windows.2
+2026-10-23T05:47:22.7956621Z Copying 'C:\Users\runneradmin\.gitconfig' to 'D:\a\_temp\920c4e58-3898-422a-a0ae-e0cc38619799\.gitconfig'
+2026-10-23T05:47:22.7974222Z Temporarily overriding HOME='D:\a\_temp\920c4e58-3898-422a-a0ae-e0cc38619799' before making global git config changes
+2026-10-23T05:47:22.7975621Z Adding repository directory to the temporary git global config as a safe directory
+2026-10-23T05:47:22.7984170Z [command]"C:\Program Files\Git\bin\git.exe" config --global --add safe.directory D:\a\patchprove\patchprove
+2026-10-23T05:47:22.8298044Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp core\.sshCommand
+2026-10-23T05:47:22.8605944Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :\""
+2026-10-23T05:47:23.3884998Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2026-10-23T05:47:23.4183437Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "sh -c \"git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :\""
+2026-10-23T05:47:23.8592990Z [command]"C:\Program Files\Git\bin\git.exe" config --local --name-only --get-regexp ^includeIf\.gitdir:
+2026-10-23T05:47:23.8897051Z [command]"C:\Program Files\Git\bin\git.exe" submodule foreach --recursive "git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2026-10-23T05:47:24.4462558Z Cleaning up orphan processes
+2026-10-23T05:47:24.4679996Z Terminate orphan process: pid (8256) (java)
+2026-10-23T05:47:24.5149558Z ##[warning]Node.js 20 is deprecated. The following actions target Node.js 20 but are being forced to run on Node.js 24: actions/checkout@11d5960a326750d5838078e36cf38b85af677262, actions/setup-go@40f1582b2485089dde7abd97c1529aa768e1baff, actions/setup-java@cf277c60eb25467037889841efdb72551f06f6c3, actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020, actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065, actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02, gradle/actions/setup-gradle@748248ddd2a24f49513d8f472f81c3a07d4d50e1. For more information see: https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/

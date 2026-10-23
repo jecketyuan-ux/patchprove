@@ -1,0 +1,245 @@
+[
+  {
+    "head": "21a1d15c653f7076f3bc912a080a47304ef74c6b",
+    "runId": 39904290204,
+    "url": "https://github.com/jecketyuan-ux/patchprove/actions/runs/39904290204",
+    "conclusion": "failure",
+    "reason": "Self-review JSON node budget; Windows Gradle non-ASCII worker startup",
+    "jobs": [
+      {
+        "id": 120252560331,
+        "name": "Go thin launcher",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120252560566,
+        "name": "Real runtime fixtures / macos-latest",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120252560578,
+        "name": "Resource budgets and pinned upstream contracts",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120252560608,
+        "name": "Read-only PR evidence",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "failure"
+      },
+      {
+        "id": 120252560620,
+        "name": "Real runtime fixtures / ubuntu-latest",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120252560671,
+        "name": "macos-latest / Node 24",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120252560676,
+        "name": "Real runtime fixtures / windows-latest",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "failure"
+      },
+      {
+        "id": 120252560733,
+        "name": "ubuntu-latest / Node 22",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120252560734,
+        "name": "ubuntu-latest / Node 24",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120252560736,
+        "name": "macos-latest / Node 22",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120252560786,
+        "name": "windows-latest / Node 22",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120252561245,
+        "name": "windows-latest / Node 24",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      }
+    ]
+  },
+  {
+    "head": "dfb5f2dc690d1a0a8288ff93941439272ddb9d40",
+    "runId": 39905685162,
+    "url": "https://github.com/jecketyuan-ux/patchprove/actions/runs/39905685162",
+    "conclusion": "failure",
+    "reason": "Windows Gradle worker ClassNotFound before user-test execution",
+    "jobs": [
+      {
+        "id": 120256985079,
+        "name": "Resource budgets and pinned upstream contracts",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120256985163,
+        "name": "macos-latest / Node 24",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120256985174,
+        "name": "Go thin launcher",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120256985200,
+        "name": "ubuntu-latest / Node 22",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120256985216,
+        "name": "Real runtime fixtures / macos-latest",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120256985227,
+        "name": "Read-only PR evidence",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120256985233,
+        "name": "windows-latest / Node 22",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120256985247,
+        "name": "Real runtime fixtures / windows-latest",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "failure"
+      },
+      {
+        "id": 120256985254,
+        "name": "windows-latest / Node 24",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120256985300,
+        "name": "Real runtime fixtures / ubuntu-latest",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120256985405,
+        "name": "macos-latest / Node 22",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120256985486,
+        "name": "ubuntu-latest / Node 24",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      }
+    ]
+  },
+  {
+    "head": "dd410dd25e248904e23dd88a4997580a3cd317d9",
+    "runId": 39906844360,
+    "url": "https://github.com/jecketyuan-ux/patchprove/actions/runs/39906844360",
+    "conclusion": "failure",
+    "reason": "Preserved unmatched Gradle worker XML identifies classpath/encoding failure",
+    "jobs": [
+      {
+        "id": 120260653009,
+        "name": "Resource budgets and pinned upstream contracts",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120260653114,
+        "name": "Read-only PR evidence",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120260653126,
+        "name": "macos-latest / Node 22",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120260653132,
+        "name": "Go thin launcher",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120260653172,
+        "name": "Real runtime fixtures / macos-latest",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120260653177,
+        "name": "windows-latest / Node 24",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120260653189,
+        "name": "macos-latest / Node 24",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120260653245,
+        "name": "ubuntu-latest / Node 24",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120260653276,
+        "name": "windows-latest / Node 22",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120260653280,
+        "name": "Real runtime fixtures / windows-latest",
+        "statusAtCapture": "in_progress",
+        "conclusionAtCapture": null
+      },
+      {
+        "id": 120260653287,
+        "name": "Real runtime fixtures / ubuntu-latest",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      },
+      {
+        "id": 120260653350,
+        "name": "ubuntu-latest / Node 22",
+        "statusAtCapture": "completed",
+        "conclusionAtCapture": "success"
+      }
+    ]
+  }
+]

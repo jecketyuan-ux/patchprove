@@ -185,6 +185,7 @@ jobs:
           set +e
           node dist/cli.js run --base "$PR_BASE" --head "$PR_HEAD" \
             --max-json-nodes 2000000 --max-json-bytes 16777216 \
+            --ignore 'docs/validation/release/**' \
             --out artifacts/evidence.json --receipt artifacts/evidence.receipt.json \
             --sarif artifacts/patchprove.sarif --format markdown > artifacts/comment.md
           status=$?

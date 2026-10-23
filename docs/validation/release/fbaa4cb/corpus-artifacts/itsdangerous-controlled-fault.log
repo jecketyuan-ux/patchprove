@@ -1,0 +1,2713 @@
+============================= test session starts ==============================
+platform linux -- Python 3.12.14, pytest-8.3.5, pluggy-1.7.0
+rootdir: /tmp/patchprove-real-projects/itsdangerous
+configfile: pyproject.toml
+testpaths: tests
+plugins: anyio-4.14.2
+collected 297 items
+
+tests/test_itsdangerous/test_encoding.py ........                        [  2%]
+tests/test_itsdangerous/test_serializer.py .FFFFF.FFFFFFFFFFFFFFFFFFFFFF [ 12%]
+FFFFFF.FF...                                                             [ 16%]
+tests/test_itsdangerous/test_signer.py .................                 [ 22%]
+tests/test_itsdangerous/test_timed.py .FFFFF.FFFFFFFFFFFFFFFFFFFFFFFFFFF [ 33%]
+F.FF...............................................................      [ 56%]
+tests/test_itsdangerous/test_url_safe.py .FFFFF.FFFFFFFFFFFFFFFFFFFFFFFF [ 66%]
+FFFF.FF.........................FFFFFFFFFFFFFFFFFFFFFFFFFFFFFF.......... [ 90%]
+...........................                                              [100%]
+
+=================================== FAILURES ===================================
+_______________ TestSerializer.test_serializer[Serializer-True] ________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce6efc80>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a1bb0>
+value = True
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == True
+E        +  where None = loads('true.l_Y3K2XCx_ycsfNxs_bJ2aPYJrY')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a1bb0>.loads
+E        +    and   'true.l_Y3K2XCx_ycsfNxs_bJ2aPYJrY' = dumps(True)
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a1bb0>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+________________ TestSerializer.test_serializer[Serializer-str] ________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce434110>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a27e0>
+value = 'str'
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       assert None == 'str'
+E        +  where None = loads('"str".a_PQ56nqXzss-JMwd8s2cKxLtcM')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a27e0>.loads
+E        +    and   '"str".a_PQ56nqXzss-JMwd8s2cKxLtcM' = dumps('str')
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a27e0>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+_______________ TestSerializer.test_serializer[Serializer-text] ________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce4341a0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a2c60>
+value = 'text'
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       assert None == 'text'
+E        +  where None = loads('"text".J4CpcjNYJzEOus99-S8eX5dIEEU')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a2c60>.loads
+E        +    and   '"text".J4CpcjNYJzEOus99-S8eX5dIEEU' = dumps('text')
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a2c60>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+______________ TestSerializer.test_serializer[Serializer-value4] _______________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce434230>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a36e0>
+value = [1, 2, 3]
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == [1, 2, 3]
+E        +  where None = loads('[1, 2, 3].97a5-D9_HuPb4fxdnCzJuMOgDGQ')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a36e0>.loads
+E        +    and   '[1, 2, 3].97a5-D9_HuPb4fxdnCzJuMOgDGQ' = dumps([1, 2, 3])
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a36e0>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+______________ TestSerializer.test_serializer[Serializer-value5] _______________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce4342c0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce751010>
+value = {'id': 42}
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.0XLzuMAHP6Oh9cnQ27puUwvSw7g')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce751010>.loads
+E        +    and   '{"id": 42}.0XLzuMAHP6Oh9cnQ27puUwvSw7g' = dumps({'id': 42})
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce751010>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+___________ TestSerializer.test_serializer[serializer_factory1-True] ___________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce434410>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce750aa0>
+value = True
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == True
+E        +  where None = loads(b'\x80\x04\x88.._lAOv9G9cPcln0dDxV9a_9b4le4')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce750aa0>.loads
+E        +    and   b'\x80\x04\x88.._lAOv9G9cPcln0dDxV9a_9b4le4' = dumps(True)
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce750aa0>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+___________ TestSerializer.test_serializer[serializer_factory1-str] ____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce4344a0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce751460>
+value = 'str'
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == 'str'
+E        +  where None = loads(b'\x80\x04\x95\x07\x00\x00\x00\x00\x00\x00\x00\x8c\x03str\x94..ytg_vxeava5QCdyClSe43wkyHJU')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce751460>.loads
+E        +    and   b'\x80\x04\x95\x07\x00\x00\x00\x00\x00\x00\x00\x8c\x03str\x94..ytg_vxeava5QCdyClSe43wkyHJU' = dumps('str')
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce751460>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+___________ TestSerializer.test_serializer[serializer_factory1-text] ___________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce434530>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce751eb0>
+value = 'text'
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == 'text'
+E        +  where None = loads(b'\x80\x04\x95\x08\x00\x00\x00\x00\x00\x00\x00\x8c\x04text\x94..lCu95PTSXDurDZjWG8ccr5KwIZ8')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce751eb0>.loads
+E        +    and   b'\x80\x04\x95\x08\x00\x00\x00\x00\x00\x00\x00\x8c\x04text\x94..lCu95PTSXDurDZjWG8ccr5KwIZ8' = dumps('text')
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce751eb0>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+__________ TestSerializer.test_serializer[serializer_factory1-value4] __________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce4345f0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce752a50>
+value = [1, 2, 3]
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == [1, 2, 3]
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00]\x94(K\x01K\x02K\x03e..3LIvPB0P-Vamj-VqteY1oYQA3D8')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce752a50>.loads
+E        +    and   b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00]\x94(K\x01K\x02K\x03e..3LIvPB0P-Vamj-VqteY1oYQA3D8' = dumps([1, 2, 3])
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce752a50>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+__________ TestSerializer.test_serializer[serializer_factory1-value5] __________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce4346b0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a3710>
+value = {'id': 42}
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..edm8yh4gUDLdH4YVvSE5dIOf8p0')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a3710>.loads
+E        +    and   b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..edm8yh4gUDLdH4YVvSE5dIOf8p0' = dumps({'id': 42})
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a3710>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+___________ TestSerializer.test_changed_value[Serializer-<lambda>0] ____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce8ca8d0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a2a80>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fba0>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.0XLzuMAHP6Oh9cnQ27puUwvSw7g')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a2a80>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+___________ TestSerializer.test_changed_value[Serializer-<lambda>1] ____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce434a40>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a2450>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fc40>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.0XLzuMAHP6Oh9cnQ27puUwvSw7g')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a2450>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+___________ TestSerializer.test_changed_value[Serializer-<lambda>2] ____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce434b60>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a2000>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fce0>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.0XLzuMAHP6Oh9cnQ27puUwvSw7g')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a2000>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+___________ TestSerializer.test_changed_value[Serializer-<lambda>3] ____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce434c20>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce752ea0>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fd80>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.0XLzuMAHP6Oh9cnQ27puUwvSw7g')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce752ea0>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+_______ TestSerializer.test_changed_value[serializer_factory1-<lambda>0] _______
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce434ce0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce752450>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fba0>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..edm8yh4gUDLdH4YVvSE5dIOf8p0')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce752450>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+_______ TestSerializer.test_changed_value[serializer_factory1-<lambda>1] _______
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce434da0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce750d70>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fc40>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..edm8yh4gUDLdH4YVvSE5dIOf8p0')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce750d70>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+_______ TestSerializer.test_changed_value[serializer_factory1-<lambda>2] _______
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce434e90>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce753530>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fce0>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..edm8yh4gUDLdH4YVvSE5dIOf8p0')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce753530>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+_______ TestSerializer.test_changed_value[serializer_factory1-<lambda>3] _______
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce434f50>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce7025d0>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fd80>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..edm8yh4gUDLdH4YVvSE5dIOf8p0')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce7025d0>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+___________ TestSerializer.test_bad_signature_exception[Serializer] ____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce435100>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce7003e0>
+value = {'id': 42}
+
+    def test_bad_signature_exception(self, serializer: Serializer, value: Any):
+        bad_signed = serializer.dumps(value)[:-1]
+    
+>       with pytest.raises(BadSignature) as exc_info:
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadSignature'>
+
+tests/test_itsdangerous/test_serializer.py:75: Failed
+_______ TestSerializer.test_bad_signature_exception[serializer_factory1] _______
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce4351c0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce700e30>
+value = {'id': 42}
+
+    def test_bad_signature_exception(self, serializer: Serializer, value: Any):
+        bad_signed = serializer.dumps(value)[:-1]
+    
+>       with pytest.raises(BadSignature) as exc_info:
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadSignature'>
+
+tests/test_itsdangerous/test_serializer.py:75: Failed
+____________ TestSerializer.test_bad_payload_exception[Serializer] _____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce435430>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce701b80>
+value = {'id': 42}
+
+    def test_bad_payload_exception(self, serializer: Serializer, value: Any):
+        original = serializer.dumps(value)
+        payload = original.rsplit(coerce_str(original, "."), 1)[0]  # type: ignore
+        bad = serializer.make_signer().sign(payload[:-1])
+    
+>       with pytest.raises(BadPayload) as exc_info:
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadPayload'>
+
+tests/test_itsdangerous/test_serializer.py:86: Failed
+________ TestSerializer.test_bad_payload_exception[serializer_factory1] ________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce4354f0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce7029f0>
+value = {'id': 42}
+
+    def test_bad_payload_exception(self, serializer: Serializer, value: Any):
+        original = serializer.dumps(value)
+        payload = original.rsplit(coerce_str(original, "."), 1)[0]  # type: ignore
+        bad = serializer.make_signer().sign(payload[:-1])
+    
+>       with pytest.raises(BadPayload) as exc_info:
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadPayload'>
+
+tests/test_itsdangerous/test_serializer.py:86: Failed
+_________________ TestSerializer.test_loads_unsafe[Serializer] _________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce435760>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce753950>
+value = {'id': 42}
+
+    def test_loads_unsafe(self, serializer: Serializer, value: Any):
+        signed = serializer.dumps(value)
+>       assert serializer.loads_unsafe(signed) == (True, value)
+E       AssertionError: assert (True, None) == (True, {'id': 42})
+E         
+E         At index 1 diff: None != {'id': 42}
+E         Use -v to get more diff
+
+tests/test_itsdangerous/test_serializer.py:93: AssertionError
+____________ TestSerializer.test_loads_unsafe[serializer_factory1] _____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce435850>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce752cf0>
+value = {'id': 42}
+
+    def test_loads_unsafe(self, serializer: Serializer, value: Any):
+        signed = serializer.dumps(value)
+>       assert serializer.loads_unsafe(signed) == (True, value)
+E       AssertionError: assert (True, None) == (True, {'id': 42})
+E         
+E         At index 1 diff: None != {'id': 42}
+E         Use -v to get more diff
+
+tests/test_itsdangerous/test_serializer.py:93: AssertionError
+_____________________ TestSerializer.test_file[Serializer] _____________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce435a90>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce7527e0>
+value = {'id': 42}
+
+    def test_file(self, serializer: Serializer, value: Any):
+        f = cast(
+            IO, BytesIO() if isinstance(serializer.dumps(value), bytes) else StringIO()
+        )
+        serializer.dump(value, f)
+        f.seek(0)
+>       assert serializer.load(f) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = load(<_io.StringIO object at 0x7fb1ce8cebc0>)
+E        +    where load = <itsdangerous.serializer.Serializer object at 0x7fb1ce7527e0>.load
+
+tests/test_itsdangerous/test_serializer.py:119: AssertionError
+________________ TestSerializer.test_file[serializer_factory1] _________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce435b50>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a2450>
+value = {'id': 42}
+
+    def test_file(self, serializer: Serializer, value: Any):
+        f = cast(
+            IO, BytesIO() if isinstance(serializer.dumps(value), bytes) else StringIO()
+        )
+        serializer.dump(value, f)
+        f.seek(0)
+>       assert serializer.load(f) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = load(<_io.BytesIO object at 0x7fb1ce78fc90>)
+E        +    where load = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a2450>.load
+
+tests/test_itsdangerous/test_serializer.py:119: AssertionError
+___________________ TestSerializer.test_alt_salt[Serializer] ___________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce435dc0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce7a2990>
+value = {'id': 42}
+
+    def test_alt_salt(self, serializer: Serializer, value: Any):
+        signed = serializer.dumps(value, salt="other")
+    
+>       with pytest.raises(BadSignature):
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadSignature'>
+
+tests/test_itsdangerous/test_serializer.py:126: Failed
+______________ TestSerializer.test_alt_salt[serializer_factory1] _______________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce435e80>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce703500>
+value = {'id': 42}
+
+    def test_alt_salt(self, serializer: Serializer, value: Any):
+        signed = serializer.dumps(value, salt="other")
+    
+>       with pytest.raises(BadSignature):
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadSignature'>
+
+tests/test_itsdangerous/test_serializer.py:126: Failed
+__________________ TestSerializer.test_signer_cls[Serializer] __________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce4360f0>
+serializer_factory = functools.partial(<class 'itsdangerous.serializer.Serializer'>, secret_key='secret_key')
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce7002f0>
+value = {'id': 42}
+
+    def test_signer_cls(self, serializer_factory, serializer: Serializer, value: Any):
+        class Other(serializer.signer):  # type: ignore
+            default_key_derivation = "hmac"
+    
+        other = serializer_factory(signer=Other)
+>       assert other.loads(other.dumps(value)) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.Sb3COPsf3d7I-kVLnJRScUeAovY')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce702330>.loads
+E        +    and   '{"id": 42}.Sb3COPsf3d7I-kVLnJRScUeAovY' = dumps({'id': 42})
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce702330>.dumps
+
+tests/test_itsdangerous/test_serializer.py:136: AssertionError
+_____________ TestSerializer.test_signer_cls[serializer_factory1] ______________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce4361b0>
+serializer_factory = functools.partial(<class 'itsdangerous.serializer.Serializer'>, serializer=<module 'pickle' from '/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pickle.py'>, secret_key='secret_key')
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce700710>
+value = {'id': 42}
+
+    def test_signer_cls(self, serializer_factory, serializer: Serializer, value: Any):
+        class Other(serializer.signer):  # type: ignore
+            default_key_derivation = "hmac"
+    
+        other = serializer_factory(signer=Other)
+>       assert other.loads(other.dumps(value)) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..WE5lVZN3vkTVlBXr3VyOrakDHj8')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce700650>.loads
+E        +    and   b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..WE5lVZN3vkTVlBXr3VyOrakDHj8' = dumps({'id': 42})
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce700650>.dumps
+
+tests/test_itsdangerous/test_serializer.py:136: AssertionError
+________________ TestSerializer.test_signer_kwargs[Serializer] _________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce436420>
+serializer_factory = functools.partial(<class 'itsdangerous.serializer.Serializer'>, secret_key='secret_key')
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce703950>
+value = {'id': 42}
+
+    def test_signer_kwargs(
+        self, serializer_factory, serializer: Serializer, value: Any
+    ):
+        other = serializer_factory(signer_kwargs={"key_derivation": "hmac"})
+>       assert other.loads(other.dumps(value)) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.Sb3COPsf3d7I-kVLnJRScUeAovY')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce7038c0>.loads
+E        +    and   '{"id": 42}.Sb3COPsf3d7I-kVLnJRScUeAovY' = dumps({'id': 42})
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce7038c0>.dumps
+
+tests/test_itsdangerous/test_serializer.py:143: AssertionError
+____________ TestSerializer.test_signer_kwargs[serializer_factory1] ____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce4364e0>
+serializer_factory = functools.partial(<class 'itsdangerous.serializer.Serializer'>, serializer=<module 'pickle' from '/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pickle.py'>, secret_key='secret_key')
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce720620>
+value = {'id': 42}
+
+    def test_signer_kwargs(
+        self, serializer_factory, serializer: Serializer, value: Any
+    ):
+        other = serializer_factory(signer_kwargs={"key_derivation": "hmac"})
+>       assert other.loads(other.dumps(value)) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..WE5lVZN3vkTVlBXr3VyOrakDHj8')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce720590>.loads
+E        +    and   b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..WE5lVZN3vkTVlBXr3VyOrakDHj8' = dumps({'id': 42})
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce720590>.dumps
+
+tests/test_itsdangerous/test_serializer.py:143: AssertionError
+______________ TestSerializer.test_serializer_kwargs[Serializer] _______________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce4366c0>
+serializer_factory = functools.partial(<class 'itsdangerous.serializer.Serializer'>, secret_key='secret_key')
+
+    def test_serializer_kwargs(self, serializer_factory):
+        serializer = serializer_factory(serializer_kwargs={"skipkeys": True})
+    
+        try:
+            serializer.serializer.dumps(None, skipkeys=True)
+        except TypeError:
+            return
+    
+>       assert serializer.loads(serializer.dumps({(): 1})) == {}
+E       AssertionError: assert None == {}
+E        +  where None = loads('{}.PpMq6V_ARdHaDR3fx6u4QtHwfNs')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce720fe0>.loads
+E        +    and   '{}.PpMq6V_ARdHaDR3fx6u4QtHwfNs' = dumps({(): 1})
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce720fe0>.dumps
+
+tests/test_itsdangerous/test_serializer.py:154: AssertionError
+_______________ TestSerializer.test_fallback_signers[Serializer] _______________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce4369c0>
+serializer_factory = functools.partial(<class 'itsdangerous.serializer.Serializer'>, secret_key='secret_key')
+value = {'id': 42}
+
+    def test_fallback_signers(self, serializer_factory, value: Any):
+        serializer = serializer_factory(signer_kwargs={"digest_method": hashlib.sha256})
+        signed = serializer.dumps(value)
+    
+        fallback_serializer = serializer_factory(
+            signer_kwargs={"digest_method": hashlib.sha1},
+            fallback_signers=[{"digest_method": hashlib.sha256}],
+        )
+    
+>       assert fallback_serializer.loads(signed) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.Thh4x2WMY9tsLB5Kl8E5faSUdyAFj9TZNPsbnCFI3a8')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce721af0>.loads
+
+tests/test_itsdangerous/test_serializer.py:165: AssertionError
+__________ TestSerializer.test_fallback_signers[serializer_factory1] ___________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce436a80>
+serializer_factory = functools.partial(<class 'itsdangerous.serializer.Serializer'>, serializer=<module 'pickle' from '/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pickle.py'>, secret_key='secret_key')
+value = {'id': 42}
+
+    def test_fallback_signers(self, serializer_factory, value: Any):
+        serializer = serializer_factory(signer_kwargs={"digest_method": hashlib.sha256})
+        signed = serializer.dumps(value)
+    
+        fallback_serializer = serializer_factory(
+            signer_kwargs={"digest_method": hashlib.sha1},
+            fallback_signers=[{"digest_method": hashlib.sha256}],
+        )
+    
+>       assert fallback_serializer.loads(signed) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..1y1pQ8Ztnw5D1t0p91zR2E0PJOkqM5hZkV3FJbsID2g')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce7038f0>.loads
+
+tests/test_itsdangerous/test_serializer.py:165: AssertionError
+_______________ TestSerializer.test_serializer[Serializer-True] ________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce4537a0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce436180>
+value = True
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == True
+E        +  where None = loads('true.l_Y3K2XCx_ycsfNxs_bJ2aPYJrY')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce436180>.loads
+E        +    and   'true.l_Y3K2XCx_ycsfNxs_bJ2aPYJrY' = dumps(True)
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce436180>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+________________ TestSerializer.test_serializer[Serializer-str] ________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce450410>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce753500>
+value = 'str'
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       assert None == 'str'
+E        +  where None = loads('"str".a_PQ56nqXzss-JMwd8s2cKxLtcM')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce753500>.loads
+E        +    and   '"str".a_PQ56nqXzss-JMwd8s2cKxLtcM' = dumps('str')
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce753500>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+_______________ TestSerializer.test_serializer[Serializer-text] ________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce4504d0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce750860>
+value = 'text'
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       assert None == 'text'
+E        +  where None = loads('"text".J4CpcjNYJzEOus99-S8eX5dIEEU')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce750860>.loads
+E        +    and   '"text".J4CpcjNYJzEOus99-S8eX5dIEEU' = dumps('text')
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce750860>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+______________ TestSerializer.test_serializer[Serializer-value4] _______________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce450590>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce753e60>
+value = [1, 2, 3]
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == [1, 2, 3]
+E        +  where None = loads('[1, 2, 3].97a5-D9_HuPb4fxdnCzJuMOgDGQ')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce753e60>.loads
+E        +    and   '[1, 2, 3].97a5-D9_HuPb4fxdnCzJuMOgDGQ' = dumps([1, 2, 3])
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce753e60>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+______________ TestSerializer.test_serializer[Serializer-value5] _______________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce450650>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce721220>
+value = {'id': 42}
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.0XLzuMAHP6Oh9cnQ27puUwvSw7g')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce721220>.loads
+E        +    and   '{"id": 42}.0XLzuMAHP6Oh9cnQ27puUwvSw7g' = dumps({'id': 42})
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce721220>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+___________ TestSerializer.test_serializer[serializer_factory1-True] ___________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce4507d0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce7224e0>
+value = True
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == True
+E        +  where None = loads(b'\x80\x04\x88.._lAOv9G9cPcln0dDxV9a_9b4le4')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce7224e0>.loads
+E        +    and   b'\x80\x04\x88.._lAOv9G9cPcln0dDxV9a_9b4le4' = dumps(True)
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce7224e0>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+___________ TestSerializer.test_serializer[serializer_factory1-str] ____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce450890>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce723380>
+value = 'str'
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == 'str'
+E        +  where None = loads(b'\x80\x04\x95\x07\x00\x00\x00\x00\x00\x00\x00\x8c\x03str\x94..ytg_vxeava5QCdyClSe43wkyHJU')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce723380>.loads
+E        +    and   b'\x80\x04\x95\x07\x00\x00\x00\x00\x00\x00\x00\x8c\x03str\x94..ytg_vxeava5QCdyClSe43wkyHJU' = dumps('str')
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce723380>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+___________ TestSerializer.test_serializer[serializer_factory1-text] ___________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce450950>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce5c4170>
+value = 'text'
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == 'text'
+E        +  where None = loads(b'\x80\x04\x95\x08\x00\x00\x00\x00\x00\x00\x00\x8c\x04text\x94..lCu95PTSXDurDZjWG8ccr5KwIZ8')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce5c4170>.loads
+E        +    and   b'\x80\x04\x95\x08\x00\x00\x00\x00\x00\x00\x00\x8c\x04text\x94..lCu95PTSXDurDZjWG8ccr5KwIZ8' = dumps('text')
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce5c4170>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+__________ TestSerializer.test_serializer[serializer_factory1-value4] __________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce450a40>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce5c4b60>
+value = [1, 2, 3]
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == [1, 2, 3]
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00]\x94(K\x01K\x02K\x03e..3LIvPB0P-Vamj-VqteY1oYQA3D8')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce5c4b60>.loads
+E        +    and   b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00]\x94(K\x01K\x02K\x03e..3LIvPB0P-Vamj-VqteY1oYQA3D8' = dumps([1, 2, 3])
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce5c4b60>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+__________ TestSerializer.test_serializer[serializer_factory1-value5] __________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce450b00>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce5c5550>
+value = {'id': 42}
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..edm8yh4gUDLdH4YVvSE5dIOf8p0')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce5c5550>.loads
+E        +    and   b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..edm8yh4gUDLdH4YVvSE5dIOf8p0' = dumps({'id': 42})
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce5c5550>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+___________ TestSerializer.test_changed_value[Serializer-<lambda>0] ____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce450ce0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce5c5f70>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fba0>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.0XLzuMAHP6Oh9cnQ27puUwvSw7g')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce5c5f70>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+___________ TestSerializer.test_changed_value[Serializer-<lambda>1] ____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce450d10>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce7239b0>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fc40>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.0XLzuMAHP6Oh9cnQ27puUwvSw7g')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce7239b0>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+___________ TestSerializer.test_changed_value[Serializer-<lambda>2] ____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce451010>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce721280>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fce0>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.0XLzuMAHP6Oh9cnQ27puUwvSw7g')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce721280>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+___________ TestSerializer.test_changed_value[Serializer-<lambda>3] ____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce4510d0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce753a40>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fd80>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.0XLzuMAHP6Oh9cnQ27puUwvSw7g')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce753a40>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+_______ TestSerializer.test_changed_value[serializer_factory1-<lambda>0] _______
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce451190>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce753080>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fba0>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..edm8yh4gUDLdH4YVvSE5dIOf8p0')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce753080>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+_______ TestSerializer.test_changed_value[serializer_factory1-<lambda>1] _______
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce451250>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce435be0>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fc40>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..edm8yh4gUDLdH4YVvSE5dIOf8p0')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce435be0>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+_______ TestSerializer.test_changed_value[serializer_factory1-<lambda>2] _______
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce451310>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce700590>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fce0>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..edm8yh4gUDLdH4YVvSE5dIOf8p0')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce700590>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+_______ TestSerializer.test_changed_value[serializer_factory1-<lambda>3] _______
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce4513d0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce5c7ce0>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fd80>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..edm8yh4gUDLdH4YVvSE5dIOf8p0')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce5c7ce0>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+___________ TestSerializer.test_bad_signature_exception[Serializer] ____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce451580>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce5c4b00>
+value = {'id': 42}
+
+    def test_bad_signature_exception(self, serializer: Serializer, value: Any):
+        bad_signed = serializer.dumps(value)[:-1]
+    
+>       with pytest.raises(BadSignature) as exc_info:
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadSignature'>
+
+tests/test_itsdangerous/test_serializer.py:75: Failed
+_______ TestSerializer.test_bad_signature_exception[serializer_factory1] _______
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce451640>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce5c6a50>
+value = {'id': 42}
+
+    def test_bad_signature_exception(self, serializer: Serializer, value: Any):
+        bad_signed = serializer.dumps(value)[:-1]
+    
+>       with pytest.raises(BadSignature) as exc_info:
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadSignature'>
+
+tests/test_itsdangerous/test_serializer.py:75: Failed
+____________ TestSerializer.test_bad_payload_exception[Serializer] _____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce451880>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce5c7b60>
+value = {'id': 42}
+
+    def test_bad_payload_exception(self, serializer: Serializer, value: Any):
+        original = serializer.dumps(value)
+        payload = original.rsplit(coerce_str(original, "."), 1)[0]  # type: ignore
+        bad = serializer.make_signer().sign(payload[:-1])
+    
+>       with pytest.raises(BadPayload) as exc_info:
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadPayload'>
+
+tests/test_itsdangerous/test_serializer.py:86: Failed
+________ TestSerializer.test_bad_payload_exception[serializer_factory1] ________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce451940>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce604740>
+value = {'id': 42}
+
+    def test_bad_payload_exception(self, serializer: Serializer, value: Any):
+        original = serializer.dumps(value)
+        payload = original.rsplit(coerce_str(original, "."), 1)[0]  # type: ignore
+        bad = serializer.make_signer().sign(payload[:-1])
+    
+>       with pytest.raises(BadPayload) as exc_info:
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadPayload'>
+
+tests/test_itsdangerous/test_serializer.py:86: Failed
+_________________ TestSerializer.test_loads_unsafe[Serializer] _________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce451b80>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce6051f0>
+value = {'id': 42}
+
+    def test_loads_unsafe(self, serializer: Serializer, value: Any):
+        signed = serializer.dumps(value)
+>       assert serializer.loads_unsafe(signed) == (True, value)
+E       AssertionError: assert (True, None) == (True, {'id': 42})
+E         
+E         At index 1 diff: None != {'id': 42}
+E         Use -v to get more diff
+
+tests/test_itsdangerous/test_serializer.py:93: AssertionError
+____________ TestSerializer.test_loads_unsafe[serializer_factory1] _____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce451c40>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce5c4bf0>
+value = {'id': 42}
+
+    def test_loads_unsafe(self, serializer: Serializer, value: Any):
+        signed = serializer.dumps(value)
+>       assert serializer.loads_unsafe(signed) == (True, value)
+E       AssertionError: assert (True, None) == (True, {'id': 42})
+E         
+E         At index 1 diff: None != {'id': 42}
+E         Use -v to get more diff
+
+tests/test_itsdangerous/test_serializer.py:93: AssertionError
+_____________________ TestSerializer.test_file[Serializer] _____________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce817ec0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce5c4d40>
+value = {'id': 42}
+
+    def test_file(self, serializer: Serializer, value: Any):
+        f = cast(
+            IO, BytesIO() if isinstance(serializer.dumps(value), bytes) else StringIO()
+        )
+        serializer.dump(value, f)
+        f.seek(0)
+>       assert serializer.load(f) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = load(<_io.StringIO object at 0x7fb1ce8ce680>)
+E        +    where load = <itsdangerous.serializer.Serializer object at 0x7fb1ce5c4d40>.load
+
+tests/test_itsdangerous/test_serializer.py:119: AssertionError
+________________ TestSerializer.test_file[serializer_factory1] _________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce451e80>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce5c5160>
+value = {'id': 42}
+
+    def test_file(self, serializer: Serializer, value: Any):
+        f = cast(
+            IO, BytesIO() if isinstance(serializer.dumps(value), bytes) else StringIO()
+        )
+        serializer.dump(value, f)
+        f.seek(0)
+>       assert serializer.load(f) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = load(<_io.BytesIO object at 0x7fb1ce70bc90>)
+E        +    where load = <itsdangerous.serializer.Serializer object at 0x7fb1ce5c5160>.load
+
+tests/test_itsdangerous/test_serializer.py:119: AssertionError
+___________________ TestSerializer.test_alt_salt[Serializer] ___________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce451790>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce435bb0>
+value = {'id': 42}
+
+    def test_alt_salt(self, serializer: Serializer, value: Any):
+        signed = serializer.dumps(value, salt="other")
+    
+>       with pytest.raises(BadSignature):
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadSignature'>
+
+tests/test_itsdangerous/test_serializer.py:126: Failed
+______________ TestSerializer.test_alt_salt[serializer_factory1] _______________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce450bc0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce751b80>
+value = {'id': 42}
+
+    def test_alt_salt(self, serializer: Serializer, value: Any):
+        signed = serializer.dumps(value, salt="other")
+    
+>       with pytest.raises(BadSignature):
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadSignature'>
+
+tests/test_itsdangerous/test_serializer.py:126: Failed
+__________________ TestSerializer.test_signer_cls[Serializer] __________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce4521b0>
+serializer_factory = functools.partial(<class 'itsdangerous.serializer.Serializer'>, secret_key='secret_key')
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce7234a0>
+value = {'id': 42}
+
+    def test_signer_cls(self, serializer_factory, serializer: Serializer, value: Any):
+        class Other(serializer.signer):  # type: ignore
+            default_key_derivation = "hmac"
+    
+        other = serializer_factory(signer=Other)
+>       assert other.loads(other.dumps(value)) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.Sb3COPsf3d7I-kVLnJRScUeAovY')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce723aa0>.loads
+E        +    and   '{"id": 42}.Sb3COPsf3d7I-kVLnJRScUeAovY' = dumps({'id': 42})
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce723aa0>.dumps
+
+tests/test_itsdangerous/test_serializer.py:136: AssertionError
+_____________ TestSerializer.test_signer_cls[serializer_factory1] ______________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce452270>
+serializer_factory = functools.partial(<class 'itsdangerous.serializer.Serializer'>, serializer=<module 'pickle' from '/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pickle.py'>, secret_key='secret_key')
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce723890>
+value = {'id': 42}
+
+    def test_signer_cls(self, serializer_factory, serializer: Serializer, value: Any):
+        class Other(serializer.signer):  # type: ignore
+            default_key_derivation = "hmac"
+    
+        other = serializer_factory(signer=Other)
+>       assert other.loads(other.dumps(value)) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..WE5lVZN3vkTVlBXr3VyOrakDHj8')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce723440>.loads
+E        +    and   b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..WE5lVZN3vkTVlBXr3VyOrakDHj8' = dumps({'id': 42})
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce723440>.dumps
+
+tests/test_itsdangerous/test_serializer.py:136: AssertionError
+________________ TestSerializer.test_signer_kwargs[Serializer] _________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce4524b0>
+serializer_factory = functools.partial(<class 'itsdangerous.serializer.Serializer'>, secret_key='secret_key')
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce604d70>
+value = {'id': 42}
+
+    def test_signer_kwargs(
+        self, serializer_factory, serializer: Serializer, value: Any
+    ):
+        other = serializer_factory(signer_kwargs={"key_derivation": "hmac"})
+>       assert other.loads(other.dumps(value)) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.Sb3COPsf3d7I-kVLnJRScUeAovY')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce6071a0>.loads
+E        +    and   '{"id": 42}.Sb3COPsf3d7I-kVLnJRScUeAovY' = dumps({'id': 42})
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce6071a0>.dumps
+
+tests/test_itsdangerous/test_serializer.py:143: AssertionError
+____________ TestSerializer.test_signer_kwargs[serializer_factory1] ____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce452570>
+serializer_factory = functools.partial(<class 'itsdangerous.serializer.Serializer'>, serializer=<module 'pickle' from '/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pickle.py'>, secret_key='secret_key')
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce604bc0>
+value = {'id': 42}
+
+    def test_signer_kwargs(
+        self, serializer_factory, serializer: Serializer, value: Any
+    ):
+        other = serializer_factory(signer_kwargs={"key_derivation": "hmac"})
+>       assert other.loads(other.dumps(value)) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..WE5lVZN3vkTVlBXr3VyOrakDHj8')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce604b30>.loads
+E        +    and   b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..WE5lVZN3vkTVlBXr3VyOrakDHj8' = dumps({'id': 42})
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce604b30>.dumps
+
+tests/test_itsdangerous/test_serializer.py:143: AssertionError
+______________ TestSerializer.test_serializer_kwargs[Serializer] _______________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce452750>
+serializer_factory = functools.partial(<class 'itsdangerous.serializer.Serializer'>, secret_key='secret_key')
+
+    def test_serializer_kwargs(self, serializer_factory):
+        serializer = serializer_factory(serializer_kwargs={"skipkeys": True})
+    
+        try:
+            serializer.serializer.dumps(None, skipkeys=True)
+        except TypeError:
+            return
+    
+>       assert serializer.loads(serializer.dumps({(): 1})) == {}
+E       AssertionError: assert None == {}
+E        +  where None = loads('{}.PpMq6V_ARdHaDR3fx6u4QtHwfNs')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce606270>.loads
+E        +    and   '{}.PpMq6V_ARdHaDR3fx6u4QtHwfNs' = dumps({(): 1})
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce606270>.dumps
+
+tests/test_itsdangerous/test_serializer.py:154: AssertionError
+_______________ TestSerializer.test_fallback_signers[Serializer] _______________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce452a20>
+serializer_factory = functools.partial(<class 'itsdangerous.serializer.Serializer'>, secret_key='secret_key')
+value = {'id': 42}
+
+    def test_fallback_signers(self, serializer_factory, value: Any):
+        serializer = serializer_factory(signer_kwargs={"digest_method": hashlib.sha256})
+        signed = serializer.dumps(value)
+    
+        fallback_serializer = serializer_factory(
+            signer_kwargs={"digest_method": hashlib.sha1},
+            fallback_signers=[{"digest_method": hashlib.sha256}],
+        )
+    
+>       assert fallback_serializer.loads(signed) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.Thh4x2WMY9tsLB5Kl8E5faSUdyAFj9TZNPsbnCFI3a8')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce607320>.loads
+
+tests/test_itsdangerous/test_serializer.py:165: AssertionError
+__________ TestSerializer.test_fallback_signers[serializer_factory1] ___________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce452ae0>
+serializer_factory = functools.partial(<class 'itsdangerous.serializer.Serializer'>, serializer=<module 'pickle' from '/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pickle.py'>, secret_key='secret_key')
+value = {'id': 42}
+
+    def test_fallback_signers(self, serializer_factory, value: Any):
+        serializer = serializer_factory(signer_kwargs={"digest_method": hashlib.sha256})
+        signed = serializer.dumps(value)
+    
+        fallback_serializer = serializer_factory(
+            signer_kwargs={"digest_method": hashlib.sha1},
+            fallback_signers=[{"digest_method": hashlib.sha256}],
+        )
+    
+>       assert fallback_serializer.loads(signed) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..1y1pQ8Ztnw5D1t0p91zR2E0PJOkqM5hZkV3FJbsID2g')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce635130>.loads
+
+tests/test_itsdangerous/test_serializer.py:165: AssertionError
+_______________ TestSerializer.test_serializer[Serializer-True] ________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce83e9f0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce68e7e0>
+value = True
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == True
+E        +  where None = loads('true.l_Y3K2XCx_ycsfNxs_bJ2aPYJrY')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce68e7e0>.loads
+E        +    and   'true.l_Y3K2XCx_ycsfNxs_bJ2aPYJrY' = dumps(True)
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce68e7e0>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+________________ TestSerializer.test_serializer[Serializer-str] ________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce83ee10>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce83d970>
+value = 'str'
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       assert None == 'str'
+E        +  where None = loads('"str".a_PQ56nqXzss-JMwd8s2cKxLtcM')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce83d970>.loads
+E        +    and   '"str".a_PQ56nqXzss-JMwd8s2cKxLtcM' = dumps('str')
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce83d970>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+_______________ TestSerializer.test_serializer[Serializer-text] ________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce83eed0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce68fa40>
+value = 'text'
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       assert None == 'text'
+E        +  where None = loads('"text".J4CpcjNYJzEOus99-S8eX5dIEEU')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce68fa40>.loads
+E        +    and   '"text".J4CpcjNYJzEOus99-S8eX5dIEEU' = dumps('text')
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce68fa40>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+______________ TestSerializer.test_serializer[Serializer-value4] _______________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce83ef90>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce18caa0>
+value = [1, 2, 3]
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == [1, 2, 3]
+E        +  where None = loads('[1, 2, 3].97a5-D9_HuPb4fxdnCzJuMOgDGQ')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce18caa0>.loads
+E        +    and   '[1, 2, 3].97a5-D9_HuPb4fxdnCzJuMOgDGQ' = dumps([1, 2, 3])
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce18caa0>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+______________ TestSerializer.test_serializer[Serializer-value5] _______________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce83f050>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce18d460>
+value = {'id': 42}
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.0XLzuMAHP6Oh9cnQ27puUwvSw7g')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce18d460>.loads
+E        +    and   '{"id": 42}.0XLzuMAHP6Oh9cnQ27puUwvSw7g' = dumps({'id': 42})
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce18d460>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+___________ TestSerializer.test_serializer[serializer_factory1-True] ___________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce83f1d0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce18e030>
+value = True
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == True
+E        +  where None = loads(b'\x80\x04\x88.._lAOv9G9cPcln0dDxV9a_9b4le4')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce18e030>.loads
+E        +    and   b'\x80\x04\x88.._lAOv9G9cPcln0dDxV9a_9b4le4' = dumps(True)
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce18e030>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+___________ TestSerializer.test_serializer[serializer_factory1-str] ____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce83f290>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce18ecc0>
+value = 'str'
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == 'str'
+E        +  where None = loads(b'\x80\x04\x95\x07\x00\x00\x00\x00\x00\x00\x00\x8c\x03str\x94..ytg_vxeava5QCdyClSe43wkyHJU')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce18ecc0>.loads
+E        +    and   b'\x80\x04\x95\x07\x00\x00\x00\x00\x00\x00\x00\x8c\x03str\x94..ytg_vxeava5QCdyClSe43wkyHJU' = dumps('str')
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce18ecc0>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+___________ TestSerializer.test_serializer[serializer_factory1-text] ___________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce83f350>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce18f8c0>
+value = 'text'
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == 'text'
+E        +  where None = loads(b'\x80\x04\x95\x08\x00\x00\x00\x00\x00\x00\x00\x8c\x04text\x94..lCu95PTSXDurDZjWG8ccr5KwIZ8')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce18f8c0>.loads
+E        +    and   b'\x80\x04\x95\x08\x00\x00\x00\x00\x00\x00\x00\x8c\x04text\x94..lCu95PTSXDurDZjWG8ccr5KwIZ8' = dumps('text')
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce18f8c0>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+__________ TestSerializer.test_serializer[serializer_factory1-value4] __________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce83f410>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce1ac410>
+value = [1, 2, 3]
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == [1, 2, 3]
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00]\x94(K\x01K\x02K\x03e..3LIvPB0P-Vamj-VqteY1oYQA3D8')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce1ac410>.loads
+E        +    and   b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00]\x94(K\x01K\x02K\x03e..3LIvPB0P-Vamj-VqteY1oYQA3D8' = dumps([1, 2, 3])
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce1ac410>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+__________ TestSerializer.test_serializer[serializer_factory1-value5] __________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce83f4d0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce1ace00>
+value = {'id': 42}
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..edm8yh4gUDLdH4YVvSE5dIOf8p0')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce1ace00>.loads
+E        +    and   b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..edm8yh4gUDLdH4YVvSE5dIOf8p0' = dumps({'id': 42})
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce1ace00>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+___________ TestSerializer.test_changed_value[Serializer-<lambda>0] ____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce83f830>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce1ad820>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fba0>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.0XLzuMAHP6Oh9cnQ27puUwvSw7g')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce1ad820>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+___________ TestSerializer.test_changed_value[Serializer-<lambda>1] ____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce83f7a0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce1ae3c0>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fc40>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.0XLzuMAHP6Oh9cnQ27puUwvSw7g')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce1ae3c0>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+___________ TestSerializer.test_changed_value[Serializer-<lambda>2] ____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce83fa10>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce1aeff0>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fce0>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.0XLzuMAHP6Oh9cnQ27puUwvSw7g')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce1aeff0>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+___________ TestSerializer.test_changed_value[Serializer-<lambda>3] ____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce83fad0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce1afc50>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fd80>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.0XLzuMAHP6Oh9cnQ27puUwvSw7g')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce1afc50>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+_______ TestSerializer.test_changed_value[serializer_factory1-<lambda>0] _______
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce83fb90>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce1af500>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fba0>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..edm8yh4gUDLdH4YVvSE5dIOf8p0')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce1af500>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+_______ TestSerializer.test_changed_value[serializer_factory1-<lambda>1] _______
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce83fc50>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce1ad670>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fc40>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..edm8yh4gUDLdH4YVvSE5dIOf8p0')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce1ad670>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+_______ TestSerializer.test_changed_value[serializer_factory1-<lambda>2] _______
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce83fd10>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce1ad250>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fce0>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..edm8yh4gUDLdH4YVvSE5dIOf8p0')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce1ad250>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+_______ TestSerializer.test_changed_value[serializer_factory1-<lambda>3] _______
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce83fdd0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce18dcd0>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fd80>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..edm8yh4gUDLdH4YVvSE5dIOf8p0')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce18dcd0>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+___________ TestSerializer.test_bad_signature_exception[Serializer] ____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce83ff80>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce18eb70>
+value = {'id': 42}
+
+    def test_bad_signature_exception(self, serializer: Serializer, value: Any):
+        bad_signed = serializer.dumps(value)[:-1]
+    
+>       with pytest.raises(BadSignature) as exc_info:
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadSignature'>
+
+tests/test_itsdangerous/test_serializer.py:75: Failed
+_______ TestSerializer.test_bad_signature_exception[serializer_factory1] _______
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce51c080>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce18d4f0>
+value = {'id': 42}
+
+    def test_bad_signature_exception(self, serializer: Serializer, value: Any):
+        bad_signed = serializer.dumps(value)[:-1]
+    
+>       with pytest.raises(BadSignature) as exc_info:
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadSignature'>
+
+tests/test_itsdangerous/test_serializer.py:75: Failed
+____________ TestSerializer.test_bad_payload_exception[Serializer] _____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce51c2c0>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce18e180>
+value = {'id': 42}
+
+    def test_bad_payload_exception(self, serializer: Serializer, value: Any):
+        original = serializer.dumps(value)
+        payload = original.rsplit(coerce_str(original, "."), 1)[0]  # type: ignore
+        bad = serializer.make_signer().sign(payload[:-1])
+    
+>       with pytest.raises(BadPayload) as exc_info:
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadPayload'>
+
+tests/test_itsdangerous/test_serializer.py:86: Failed
+________ TestSerializer.test_bad_payload_exception[serializer_factory1] ________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce51c380>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce83ef30>
+value = {'id': 42}
+
+    def test_bad_payload_exception(self, serializer: Serializer, value: Any):
+        original = serializer.dumps(value)
+        payload = original.rsplit(coerce_str(original, "."), 1)[0]  # type: ignore
+        bad = serializer.make_signer().sign(payload[:-1])
+    
+>       with pytest.raises(BadPayload) as exc_info:
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadPayload'>
+
+tests/test_itsdangerous/test_serializer.py:86: Failed
+_________________ TestSerializer.test_loads_unsafe[Serializer] _________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce83e900>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce209f40>
+value = {'id': 42}
+
+    def test_loads_unsafe(self, serializer: Serializer, value: Any):
+        signed = serializer.dumps(value)
+>       assert serializer.loads_unsafe(signed) == (True, value)
+E       AssertionError: assert (True, None) == (True, {'id': 42})
+E         
+E         At index 1 diff: None != {'id': 42}
+E         Use -v to get more diff
+
+tests/test_itsdangerous/test_serializer.py:93: AssertionError
+____________ TestSerializer.test_loads_unsafe[serializer_factory1] _____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce456a50>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce208c80>
+value = {'id': 42}
+
+    def test_loads_unsafe(self, serializer: Serializer, value: Any):
+        signed = serializer.dumps(value)
+>       assert serializer.loads_unsafe(signed) == (True, value)
+E       AssertionError: assert (True, None) == (True, {'id': 42})
+E         
+E         At index 1 diff: None != {'id': 42}
+E         Use -v to get more diff
+
+tests/test_itsdangerous/test_serializer.py:93: AssertionError
+_____________________ TestSerializer.test_file[Serializer] _____________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce51c560>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce2099d0>
+value = {'id': 42}
+
+    def test_file(self, serializer: Serializer, value: Any):
+        f = cast(
+            IO, BytesIO() if isinstance(serializer.dumps(value), bytes) else StringIO()
+        )
+        serializer.dump(value, f)
+        f.seek(0)
+>       assert serializer.load(f) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = load(<_io.StringIO object at 0x7fb1ce1dd6c0>)
+E        +    where load = <itsdangerous.serializer.Serializer object at 0x7fb1ce2099d0>.load
+
+tests/test_itsdangerous/test_serializer.py:119: AssertionError
+________________ TestSerializer.test_file[serializer_factory1] _________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce51c620>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce20a870>
+value = {'id': 42}
+
+    def test_file(self, serializer: Serializer, value: Any):
+        f = cast(
+            IO, BytesIO() if isinstance(serializer.dumps(value), bytes) else StringIO()
+        )
+        serializer.dump(value, f)
+        f.seek(0)
+>       assert serializer.load(f) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = load(<_io.BytesIO object at 0x7fb1ce1f84a0>)
+E        +    where load = <itsdangerous.serializer.Serializer object at 0x7fb1ce20a870>.load
+
+tests/test_itsdangerous/test_serializer.py:119: AssertionError
+___________________ TestSerializer.test_alt_salt[Serializer] ___________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce51c860>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce18cf80>
+value = {'id': 42}
+
+    def test_alt_salt(self, serializer: Serializer, value: Any):
+        signed = serializer.dumps(value, salt="other")
+    
+>       with pytest.raises(BadSignature):
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadSignature'>
+
+tests/test_itsdangerous/test_serializer.py:126: Failed
+______________ TestSerializer.test_alt_salt[serializer_factory1] _______________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce51c920>
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce18c8c0>
+value = {'id': 42}
+
+    def test_alt_salt(self, serializer: Serializer, value: Any):
+        signed = serializer.dumps(value, salt="other")
+    
+>       with pytest.raises(BadSignature):
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadSignature'>
+
+tests/test_itsdangerous/test_serializer.py:126: Failed
+__________________ TestSerializer.test_signer_cls[Serializer] __________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce51cb60>
+serializer_factory = functools.partial(<class 'itsdangerous.serializer.Serializer'>, secret_key='secret_key')
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce18f650>
+value = {'id': 42}
+
+    def test_signer_cls(self, serializer_factory, serializer: Serializer, value: Any):
+        class Other(serializer.signer):  # type: ignore
+            default_key_derivation = "hmac"
+    
+        other = serializer_factory(signer=Other)
+>       assert other.loads(other.dumps(value)) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.Sb3COPsf3d7I-kVLnJRScUeAovY')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce18f980>.loads
+E        +    and   '{"id": 42}.Sb3COPsf3d7I-kVLnJRScUeAovY' = dumps({'id': 42})
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce18f980>.dumps
+
+tests/test_itsdangerous/test_serializer.py:136: AssertionError
+_____________ TestSerializer.test_signer_cls[serializer_factory1] ______________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce51cc20>
+serializer_factory = functools.partial(<class 'itsdangerous.serializer.Serializer'>, serializer=<module 'pickle' from '/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pickle.py'>, secret_key='secret_key')
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce1af8f0>
+value = {'id': 42}
+
+    def test_signer_cls(self, serializer_factory, serializer: Serializer, value: Any):
+        class Other(serializer.signer):  # type: ignore
+            default_key_derivation = "hmac"
+    
+        other = serializer_factory(signer=Other)
+>       assert other.loads(other.dumps(value)) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..WE5lVZN3vkTVlBXr3VyOrakDHj8')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce1ad100>.loads
+E        +    and   b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..WE5lVZN3vkTVlBXr3VyOrakDHj8' = dumps({'id': 42})
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce1ad100>.dumps
+
+tests/test_itsdangerous/test_serializer.py:136: AssertionError
+________________ TestSerializer.test_signer_kwargs[Serializer] _________________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce51ce60>
+serializer_factory = functools.partial(<class 'itsdangerous.serializer.Serializer'>, secret_key='secret_key')
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce1adb50>
+value = {'id': 42}
+
+    def test_signer_kwargs(
+        self, serializer_factory, serializer: Serializer, value: Any
+    ):
+        other = serializer_factory(signer_kwargs={"key_derivation": "hmac"})
+>       assert other.loads(other.dumps(value)) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.Sb3COPsf3d7I-kVLnJRScUeAovY')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce1acaa0>.loads
+E        +    and   '{"id": 42}.Sb3COPsf3d7I-kVLnJRScUeAovY' = dumps({'id': 42})
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce1acaa0>.dumps
+
+tests/test_itsdangerous/test_serializer.py:143: AssertionError
+____________ TestSerializer.test_signer_kwargs[serializer_factory1] ____________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce51cf20>
+serializer_factory = functools.partial(<class 'itsdangerous.serializer.Serializer'>, serializer=<module 'pickle' from '/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pickle.py'>, secret_key='secret_key')
+serializer = <itsdangerous.serializer.Serializer object at 0x7fb1ce20a6f0>
+value = {'id': 42}
+
+    def test_signer_kwargs(
+        self, serializer_factory, serializer: Serializer, value: Any
+    ):
+        other = serializer_factory(signer_kwargs={"key_derivation": "hmac"})
+>       assert other.loads(other.dumps(value)) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..WE5lVZN3vkTVlBXr3VyOrakDHj8')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce2086e0>.loads
+E        +    and   b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..WE5lVZN3vkTVlBXr3VyOrakDHj8' = dumps({'id': 42})
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce2086e0>.dumps
+
+tests/test_itsdangerous/test_serializer.py:143: AssertionError
+______________ TestSerializer.test_serializer_kwargs[Serializer] _______________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce51d100>
+serializer_factory = functools.partial(<class 'itsdangerous.serializer.Serializer'>, secret_key='secret_key')
+
+    def test_serializer_kwargs(self, serializer_factory):
+        serializer = serializer_factory(serializer_kwargs={"skipkeys": True})
+    
+        try:
+            serializer.serializer.dumps(None, skipkeys=True)
+        except TypeError:
+            return
+    
+>       assert serializer.loads(serializer.dumps({(): 1})) == {}
+E       AssertionError: assert None == {}
+E        +  where None = loads('{}.PpMq6V_ARdHaDR3fx6u4QtHwfNs')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce209f10>.loads
+E        +    and   '{}.PpMq6V_ARdHaDR3fx6u4QtHwfNs' = dumps({(): 1})
+E        +      where dumps = <itsdangerous.serializer.Serializer object at 0x7fb1ce209f10>.dumps
+
+tests/test_itsdangerous/test_serializer.py:154: AssertionError
+_______________ TestSerializer.test_fallback_signers[Serializer] _______________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce51d3d0>
+serializer_factory = functools.partial(<class 'itsdangerous.serializer.Serializer'>, secret_key='secret_key')
+value = {'id': 42}
+
+    def test_fallback_signers(self, serializer_factory, value: Any):
+        serializer = serializer_factory(signer_kwargs={"digest_method": hashlib.sha256})
+        signed = serializer.dumps(value)
+    
+        fallback_serializer = serializer_factory(
+            signer_kwargs={"digest_method": hashlib.sha1},
+            fallback_signers=[{"digest_method": hashlib.sha256}],
+        )
+    
+>       assert fallback_serializer.loads(signed) == value
+E       assert None == {'id': 42}
+E        +  where None = loads('{"id": 42}.Thh4x2WMY9tsLB5Kl8E5faSUdyAFj9TZNPsbnCFI3a8')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce2084a0>.loads
+
+tests/test_itsdangerous/test_serializer.py:165: AssertionError
+__________ TestSerializer.test_fallback_signers[serializer_factory1] ___________
+
+self = <test_itsdangerous.test_serializer.TestSerializer object at 0x7fb1ce51d490>
+serializer_factory = functools.partial(<class 'itsdangerous.serializer.Serializer'>, serializer=<module 'pickle' from '/opt/codex/runtimes/codex-primary-runtime/dependencies/python/lib/python3.12/pickle.py'>, secret_key='secret_key')
+value = {'id': 42}
+
+    def test_fallback_signers(self, serializer_factory, value: Any):
+        serializer = serializer_factory(signer_kwargs={"digest_method": hashlib.sha256})
+        signed = serializer.dumps(value)
+    
+        fallback_serializer = serializer_factory(
+            signer_kwargs={"digest_method": hashlib.sha1},
+            fallback_signers=[{"digest_method": hashlib.sha256}],
+        )
+    
+>       assert fallback_serializer.loads(signed) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads(b'\x80\x04\x95\x0b\x00\x00\x00\x00\x00\x00\x00}\x94\x8c\x02id\x94K*s..1y1pQ8Ztnw5D1t0p91zR2E0PJOkqM5hZkV3FJbsID2g')
+E        +    where loads = <itsdangerous.serializer.Serializer object at 0x7fb1ce20b530>.loads
+
+tests/test_itsdangerous/test_serializer.py:165: AssertionError
+_________________ TestURLSafeSerializer.test_serializer[True] __________________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce51ffe0>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce21b500>
+value = True
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == True
+E        +  where None = loads('dHJ1ZQ.iluS9iJaQvo3zYhQrbvAcuSIyH0')
+E        +    where loads = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce21b500>.loads
+E        +    and   'dHJ1ZQ.iluS9iJaQvo3zYhQrbvAcuSIyH0' = dumps(True)
+E        +      where dumps = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce21b500>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+__________________ TestURLSafeSerializer.test_serializer[str] __________________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c80e0>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce208560>
+value = 'str'
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == 'str'
+E        +  where None = loads('InN0ciI.hZIFptNBUbq2v20xlYNY4zhzZJQ')
+E        +    where loads = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce208560>.loads
+E        +    and   'InN0ciI.hZIFptNBUbq2v20xlYNY4zhzZJQ' = dumps('str')
+E        +      where dumps = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce208560>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+_________________ TestURLSafeSerializer.test_serializer[text] __________________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c81a0>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce208bc0>
+value = 'text'
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == 'text'
+E        +  where None = loads('InRleHQi.eKVoIMV7fOcC79YpsxX9snl_Hdo')
+E        +    where loads = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce208bc0>.loads
+E        +    and   'InRleHQi.eKVoIMV7fOcC79YpsxX9snl_Hdo' = dumps('text')
+E        +      where dumps = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce208bc0>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+________________ TestURLSafeSerializer.test_serializer[value4] _________________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c8260>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce1ad0d0>
+value = [1, 2, 3]
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == [1, 2, 3]
+E        +  where None = loads('WzEsMiwzXQ.ss4nn3igDDAwxiqsWvj3EQ9FdIQ')
+E        +    where loads = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce1ad0d0>.loads
+E        +    and   'WzEsMiwzXQ.ss4nn3igDDAwxiqsWvj3EQ9FdIQ' = dumps([1, 2, 3])
+E        +      where dumps = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce1ad0d0>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+________________ TestURLSafeSerializer.test_serializer[value5] _________________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c8320>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce1ad370>
+value = {'id': 42}
+
+    @pytest.mark.parametrize(
+        "value", (None, True, "str", "text", [1, 2, 3], {"id": 42})
+    )
+    def test_serializer(self, serializer: Serializer, value: Any):
+>       assert serializer.loads(serializer.dumps(value)) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads('eyJpZCI6NDJ9.Z-HaNt236Oj5pFDPW25MouYkrcA')
+E        +    where loads = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce1ad370>.loads
+E        +    and   'eyJpZCI6NDJ9.Z-HaNt236Oj5pFDPW25MouYkrcA' = dumps({'id': 42})
+E        +      where dumps = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce1ad370>.dumps
+
+tests/test_itsdangerous/test_serializer.py:53: AssertionError
+__________ TestURLSafeSerializer.test_changed_value[value0-<lambda>0] __________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c86b0>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce18d700>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fba0>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads('eyJpZCI6NDJ9.Z-HaNt236Oj5pFDPW25MouYkrcA')
+E        +    where loads = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce18d700>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+__________ TestURLSafeSerializer.test_changed_value[value0-<lambda>1] __________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c8620>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce18f0e0>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fc40>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads('eyJpZCI6NDJ9.Z-HaNt236Oj5pFDPW25MouYkrcA')
+E        +    where loads = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce18f0e0>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+__________ TestURLSafeSerializer.test_changed_value[value0-<lambda>2] __________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c88c0>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce51c0e0>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fce0>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads('eyJpZCI6NDJ9.Z-HaNt236Oj5pFDPW25MouYkrcA')
+E        +    where loads = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce51c0e0>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+__________ TestURLSafeSerializer.test_changed_value[value0-<lambda>3] __________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c8980>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce218170>
+value = {'id': 42}
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fd80>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads('eyJpZCI6NDJ9.Z-HaNt236Oj5pFDPW25MouYkrcA')
+E        +    where loads = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce218170>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+___________ TestURLSafeSerializer.test_changed_value[zlib-<lambda>0] ___________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c8a40>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce21b8c0>
+value = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fba0>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       AssertionError: assert None == 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+E        +  where None = loads('.eJxTShwFo2AUDHugBAD6Fns8.NYEsGZpsS7Gu_E4ck8v7NEZ78HQ')
+E        +    where loads = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce21b8c0>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+___________ TestURLSafeSerializer.test_changed_value[zlib-<lambda>1] ___________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c8b00>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce228350>
+value = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fc40>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       AssertionError: assert None == 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+E        +  where None = loads('.eJxTShwFo2AUDHugBAD6Fns8.NYEsGZpsS7Gu_E4ck8v7NEZ78HQ')
+E        +    where loads = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce228350>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+___________ TestURLSafeSerializer.test_changed_value[zlib-<lambda>2] ___________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c8bc0>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce228d10>
+value = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fce0>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       AssertionError: assert None == 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+E        +  where None = loads('.eJxTShwFo2AUDHugBAD6Fns8.NYEsGZpsS7Gu_E4ck8v7NEZ78HQ')
+E        +    where loads = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce228d10>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+___________ TestURLSafeSerializer.test_changed_value[zlib-<lambda>3] ___________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c8c80>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce2297c0>
+value = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+transform = <function TestSerializer.<lambda> at 0x7fb1ce85fd80>
+
+    @pytest.mark.parametrize(
+        "transform",
+        (
+            lambda s: s.upper(),
+            lambda s: s + coerce_str(s, "a"),
+            lambda s: coerce_str(s, "a") + s[1:],
+            lambda s: s.replace(coerce_str(s, "."), coerce_str(s, "")),
+        ),
+    )
+    def test_changed_value(self, serializer: Serializer, value: Any, transform):
+        signed = serializer.dumps(value)
+>       assert serializer.loads(signed) == value
+E       AssertionError: assert None == 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+E        +  where None = loads('.eJxTShwFo2AUDHugBAD6Fns8.NYEsGZpsS7Gu_E4ck8v7NEZ78HQ')
+E        +    where loads = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce2297c0>.loads
+
+tests/test_itsdangerous/test_serializer.py:66: AssertionError
+__________ TestURLSafeSerializer.test_bad_signature_exception[value0] __________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce51f560>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce219c10>
+value = {'id': 42}
+
+    def test_bad_signature_exception(self, serializer: Serializer, value: Any):
+        bad_signed = serializer.dumps(value)[:-1]
+    
+>       with pytest.raises(BadSignature) as exc_info:
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadSignature'>
+
+tests/test_itsdangerous/test_serializer.py:75: Failed
+___________ TestURLSafeSerializer.test_bad_signature_exception[zlib] ___________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce51f440>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce219af0>
+value = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+
+    def test_bad_signature_exception(self, serializer: Serializer, value: Any):
+        bad_signed = serializer.dumps(value)[:-1]
+    
+>       with pytest.raises(BadSignature) as exc_info:
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadSignature'>
+
+tests/test_itsdangerous/test_serializer.py:75: Failed
+___________ TestURLSafeSerializer.test_bad_payload_exception[value0] ___________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce51e960>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce18ef90>
+value = {'id': 42}
+
+    def test_bad_payload_exception(self, serializer: Serializer, value: Any):
+        original = serializer.dumps(value)
+        payload = original.rsplit(coerce_str(original, "."), 1)[0]  # type: ignore
+        bad = serializer.make_signer().sign(payload[:-1])
+    
+>       with pytest.raises(BadPayload) as exc_info:
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadPayload'>
+
+tests/test_itsdangerous/test_serializer.py:86: Failed
+____________ TestURLSafeSerializer.test_bad_payload_exception[zlib] ____________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce51ce90>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce1ad430>
+value = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+
+    def test_bad_payload_exception(self, serializer: Serializer, value: Any):
+        original = serializer.dumps(value)
+        payload = original.rsplit(coerce_str(original, "."), 1)[0]  # type: ignore
+        bad = serializer.make_signer().sign(payload[:-1])
+    
+>       with pytest.raises(BadPayload) as exc_info:
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadPayload'>
+
+tests/test_itsdangerous/test_serializer.py:86: Failed
+_______________ TestURLSafeSerializer.test_loads_unsafe[value0] ________________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c8e30>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce208740>
+value = {'id': 42}
+
+    def test_loads_unsafe(self, serializer: Serializer, value: Any):
+        signed = serializer.dumps(value)
+>       assert serializer.loads_unsafe(signed) == (True, value)
+E       AssertionError: assert (True, None) == (True, {'id': 42})
+E         
+E         At index 1 diff: None != {'id': 42}
+E         Use -v to get more diff
+
+tests/test_itsdangerous/test_serializer.py:93: AssertionError
+________________ TestURLSafeSerializer.test_loads_unsafe[zlib] _________________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c8ef0>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce208560>
+value = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+
+    def test_loads_unsafe(self, serializer: Serializer, value: Any):
+        signed = serializer.dumps(value)
+>       assert serializer.loads_unsafe(signed) == (True, value)
+E       AssertionError: assert (True, None) == (True, 'aaaaa...aaaaaaaaaaaa')
+E         
+E         At index 1 diff: None != 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...
+E         
+E         ...Full output truncated (2 lines hidden), use '-vv' to show
+
+tests/test_itsdangerous/test_serializer.py:93: AssertionError
+___________________ TestURLSafeSerializer.test_file[value0] ____________________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c9160>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce22b050>
+value = {'id': 42}
+
+    def test_file(self, serializer: Serializer, value: Any):
+        f = cast(
+            IO, BytesIO() if isinstance(serializer.dumps(value), bytes) else StringIO()
+        )
+        serializer.dump(value, f)
+        f.seek(0)
+>       assert serializer.load(f) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = load(<_io.StringIO object at 0x7fb1ce1dd300>)
+E        +    where load = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce22b050>.load
+
+tests/test_itsdangerous/test_serializer.py:119: AssertionError
+____________________ TestURLSafeSerializer.test_file[zlib] _____________________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c9220>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce2290a0>
+value = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+
+    def test_file(self, serializer: Serializer, value: Any):
+        f = cast(
+            IO, BytesIO() if isinstance(serializer.dumps(value), bytes) else StringIO()
+        )
+        serializer.dump(value, f)
+        f.seek(0)
+>       assert serializer.load(f) == value
+E       AssertionError: assert None == 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+E        +  where None = load(<_io.StringIO object at 0x7fb1ce1dc280>)
+E        +    where load = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce2290a0>.load
+
+tests/test_itsdangerous/test_serializer.py:119: AssertionError
+_________________ TestURLSafeSerializer.test_alt_salt[value0] __________________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c9490>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce22a210>
+value = {'id': 42}
+
+    def test_alt_salt(self, serializer: Serializer, value: Any):
+        signed = serializer.dumps(value, salt="other")
+    
+>       with pytest.raises(BadSignature):
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadSignature'>
+
+tests/test_itsdangerous/test_serializer.py:126: Failed
+__________________ TestURLSafeSerializer.test_alt_salt[zlib] ___________________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c9550>
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce22b440>
+value = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+
+    def test_alt_salt(self, serializer: Serializer, value: Any):
+        signed = serializer.dumps(value, salt="other")
+    
+>       with pytest.raises(BadSignature):
+E       Failed: DID NOT RAISE <class 'itsdangerous.exc.BadSignature'>
+
+tests/test_itsdangerous/test_serializer.py:126: Failed
+________________ TestURLSafeSerializer.test_signer_cls[value0] _________________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c97f0>
+serializer_factory = functools.partial(<class 'itsdangerous.url_safe.URLSafeSerializer'>, secret_key='secret-key')
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce260320>
+value = {'id': 42}
+
+    def test_signer_cls(self, serializer_factory, serializer: Serializer, value: Any):
+        class Other(serializer.signer):  # type: ignore
+            default_key_derivation = "hmac"
+    
+        other = serializer_factory(signer=Other)
+>       assert other.loads(other.dumps(value)) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads('eyJpZCI6NDJ9.3nWu9xo5hRFxl-rlxdlCxemzDx0')
+E        +    where loads = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce2603b0>.loads
+E        +    and   'eyJpZCI6NDJ9.3nWu9xo5hRFxl-rlxdlCxemzDx0' = dumps({'id': 42})
+E        +      where dumps = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce2603b0>.dumps
+
+tests/test_itsdangerous/test_serializer.py:136: AssertionError
+_________________ TestURLSafeSerializer.test_signer_cls[zlib] __________________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c98e0>
+serializer_factory = functools.partial(<class 'itsdangerous.url_safe.URLSafeSerializer'>, secret_key='secret-key')
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce260d70>
+value = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+
+    def test_signer_cls(self, serializer_factory, serializer: Serializer, value: Any):
+        class Other(serializer.signer):  # type: ignore
+            default_key_derivation = "hmac"
+    
+        other = serializer_factory(signer=Other)
+>       assert other.loads(other.dumps(value)) == value
+E       AssertionError: assert None == 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+E        +  where None = loads('.eJxTShwFo2AUDHugBAD6Fns8.dSnvL4loTjs0TB9TpWa_XwYLijU')
+E        +    where loads = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce260e00>.loads
+E        +    and   '.eJxTShwFo2AUDHugBAD6Fns8.dSnvL4loTjs0TB9TpWa_XwYLijU' = dumps('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+E        +      where dumps = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce260e00>.dumps
+
+tests/test_itsdangerous/test_serializer.py:136: AssertionError
+_______________ TestURLSafeSerializer.test_signer_kwargs[value0] _______________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c9b50>
+serializer_factory = functools.partial(<class 'itsdangerous.url_safe.URLSafeSerializer'>, secret_key='secret-key')
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce22bad0>
+value = {'id': 42}
+
+    def test_signer_kwargs(
+        self, serializer_factory, serializer: Serializer, value: Any
+    ):
+        other = serializer_factory(signer_kwargs={"key_derivation": "hmac"})
+>       assert other.loads(other.dumps(value)) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads('eyJpZCI6NDJ9.3nWu9xo5hRFxl-rlxdlCxemzDx0')
+E        +    where loads = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce22bb60>.loads
+E        +    and   'eyJpZCI6NDJ9.3nWu9xo5hRFxl-rlxdlCxemzDx0' = dumps({'id': 42})
+E        +      where dumps = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce22bb60>.dumps
+
+tests/test_itsdangerous/test_serializer.py:143: AssertionError
+________________ TestURLSafeSerializer.test_signer_kwargs[zlib] ________________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c9c10>
+serializer_factory = functools.partial(<class 'itsdangerous.url_safe.URLSafeSerializer'>, secret_key='secret-key')
+serializer = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce607290>
+value = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+
+    def test_signer_kwargs(
+        self, serializer_factory, serializer: Serializer, value: Any
+    ):
+        other = serializer_factory(signer_kwargs={"key_derivation": "hmac"})
+>       assert other.loads(other.dumps(value)) == value
+E       AssertionError: assert None == 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+E        +  where None = loads('.eJxTShwFo2AUDHugBAD6Fns8.dSnvL4loTjs0TB9TpWa_XwYLijU')
+E        +    where loads = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce634560>.loads
+E        +    and   '.eJxTShwFo2AUDHugBAD6Fns8.dSnvL4loTjs0TB9TpWa_XwYLijU' = dumps('aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa')
+E        +      where dumps = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce634560>.dumps
+
+tests/test_itsdangerous/test_serializer.py:143: AssertionError
+_________________ TestURLSafeSerializer.test_serializer_kwargs _________________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c9e20>
+serializer_factory = functools.partial(<class 'itsdangerous.url_safe.URLSafeSerializer'>, secret_key='secret-key')
+
+    def test_serializer_kwargs(self, serializer_factory):
+        serializer = serializer_factory(serializer_kwargs={"skipkeys": True})
+    
+        try:
+            serializer.serializer.dumps(None, skipkeys=True)
+        except TypeError:
+            return
+    
+>       assert serializer.loads(serializer.dumps({(): 1})) == {}
+E       AssertionError: assert None == {}
+E        +  where None = loads('e30.zuCYJsixFQeQ4S8DeI_iJkct5kg')
+E        +    where loads = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce5c5d60>.loads
+E        +    and   'e30.zuCYJsixFQeQ4S8DeI_iJkct5kg' = dumps({(): 1})
+E        +      where dumps = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce5c5d60>.dumps
+
+tests/test_itsdangerous/test_serializer.py:154: AssertionError
+_____________ TestURLSafeSerializer.test_fallback_signers[value0] ______________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7c9fd0>
+serializer_factory = functools.partial(<class 'itsdangerous.url_safe.URLSafeSerializer'>, secret_key='secret-key')
+value = {'id': 42}
+
+    def test_fallback_signers(self, serializer_factory, value: Any):
+        serializer = serializer_factory(signer_kwargs={"digest_method": hashlib.sha256})
+        signed = serializer.dumps(value)
+    
+        fallback_serializer = serializer_factory(
+            signer_kwargs={"digest_method": hashlib.sha1},
+            fallback_signers=[{"digest_method": hashlib.sha256}],
+        )
+    
+>       assert fallback_serializer.loads(signed) == value
+E       AssertionError: assert None == {'id': 42}
+E        +  where None = loads('eyJpZCI6NDJ9.uc5A61HcrCwC7j1jOMcO7QkqiLN8AQHfQ75XopMRxqI')
+E        +    where loads = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce722120>.loads
+
+tests/test_itsdangerous/test_serializer.py:165: AssertionError
+______________ TestURLSafeSerializer.test_fallback_signers[zlib] _______________
+
+self = <test_itsdangerous.test_url_safe.TestURLSafeSerializer object at 0x7fb1ce7ca090>
+serializer_factory = functools.partial(<class 'itsdangerous.url_safe.URLSafeSerializer'>, secret_key='secret-key')
+value = 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+
+    def test_fallback_signers(self, serializer_factory, value: Any):
+        serializer = serializer_factory(signer_kwargs={"digest_method": hashlib.sha256})
+        signed = serializer.dumps(value)
+    
+        fallback_serializer = serializer_factory(
+            signer_kwargs={"digest_method": hashlib.sha1},
+            fallback_signers=[{"digest_method": hashlib.sha256}],
+        )
+    
+>       assert fallback_serializer.loads(signed) == value
+E       AssertionError: assert None == 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa...aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+E        +  where None = loads('.eJxTShwFo2AUDHugBAD6Fns8.AxvNugFgTf-tWxmVbSgl6PlE9mIjzELWIqf_sips1SA')
+E        +    where loads = <itsdangerous.url_safe.URLSafeSerializer object at 0x7fb1ce7a37a0>.loads
+
+tests/test_itsdangerous/test_serializer.py:165: AssertionError
+- generated xml file: /tmp/patchprove-final-projects.json.data/itsdangerous-controlled-fault.xml -
+=========================== short test summary info ============================
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_serializer[Serializer-True]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_serializer[Serializer-str]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_serializer[Serializer-text]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_serializer[Serializer-value4]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_serializer[Serializer-value5]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_serializer[serializer_factory1-True]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_serializer[serializer_factory1-str]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_serializer[serializer_factory1-text]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_serializer[serializer_factory1-value4]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_serializer[serializer_factory1-value5]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_changed_value[Serializer-<lambda>0]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_changed_value[Serializer-<lambda>1]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_changed_value[Serializer-<lambda>2]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_changed_value[Serializer-<lambda>3]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_changed_value[serializer_factory1-<lambda>0]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_changed_value[serializer_factory1-<lambda>1]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_changed_value[serializer_factory1-<lambda>2]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_changed_value[serializer_factory1-<lambda>3]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_bad_signature_exception[Serializer]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_bad_signature_exception[serializer_factory1]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_bad_payload_exception[Serializer]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_bad_payload_exception[serializer_factory1]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_loads_unsafe[Serializer]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_loads_unsafe[serializer_factory1]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_file[Serializer]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_file[serializer_factory1]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_alt_salt[Serializer]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_alt_salt[serializer_factory1]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_signer_cls[Serializer]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_signer_cls[serializer_factory1]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_signer_kwargs[Serializer]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_signer_kwargs[serializer_factory1]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_serializer_kwargs[Serializer]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_fallback_signers[Serializer]
+FAILED tests/test_itsdangerous/test_serializer.py::TestSerializer::test_fallback_signers[serializer_factory1]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_serializer[Serializer-True]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_serializer[Serializer-str]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_serializer[Serializer-text]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_serializer[Serializer-value4]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_serializer[Serializer-value5]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_serializer[serializer_factory1-True]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_serializer[serializer_factory1-str]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_serializer[serializer_factory1-text]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_serializer[serializer_factory1-value4]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_serializer[serializer_factory1-value5]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_changed_value[Serializer-<lambda>0]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_changed_value[Serializer-<lambda>1]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_changed_value[Serializer-<lambda>2]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_changed_value[Serializer-<lambda>3]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_changed_value[serializer_factory1-<lambda>0]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_changed_value[serializer_factory1-<lambda>1]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_changed_value[serializer_factory1-<lambda>2]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_changed_value[serializer_factory1-<lambda>3]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_bad_signature_exception[Serializer]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_bad_signature_exception[serializer_factory1]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_bad_payload_exception[Serializer]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_bad_payload_exception[serializer_factory1]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_loads_unsafe[Serializer]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_loads_unsafe[serializer_factory1]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_file[Serializer]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_file[serializer_factory1]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_alt_salt[Serializer]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_alt_salt[serializer_factory1]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_signer_cls[Serializer]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_signer_cls[serializer_factory1]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_signer_kwargs[Serializer]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_signer_kwargs[serializer_factory1]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_serializer_kwargs[Serializer]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_fallback_signers[Serializer]
+FAILED tests/test_itsdangerous/test_timed.py::TestSerializer::test_fallback_signers[serializer_factory1]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_serializer[Serializer-True]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_serializer[Serializer-str]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_serializer[Serializer-text]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_serializer[Serializer-value4]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_serializer[Serializer-value5]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_serializer[serializer_factory1-True]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_serializer[serializer_factory1-str]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_serializer[serializer_factory1-text]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_serializer[serializer_factory1-value4]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_serializer[serializer_factory1-value5]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_changed_value[Serializer-<lambda>0]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_changed_value[Serializer-<lambda>1]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_changed_value[Serializer-<lambda>2]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_changed_value[Serializer-<lambda>3]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_changed_value[serializer_factory1-<lambda>0]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_changed_value[serializer_factory1-<lambda>1]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_changed_value[serializer_factory1-<lambda>2]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_changed_value[serializer_factory1-<lambda>3]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_bad_signature_exception[Serializer]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_bad_signature_exception[serializer_factory1]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_bad_payload_exception[Serializer]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_bad_payload_exception[serializer_factory1]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_loads_unsafe[Serializer]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_loads_unsafe[serializer_factory1]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_file[Serializer]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_file[serializer_factory1]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_alt_salt[Serializer]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_alt_salt[serializer_factory1]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_signer_cls[Serializer]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_signer_cls[serializer_factory1]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_signer_kwargs[Serializer]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_signer_kwargs[serializer_factory1]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_serializer_kwargs[Serializer]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_fallback_signers[Serializer]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestSerializer::test_fallback_signers[serializer_factory1]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_serializer[True]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_serializer[str]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_serializer[text]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_serializer[value4]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_serializer[value5]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_changed_value[value0-<lambda>0]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_changed_value[value0-<lambda>1]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_changed_value[value0-<lambda>2]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_changed_value[value0-<lambda>3]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_changed_value[zlib-<lambda>0]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_changed_value[zlib-<lambda>1]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_changed_value[zlib-<lambda>2]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_changed_value[zlib-<lambda>3]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_bad_signature_exception[value0]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_bad_signature_exception[zlib]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_bad_payload_exception[value0]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_bad_payload_exception[zlib]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_loads_unsafe[value0]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_loads_unsafe[zlib]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_file[value0]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_file[zlib]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_alt_salt[value0]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_alt_salt[zlib]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_signer_cls[value0]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_signer_cls[zlib]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_signer_kwargs[value0]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_signer_kwargs[zlib]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_serializer_kwargs
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_fallback_signers[value0]
+FAILED tests/test_itsdangerous/test_url_safe.py::TestURLSafeSerializer::test_fallback_signers[zlib]
+======================= 135 failed, 162 passed in 1.96s ========================
+
