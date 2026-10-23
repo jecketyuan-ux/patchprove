@@ -333,9 +333,12 @@ program.command("reports").description("Verify retained machine reports without 
   .command("verify")
   .argument("<evidence>", "Path to evidence.json")
   .option("--max-json-bytes <bytes>", "Maximum bytes per input JSON")
-  .action((evidencePath: string, opts: { maxJsonBytes?: string }) => {
+  .option("--max-json-depth <depth>", "Maximum JSON nesting depth")
+  .option("--max-json-nodes <count>", "Maximum JSON structural tokens")
+  .action((evidencePath: string, opts: { maxJsonBytes?: string; maxJsonDepth?: string; maxJsonNodes?: string }) => {
     try {
-      const limits = opts.maxJsonBytes === undefined ? {} : { maxJsonBytes: Number(opts.maxJsonBytes) };
+      const limits: InputLimits = {};
+      for (const key of ["maxJsonBytes", "maxJsonDepth", "maxJsonNodes"] as const) if (opts[key] !== undefined) limits[key] = Number(opts[key]);
       resolveInputLimits(limits);
       const result = withInputBudget({ limits }, () => verifyReportArchive(readEvidenceFile(evidencePath), { artifactRoot: path.dirname(path.resolve(evidencePath)) }));
       process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);

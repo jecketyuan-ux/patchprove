@@ -35,7 +35,7 @@ export async function load(url,context,next){
     writeFileSync(runner, `const {resolveLanguagePluginSession}=await import(${JSON.stringify(pathToFileURL(path.join(alias, "src/plugins/load.ts")).href)});
 const session=await resolveLanguagePluginSession(${JSON.stringify(temporary)},{env:{},allowAuto:false});
 console.log(JSON.stringify(session.provenance.map(plugin=>({id:plugin.id,entry:plugin.entry,entryHash:plugin.entryHash,bound:plugin.inputs.some(input=>input.path===plugin.entry&&input.hash===plugin.entryHash)}))));`);
-    const child = spawnSync(process.execPath, ["--preserve-symlinks", "--import", register, runner], { encoding: "utf8", timeout: 30_000 });
+    const child = spawnSync(process.execPath, ["--preserve-symlinks", "--import", pathToFileURL(register).href, runner], { encoding: "utf8", timeout: 30_000 });
     expect(child.status, child.stderr || child.error?.message).toBe(0);
     const provenance = JSON.parse(child.stdout) as Array<{ id: string; entry: string; entryHash: string; bound: boolean }>;
     expect(provenance.length).toBeGreaterThan(0);
