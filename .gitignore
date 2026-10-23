@@ -5,6 +5,7 @@ bin/
 *.tgz
 .DS_Store
 evidence.json
+!test/fixtures/legacy-v2-producer/evidence.json
 tmp/
 .idea/
 .vscode/
