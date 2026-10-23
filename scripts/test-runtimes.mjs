@@ -14,6 +14,7 @@ import { emptyDetectedTools } from "../dist/types.js";
 import { detectTools } from "../dist/detect.js";
 import { withMachineReportArchive } from "../dist/report-archive.js";
 import { createHash } from "node:crypto";
+import { retainRuntimeFailure, runtimeReportState } from "./runtime-failure-retention.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const fixtures = path.join(root, "test/fixtures/runtimes");
@@ -80,6 +81,7 @@ for (const engine of engines) {
     // Windows temp directories may use 8.3 aliases such as RUNNER~1.
     const requestedCwd = await mkdtemp(path.join(os.tmpdir(), "patchprove-runtime-测试 space-"));
     const dir = realpathSync.native(requestedCwd);
+    let selectedRun = null, fullResult = null, phase = "setup", priorReports = new Map();
     try {
       await cp(path.join(fixtures, item.path), dir, { recursive: true });
       if (engine === "node" && item.scenario !== "missing") await symlink(path.join(root, "node_modules"), path.join(dir, "node_modules"), process.platform === "win32" ? "junction" : "dir");
@@ -100,7 +102,9 @@ for (const engine of engines) {
       }
       const files = await filesIn(dir);
       const context = { cwd: dir, existing: new Set(files) };
-      const selectedRun = await withMachineReportArchive(path.join(retainedRoot, item.id, "selected"),
+      phase = "selected";
+      if (["maven", "gradle"].includes(engine)) priorReports = await runtimeReportState(dir);
+      selectedRun = await withMachineReportArchive(path.join(retainedRoot, item.id, "selected"),
         () => runAffectedTests(dir, tools, item.tests, true, plugins, context, { timeoutMs: 180000, maxOutputBytes: 2 * 1024 * 1024 }));
       const selected = selectedRun.result;
       assert.equal(selected.status, item.expected, `${item.id}: ${selected.reason}\n${selected.detail ?? ""}`);
@@ -121,7 +125,10 @@ for (const engine of engines) {
           gradle: ["cleanTest", "test", "--console=plain", "--no-daemon"],
         }[engine];
         if (["maven", "gradle"].includes(engine)) for (const file of await javaReportFiles(dir)) await rm(file);
+        phase = "full";
+        if (["maven", "gradle"].includes(engine)) priorReports = await runtimeReportState(dir);
         const raw = await runCommand(probe.command, fullArgs, { cwd: dir, timeoutMs: 180000, maxOutputBytes: 2 * 1024 * 1024 });
+        fullResult = raw;
         assert(!raw.timedOut && !raw.aborted && !raw.truncated, `${item.id}: full-suite process/output incomplete`);
         const retained = path.join(retainedRoot, item.id, "full"); await mkdir(retained, { recursive: true, mode: 0o700 });
         const machineReports = [];
@@ -152,7 +159,15 @@ for (const engine of engines) {
       report.cases.push({ id: item.id, requestedCwd, executionCwd: dir, outcome: "passed", expected: item.expected, selected: { status: selected.status, collectedTests: selectedCount ?? null, durationMs: selected.durationMs, records: selected.records, reportArchive: selectedRun.archive, ...(javaAssertions ? { javaAssertions } : {}) }, full });
       console.log(`PASS ${item.id}: ${selected.status}`);
     } catch (error) {
-      failures++; report.cases.push({ id: item.id, requestedCwd, executionCwd: dir, outcome: "failed", reason: String(error) }); console.error(`FAIL ${item.id}: ${error}`);
+      let failureDiagnostics = null, retentionError = null;
+      try {
+        const destination = path.join(retainedRoot, item.id, "failure-diagnostics");
+        const index = await retainRuntimeFailure({ fixtureRoot: dir, destination, phase, selectedRun, fullResult, priorReports });
+        failureDiagnostics = { ...index, pathBase: path.basename(retainedRoot), path: path.relative(retainedRoot, path.join(destination, index.path)).split(path.sep).join("/") };
+      } catch (retentionFailure) { retentionError = String(retentionFailure); }
+      failures++; report.cases.push({ id: item.id, requestedCwd, executionCwd: dir, outcome: "failed", reason: String(error),
+        ...(selectedRun ? { selected: selectedRun.result, reportArchive: selectedRun.archive } : {}),
+        failureDiagnostics, ...(retentionError ? { retentionError } : {}) }); console.error(`FAIL ${item.id}: ${error}`);
     } finally { await rm(dir, { recursive: true, force: true }); }
   }
 }
