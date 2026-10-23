@@ -2,13 +2,36 @@
 import { validationIdentity } from "./validation-identity.mjs";
 import assert from "node:assert/strict";
 import { createHash } from "node:crypto";
-import { cp, mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
+import { cp, mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { runCommand } from "../dist/exec.js";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+async function retainFailureReports(cwd, id) {
+  const files = [];
+  async function walk(dir) {
+    for (const entry of await readdir(dir, { withFileTypes: true }).catch(() => [])) {
+      if ([".git", "node_modules", ".gradle"].includes(entry.name)) continue;
+      const file = path.join(dir, entry.name);
+      if (entry.isDirectory()) await walk(file);
+      else if (/^TEST-.+\.xml$/.test(entry.name) && files.length < 20) files.push(file);
+    }
+  }
+  await walk(cwd);
+  const out = path.join(path.dirname(process.env.PATCHPROVE_PRODUCTION_REPORT ?? path.join(os.tmpdir(), "production-chain.json")), "production-failures", id);
+  const reports = [];
+  for (const file of files) {
+    const xml = await readFile(file); if (xml.length > 1024 * 1024) continue;
+    const relative = path.relative(cwd, file), destination = path.join(out, relative);
+    await mkdir(path.dirname(destination), { recursive: true }); await writeFile(destination, xml);
+    reports.push({ path: destination, sha256: createHash("sha256").update(xml).digest("hex") });
+    const failure = xml.toString("utf8").match(/<(?:failure|error)\b[\s\S]*?<\/(?:failure|error)>/)?.[0];
+    if (failure) console.error(`Runner failure report ${relative}:\n${failure.slice(0, 12_000)}`);
+  }
+  return reports;
+}
 
 /** Exercise the installed CLI and unmodified detector/plugins. Tool installation is caller-owned. */
 export async function verifyProductionChain(installed, engines) {
@@ -47,7 +70,10 @@ export async function verifyProductionChain(installed, engines) {
       report.cases.push({ id: item.id, status: "passed", cli: { exitCode: result.exitCode, args, outputHash: result.outputHash, durationMs: result.durationMs },
         verification: evidence.verification, environment: evidence.environment, tests: check });
       console.log(`PASS installed ${item.id}`);
-    } catch (error) { report.cases.push({ id: item.id, status: "failed", error: String(error), ...(observed ? { observed } : {}) }); console.error(`FAIL installed ${item.id}: ${error}`); }
+    } catch (error) {
+      const failureReports = await retainFailureReports(cwd, item.id);
+      report.cases.push({ id: item.id, status: "failed", error: String(error), failureReports, ...(observed ? { observed } : {}) }); console.error(`FAIL installed ${item.id}: ${error}`);
+    }
     finally { await rm(cwd, { recursive: true, force: true }); await rm(artifacts, { recursive: true, force: true }); }
   }
   const output = process.env.PATCHPROVE_PRODUCTION_REPORT ?? path.join(os.tmpdir(), "patchprove-production-report.json");

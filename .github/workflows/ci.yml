@@ -91,7 +91,7 @@ jobs:
         if: always()
         with:
           name: runtime-corpus-${{ matrix.os }}
-          path: artifacts/*.json
+          path: artifacts/
           if-no-files-found: error
 
   contracts:
