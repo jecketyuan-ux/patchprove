@@ -10,6 +10,7 @@ import type { Evidence, ExecutionRecord } from "../src/types.js";
 it("replays a valid large report pack using the producer's explicit JSON budgets", async () => {
   const root = mkdtempSync(path.join(tmpdir(), "patchprove-reports-cli-limits-"));
   try {
+    writeFileSync(path.join(root, "value.test.js"), "export {};\n");
     const report = path.join(root, "report.json");
     writeFileSync(report, JSON.stringify({ testResults: [{ name: path.join(root, "value.test.js"), assertionResults: [{ status: "passed" }] }] }));
     const evidence = await withReportArchive(path.join(root, "reports"), async () => {
