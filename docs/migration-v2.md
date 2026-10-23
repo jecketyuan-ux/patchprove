@@ -54,3 +54,11 @@ patchprove receipt verify /tmp/evidence-v1.json --allow-legacy
 未发布 checkout 推荐 `patchprove init-agent --local-cli /absolute/path/to/dist/cli.js`。发布后 MCP 启动应绑定包与 bin：`npx --yes --package=patchprove@VERSION patchprove-mcp`。不要把 bin 名误当作独立 npm 包。
 
 MCP、CLI、hook 与 Action 使用同一判定；产物需按入口的显式参数启用。Claude Code 停止响应受真实宿主协议约束，Cursor followup 是建议而非强制阻断。本地 transport/fixture 通过不能冒充真实宿主验证。跨 Node/OS/native runner 的执行范围见 [validation](validation.md)，导出适配器边界见 [ecosystem](ecosystem.md)。
+
+## Execution-proof hardening before the 2.0 release
+
+New records separate requested/collected/executed/skipped/unknown scopes and counts. An excluded, all-skipped, reporter-missing or partially executed suite can now be incomplete where older producers reported passed. Normal Vitest/pytest runs require fresh machine reports; Java consumes fresh testcase outcomes, Go uses package events, Cargo retains crate granularity. Do not copy argv into scope in custom adapters. Known optional fields remain compatible; contradictory copies or stored decisions are rejected.
+
+`sign:true` creates a receipt through MCP/SDK artifact operations; combining it with `receipt:false` is an error. Missing/invalid required signing material fails before repository checks. Input budgets apply by default and can be raised explicitly. Project policy is additive; required project gates override a global optional disable. Sticky PR comments now default off and remain experimental pending live same-repository/fork acceptance; serialize enabled publishers per PR.
+
+See [execution reports](execution-reports.md), [project policy](project-policy.md), [budgets](resource-budgets.md) and [live-host acceptance](host-acceptance.md). Historical signed bytes are never silently rewritten or re-signed by the reader.

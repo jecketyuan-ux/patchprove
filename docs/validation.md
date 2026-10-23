@@ -2,6 +2,9 @@
 title: Validation and delivery
 ---
 
+**Current candidate:** see the [2026-10-23 hardening record](upgrades/2x-hardening.md) and its release ledger. The reports and counts below describe the earlier 2.0 implementation and are retained as history. They do not validate changed candidate code.
+
+
 The repository separates unit checks, real runtime execution, installed-package checks, and measured selection experiments. CI configuration is an intended gate; a checked-in workflow is not evidence that a remote runner has already passed.
 
 Run the checks from a Node 22 or 24 checkout after `npm ci`:

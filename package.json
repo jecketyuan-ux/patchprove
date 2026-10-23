@@ -1,7 +1,7 @@
 {
   "name": "patchprove",
   "version": "2.0.0",
-  "description": "Evidence pack for AI/agent patches: impact → checks → gaps → risk.",
+  "description": "Evidence pack for AI/agent patches: impact \u2192 checks \u2192 gaps \u2192 risk.",
   "keywords": [
     "evidence",
     "agent",
@@ -24,7 +24,8 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js"
     },
-    "./schema": "./schema/evidence.schema.json"
+    "./schema": "./schema/evidence.schema.json",
+    "./adapter-schema": "./schema/adapter.schema.json"
   },
   "files": [
     "dist",
@@ -51,7 +52,11 @@
     "test:package": "node scripts/test-package.mjs",
     "test:corpus": "node scripts/benchmark-corpus.mjs",
     "generate:protocol": "node scripts/generate-protocol.mjs",
-    "check:protocol": "node scripts/generate-protocol.mjs --check"
+    "check:protocol": "node scripts/generate-protocol.mjs --check",
+    "test:gitleaks": "node scripts/test-gitleaks.mjs",
+    "test:resources": "node scripts/benchmark-resources.mjs",
+    "test:projects": "node scripts/benchmark-projects.mjs",
+    "test:upstream": "node scripts/test-upstream.mjs"
   },
   "publishConfig": {
     "access": "public"
@@ -77,6 +82,6 @@
     "ajv-draft-04": "1.0.0",
     "json-schema-to-typescript": "16.0.0",
     "typescript": "^5.8.2",
-    "vitest": "^3.0.8"
+    "vitest": "4.1.12"
   }
 }

@@ -37,6 +37,13 @@ describe.skipIf(process.platform === "win32")("tool identity probes", () => {
     expect(detectTools(dir).mypyBin).toBeNull();
   });
 
+  it("discovers an installed pytest module when no pytest launcher is on PATH", () => {
+    const dir = fixture();
+    writeFileSync(path.join(dir, "pytest.ini"), "[pytest]\n");
+    const binary = fake(dir, "python3", "pytest 8.3.5");
+    expect(detectTools(dir).pytestBin).toBe(binary);
+  });
+
   it("accepts local configured tools only after a version identity probe", () => {
     const dir = fixture();
     writeFileSync(path.join(dir, "tsconfig.json"), "{}");

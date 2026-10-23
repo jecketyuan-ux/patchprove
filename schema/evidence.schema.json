@@ -274,6 +274,106 @@
       "items": {
         "$ref": "#/definitions/mappingEvidence"
       }
+    },
+    "environment": {
+      "$ref": "#/definitions/environment"
+    },
+    "projectScopes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "applicable": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "applicable",
+          "reason"
+        ]
+      }
+    },
+    "resolutionProvenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "parserVersion",
+        "inputHash",
+        "configurations",
+        "resolutions"
+      ],
+      "properties": {
+        "parserVersion": {
+          "const": "2"
+        },
+        "inputHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "configurations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "hash"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        },
+        "resolutions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "from",
+              "specifier",
+              "kind",
+              "targets"
+            ],
+            "properties": {
+              "from": {
+                "type": "string"
+              },
+              "specifier": {
+                "type": "string"
+              },
+              "kind": {
+                "enum": [
+                  "builtin",
+                  "external",
+                  "internal-resolved",
+                  "internal-unresolved"
+                ]
+              },
+              "targets": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "definitions": {
@@ -994,6 +1094,12 @@
             "version",
             "inputHash"
           ]
+        },
+        "testExecution": {
+          "$ref": "#/definitions/testExecution"
+        },
+        "required": {
+          "type": "boolean"
         }
       },
       "required": [
@@ -1037,6 +1143,47 @@
         },
         "unitId": {
           "type": "string"
+        },
+        "sourceFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "granularity": {
+          "enum": [
+            "file",
+            "package",
+            "crate",
+            "repository"
+          ]
+        },
+        "policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "enum": [
+                "required",
+                "optional",
+                "not-applicable"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "expiresAt": {
+              "type": "string"
+            },
+            "project": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "mode",
+            "project"
+          ]
         }
       },
       "required": [
@@ -1303,6 +1450,41 @@
         "hash": {
           "type": "string",
           "pattern": "^(sha256:)?[0-9a-f]{64}$"
+        },
+        "projects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "gates": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "typecheck": {
+                    "$ref": "#/definitions/projectGatePolicy"
+                  },
+                  "lint": {
+                    "$ref": "#/definitions/projectGatePolicy"
+                  },
+                  "tests": {
+                    "$ref": "#/definitions/projectGatePolicy"
+                  },
+                  "secrets": {
+                    "$ref": "#/definitions/projectGatePolicy"
+                  }
+                }
+              }
+            },
+            "required": [
+              "path",
+              "gates"
+            ]
+          }
         }
       },
       "required": [
@@ -1364,6 +1546,321 @@
         "test",
         "via",
         "precision"
+      ]
+    },
+    "testExecution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "parserVersion": {
+          "const": "1"
+        },
+        "format": {
+          "enum": [
+            "vitest-json",
+            "jest-json",
+            "pytest-junit",
+            "java-junit",
+            "go-json",
+            "cargo-harness",
+            "unavailable"
+          ]
+        },
+        "granularity": {
+          "enum": [
+            "file",
+            "package",
+            "crate"
+          ]
+        },
+        "requestedScope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "collectedScope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "executedScope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "skippedScope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unknownScope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "collected": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "executed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "passed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "failed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "skipped": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "collected",
+            "executed",
+            "passed",
+            "failed",
+            "skipped"
+          ]
+        },
+        "reportHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "reportPath": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "sourceFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "eligibleSourceFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reportStatus": {
+          "enum": [
+            "validated",
+            "partial",
+            "missing",
+            "invalid",
+            "truncated"
+          ]
+        }
+      },
+      "required": [
+        "parserVersion",
+        "format",
+        "granularity",
+        "requestedScope",
+        "collectedScope",
+        "executedScope",
+        "skippedScope",
+        "unknownScope",
+        "counts",
+        "reportStatus"
+      ]
+    },
+    "inputLimits": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maxFileBytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxTotalBytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxFiles": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxJsonBytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxJsonDepth": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxJsonNodes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxGraphEdges": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "maxFileBytes",
+        "maxTotalBytes",
+        "maxFiles",
+        "maxJsonBytes",
+        "maxJsonDepth",
+        "maxJsonNodes",
+        "maxGraphEdges"
+      ]
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "platform": {
+          "type": "string"
+        },
+        "arch": {
+          "type": "string"
+        },
+        "nodeVersion": {
+          "type": "string"
+        },
+        "gitVersion": {
+          "type": "string"
+        },
+        "hermetic": {
+          "const": false
+        },
+        "inputLimits": {
+          "$ref": "#/definitions/inputLimits"
+        },
+        "tools": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "version": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "path": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "version",
+              "path"
+            ]
+          }
+        },
+        "dependencyLocks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            },
+            "required": [
+              "path",
+              "hash"
+            ]
+          }
+        },
+        "configurations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "hash"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        }
+      },
+      "required": [
+        "platform",
+        "arch",
+        "nodeVersion",
+        "gitVersion",
+        "hermetic",
+        "inputLimits",
+        "tools",
+        "dependencyLocks"
+      ]
+    },
+    "projectGatePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "enum": [
+            "required",
+            "optional",
+            "not-applicable"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expiresAt": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "mode"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "not-applicable"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "reason"
+            ]
+          }
+        }
       ]
     }
   },

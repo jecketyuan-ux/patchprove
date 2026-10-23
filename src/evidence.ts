@@ -157,7 +157,8 @@ export function buildImpact(
   }
 
   const availableGraphs = [graph, options?.baseGraph].filter((candidate): candidate is ImportGraph => candidate != null);
-  const dynamicGraph = availableGraphs.find((candidate) => candidate.diagnostics?.some((diagnostic) => diagnostic.code === "mapping-dynamic-dependency"));
+  const dynamicGraph = availableGraphs.find((candidate) => candidate.diagnostics?.some((diagnostic) =>
+    ["mapping-dynamic-dependency", "mapping-unresolved-internal-import", "mapping-unreadable-file", "mapping-invalid-configuration"].includes(diagnostic.code)));
   if (dynamicGraph) {
     const fallbackTests = [...new Set(availableGraphs.flatMap((candidate) =>
       [...(candidate.tests ?? new Set([...candidate.importers.values()].flat()))],
@@ -177,7 +178,7 @@ export function buildImpact(
         mappedTests.push({ source: file.path, tests: fallbackTests, via: "graph" });
       }
       for (const test of fallbackTests) {
-        mappingEvidence.push({ source: file.path, test, via: "graph", precision: "heuristic", origin: "dynamic-fallback", freshness: "unknown", inputHash: dynamicGraph.inputHash });
+        mappingEvidence.push({ source: file.path, test, via: "graph", precision: "heuristic", origin: dynamicGraph.diagnostics?.some((item) => item.code === "mapping-dynamic-dependency") ? "dynamic-fallback" : "unresolved-internal-fallback", freshness: "unknown", inputHash: dynamicGraph.inputHash });
       }
       vias.push("graph");
       if (file.status !== "deleted" && isSourceFile(file.path, plugins)) {
@@ -253,14 +254,15 @@ export function collectGaps(
 
   for (const check of checks) {
     if (check.status !== "skipped") continue;
-    if (check.reason?.startsWith("Disabled by config")) continue;
-    if (check.id === "tests" && impact.mappedTests.length === 0) continue;
+    if (check.records?.length && check.records.every((record) => record.required === false || record.status === "not-applicable" || record.reason?.startsWith("Disabled by config"))) continue;
+    if (!check.records?.length && check.reason?.startsWith("Disabled by config")) continue;
+    if (check.id === "tests" && impact.mappedTests.length === 0 && !check.records?.some((record) => record.required)) continue;
     const missing =
       (check.id === "typecheck" && (tools.typescript || tools.pyright || tools.mypy)) ||
       (check.id === "lint" && (tools.eslint || tools.ruff)) ||
       (check.id === "tests" &&
         (tools.vitest || tools.jest || tools.pytest || tools.go || tools.cargo || tools.maven || tools.gradle));
-    if (missing || /not found|configured but/i.test(check.reason ?? "")) {
+    if (missing || check.records?.some((record) => record.required && record.status === "skipped") || /not found|configured but/i.test(check.reason ?? "")) {
       gaps.push({
         id: `gap-tool-${check.id}`,
         kind: "tool-missing",

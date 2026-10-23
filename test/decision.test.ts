@@ -23,6 +23,13 @@ function record(scope = ["a.ts"]): ExecutionRecord {
 }
 
 describe("shared verification decision", () => {
+  it("cannot pass contradictory copies of an execution supplied directly by an SDK caller", () => {
+    const evidence = complete();
+    evidence.executionRecords = [record()];
+    evidence.checks = [{ id: "tests", name: "tests", status: "passed", command: null, exitCode: 0, durationMs: 1,
+      records: [{ ...record(), status: "failed", exitCode: 1 }] }];
+    expect(evaluateVerification(evidence).status).not.toBe("passed");
+  });
   it("passes a complete run with no applicable planned checks", () => {
     expect(evaluateVerification(complete()).status).toBe("passed");
   });

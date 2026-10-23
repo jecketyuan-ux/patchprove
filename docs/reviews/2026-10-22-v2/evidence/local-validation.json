@@ -1,0 +1,354 @@
+{
+  "capturedAt": "2026-10-22T17:26:43.185Z",
+  "head": "6fa50972f424ee0b6c8e2b1a8506b7ee3f804f0d",
+  "node": "v24.19.0",
+  "commands": [
+    "npm run check:protocol",
+    "npm run build",
+    "npm run typecheck:test",
+    "npm test -- --reporter=json --outputFile=/tmp/patchprove-v2-reaudit-tests.json"
+  ],
+  "success": true,
+  "files": 47,
+  "tests": 433,
+  "passed": 430,
+  "failed": 0,
+  "skipped": 3,
+  "sourceReportSha256": "add58c04313e833aac192944cadf9d7d6d3aba6fb802f59b8ff069e0da36f1e3",
+  "results": [
+    {
+      "file": "test/accept.test.ts",
+      "status": "passed",
+      "tests": 5,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/action-publisher.test.ts",
+      "status": "passed",
+      "tests": 3,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/adapters.test.ts",
+      "status": "passed",
+      "tests": 10,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/artifact-verifier.test.ts",
+      "status": "passed",
+      "tests": 24,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/artifacts.test.ts",
+      "status": "passed",
+      "tests": 13,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/baseline.test.ts",
+      "status": "passed",
+      "tests": 8,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/config.test.ts",
+      "status": "passed",
+      "tests": 13,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/coverage.test.ts",
+      "status": "passed",
+      "tests": 9,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/decision.test.ts",
+      "status": "passed",
+      "tests": 10,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/detect.test.ts",
+      "status": "passed",
+      "tests": 9,
+      "failed": [],
+      "skipped": [
+        "Windows tool identity probes probes real Maven and Gradle batch launchers with spaces in their paths"
+      ]
+    },
+    {
+      "file": "test/evidence.test.ts",
+      "status": "passed",
+      "tests": 2,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/exec.test.ts",
+      "status": "passed",
+      "tests": 22,
+      "failed": [],
+      "skipped": [
+        "Windows batch command construction executes a real .cmd launcher without losing quoted argv",
+        "Windows batch command construction executes a real .bat launcher without losing quoted argv"
+      ]
+    },
+    {
+      "file": "test/gates.test.ts",
+      "status": "passed",
+      "tests": 20,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/git-budget.test.ts",
+      "status": "passed",
+      "tests": 3,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/git.test.ts",
+      "status": "passed",
+      "tests": 16,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/glob.test.ts",
+      "status": "passed",
+      "tests": 3,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/golden.test.ts",
+      "status": "passed",
+      "tests": 3,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/graph.test.ts",
+      "status": "passed",
+      "tests": 5,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/hook.test.ts",
+      "status": "passed",
+      "tests": 8,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/init-agent.test.ts",
+      "status": "passed",
+      "tests": 10,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/language-regressions.test.ts",
+      "status": "passed",
+      "tests": 16,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/mapping-regressions.test.ts",
+      "status": "passed",
+      "tests": 32,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/mapping.test.ts",
+      "status": "passed",
+      "tests": 10,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/mcp-tools.test.ts",
+      "status": "passed",
+      "tests": 11,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/paths.test.ts",
+      "status": "passed",
+      "tests": 2,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/plugins-load.test.ts",
+      "status": "passed",
+      "tests": 4,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/plugins.test.ts",
+      "status": "passed",
+      "tests": 11,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/policy-inputs.test.ts",
+      "status": "passed",
+      "tests": 2,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/protocol-generation.test.ts",
+      "status": "passed",
+      "tests": 1,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/protocol-types.test.ts",
+      "status": "passed",
+      "tests": 3,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/receipt-forward-compat.test.ts",
+      "status": "passed",
+      "tests": 1,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/receipt-v2.test.ts",
+      "status": "passed",
+      "tests": 26,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/receipt.test.ts",
+      "status": "passed",
+      "tests": 11,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/risk.test.ts",
+      "status": "passed",
+      "tests": 6,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/run-dependencies.integration.test.ts",
+      "status": "passed",
+      "tests": 2,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/run-path-alias.integration.test.ts",
+      "status": "passed",
+      "tests": 2,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/run-snapshot-drift.integration.test.ts",
+      "status": "passed",
+      "tests": 1,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/run-upgrade.integration.test.ts",
+      "status": "passed",
+      "tests": 16,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/run.integration.test.ts",
+      "status": "passed",
+      "tests": 5,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/sarif-schema.test.ts",
+      "status": "passed",
+      "tests": 11,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/sarif.test.ts",
+      "status": "passed",
+      "tests": 3,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/schema-fixtures.test.ts",
+      "status": "passed",
+      "tests": 2,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/secrets.test.ts",
+      "status": "passed",
+      "tests": 5,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/snapshot.test.ts",
+      "status": "passed",
+      "tests": 19,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/spec.test.ts",
+      "status": "passed",
+      "tests": 15,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/transports.integration.test.ts",
+      "status": "passed",
+      "tests": 11,
+      "failed": [],
+      "skipped": []
+    },
+    {
+      "file": "test/validation.test.ts",
+      "status": "passed",
+      "tests": 9,
+      "failed": [],
+      "skipped": []
+    }
+  ]
+}

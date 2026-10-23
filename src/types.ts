@@ -1,3 +1,5 @@
+import type { InputLimits } from "./input-budget.js";
+
 export const SCHEMA_VERSION = "2.0.0" as const;
 export const TOOL_VERSION = "2.0.0";
 export const RECEIPT_SCHEMA_VERSION = "2.0.0" as const;
@@ -37,12 +39,33 @@ export interface ExecutionRecord {
   exitCode: number | null;
   durationMs: number;
   reason?: string;
+  required?: boolean;
   toolVersion?: string;
   collectedTests?: number;
+  testExecution?: TestExecution;
   signal?: string | null;
   truncated?: boolean;
   outputHash?: string;
   provenance?: { adapter: string; version: string; inputHash: string; snapshotHash?: string };
+}
+
+/** Observed machine-report facts. A requested path alone never proves execution. */
+export interface TestExecution {
+  parserVersion: "1";
+  format: "vitest-json" | "jest-json" | "pytest-junit" | "java-junit" | "go-json" | "cargo-harness" | "unavailable";
+  reportStatus: "validated" | "partial" | "missing" | "invalid" | "truncated";
+  granularity: "file" | "package" | "crate";
+  sourceFiles?: string[];
+  eligibleSourceFiles?: string[];
+  requestedScope: string[];
+  collectedScope: string[];
+  executedScope: string[];
+  skippedScope: string[];
+  unknownScope: string[];
+  counts: { collected: number; executed: number; passed: number; failed: number; skipped: number };
+  reportHash?: string;
+  reportPath?: string;
+  reason?: string;
 }
 
 export interface VerificationPlanItem {
@@ -52,6 +75,19 @@ export interface VerificationPlanItem {
   scope: string[];
   required: boolean;
   reason: string;
+  sourceFiles?: string[];
+  granularity?: "file" | "package" | "crate" | "repository";
+  policy?: ProjectGatePolicy & { project: string };
+}
+
+export interface ProjectGatePolicy {
+  mode: "required" | "optional" | "not-applicable";
+  reason?: string;
+  expiresAt?: string;
+}
+export interface ProjectPolicy {
+  path: string;
+  gates: Partial<Record<CheckId, ProjectGatePolicy>>;
 }
 
 export interface VerificationDecision {
@@ -81,6 +117,7 @@ export interface EffectivePolicy {
   spec: { path: string; hash: string; inputs?: Array<{ path: string; hash: string }> } | null;
   baseline: { path: string; hash: string } | null;
   hash: string;
+  projects?: ProjectPolicy[];
 }
 
 export type RiskLevel = "low" | "medium" | "high" | "critical";
@@ -335,8 +372,23 @@ export interface Evidence {
   verificationPlan?: VerificationPlanItem[];
   verification?: VerificationDecision;
   effectivePolicy?: EffectivePolicy;
+  environment?: EnvironmentProvenance;
+  resolutionProvenance?: import("./graph.js").ImportGraph["provenance"];
+  projectScopes?: Array<{ path: string; applicable: boolean; reason: string }>;
   diagnostics?: Diagnostic[];
   mappingEvidence?: Array<{ source: string; test: string; via: MappingStrategy; precision: "heuristic" | "structural" | "historical"; origin?: string; freshness?: "current" | "unknown" | "stale"; inputHash?: string }>;
+}
+
+export interface EnvironmentProvenance {
+  platform: string;
+  arch: string;
+  nodeVersion: string;
+  gitVersion: string;
+  tools: Array<{ name: string; version: string | null; path: string }>;
+  dependencyLocks: Array<{ path: string; hash: string }>;
+  configurations?: Array<{ path: string; hash: string }>;
+  inputLimits: Required<InputLimits>;
+  hermetic: false;
 }
 
 export interface DetectedTools {
@@ -423,6 +475,7 @@ export interface ResolvedConfig {
   spec: string | null;
   /** Local JS plugin module paths (config `plugins:`). */
   plugins: string[];
+  projects?: ProjectPolicy[];
 }
 
 export interface RunOptions {
@@ -450,6 +503,9 @@ export interface RunOptions {
   isolate?: boolean;
   timeoutMs?: number;
   maxOutputBytes?: number;
+  inputLimits?: InputLimits;
+  /** SDK cancellation; wire/CLI callers use their own transport/process cancellation. */
+  signal?: AbortSignal;
   allowPlugins?: boolean;
   strictConfig?: boolean;
   adapterInputs?: Array<{ adapter: "nx" | "turbo" | "testmon"; path: string }>;

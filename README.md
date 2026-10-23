@@ -1,5 +1,8 @@
 # patchprove
 
+The 2026-10-23 hardening implements fresh test-result reconciliation, conservative unresolved-import fallback, semantic readers, signing intent checks, stale-publisher guards, project policies and input budgets. See [current implementation and evidence](docs/upgrades/2x-hardening.md), [execution facts](docs/execution-reports.md), [project policy](docs/project-policy.md) and [limits](docs/resource-budgets.md). Live Claude/Cursor and fork-publisher acceptance remain experimental; historical CI is not evidence for this candidate.
+
+
 **Evidence for a patch: snapshot → impact → planned checks → execution → gaps → decision.**
 
 patchprove runs configured tools and records what they establish about a Git change. It uses no LLM, cloud service, or telemetry. A successful decision means the recorded policy was satisfied; it does not establish that every behavior is correct or replace repository CI and review.

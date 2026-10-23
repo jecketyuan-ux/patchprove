@@ -1,13 +1,15 @@
-import { existsSync, readFileSync, readdirSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { spawnSync } from "node:child_process";
 import path from "node:path";
+import { InputBudgetError, readBoundedFile, readJsonInput } from "./input-budget.js";
 import { childEnvironment, commandInvocation, localBin, whichSync } from "./exec.js";
 import type { DetectedTools } from "./types.js";
 
 function readJson(filePath: string): Record<string, unknown> | null {
   try {
-    return JSON.parse(readFileSync(filePath, "utf8")) as Record<string, unknown>;
-  } catch {
+    return readJsonInput(filePath) as Record<string, unknown>;
+  } catch (error) {
+    if (error instanceof InputBudgetError) throw error;
     return null;
   }
 }
@@ -40,8 +42,9 @@ function globPrefixExists(cwd: string, prefixes: string[]): boolean {
 
 function readText(filePath: string): string {
   try {
-    return readFileSync(filePath, "utf8");
-  } catch {
+    return readBoundedFile(filePath).toString("utf8");
+  } catch (error) {
+    if (error instanceof InputBudgetError) throw error;
     return "";
   }
 }
@@ -167,7 +170,12 @@ export function detectTools(cwd: string, limits: ToolDetectionLimits = {}): Dete
     if (python && version) { mypyBin = python; versions.mypy = version; }
   }
   const ruffBin = resolveBin(cwd, ["ruff"], ruffConfigured, versions, limits);
-  const pytestBin = resolveBin(cwd, ["pytest"], pytestConfigured, versions, limits);
+  let pytestBin = resolveBin(cwd, ["pytest"], pytestConfigured, versions, limits);
+  if (!pytestBin && pytestConfigured && remainingProbeMs(limits) > 0) {
+    const interpreter = whichSync("python3") ?? whichSync("python");
+    const version = interpreter ? probe(interpreter, "pytest", cwd, limits, ["-m", "pytest"]) : null;
+    if (interpreter && version) { pytestBin = interpreter; versions.pytest = version; }
+  }
   const gitleaksBin = resolveBin(cwd, ["gitleaks"], true, versions, limits);
 
   const goPresent = anyExists(cwd, ["go.mod", "go.sum"]);

@@ -79,3 +79,9 @@ reviewdog -f=sarif -name=patchprove -reporter=local < patchprove.sarif
 ```
 
 The local reporter prints annotations without a write token. Preserve the CLI exit code if a verification failure occurs. For GitHub comment publication, use the two-stage workflow described in [validation](validation.md): verify the artifact and regenerate the report using trusted code before supplying a token to the publisher. The repository does not install reviewdog automatically or claim compatibility with every reviewdog version.
+
+## Tested native Turbo producer contract
+
+`exportTurboEvidence({plan, summary?, snapshotHash})` accepts Turbo **2.5.0**, native JSON format `version:"1"`, and joins task scope to the supplied dry plan. It records plan/summary digests in the caller-bound data. Unsupported native versions are rejected rather than guessed. Omitting summary exports a plan with no execution records. A run export preserves executed/cached/failed states as imported evidence, without inventing test counts. The [adapter envelope schema](../schema/adapter.schema.json) is also exported as `patchprove/adapter-schema`. Normalized envelope v1 remains available for existing Nx/Turbo/testmon integrations; Nx and testmon native producer compatibility remains experimental.
+
+Run `TURBO_BIN=/absolute/path/to/turbo npm run test:upstream` with a separately installed 2.5.0 binary. The harness disables Turbo telemetry and exercises actual dry plans, execution, cache hits and failures in a disposable workspace. It never downloads tools or sends feedback. Snapshot/input hashes bind the caller's supplied data; they do not authenticate its producer.

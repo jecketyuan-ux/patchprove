@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { validationIdentity } from "./validation-identity.mjs";
 import assert from "node:assert/strict";
 import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
@@ -12,7 +13,7 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const temp = await mkdtemp(path.join(os.tmpdir(), "patchprove-package-"));
 const npmCli = process.env.npm_execpath;
 assert(npmCli, "Run this check with npm run test:package so npm's JS entry is known on all platforms");
-const report = { schemaVersion: 1, node: process.version, platform: process.platform, install: "Local project tarball in a fresh consumer; declared dependencies downloaded with install scripts disabled", runtimeNetwork: "No application network calls are required for CLI and stdio MCP checks" };
+const report = { identity: validationIdentity(import.meta.url), schemaVersion: 1, node: process.version, platform: process.platform, install: "Local project tarball in a fresh consumer; declared dependencies downloaded with install scripts disabled", runtimeNetwork: "No application network calls are required for CLI and stdio MCP checks" };
 async function command(program, args, cwd = root, expected = 0, env) {
   const result = await runCommand(program, args, { cwd, timeoutMs: 180000, maxOutputBytes: 4 * 1024 * 1024, env });
   assert.equal(result.exitCode, expected, `${result.command}\n${result.stdout}\n${result.stderr}`); return result;
@@ -81,6 +82,11 @@ try {
   artifact.summary.risk = "critical"; await writeFile(path.join(incoming, "evidence.json"), JSON.stringify(artifact));
   await command(process.execPath, publisherArgs, consumer, 1, { GITHUB_EVENT_PATH: eventPath });
   report.publisher = "trusted rendering accepts matching receipt/head and rejects wrong head or tampered evidence; no publication performed";
+  if (process.env.PATCHPROVE_PRODUCTION_ENGINES) {
+    const { verifyProductionChain } = await import("./test-production.mjs");
+    const production = await verifyProductionChain(installed, process.env.PATCHPROVE_PRODUCTION_ENGINES.split(","));
+    report.productionCases = production.cases.length;
+  }
   report.package = { filename: pack.filename, integrity: pack.integrity, shasum: pack.shasum, version: metadata.version };
   report.cli = "version, help, strict protocol-2 evidence, receipt verification, public module import";
   if (process.env.PATCHPROVE_PACKAGE_REPORT) {

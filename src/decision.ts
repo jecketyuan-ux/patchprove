@@ -1,4 +1,5 @@
 import { isOpenGap } from "./accept.js";
+import { isDeepStrictEqual } from "node:util";
 import { newGapsMeetFailOn } from "./baseline.js";
 import { meetsFailOn } from "./risk.js";
 import type { CheckId, Evidence, ExecutionRecord, ResolvedConfig, VerificationDecision } from "./types.js";
@@ -18,7 +19,8 @@ export function evaluateVerification(
   const requiredGates = new Set<CheckId>(evidence.contract.clauses
     .filter((clause) => clause.kind === "required-gate")
     .map((clause) => clause.id.replace(/^required-gate-/, "") as CheckId));
-  const disabled = (id: CheckId) => gates?.[id] === false && !requiredGates.has(id);
+  const projectRequired = new Set(evidence.verificationPlan?.filter((item) => item.required && item.policy?.mode === "required").map((item) => item.checkId));
+  const disabled = (id: CheckId) => gates?.[id] === false && !requiredGates.has(id) && !projectRequired.has(id);
 
   for (const check of evidence.checks) {
     if (check.status === "failed" || check.timedOut) {
@@ -27,6 +29,14 @@ export function evaluateVerification(
     }
   }
   const records = evidence.executionRecords ?? evidence.checks.flatMap((check) => check.records ?? []);
+  const identities = new Map<string, ExecutionRecord>();
+  for (const record of records) {
+    if (identities.has(record.id)) add("execution-identity-duplicate", `Execution identity ${record.id} is repeated`, { checkId: record.checkId });
+    identities.set(record.id, record);
+  }
+  if (evidence.executionRecords) for (const check of evidence.checks) for (const record of check.records ?? []) {
+    if (record.checkId !== check.id || !isDeepStrictEqual(identities.get(record.id), record)) add("execution-facts-conflict", `Execution ${record.id} has inconsistent copies`, { checkId: check.id });
+  }
   for (const record of records) {
     if (record.status === "failed" || record.status === "timed-out" || (record.exitCode !== null && record.exitCode !== 0)) {
       failed = true;
@@ -37,6 +47,11 @@ export function evaluateVerification(
     }
     if (record.status === "passed" && record.exitCode !== 0) {
       add("execution-exit-unproven", `Execution ${record.id} has no successful exit code`, { checkId: record.checkId, scope: record.scope });
+    }
+    if (record.testExecution && !disabled("tests")) {
+      const proof = record.testExecution;
+      if (proof.unknownScope.length) add("test-scope-unknown", proof.reason ?? `Execution ${record.id} could not establish every selected scope`, { checkId: "tests", scope: proof.unknownScope });
+      if (proof.counts.skipped > 0) add("tests-skipped", `Execution ${record.id} skipped ${proof.counts.skipped} selected tests`, { checkId: "tests", scope: proof.skippedScope });
     }
   }
   if (!evidence.contract.passed || evidence.contract.clauses.some((clause) => !clause.passed)) {

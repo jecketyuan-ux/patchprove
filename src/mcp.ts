@@ -33,6 +33,12 @@ const provePatchShape = {
   isolate: z.boolean().optional(),
   timeoutMs: z.number().int().positive().optional(),
   maxOutputBytes: z.number().int().positive().optional(),
+  inputLimits: z.object({
+    maxFileBytes: z.number().int().positive().optional(), maxTotalBytes: z.number().int().positive().optional(),
+    maxFiles: z.number().int().positive().optional(), maxJsonBytes: z.number().int().positive().optional(),
+    maxJsonDepth: z.number().int().positive().optional(), maxJsonNodes: z.number().int().positive().optional(),
+    maxGraphEdges: z.number().int().positive().optional(),
+  }).strict().optional(),
   allowPlugins: z.boolean().optional(),
   strictConfig: z.boolean().optional(),
   adapterInputs: z.array(z.object({ adapter: z.enum(["nx", "turbo", "testmon"]), path: z.string() })).optional(),

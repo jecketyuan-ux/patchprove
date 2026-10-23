@@ -7,17 +7,53 @@ import { describe, expect, it } from "vitest";
 import { publishComment, MARKER } from "../action/post-comment.mjs";
 
 describe("sticky comment publisher", () => {
+  it.each(["attempt", "final-head"])("skips a stale %s immediately before publication", async (scenario) => {
+    const dir = mkdtempSync(path.join(tmpdir(), "patchprove-comment-order-"));
+    const eventPath = path.join(dir, "event.json"), commentFile = path.join(dir, "comment.md"), head = "a".repeat(40);
+    writeFileSync(eventPath, JSON.stringify({ repository: { full_name: "owner/repo" }, workflow_run: { id: 10, run_attempt: 1, head_sha: head, pull_requests: [{ number: 7 }] } }));
+    writeFileSync(commentFile, `${MARKER}\nOld result\n`);
+    const responses = [
+      { state: "open", head: { sha: head } },
+      [{ id: 2, body: `${MARKER}\n<!-- patchprove-run head=${head} run=10 attempt=${scenario === "attempt" ? 2 : 1} -->`, user: { type: "Bot", login: "github-actions[bot]" } }],
+      { state: "open", head: { sha: "b".repeat(40) } },
+    ];
+    const methods: string[] = [];
+    try {
+      const message = await publishComment({ token: "fixture", eventPath, commentFile, fetchImpl: async (_url, options) => {
+        methods.push(options?.method ?? "GET"); return new Response(JSON.stringify(responses.shift()));
+      } });
+      expect(message).toMatch(/Skipping stale/); expect(methods.every((method) => method === "GET")).toBe(true);
+      expect(methods).toHaveLength(scenario === "attempt" ? 2 : 3);
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+  });
+  it("does not let a completed old run overwrite the report for a newer PR head", async () => {
+    const dir = mkdtempSync(path.join(tmpdir(), "patchprove-comment-stale-"));
+    const eventPath = path.join(dir, "event.json"), commentFile = path.join(dir, "comment.md");
+    writeFileSync(eventPath, JSON.stringify({ repository: { full_name: "owner/repo" }, workflow_run: { id: 10, run_attempt: 1, head_sha: "a".repeat(40), pull_requests: [{ number: 7 }] } }));
+    writeFileSync(commentFile, `${MARKER}\nOld success\n`);
+    const methods: string[] = [];
+    try {
+      const message = await publishComment({ token: "fixture", eventPath, commentFile, fetchImpl: async (_url, options) => {
+        methods.push(options?.method ?? "GET");
+        return new Response(JSON.stringify({ state: "open", head: { sha: "b".repeat(40) } }));
+      } });
+      expect(message).toMatch(/stale|head.*changed/i);
+      expect(methods).toEqual(["GET"]);
+    } finally { rmSync(dir, { recursive: true, force: true }); }
+  });
   it("paginates past a spoofed user marker, retries a transient response, and updates only the bot", async () => {
     const dir = mkdtempSync(path.join(tmpdir(), "patchprove-comment-"));
     const eventPath = path.join(dir, "event.json");
     const commentFile = path.join(dir, "comment.md");
-    writeFileSync(eventPath, JSON.stringify({ repository: { full_name: "owner/repo" }, pull_request: { number: 7 } }));
+    writeFileSync(eventPath, JSON.stringify({ repository: { full_name: "owner/repo" }, workflow_run: { id: 10, run_attempt: 1, head_sha: "a".repeat(40), pull_requests: [{ number: 7 }] } }));
     writeFileSync(commentFile, `${MARKER}\n## Report\n`);
     const calls: Array<{ url: string; options: RequestInit }> = [];
     const responses = [
       new Response("busy", { status: 503 }),
+      new Response(JSON.stringify({ state: "open", head: { sha: "a".repeat(40) } })),
       new Response(JSON.stringify([{ id: 1, body: MARKER, user: { login: "github-actions[bot]", type: "User" } }, { id: 3, body: MARKER, user: { login: "other[bot]", type: "Bot" } }]), { headers: { link: '<https://api.github.com/page2>; rel="next"' } }),
       new Response(JSON.stringify([{ id: 2, url: "https://evil.invalid", body: MARKER, user: { login: "github-actions[bot]", type: "Bot" } }])),
+      new Response(JSON.stringify({ state: "open", head: { sha: "a".repeat(40) } })),
       new Response(JSON.stringify({ id: 2 })),
     ];
     try {
@@ -26,9 +62,9 @@ describe("sticky comment publisher", () => {
         return responses.shift()!;
       } });
       expect(message).toBe("Updated sticky comment 2");
-      expect(calls[2]!.url).toContain("page=2");
-      expect(calls[3]!.url).toBe("https://api.github.com/repos/owner/repo/issues/comments/2");
-      expect(calls[3]!.options.method).toBe("PATCH");
+      expect(calls[3]!.url).toContain("page=2");
+      expect(calls[5]!.url).toBe("https://api.github.com/repos/owner/repo/issues/comments/2");
+      expect(calls[5]!.options.method).toBe("PATCH");
     } finally { rmSync(dir, { recursive: true, force: true }); }
   });
 });

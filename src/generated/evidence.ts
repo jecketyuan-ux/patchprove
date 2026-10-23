@@ -1,6 +1,6 @@
 /* This file is generated. Do not edit directly.
  * Source: schema/evidence.schema.json
- * Schema SHA-256: 642bfb95f23165b4bf1352e531f1a7f7a0cb72cd8c9993be3e4a8935d6b23b98
+ * Schema SHA-256: 88274f61ad414e809da042fd9d6d7f4d6355684bd0bd0b0d12d29725318b1c57
  * Compiler: json-schema-to-typescript 16.0.0
  * Regenerate with: npm run generate:protocol
  */
@@ -68,9 +68,34 @@ export type EvidenceWire = {
   verificationPlan?: PlanItem[];
   diagnostics?: Diagnostic[];
   mappingEvidence?: MappingEvidence[];
+  environment?: Environment;
+  projectScopes?: {
+    path: string;
+    applicable: boolean;
+    reason: string;
+  }[];
+  resolutionProvenance?: {
+    parserVersion: "2";
+    inputHash: string;
+    configurations: {
+      path: string;
+      hash: string;
+    }[];
+    resolutions: {
+      from: string;
+      specifier: string;
+      kind: "builtin" | "external" | "internal-resolved" | "internal-unresolved";
+      targets: string[];
+    }[];
+  };
 };
 export type RiskLevel = "low" | "medium" | "high" | "critical";
 export type SummaryRisk = "none" | "low" | "medium" | "high" | "critical";
+export type ProjectGatePolicy = {
+  mode: "required" | "optional" | "not-applicable";
+  reason?: string;
+  expiresAt?: string;
+};
 
 export interface ChangedFile {
   path: string;
@@ -139,6 +164,32 @@ export interface ExecutionRecord {
     inputHash: string;
     snapshotHash?: string;
   };
+  testExecution?: TestExecution;
+  required?: boolean;
+}
+export interface TestExecution {
+  parserVersion: "1";
+  format:
+    "vitest-json" | "jest-json" | "pytest-junit" | "java-junit" | "go-json" | "cargo-harness" | "unavailable";
+  granularity: "file" | "package" | "crate";
+  requestedScope: string[];
+  collectedScope: string[];
+  executedScope: string[];
+  skippedScope: string[];
+  unknownScope: string[];
+  counts: {
+    collected: number;
+    executed: number;
+    passed: number;
+    failed: number;
+    skipped: number;
+  };
+  reportHash?: string;
+  reportPath?: string;
+  reason?: string;
+  sourceFiles?: string[];
+  eligibleSourceFiles?: string[];
+  reportStatus: "validated" | "partial" | "missing" | "invalid" | "truncated";
 }
 export interface Gap {
   id: string;
@@ -279,6 +330,15 @@ export interface EffectivePolicy {
     hash: string;
   };
   hash: string;
+  projects?: {
+    path: string;
+    gates: {
+      typecheck?: ProjectGatePolicy;
+      lint?: ProjectGatePolicy;
+      tests?: ProjectGatePolicy;
+      secrets?: ProjectGatePolicy;
+    };
+  }[];
 }
 export interface Verification {
   status: "passed" | "failed" | "incomplete";
@@ -298,6 +358,44 @@ export interface PlanItem {
   required: boolean;
   reason: string;
   unitId?: string;
+  sourceFiles?: string[];
+  granularity?: "file" | "package" | "crate" | "repository";
+  policy?: {
+    mode: "required" | "optional" | "not-applicable";
+    reason?: string;
+    expiresAt?: string;
+    project: string;
+  };
+}
+export interface Environment {
+  platform: string;
+  arch: string;
+  nodeVersion: string;
+  gitVersion: string;
+  hermetic: false;
+  inputLimits: InputLimits;
+  tools: {
+    name: string;
+    version: string | null;
+    path: string;
+  }[];
+  dependencyLocks: {
+    path: string;
+    hash: string;
+  }[];
+  configurations?: {
+    path: string;
+    hash: string;
+  }[];
+}
+export interface InputLimits {
+  maxFileBytes: number;
+  maxTotalBytes: number;
+  maxFiles: number;
+  maxJsonBytes: number;
+  maxJsonDepth: number;
+  maxJsonNodes: number;
+  maxGraphEdges: number;
 }
 
 /** Required fields derived from the protocol-2 conditional in the JSON schema. */

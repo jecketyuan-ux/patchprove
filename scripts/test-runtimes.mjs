@@ -1,4 +1,5 @@
 #!/usr/bin/env node
+import { validationIdentity } from "./validation-identity.mjs";
 import assert from "node:assert/strict";
 import { realpathSync } from "node:fs";
 import { cp, mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from "node:fs/promises";
@@ -26,7 +27,7 @@ const probes = {
   maven: { command: whichSync("mvn"), args: ["--version"], pattern: /Apache Maven \d/ },
   gradle: { command: whichSync("gradle"), args: ["--version"], pattern: /^Gradle \d/m },
 };
-const report = { schemaVersion: 1, generatedAt: new Date().toISOString(), node: process.version, platform: process.platform, toolchains: {}, cases: [], limitations: ["Minimal local fixtures exercise execution and collection behavior; they do not measure real-world mapping accuracy.", "Durations include local build/tool caches and are not speedup measurements."] };
+const report = { identity: validationIdentity(import.meta.url), schemaVersion: 1, generatedAt: new Date().toISOString(), node: process.version, platform: process.platform, toolchains: {}, cases: [], limitations: ["Minimal local fixtures exercise execution and collection behavior; they do not measure real-world mapping accuracy.", "Durations include local build/tool caches and are not speedup measurements."] };
 let failures = 0;
 async function filesIn(dir, prefix = "") {
   const files = [];

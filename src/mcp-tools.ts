@@ -1,5 +1,5 @@
-import { readFileSync } from "node:fs";
 import path from "node:path";
+import { readJsonInput, withInputBudget } from "./input-budget.js";
 import { isOpenGap } from "./accept.js";
 import { evaluateVerification } from "./decision.js";
 import { validateEvidence } from "./validation.js";
@@ -57,7 +57,7 @@ export function readEvidenceFile(filePath: string): Evidence {
   const resolved = path.resolve(filePath);
   let raw: unknown;
   try {
-    raw = JSON.parse(readFileSync(resolved, "utf8"));
+    raw = readJsonInput(resolved);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(`Cannot read evidence JSON at ${resolved}: ${message}`);
@@ -67,7 +67,7 @@ export function readEvidenceFile(filePath: string): Evidence {
 
 export async function provePatch(input: ProvePatchInput = {}): Promise<ProvePatchResult> {
   const options = runOptionsFromInput(input);
-  const writesRequested = input.out !== undefined || input.sarif !== undefined || input.receipt === true || typeof input.receipt === "string";
+  const writesRequested = input.sign === true || input.out !== undefined || input.sarif !== undefined || input.receipt === true || typeof input.receipt === "string";
   const evidence = writesRequested ? (await analyzeAndWrite(options)).evidence : await analyze(options);
   evidence.verification = evaluateVerification(evidence);
   const failOn = evidence.effectivePolicy?.failOn ?? undefined;
@@ -84,7 +84,7 @@ export async function listGaps(input: ListGapsInput = {}): Promise<ListGapsResul
   let evidence: Evidence;
   let source: "run" | "file";
   if (input.evidencePath) {
-    evidence = readEvidenceFile(input.evidencePath);
+    evidence = withInputBudget({ limits: input.inputLimits }, () => readEvidenceFile(input.evidencePath!));
     source = "file";
   } else {
     const ran = await provePatch(input);

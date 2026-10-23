@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import path from "node:path";
+import { InputBudgetError, parseBoundedJson, readBoundedFile } from "./input-budget.js";
 import { fileURLToPath } from "node:url";
 import type { ImportGraph } from "./graph.js";
 import { mapTestsFromGraph } from "./graph.js";
@@ -143,8 +144,9 @@ function parseIstanbul(raw: Record<string, unknown>, root: string): CoverageInde
 function parseCoverageJson(text: string, root: string): CoverageIndex | null {
   let raw: unknown;
   try {
-    raw = JSON.parse(text) as unknown;
-  } catch {
+    raw = parseBoundedJson(text, "coverage JSON");
+  } catch (error) {
+    if (error instanceof InputBudgetError) throw error;
     return null;
   }
   if (!isPlainObject(raw)) return null;
@@ -193,8 +195,9 @@ export function loadCoverageMap(root: string): CoverageIndex | null {
     if (!existsSync(full)) continue;
     let text: string;
     try {
-      text = readFileSync(full, "utf8");
-    } catch {
+      text = readBoundedFile(full).toString("utf8");
+    } catch (error) {
+      if (error instanceof InputBudgetError) throw error;
       continue;
     }
     const kind = rel.endsWith(".xml") ? "xml" : "json";

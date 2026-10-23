@@ -81,10 +81,57 @@ jobs:
         run: npm run test:corpus
         env:
           PATCHPROVE_CORPUS_REPORT: artifacts/corpus-report.json
+      - name: Installed CLI with original detection and plugins
+        run: npm run test:package
+        env:
+          PATCHPROVE_PRODUCTION_ENGINES: node,python,go,cargo,maven,gradle
+          PATCHPROVE_PRODUCTION_REPORT: artifacts/production-chain.json
+          PATCHPROVE_PACKAGE_REPORT: artifacts/installed-package.json
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:
           name: runtime-corpus-${{ matrix.os }}
+          path: artifacts/*.json
+          if-no-files-found: error
+
+  contracts:
+    name: Resource budgets and pinned upstream contracts
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - name: Prepare explicit pinned contract tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/scanner"
+          curl --fail --location --retry 2 https://github.com/gitleaks/gitleaks/releases/download/v8.24.3/gitleaks_8.24.3_linux_x64.tar.gz --output "$RUNNER_TEMP/scanner/archive.tar.gz"
+          echo "9991e0b2903da4c8f6122b5c3186448b927a5da4deef1fe45271c3793f4ee29c  $RUNNER_TEMP/scanner/archive.tar.gz" | sha256sum --check
+          tar -xzf "$RUNNER_TEMP/scanner/archive.tar.gz" -C "$RUNNER_TEMP/scanner" gitleaks
+          npm install --prefix "$RUNNER_TEMP/upstream" --ignore-scripts --no-audit --no-fund --save-exact turbo@2.5.0
+          echo "GITLEAKS_BIN=$RUNNER_TEMP/scanner/gitleaks" >> "$GITHUB_ENV"
+          echo "TURBO_BIN=$RUNNER_TEMP/upstream/node_modules/.bin/turbo" >> "$GITHUB_ENV"
+      - run: npm run test:resources
+        env:
+          PATCHPROVE_RESOURCE_REPORT: artifacts/resources.json
+      - run: npm run test:gitleaks
+        env:
+          PATCHPROVE_GITLEAKS_REPORT: artifacts/gitleaks.json
+      - run: npm run test:upstream
+        env:
+          PATCHPROVE_UPSTREAM_REPORT: artifacts/upstream.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: resource-upstream-contracts
           path: artifacts/*.json
           if-no-files-found: error
 

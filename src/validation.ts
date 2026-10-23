@@ -1,8 +1,10 @@
 import { readFileSync } from "node:fs";
+import { isDeepStrictEqual } from "node:util";
 import { Ajv, type AnySchema, type ValidateFunction } from "ajv";
 import addFormatsModule from "ajv-formats";
 import type { FormatsPlugin } from "ajv-formats";
 import { maxRisk } from "./risk.js";
+import { evaluateVerification } from "./decision.js";
 import { emptyContractResult } from "./types.js";
 import type { Evidence, EvidenceReceipt } from "./types.js";
 
@@ -103,6 +105,44 @@ export function validateEvidence(value: unknown, source = "evidence"): Evidence 
   unique(evidence.findings, source, "/findings");
   if (evidence.executionRecords) unique(evidence.executionRecords, source, "/executionRecords");
   if (evidence.verificationPlan) unique(evidence.verificationPlan, source, "/verificationPlan");
+  const nestedIds = new Set<string>();
+  const authoritativeRecords = new Map(evidence.executionRecords?.map((item) => [item.id, item]));
+  for (const [checkIndex, check] of evidence.checks.entries()) {
+    for (const [recordIndex, execution] of (check.records ?? []).entries()) {
+      const pointer = `/checks/${checkIndex}/records/${recordIndex}`;
+      if (nestedIds.has(execution.id)) throw new Error(`${source}: ${pointer}/id duplicate identity "${execution.id}"`);
+      nestedIds.add(execution.id);
+      if (execution.checkId !== check.id) throw new Error(`${source}: ${pointer}/checkId does not match its check`);
+      if (evidence.executionRecords) {
+        const authoritative = authoritativeRecords.get(execution.id);
+        if (!authoritative || !isDeepStrictEqual(authoritative, execution)) {
+          throw new Error(`${source}: ${pointer} conflicts with /executionRecords for identity "${execution.id}"`);
+        }
+      }
+      if (check.status === "passed" && (execution.status === "failed" || execution.status === "timed-out" || execution.status === "skipped" && execution.required !== false)) {
+        throw new Error(`${source}: ${pointer}/status contradicts the passed check`);
+      }
+    }
+  }
+  for (const [index, execution] of (evidence.executionRecords ?? evidence.checks.flatMap((check) => check.records ?? [])).entries()) {
+    if (execution.status === "passed" && execution.exitCode !== 0) {
+      throw new Error(`${source}: /executionRecords/${index}/exitCode must be zero for a passed execution`);
+    }
+    const proof = execution.testExecution;
+    if (proof) {
+      const pointer = `/executionRecords/${index}/testExecution`;
+      const counts = proof.counts;
+      if (counts.executed !== counts.passed + counts.failed || counts.collected !== counts.executed + counts.skipped) throw new Error(`${source}: ${pointer}/counts contradicts the observed outcomes`);
+      for (const field of ["requestedScope", "collectedScope", "executedScope", "skippedScope", "unknownScope"] as const) {
+        if (new Set(proof[field]).size !== proof[field].length || field !== "requestedScope" && proof[field].some((item) => !proof.requestedScope.includes(item))) {
+          throw new Error(`${source}: ${pointer}/${field} contains duplicate or unrequested scope`);
+        }
+      }
+      if (execution.scope.some((item) => !proof.executedScope.includes(item) || proof.unknownScope.includes(item))) throw new Error(`${source}: ${pointer}/executedScope does not establish the execution's scope`);
+      if (execution.status === "passed" && counts.executed === 0) throw new Error(`${source}: ${pointer}/counts/executed cannot establish a passed execution`);
+      if (counts.failed > 0 && execution.status !== "failed" && execution.status !== "timed-out") throw new Error(`${source}: ${pointer}/counts/failed contradicts the execution status`);
+    }
+  }
   const counts = {
     checksPassed: evidence.checks.filter((check) => check.status === "passed").length,
     checksFailed: evidence.checks.filter((check) => check.status === "failed").length,
@@ -118,6 +158,11 @@ export function validateEvidence(value: unknown, source = "evidence"): Evidence 
   }
   const risk = maxRisk([...evidence.gaps.filter((gap) => gap.accepted !== true).map((gap) => gap.risk), ...evidence.findings.map((finding) => finding.risk)]);
   if (evidence.summary.risk !== risk) throw new Error(`${source}: /summary/risk does not match detail risk ${risk}`);
+  if (major === 2) {
+    const decision = evaluateVerification(evidence);
+    if (evidence.verification!.status !== decision.status) throw new Error(`${source}: /verification/status contradicts policy, plan, or execution facts (${decision.status})`);
+    if (evidence.verification!.strict !== decision.strict) throw new Error(`${source}: /verification/strict contradicts the effective policy`);
+  }
   return evidence;
 }
 

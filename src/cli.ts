@@ -2,6 +2,7 @@
 import { Command } from "commander";
 import { verifyArtifactSet } from "./artifacts.js";
 import path from "node:path";
+import { resolveInputLimits, type InputLimits } from "./input-budget.js";
 import { DEFAULT_BASELINE_REL, writeBaseline } from "./baseline.js";
 import { isCheckId } from "./config.js";
 import { executeHook, isHookAdapter, isHookEvent } from "./hook.js";
@@ -41,6 +42,13 @@ function addPipelineOptions(cmd: Command): Command {
     .option("--isolate", "Use an isolated snapshot for a --base/--head range (the default)")
     .option("--timeout-ms <ms>", "Total execution budget in milliseconds")
     .option("--max-output-bytes <bytes>", "Maximum captured tool output")
+    .option("--max-input-file-bytes <bytes>", "Maximum bytes per input file (default 33554432)")
+    .option("--max-input-total-bytes <bytes>", "Maximum distinct input bytes (default 268435456)")
+    .option("--max-input-files <count>", "Maximum distinct input files (default 50000)")
+    .option("--max-json-bytes <bytes>", "Maximum bytes per JSON input (default 8388608)")
+    .option("--max-json-depth <count>", "Maximum JSON nesting depth (default 64)")
+    .option("--max-json-nodes <count>", "Maximum JSON structure budget (default 200000)")
+    .option("--max-graph-edges <count>", "Maximum test/source relationships (default 500000)")
     .option("--allow-plugins", "Allow explicitly configured local plugins")
     .option("--strict-config", "Treat configuration diagnostics as errors")
     .option("--adapter-input <kind:path>", "Import nx, turbo, or testmon execution evidence (repeatable)", collect, [] as string[]);
@@ -97,7 +105,19 @@ function parsePipelineOpts(opts: PipelineCliOptions): Omit<RunOptions, "json" | 
     }
     adapterInputs.push({ adapter: adapter as "nx" | "turbo" | "testmon", path: file });
   }
-  const { protocol, timeoutMs, maxOutputBytes, disableGate, adapterInput, ...rest } = opts;
+  const limitFields = { maxFileBytes: "maxInputFileBytes", maxTotalBytes: "maxInputTotalBytes", maxFiles: "maxInputFiles", maxJsonBytes: "maxJsonBytes", maxJsonDepth: "maxJsonDepth", maxJsonNodes: "maxJsonNodes", maxGraphEdges: "maxGraphEdges" } as const;
+  const inputLimits: InputLimits = {};
+  const remaining = { ...opts };
+  for (const [key, field] of Object.entries(limitFields) as Array<[keyof InputLimits, string]>) {
+    const raw = opts[field];
+    if (raw !== undefined) {
+      if (typeof raw !== "string" || !/^\d+$/.test(raw)) return invalid(`${field} must be a positive integer`);
+      inputLimits[key] = Number(raw);
+    }
+    delete remaining[field];
+  }
+  try { resolveInputLimits(inputLimits); } catch (error) { return invalid(error instanceof Error ? error.message : String(error)); }
+  const { protocol, timeoutMs, maxOutputBytes, disableGate, adapterInput, ...rest } = remaining;
   return {
     ...rest,
     cwd: opts.cwd,
@@ -107,6 +127,7 @@ function parsePipelineOpts(opts: PipelineCliOptions): Omit<RunOptions, "json" | 
     protocol: protocol === undefined ? undefined : Number(protocol) as 1 | 2,
     timeoutMs: timeoutMs === undefined ? undefined : Number(timeoutMs),
     maxOutputBytes: maxOutputBytes === undefined ? undefined : Number(maxOutputBytes),
+    ...(Object.keys(inputLimits).length ? { inputLimits } : {}),
     adapterInputs,
   } as Omit<RunOptions, "json" | "format" | "out"> & { out?: string };
 }

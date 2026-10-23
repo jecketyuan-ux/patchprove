@@ -1,5 +1,6 @@
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { readBoundedFile, parseBoundedJson } from "./input-budget.js";
 import { isOpenGap } from "./accept.js";
 import { riskRank } from "./risk.js";
 import { gapFingerprint, findingFingerprint } from "./fingerprint.js";
@@ -135,8 +136,8 @@ export function loadBaselineInput(filePath: string): { evidence: Evidence; ident
   let raw: unknown;
   let text: string;
   try {
-    text = readFileSync(resolved, "utf8");
-    raw = JSON.parse(text);
+    text = readBoundedFile(resolved).toString("utf8");
+    raw = parseBoundedJson(text, resolved);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(`Cannot read baseline evidence JSON at ${resolved}: ${message}`);

@@ -46,3 +46,5 @@ patchprove run --allow-plugins
 Impact and contracts consume the same classified source results, so an external extension cannot bypass a required mapped-test clause merely because built-ins do not recognize it. Coverage/graph/naming relationships remain selection evidence rather than branch/assertion proof.
 
 Accepting a gap never removes findings. An auth/crypto path finding can keep residual risk high even when its tests execute and all mapping gaps are accepted. Use a considered risk/contract policy rather than assuming `acceptGaps` overrides findings.
+
+New plugins should declare `capabilities: { contractVersion: 1, testedRunners: ["runner@version"], granularity: "file", reportFormats: ["vitest-json"], unknownResult: "incomplete" }`. A `testCommand` may supply `reportFormat` for the supported fresh-report interfaces (`vitest-json`, `jest-json`, `pytest-junit`). An unsupported/missing report adapter keeps execution unproven even if console output or exit zero looks successful. This contract does not grant local-plugin trust or OS isolation.

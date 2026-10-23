@@ -22,9 +22,9 @@ inputs:
     required: false
     default: "${{ github.token }}"
   comment:
-    description: "Publish a sticky PR comment. Use false in a read-only analysis workflow."
+    description: "Experimental sticky PR comment. Requires write permission and per-PR publisher concurrency."
     required: false
-    default: "true"
+    default: "false"
   out:
     description: "Evidence JSON output path, relative to cwd."
     required: false
@@ -81,6 +81,34 @@ inputs:
     description: "Maximum captured tool output."
     required: false
     default: ""
+  max-input-file-bytes:
+    description: "Input resource budget; empty uses the CLI default."
+    required: false
+    default: ""
+  max-input-total-bytes:
+    description: "Input resource budget; empty uses the CLI default."
+    required: false
+    default: ""
+  max-input-files:
+    description: "Input resource budget; empty uses the CLI default."
+    required: false
+    default: ""
+  max-json-bytes:
+    description: "Input resource budget; empty uses the CLI default."
+    required: false
+    default: ""
+  max-json-depth:
+    description: "Input resource budget; empty uses the CLI default."
+    required: false
+    default: ""
+  max-json-nodes:
+    description: "Input resource budget; empty uses the CLI default."
+    required: false
+    default: ""
+  max-graph-edges:
+    description: "Input resource budget; empty uses the CLI default."
+    required: false
+    default: ""
   allow-plugins:
     description: "Allow configured local plugins."
     required: false
@@ -129,7 +157,7 @@ runs:
     - name: Setup Node
       uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
       with:
-        node-version: "20"
+        node-version: "22"
     - name: Build patchprove from action repo
       shell: bash
       env:
@@ -162,6 +190,13 @@ runs:
         INPUT_ISOLATE: ${{ inputs.isolate }}
         INPUT_TIMEOUT_MS: ${{ inputs.timeout-ms }}
         INPUT_MAX_OUTPUT_BYTES: ${{ inputs.max-output-bytes }}
+        INPUT_MAX_INPUT_FILE_BYTES: ${{ inputs.max-input-file-bytes }}
+        INPUT_MAX_INPUT_TOTAL_BYTES: ${{ inputs.max-input-total-bytes }}
+        INPUT_MAX_INPUT_FILES: ${{ inputs.max-input-files }}
+        INPUT_MAX_JSON_BYTES: ${{ inputs.max-json-bytes }}
+        INPUT_MAX_JSON_DEPTH: ${{ inputs.max-json-depth }}
+        INPUT_MAX_JSON_NODES: ${{ inputs.max-json-nodes }}
+        INPUT_MAX_GRAPH_EDGES: ${{ inputs.max-graph-edges }}
         INPUT_ALLOW_PLUGINS: ${{ inputs.allow-plugins }}
         INPUT_STRICT_CONFIG: ${{ inputs.strict-config }}
         INPUT_ADAPTER_INPUT: ${{ inputs.adapter-input }}

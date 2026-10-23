@@ -1,9 +1,19 @@
-import type { CheckResult, DetectedTools, Language } from "../types.js";
+import type { CheckResult, DetectedTools, Diagnostic, Language, TestExecution } from "../types.js";
+
+export interface PluginCapabilities {
+  contractVersion: 1;
+  testedRunners: string[];
+  granularity: TestExecution["granularity"];
+  reportFormats: TestExecution["format"][];
+  unknownResult: "incomplete";
+}
 
 export interface PluginTestCommand {
   name: string;
   command: string;
   args: string[];
+  /** Supported fresh machine-report interface for an external runner plugin. */
+  reportFormat?: "vitest-json" | "jest-json" | "pytest-junit";
 }
 
 /**
@@ -28,12 +38,16 @@ export interface PluginContext {
  */
 export interface LanguagePlugin {
   id: string;
+  capabilities?: PluginCapabilities;
   languages: Language[];
   extensions: string[];
   isTestFile(rel: string, ctx?: PluginContext): boolean;
   testCandidates(rel: string, ctx?: PluginContext): string[];
   /** Unresolved import specifiers (module strings as they appear in source). */
   parseImports?(sourceText: string, rel: string): string[];
+  /** Classify unresolved specifiers without treating built-ins as missing code. */
+  classifyImport?(fromFile: string, specifier: string, ctx?: PluginContext): "internal" | "external" | "builtin";
+  configurationDiagnostics?(ctx: PluginContext): Diagnostic[];
   resolveImport?(
     fromFile: string,
     specifier: string,
@@ -73,6 +87,12 @@ export function uniqueSorted(values: Iterable<string>): string[] {
 export function isLanguagePlugin(value: unknown): value is LanguagePlugin {
   if (!value || typeof value !== "object") return false;
   const rec = value as Record<string, unknown>;
+  if (rec.capabilities !== undefined) {
+    const item = rec.capabilities as Partial<PluginCapabilities> | null;
+    if (!item || typeof item !== "object" || item.contractVersion !== 1 || item.unknownResult !== "incomplete" ||
+      !["file", "package", "crate"].includes(item.granularity ?? "") || !Array.isArray(item.testedRunners) || !item.testedRunners.every((name) => typeof name === "string" && name.length > 0) ||
+      !Array.isArray(item.reportFormats) || !item.reportFormats.every((format) => ["vitest-json", "jest-json", "pytest-junit", "java-junit", "go-json", "cargo-harness", "unavailable"].includes(format))) return false;
+  }
   return (
     typeof rec.id === "string" &&
     rec.id.trim().length > 0 &&

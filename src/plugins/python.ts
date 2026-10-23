@@ -127,6 +127,7 @@ export function resolvePyImport(
 
 export const pythonPlugin: LanguagePlugin = {
   id: "python",
+  capabilities: { contractVersion: 1, testedRunners: ["pytest@8.3.5"], granularity: "file", reportFormats: ["pytest-junit"], unknownResult: "incomplete" },
   languages: ["python"],
   extensions: [".py"],
   isTestFile: isPyTestFile,

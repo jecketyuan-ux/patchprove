@@ -1,4 +1,5 @@
-import { existsSync, readFileSync, readdirSync, realpathSync, symlinkSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, realpathSync, statSync, symlinkSync } from "node:fs";
+import { createHash } from "node:crypto";
 import path from "node:path";
 import { loadAdapterEvidence } from "./adapters.js";
 import { writeArtifactSet, writeJsonAtomic } from "./artifacts.js";
@@ -7,6 +8,8 @@ import { resolveConfig } from "./config.js";
 import { loadCoverageMap } from "./coverage.js";
 import { evaluateVerification } from "./decision.js";
 import { detectTools } from "./detect.js";
+import { readBoundedFile, readJsonInput, resolveInputLimits, stringifyBoundedJson, withInputBudget } from "./input-budget.js";
+import { configuredToolUnits, testExecutionUnits, type TestUnit, type ToolUnit } from "./execution-units.js";
 import { buildEvidence, buildImpact, collectGaps, failedCheckFindings, filterIgnored, pathFindings } from "./evidence.js";
 import { gapFingerprint, findingFingerprint } from "./fingerprint.js";
 import { runAffectedTests, runLint, runSecretScan, runTypecheck } from "./gates.js";
@@ -14,14 +17,14 @@ import { collectGitSnapshot, type DiffFile } from "./git.js";
 import { buildImportGraph } from "./graph.js";
 import { canonicalPathParent } from "./paths.js";
 import { createPluginContext, resolveLanguagePlugins } from "./plugins/index.js";
-import { attachReceiptRef, buildReceipt, defaultReceiptPath, findPreviousReceiptHash, hashCanonical } from "./receipt.js";
+import { attachReceiptRef, buildReceipt, defaultReceiptPath, findPreviousReceiptHash, hashCanonical, parseSigningKey } from "./receipt.js";
 import { formatHumanReport, formatMarkdownReport } from "./report.js";
 import { meetsFailOn } from "./risk.js";
 import { toSarif } from "./sarif.js";
 import { captureSnapshotIdentity, checkedGit, createExecutionSnapshot, listVersionedFiles, readVersionedFile, repositoryRoot, withGitExecutionBudget } from "./snapshot.js";
 import { evaluateContract, loadContract } from "./spec.js";
 import { COMPAT_SCHEMA_VERSION, SCHEMA_VERSION, TOOL_VERSION } from "./types.js";
-import type { DetectedTools, EffectivePolicy, Evidence, ExecutionRecord, FailOnOutcomeReason, PatchproveContract, ResolvedConfig, RunOptions, VerificationPlanItem } from "./types.js";
+import type { DetectedTools, EffectivePolicy, Evidence, ExecutionRecord, FailOnOutcomeReason, PatchproveContract, ProjectGatePolicy, ResolvedConfig, RunOptions, VerificationPlanItem } from "./types.js";
 import { validateEvidence } from "./validation.js";
 
 let retainedSigningKey: string | undefined;
@@ -31,10 +34,19 @@ function retainSigningKey(): string | undefined {
   return retainedSigningKey;
 }
 
+/** Validate the caller's artifact intent before any target-controlled work. */
+export function validateArtifactOptions(options: Pick<RunOptions, "sign" | "receipt" | "protocol">, signingKey?: string | null): void {
+  if (!options.sign) return;
+  if (options.receipt === false) throw new Error("Signing requires a receipt; sign:true conflicts with receipt:false");
+  if ((options.protocol ?? 2) === 2 && !parseSigningKey(signingKey ?? process.env.PATCHPROVE_SIGNING_KEY)) {
+    throw new Error("Signing was required but no signing key was provided");
+  }
+}
+
 export function hydrateUntrackedPatches(root: string, files: DiffFile[]): DiffFile[] {
   return files.map((file) => {
     if (file.patch || file.status === "deleted" || !["untracked", "added"].includes(file.status)) return file;
-    const content = readFileSync(path.join(root, file.path), "utf8");
+    const content = readBoundedFile(path.join(root, file.path)).toString("utf8");
     const lines = content.split("\n");
     return { ...file, patch: [`diff --git a/${file.path} b/${file.path}`, "--- /dev/null", `+++ b/${file.path}`, `@@ -0,0 +1,${lines.length} @@`, ...lines.map((line) => `+${line}`)].join("\n"), additions: lines.length };
   });
@@ -89,7 +101,7 @@ function assertArtifactDestinations(outputs: string[]): void {
     }
     if (!existsSync(output)) continue;
     let value: Record<string, unknown> | undefined;
-    try { value = JSON.parse(readFileSync(output, "utf8")) as Record<string, unknown>; } catch { /* An existing unrelated file is an input. */ }
+    try { value = readJsonInput(output) as Record<string, unknown>; } catch { /* An existing unrelated file is an input. */ }
     if (!value || typeof value !== "object" || Array.isArray(value) ||
         !(Array.isArray(value.checks) && (Array.isArray(value.gaps) || typeof value.contentHash === "string") || Array.isArray(value.runs) && value.version === "2.1.0" || Array.isArray(value.artifacts) && typeof value.runId === "string")) {
       throw new Error(`Artifact destination already contains an unrelated input: ${output}`);
@@ -97,7 +109,7 @@ function assertArtifactDestinations(outputs: string[]): void {
   }
 }
 function fileIdentity(file: string | null): { path: string; hash: string } | null {
-  return file ? { path: file, hash: hashCanonical(readFileSync(file, "utf8")) } : null;
+  return file ? { path: file, hash: hashCanonical(readBoundedFile(file).toString("utf8")) } : null;
 }
 function policyFor(config: ResolvedConfig, protocol: 1 | 2, contract: PatchproveContract | null, baseline: { path: string; hash: string } | null): EffectivePolicy {
   const spec = contract?.inputIdentities?.[0] ?? fileIdentity(contract?.sourcePath ?? null);
@@ -106,7 +118,7 @@ function policyFor(config: ResolvedConfig, protocol: 1 | 2, contract: Patchprove
     failOn: config.failOn ?? null, failOnNewGaps: config.failOnNewGaps ?? null,
     gates: config.gates, ignorePaths: config.ignorePaths, acceptGaps: config.acceptGaps, plugins: config.plugins,
     config: config.sourcePath ? { path: config.sourcePath, hash: config.sourceHash ?? fileIdentity(config.sourcePath)!.hash } : null,
-    spec: spec && specInputs ? { ...spec, inputs: specInputs } : spec, baseline, hash: "" };
+    spec: spec && specInputs ? { ...spec, inputs: specInputs } : spec, baseline, hash: "", ...(config.projects ? { projects: config.projects } : {}) };
   const { baseline: _baseline, hash: _hash, ...effective } = policy;
   policy.hash = hashCanonical(effective);
   return policy;
@@ -119,15 +131,14 @@ function portablePolicy(policy: EffectivePolicy, executionRoot: string, sourceRo
   result.hash = hashCanonical(effective);
   return result;
 }
-function planFor(tools: DetectedTools, config: ResolvedConfig, tests: string[], changed: string[]): VerificationPlanItem[] {
-  const plan: VerificationPlanItem[] = [];
-  for (const [tool, configured] of [["tsc", tools.typescript || Boolean(tools.tscBin)], ["pyright", tools.pyright || Boolean(tools.pyrightBin)], ["mypy", tools.mypy || Boolean(tools.mypyBin)]] as const) {
-    if (configured && config.gates.typecheck) plan.push({ id: `plan:typecheck:${tool}`, unitId: `typecheck:${tool}`, checkId: "typecheck", scope: ["."], required: true, reason: `${tool} is configured` });
+function planFor(config: ResolvedConfig, tools: ToolUnit[], units: TestUnit[], tests: string[], changed: string[]): VerificationPlanItem[] {
+  const plan: VerificationPlanItem[] = tools.map((unit) => ({ id: `plan:${unit.id}`, unitId: unit.id, checkId: unit.checkId, scope: unit.scope, required: unit.required, reason: unit.reason, granularity: "repository", ...(unit.policy ? { policy: unit.policy } : {}) }));
+  {
+    for (const unit of units) plan.push({ id: `plan:${unit.id}`, unitId: unit.id, checkId: "tests", scope: unit.scope, sourceFiles: unit.sourceFiles, granularity: unit.granularity, required: unit.required,
+      reason: unit.inactiveReason ?? `Selected ${unit.plugin.id} ${unit.granularity} unit`, ...(unit.policy ? { policy: unit.policy } : {}) });
+    const unsupported = tests.filter((file) => !units.some((unit) => unit.sourceFiles.includes(file)));
+    if (unsupported.length && config.gates.tests) plan.push({ id: "plan:tests:unsupported", checkId: "tests", scope: unsupported, required: true, reason: "Selected tests have no supported execution unit" });
   }
-  for (const [tool, configured] of [["eslint", tools.eslint || Boolean(tools.eslintBin)], ["ruff", tools.ruff || Boolean(tools.ruffBin)]] as const) {
-    if (configured && config.gates.lint) plan.push({ id: `plan:lint:${tool}`, unitId: `lint:${tool}`, checkId: "lint", scope: ["."], required: true, reason: `${tool} is configured` });
-  }
-  if (tests.length && config.gates.tests) plan.push({ id: "plan:tests", checkId: "tests", scope: tests, required: true, reason: "Changed tests and conservative dependency selection" });
   if (changed.length && config.gates.secrets) plan.push({ id: "plan:secrets", checkId: "secrets", scope: changed, required: true, reason: "All selected added lines must be scanned" });
   return plan;
 }
@@ -146,7 +157,7 @@ async function provisionMatchingNodeDependencies(source: string, target: string,
     const targetFile = path.join(target, file);
     const sourceFile = path.join(source, file);
     if (existsSync(sourceFile) !== existsSync(targetFile)) return false;
-    if (existsSync(sourceFile) && !readFileSync(sourceFile).equals(readFileSync(targetFile))) return false;
+    if (existsSync(sourceFile) && !readBoundedFile(sourceFile).equals(readBoundedFile(targetFile))) return false;
   }
   // npm/pnpm workspace links can resolve into the live checkout even when the
   // package manifests match. Such links would escape the isolated code tree.
@@ -181,12 +192,16 @@ export async function analyze(options: RunOptions): Promise<Evidence> {
   const protocol = options.protocol ?? 2;
   const timeout = options.timeoutMs ?? 180_000;
   if (!Number.isSafeInteger(timeout) || timeout < 1) throw new Error("timeoutMs must be a positive integer");
+  const limitsInput = resolveInputLimits(options.inputLimits);
   const controller = new AbortController();
+  const cancel = () => controller.abort(options.signal?.reason);
+  options.signal?.addEventListener("abort", cancel, { once: true });
+  if (options.signal?.aborted) cancel();
   const deadlineAt = Date.now() + timeout;
   const deadline = setTimeout(() => controller.abort(), timeout);
   let execution: Awaited<ReturnType<typeof createExecutionSnapshot>> | undefined;
   let reusedDependencies = false;
-  return withGitExecutionBudget({ signal: controller.signal, deadline: deadlineAt }, async () => {
+  return withInputBudget({ limits: limitsInput, signal: controller.signal, deadline: deadlineAt }, () => withGitExecutionBudget({ signal: controller.signal, deadline: deadlineAt }, async () => {
   try {
     const sourceRoot = await repositoryRoot(path.resolve(options.cwd));
     if ((options.base !== undefined || options.head !== undefined) && options.isolate !== false) {
@@ -246,14 +261,102 @@ export async function analyze(options: RunOptions): Promise<Evidence> {
     }
     const impact = buildImpact(files, existing, { ignorePaths: config.ignorePaths, coverage, graph, plugins, pluginContext: context, baseGraph, basePluginContext: baseContext });
     const tools = detectTools(root, { deadlineAt, signal: controller.signal });
+    const environment = {
+      platform: process.platform, arch: process.arch, nodeVersion: process.version,
+      gitVersion: (await checkedGit(root, ["--version"])).trim(),
+      tools: Object.entries(tools).filter(([name, value]) => name.endsWith("Bin") && typeof value === "string").map(([field, value]) => {
+        const name = field.slice(0, -3);
+        return { name, version: tools.versions?.[name === "maven" ? "mvn" : name] ?? null, path: realpathSync.native(value as string) };
+      }).sort((a, b) => a.name.localeCompare(b.name)),
+      dependencyLocks: [...existing].filter((file) => /(^|\/)(?:package-lock\.json|npm-shrinkwrap\.json|pnpm-lock\.yaml|yarn\.lock|bun\.lockb?|Cargo\.lock|go\.sum|poetry\.lock|uv\.lock|Pipfile\.lock)$/.test(file))
+        .sort().map((file) => ({ path: file, hash: createHash("sha256").update(readBoundedFile(path.join(root, file))).digest("hex") })),
+      inputLimits: limitsInput, hermetic: false as const,
+      configurations: [...existing].filter((file) => /(^|\/)(?:[tj]sconfig[^/]*\.json|package\.json|(?:vitest|vite|jest|eslint)\.config\.[^/]+|\.eslintrc[^/]*|pytest\.ini|pyproject\.toml|conftest\.py|setup\.cfg|tox\.ini|\.gitleaks(?:\.toml|ignore)|gitleaks\.toml|Cargo\.toml|go\.(?:mod|work)|pom\.xml|(?:build|settings)\.gradle(?:\.kts)?|gradle\.properties)$/.test(file))
+        .sort().map((file) => ({ path: file, hash: createHash("sha256").update(readBoundedFile(path.join(root, file))).digest("hex") })),
+    };
     const selected = [...new Set(impact.mappedTests.flatMap((mapped) => mapped.tests))].sort();
-    const plan = planFor(tools, config, selected, files.map((file) => file.path));
+    const toolUnits: ToolUnit[] = [];
+    const projectContexts: Array<{ path: string; cwd: string; tools: DetectedTools; context: ReturnType<typeof createPluginContext>; gates: Partial<Record<"typecheck" | "lint" | "tests" | "secrets", ProjectGatePolicy>> }> = [];
+    const projectScopes: NonNullable<Evidence["projectScopes"]> = [];
+    if (!config.projects?.some((project) => project.path === ".")) {
+      toolUnits.push(...configuredToolUnits(root, "typecheck", tools, config.gates.typecheck), ...configuredToolUnits(root, "lint", tools, config.gates.lint));
+    }
+    const inside = (file: string, directory: string) => directory === "." || file === directory || file.startsWith(`${directory}/`);
+    for (const project of config.projects ?? []) {
+      const requestedDirectory = path.resolve(root, project.path);
+      const directory = realpathSync.native(requestedDirectory);
+      const relative = path.relative(realpathSync.native(root), directory);
+      if (!statSync(directory).isDirectory() || relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) throw new Error(`Project directory must stay inside the repository: ${project.path}`);
+      const policyPath = config.sourcePath ? path.relative(root, config.sourcePath).split(path.sep).join("/") : null;
+      const applicable = [...files.map((file) => file.path), ...selected].some((file) => inside(file, project.path)) || files.some((file) => file.path === policyPath);
+      projectScopes.push({ path: project.path, applicable, reason: applicable ? "Changed paths, selected tests, or repository policy affect this project" : "No changed paths or selected tests in this project" });
+      if (!applicable) continue;
+      const detected = detectTools(directory, { deadlineAt, signal: controller.signal });
+      detected.versions = { ...detected.versions };
+      for (const [flag, binary, version] of [["typescript", "tscBin", "tsc"], ["eslint", "eslintBin", "eslint"], ["pyright", "pyrightBin", "pyright"], ["mypy", "mypyBin", "mypy"], ["ruff", "ruffBin", "ruff"], ["vitest", "vitestBin", "vitest"], ["jest", "jestBin", "jest"]] as const) {
+        if (detected[flag] && !detected[binary] && tools[binary]) { detected[binary] = tools[binary]; if (tools.versions?.[version]) detected.versions[version] = tools.versions[version]; }
+      }
+      if (!detected.vitest && !detected.jest) {
+        if (tools.vitestBin) { detected.vitest = true; detected.vitestBin = tools.vitestBin; if (tools.versions?.vitest) detected.versions.vitest = tools.versions.vitest; }
+        else if (tools.jestBin) { detected.jest = true; detected.jestBin = tools.jestBin; if (tools.versions?.jest) detected.versions.jest = tools.versions.jest; }
+      }
+      const gates = Object.fromEntries(Object.entries(project.gates).map(([gate, declared]) => {
+        const expiresAt = declared.expiresAt === undefined ? Infinity : Date.parse(declared.expiresAt) + (declared.expiresAt.includes("T") ? 0 : 86_400_000);
+        return [gate, expiresAt <= Date.now() ? { ...declared, mode: "required", reason: `Previous ${gate} policy expired: ${declared.expiresAt}` } : declared];
+      })) as typeof project.gates;
+      const localFiles = new Set([...existing].filter((file) => inside(file, project.path)).map((file) => project.path === "." ? file : file.slice(project.path.length + 1)));
+      projectContexts.push({ path: project.path, cwd: directory, tools: detected, context: createPluginContext(directory, localFiles), gates });
+      for (const gate of ["typecheck", "lint"] as const) {
+        const projectPolicy = gates[gate] ?? { mode: "optional" as const };
+        toolUnits.push(...configuredToolUnits(directory, gate, detected, config.gates[gate], { path: project.path, policy: projectPolicy }));
+      }
+      environment.tools.push(...Object.entries(detected).filter(([name, value]) => name.endsWith("Bin") && typeof value === "string").map(([name, value]) => ({ name: `${project.path}:${name.slice(0, -3)}`, version: detected.versions?.[name.slice(0, -3) === "maven" ? "mvn" : name.slice(0, -3)] ?? null, path: realpathSync.native(value as string) })));
+    }
+    const testUnits: TestUnit[] = [];
+    const owner = (file: string) => projectContexts.filter((project) => inside(file, project.path)).sort((a, b) => b.path.length - a.path.length)[0];
+    const rootFiles = selected.filter((file) => !owner(file));
+    testUnits.push(...testExecutionUnits(rootFiles, plugins, context).map((unit) => config.gates.tests ? unit : { ...unit, required: false, inactiveReason: "Disabled by config (gates.tests: false)" }));
+    for (const project of projectContexts) {
+      const declared = project.gates.tests ?? { mode: "optional" as const };
+      let projectTests = selected.filter((file) => owner(file) === project);
+      if (!projectTests.length && declared.mode === "required") {
+        projectTests = [...existing].filter((file) => owner(file) === project && plugins.some((plugin) => plugin.isTestFile(file, context)));
+      }
+      const prefix = project.path === "." ? "" : `${project.path}/`;
+      const scoped = testExecutionUnits(projectTests.map((file) => prefix ? file.slice(prefix.length) : file), plugins, project.context);
+      const required = declared.mode === "required" || config.gates.tests && declared.mode !== "not-applicable";
+      const inactiveReason = declared.mode === "not-applicable" ? `Not applicable: ${declared.reason}` : !required ? "Disabled by config (gates.tests: false)" : undefined;
+      for (const unit of scoped) {
+        testUnits.push({ ...unit, id: `${unit.id}:project:${project.path}`, sourceFiles: unit.sourceFiles.map((file) => `${prefix}${file}`),
+          scope: unit.granularity === "file" ? unit.scope.map((file) => `${prefix}${file}`) : unit.scope.map((item) => `${item.slice(0, item.indexOf(":") + 1)}${path.posix.join(project.path, item.slice(item.indexOf(":") + 1))}`),
+          tools: project.tools, required, inactiveReason, policy: { ...declared, project: project.path } });
+      }
+      if (!scoped.length && project.gates.tests) {
+        testUnits.push({ id: `tests:unconfigured:project:${project.path}`, plugin: { id: "unconfigured", languages: [], extensions: [], isTestFile: () => false, testCandidates: () => [] },
+          sourceFiles: [], commandFiles: [], scope: [project.path], granularity: "file", cwd: project.cwd, required, policy: { ...declared, project: project.path },
+          inactiveReason: inactiveReason ?? "Required tests have no known execution scopes" });
+      }
+    }
+    const secretProjects = projectContexts.filter((project) => project.gates.secrets?.mode === "required");
+    const secretFiles = (config.gates.secrets ? files : files.filter((file) => secretProjects.some((project) => inside(file.path, project.path))))
+      .filter((file) => owner(file.path)?.gates.secrets?.mode !== "not-applicable");
+    const plan = planFor(config, toolUnits, testUnits, selected, secretFiles.map((file) => file.path));
+    if (!config.gates.secrets) for (const project of secretProjects) {
+      const scope = secretFiles.filter((file) => inside(file.path, project.path)).map((file) => file.path);
+      if (scope.length) plan.push({ id: `plan:secrets:project:${project.path}`, checkId: "secrets", scope, required: true, reason: "Project requires scanning selected added lines", policy: { ...project.gates.secrets!, project: project.path } });
+    }
     const limits = { timeoutMs: timeout, maxOutputBytes: options.maxOutputBytes ?? 1024 * 1024, signal: controller.signal };
     const [typecheck, lint, tests, secretScan] = await Promise.all([
-      runTypecheck(root, tools, config.gates.typecheck, limits), runLint(root, tools, config.gates.lint, limits),
-      runAffectedTests(root, tools, selected, config.gates.tests, plugins, context, limits),
-      runSecretScan(root, tools, files, gitSnapshot.range, config.gates.secrets, limits),
+      runTypecheck(root, tools, config.gates.typecheck, limits, toolUnits.filter((unit) => unit.checkId === "typecheck")), runLint(root, tools, config.gates.lint, limits, toolUnits.filter((unit) => unit.checkId === "lint")),
+      runAffectedTests(root, tools, selected, config.gates.tests, plugins, context, limits, testUnits),
+      runSecretScan(root, tools, secretFiles, gitSnapshot.range, config.gates.secrets || secretProjects.length > 0, limits),
     ]);
+    for (const project of projectContexts.filter((project) => project.gates.secrets?.mode === "not-applicable")) {
+      const id = `secrets:project:${project.path}:not-applicable`, reason = `Not applicable: ${project.gates.secrets!.reason}`;
+      const record: ExecutionRecord = { id, checkId: "secrets", scope: [project.path], cwd: project.cwd, status: "not-applicable", required: false, reason, command: null, args: [], exitCode: null, durationMs: 0 };
+      secretScan.check.records = [...(secretScan.check.records ?? []), record];
+      plan.push({ id: `plan:${id}`, unitId: id, checkId: "secrets", scope: record.scope, required: false, reason, policy: { ...project.gates.secrets!, project: project.path } });
+    }
     const after = await (async () => {
       try { return await captureSnapshotIdentity(root, snapshotOptions); }
       catch (error) {
@@ -270,7 +373,7 @@ export async function analyze(options: RunOptions): Promise<Evidence> {
     evidence = { ...evidence, schemaVersion: protocol === 1 ? COMPAT_SCHEMA_VERSION : SCHEMA_VERSION, toolVersion: TOOL_VERSION,
       snapshot: { ...before, consistent: before.consistent && after.consistent && before.contentHash === after.contentHash,
         ...((before.contentHash !== after.contentHash || !after.consistent) ? { reason: "Verification inputs changed during execution" } : {}) },
-      executionRecords: records, verificationPlan: plan, effectivePolicy: policy,
+      executionRecords: records, verificationPlan: plan, effectivePolicy: policy, environment, resolutionProvenance: graph.provenance, ...(config.projects ? { projectScopes } : {}),
       diagnostics: [...(evidence.diagnostics ?? []), ...(config.diagnostics ?? []), ...adapters.diagnostics,
         ...(!allowPlugins && hasPlugins ? [{ code: "plugins-not-authorized", message: "Local plugins were not executed; use --allow-plugins only for trusted repository code", severity: "error" as const }] : []),
         ...(reusedDependencies ? [{ code: "dependencies-reused", message: "Reused local node_modules after matching all discovered dependency manifests; installed dependency bytes are not a hermetic environment", severity: "warning" as const }] : []),
@@ -288,9 +391,10 @@ export async function analyze(options: RunOptions): Promise<Evidence> {
     return validateEvidence(evidence, "generated evidence");
   } finally {
     clearTimeout(deadline);
+    options.signal?.removeEventListener("abort", cancel);
     if (execution) await execution.cleanup();
   }
-  });
+  }));
 }
 
 export function writeEvidence(outPath: string, evidence: Evidence): string { return writeJsonAtomic(outPath, evidence); }
@@ -300,18 +404,20 @@ export function render(evidence: Evidence, format: RunOptions["format"]): string
 }
 
 export function produceArtifacts(evidence: Evidence, options: RunOptions, signingKey?: string | null): Evidence {
+  validateArtifactOptions(options, signingKey);
   const output = outputPath(options, options.out);
   const receiptPath = resolveReceiptPath(options);
   let result = evidence;
   const entries: Array<{ path: string; content: string }> = [];
+  const serialize = (value: unknown) => withInputBudget({ limits: options.inputLimits }, () => stringifyBoundedJson(value));
   if (receiptPath) {
     const outcome = failOnOutcomeOf(evidence);
     const receipt = buildReceipt({ evidence, argv: options.argv ?? process.argv.slice(2), options, exitCode: outcome.failed ? 1 : 0, failOnOutcome: outcome, sign: options.sign, signingKey });
     result = attachReceiptRef(evidence, receipt, { path: path.relative(evidence.repo.root, canonicalPathParent(receiptPath)), previousContentHash: findPreviousReceiptHash(evidence.baselineComparison?.baselinePath) });
-    entries.push({ path: receiptPath, content: `${JSON.stringify(receipt, null, 2)}\n` });
+    entries.push({ path: receiptPath, content: serialize(receipt) });
   }
-  entries.push({ path: output, content: `${JSON.stringify(result, null, 2)}\n` });
-  if (options.sarif) entries.push({ path: outputPath(options, options.sarif), content: `${JSON.stringify(toSarif(result), null, 2)}\n` });
+  entries.push({ path: output, content: serialize(result) });
+  if (options.sarif) entries.push({ path: outputPath(options, options.sarif), content: serialize(toSarif(result)) });
   writeArtifactSet(entries, `${output}.manifest.json`);
   return result;
 }
@@ -319,6 +425,7 @@ export function produceArtifacts(evidence: Evidence, options: RunOptions, signin
 /** Separate the signing secret from any target-controlled plugin or check environment. */
 export async function analyzeAndWrite(options: RunOptions): Promise<{ evidence: Evidence; exitCode: number }> {
   const signingKey = retainSigningKey();
+  validateArtifactOptions(options, signingKey);
   const evidence = produceArtifacts(await analyze(options), options, signingKey);
   return { evidence, exitCode: shouldFailRun(evidence) ? 1 : 0 };
 }

@@ -256,7 +256,9 @@ describe("analyze integration", () => {
     });
 
     const mapped = evidence.impact.mappedTests.find((m) => m.source === "internal/auth/token.go");
-    expect(mapped?.tests).toEqual(["internal/auth/token_test.go", "pkg/api/handler_test.go"]);
+    expect(mapped?.tests).toEqual(expect.arrayContaining(["internal/auth/token_test.go", "pkg/api/handler_test.go"]));
+    expect(evidence.impact.mappingDiagnostics).toEqual(expect.arrayContaining([expect.objectContaining({ code: "mapping-unresolved-internal-import" })]));
+    expect(evidence.mappingEvidence).toEqual(expect.arrayContaining([expect.objectContaining({ origin: "unresolved-internal-fallback" })]));
     expect(evidence.findings.some((f) => f.kind === "auth-crypto")).toBe(true);
     expect(evidence.summary.risk).toBe("high");
     const testsCheck = evidence.checks.find((c) => c.id === "tests");

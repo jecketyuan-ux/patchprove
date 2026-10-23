@@ -9,6 +9,7 @@ import {
 } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { readJsonInput } from "./input-budget.js";
 import { writeJsonAtomic } from "./artifacts.js";
 import { evaluateVerification } from "./decision.js";
 import { validateEvidence, validateReceipt } from "./validation.js";
@@ -88,10 +89,19 @@ export function canonicalEvidence(evidence: Evidence): unknown {
   const { generatedAt: _generatedAt, receipt: _receipt, ...rest } = evidence;
   if (evidence.schemaVersion.startsWith("2.")) {
     const locations = evidence.executionRecords?.map((record) => record.cwd).filter(Boolean) ?? [];
-    const portable = (value: string): string => locations.reduce((text, cwd) => text.replaceAll(cwd, "<snapshot>"), value);
+    const reports = evidence.executionRecords?.flatMap((record) => record.testExecution?.reportPath ? [record.testExecution.reportPath] : []) ?? [];
+    const portable = (value: string): string => locations.reduce((text, cwd) => text.replaceAll(cwd, "<snapshot>"), reports.reduce((text, report) => text.replaceAll(report, "<test-report>"), value));
     const stableRecord = (record: NonNullable<Evidence["executionRecords"]>[number]) => {
       const { durationMs: _duration, outputHash: _output, cwd: _cwd, ...stable } = record;
-      return { ...stable, command: stable.command ? portable(stable.command) : null, args: stable.args.map(portable) };
+      const facts = stable.testExecution ? { ...stable.testExecution } : undefined;
+      if (facts) {
+        delete facts.reportHash;
+        if (facts.reportPath) facts.reportPath = "<test-report>";
+        if (facts.reason) facts.reason = portable(facts.reason);
+      }
+      return { ...stable, command: stable.command ? portable(stable.command) : null, args: stable.args.map(portable),
+        ...(stable.reason ? { reason: portable(stable.reason) } : {}),
+        ...(facts ? { testExecution: facts } : {}) };
     };
     const { excludedPaths: _outputs, ...snapshot } = evidence.snapshot ?? {};
     return sortKeys({
@@ -303,7 +313,7 @@ export function readReceiptFile(filePath: string): EvidenceReceipt {
   const resolved = path.resolve(filePath);
   let raw: unknown;
   try {
-    raw = JSON.parse(readFileSync(resolved, "utf8"));
+    raw = readJsonInput(resolved);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(`Cannot read receipt JSON at ${resolved}: ${message}`);

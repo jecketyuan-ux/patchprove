@@ -99,7 +99,7 @@ describe("protocol 2 receipt authentication", () => {
   it("rejects a stale decision or contradictory exit metadata before signing", () => {
     const evidence = modernEvidence();
     evidence.executionRecords![0]!.exitCode = null;
-    expect(() => receiptFor(evidence)).toThrow(/decision/);
+    expect(() => receiptFor(evidence)).toThrow(/decision|exitCode/);
     expect(() => buildReceipt({ evidence: modernEvidence(), exitCode: 1, failOnOutcome: { failed: true, reason: "fail-on" } })).toThrow(/exit code/);
   });
 

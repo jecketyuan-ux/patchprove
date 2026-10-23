@@ -3,7 +3,7 @@ import path from "node:path";
 import { evaluateVerification } from "./decision.js";
 import { runCommand } from "./exec.js";
 import { type ProvePatchInput, type ProvePatchResult, runOptionsFromInput } from "./mcp-tools.js";
-import { produceArtifacts } from "./run.js";
+import { produceArtifacts, validateArtifactOptions } from "./run.js";
 import { validateEvidence } from "./validation.js";
 
 export type HookAdapter = "claude-code" | "cursor";
@@ -131,6 +131,7 @@ export async function executeHook(options: HookOptions): Promise<number> {
   const started = Date.now();
   const budget = options.timeoutMs ?? 30_000;
   try {
+    validateArtifactOptions(options);
     const context = await readHookContext(process.stdin, Math.min(1000, budget));
     if (context.stopHookActive || context.loopCount >= LOOP_LIMIT) {
       process.stdout.write("{}\n");
@@ -154,7 +155,7 @@ export async function executeHook(options: HookOptions): Promise<number> {
     if (result.exitCode !== 0 || result.truncated) throw new Error(result.stderr.trim() || "Hook worker failed");
     const proved = JSON.parse(result.stdout) as ProvePatchResult;
     proved.evidence = validateEvidence(proved.evidence, "hook worker");
-    if (options.out !== undefined || options.sarif !== undefined || options.receipt === true || typeof options.receipt === "string") {
+    if (options.sign === true || options.out !== undefined || options.sarif !== undefined || options.receipt === true || typeof options.receipt === "string") {
       proved.evidence = produceArtifacts(proved.evidence, runOptionsFromInput(effective));
     }
     process.stdout.write(`${JSON.stringify(buildHookResponse(proved, options.adapter, options.event).payload)}\n`);

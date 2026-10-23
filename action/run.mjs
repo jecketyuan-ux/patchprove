@@ -8,7 +8,7 @@ const target = path.resolve(input("cwd") || process.env.GITHUB_WORKSPACE || proc
 const out = path.resolve(target, input("out") || "evidence.json");
 const comment = path.join(process.env.RUNNER_TEMP ?? process.cwd(), "patchprove-comment.md");
 const args = ["run", "--cwd", target, "--out", out, "--format", "markdown"];
-for (const name of ["fail-on", "fail-on-new-gaps", "config", "spec", "baseline", "base", "head", "protocol", "timeout-ms", "max-output-bytes"]) {
+for (const name of ["fail-on", "fail-on-new-gaps", "config", "spec", "baseline", "base", "head", "protocol", "timeout-ms", "max-output-bytes", "max-input-file-bytes", "max-input-total-bytes", "max-input-files", "max-json-bytes", "max-json-depth", "max-json-nodes", "max-graph-edges"]) {
   if (input(name)) args.push(`--${name}`, input(name));
 }
 for (const name of ["accept", "ignore", "disable-gate", "adapter-input"]) {

@@ -1,5 +1,8 @@
 # Roadmap
 
+Current follow-up: [U01–U11 implementation and acceptance](docs/upgrades/2x-hardening.md), based on the immutable [2.0 re-audit](docs/reviews/2026-10-22-v2/03-upgrade-roadmap.md). Implemented code, measured results and external not-run gates are tracked separately.
+
+
 The working tree implements the 2.0 upgrade; publishing and external validation remain separate activities. The dated [2026-10-22 review](docs/reviews/2026-10-22/03-upgrade-roadmap.md) is an immutable historical assessment, not a current feature-status list.
 
 ## Implemented in this checkout

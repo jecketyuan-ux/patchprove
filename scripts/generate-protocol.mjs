@@ -77,6 +77,28 @@ async function generatedModule(file, name) {
   return { destination: path.join(root, "src", "generated", `${file}.ts`), output: `${output}\n${v2Aliases(schema, name)}` };
 }
 
+// Evidence owns the shared semantic definitions; receipt schemas are shipped
+// standalone, but must never silently diverge from those definitions.
+const evidenceSchema = JSON.parse(await readFile(path.join(root, "schema/evidence.schema.json"), "utf8"));
+const receiptPath = path.join(root, "schema/receipt.schema.json");
+const receiptSchema = JSON.parse(await readFile(receiptPath, "utf8"));
+const shared = new Set(["verification", "effectivePolicy"]);
+const queue = [...shared];
+for (const name of queue) {
+  const definition = evidenceSchema.definitions[name];
+  if (!definition) throw new Error(`Missing shared protocol definition: ${name}`);
+  const references = JSON.stringify(definition).matchAll(/"\$ref":"#\/definitions\/([^"]+)"/g);
+  for (const [, reference] of references) if (!shared.has(reference)) { shared.add(reference); queue.push(reference); }
+}
+let sharedDrift = false;
+for (const name of shared) {
+  if (JSON.stringify(receiptSchema.definitions[name]) !== JSON.stringify(evidenceSchema.definitions[name])) sharedDrift = true;
+  receiptSchema.definitions[name] = evidenceSchema.definitions[name];
+}
+if (sharedDrift) {
+  if (check) throw new Error("Shared receipt protocol definitions drifted; run npm run generate:protocol");
+  await writeFile(receiptPath, `${JSON.stringify(receiptSchema, null, 2)}\n`);
+}
 const modules = await Promise.all([generatedModule("evidence", "EvidenceWire"), generatedModule("receipt", "ReceiptWire")]);
 let drift = false;
 for (const { destination, output } of modules) {
