@@ -147,7 +147,7 @@
               "graph"
             ]
           },
-          "description": "Other strategies that also produced at least one source\u2192test mapping on this run."
+          "description": "Other strategies that also produced at least one source→test mapping on this run."
         },
         "mappingEvidence": {
           "type": "array",
@@ -1704,6 +1704,12 @@
           "items": {
             "$ref": "#/definitions/reportArtifact"
           }
+        },
+        "javaRuntimeObservations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/javaTestRuntimeObservation"
+          }
         }
       },
       "required": [
@@ -2189,6 +2195,157 @@
           "type": "string"
         }
       }
+    },
+    "javaTestRuntimeObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "const": "test"
+        },
+        "source": {
+          "const": "junit-properties"
+        },
+        "status": {
+          "enum": [
+            "observed",
+            "unknown"
+          ]
+        },
+        "reportHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "suite": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$"
+        },
+        "scope": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "javaVersion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$"
+        },
+        "javaHome": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 4096,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$"
+        },
+        "vendor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$"
+        },
+        "fileEncoding": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$"
+        },
+        "nativeEncoding": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$"
+        },
+        "reason": {
+          "enum": [
+            "missing-properties",
+            "conflicting-properties",
+            "invalid-properties",
+            "missing-suite-identity",
+            "unattributed-scope"
+          ]
+        }
+      },
+      "required": [
+        "role",
+        "source",
+        "status",
+        "reportHash",
+        "suite",
+        "scope",
+        "javaVersion",
+        "javaHome",
+        "vendor",
+        "fileEncoding",
+        "nativeEncoding"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "observed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "suite": {
+                "type": "string"
+              },
+              "javaVersion": {
+                "type": "string"
+              },
+              "javaHome": {
+                "type": "string"
+              },
+              "vendor": {
+                "type": "string"
+              },
+              "fileEncoding": {
+                "type": "string"
+              },
+              "nativeEncoding": {
+                "type": "string"
+              },
+              "scope": {
+                "minItems": 1
+              }
+            },
+            "not": {
+              "required": [
+                "reason"
+              ]
+            }
+          },
+          "else": {
+            "required": [
+              "reason"
+            ]
+          }
+        }
+      ]
     }
   },
   "allOf": [

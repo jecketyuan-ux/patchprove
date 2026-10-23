@@ -17,6 +17,7 @@ function rawReport(cwd: string): Buffer {
 }
 async function archived(root: string, raw = rawReport(root)): Promise<Evidence> {
   const original = path.join(root, "temporary.json");
+  writeFileSync(path.join(root, "value.test.js"), "export {};\n");
   writeFileSync(original, raw);
   return withReportArchive(path.join(root, "reports"), async () => {
     const proof = readTestReport("vitest-json", original, root, ["value.test.js"]);
@@ -33,6 +34,7 @@ async function archived(root: string, raw = rawReport(root)): Promise<Evidence> 
 describe("machine report archives", () => {
   it("keeps only facts and digest when retention was not requested", () => {
     const root = temporary(), report = path.join(root, "temporary.json");
+    writeFileSync(path.join(root, "value.test.js"), "export {};\n");
     writeFileSync(report, rawReport(root));
     const proof = readTestReport("vitest-json", report, root, ["value.test.js"]);
     expect(proof).toMatchObject({ reportRetention: "not-retained", counts: { passed: 1, failed: 1, executed: 2 } });
@@ -86,6 +88,7 @@ describe("machine report archives", () => {
     mkdirSync(path.join(root, "destination"));
     writeFileSync(path.join(root, "destination", "file"), "not a directory");
     await expect(withReportArchive(path.join(root, "destination", "file", "reports"), async () => fixture())).rejects.toThrow(/not published/);
+    expect(readFileSync(path.join(root, "destination", "file"), "utf8")).toBe("not a directory");
   });
 
   it("binds exact report bytes and context into the final artifact manifest", async () => {
@@ -126,6 +129,43 @@ describe("machine report archives", () => {
     const proof = readTestReport("vitest-json", report, "C:\\logical", ["value.test.js"], undefined, "C:\\logical", false,
       { platform: "win32", aliases: [{ from: "C:\\logical", to: "C:\\physical" }] });
     expect(proof).toMatchObject({ reportStatus: "validated", executedScope: ["value.test.js"], counts: { passed: 1, failed: 0 } });
+  });
+
+  it.each(["requested", "unrequested"])("preserves a missing %s reporter path below a directory alias", async kind => {
+    const root = temporary(), physical = path.join(root, "physical"), logical = path.join(root, "logical");
+    mkdirSync(physical);
+    writeFileSync(path.join(physical, "present.test.js"), "export {};\n");
+    symlinkSync(physical, logical, process.platform === "win32" ? "junction" : "dir");
+    const selected = kind === "requested" ? ["missing.test.js"] : ["present.test.js"];
+    const report = path.join(root, "temporary.json");
+    const suites = [...(kind === "unrequested" ? [{ name: path.join(logical, "present.test.js"), assertionResults: [{ status: "passed" }] }] : []),
+      { name: path.join(logical, "missing.test.js"), assertionResults: [{ status: "passed" }] }];
+    writeFileSync(report, JSON.stringify({ testResults: suites }));
+    const evidence = await withReportArchive(path.join(root, "reports"), async () => {
+      const proof = readTestReport("vitest-json", report, logical, selected);
+      expect(proof.reportStatus).toBe("invalid");
+      const value = fixture();
+      const record: ExecutionRecord = { id: "tests:missing", checkId: "tests", scope: [], status: "failed", exitCode: 1,
+        command: "fixture", args: [], cwd: logical, durationMs: 1, testExecution: proof };
+      value.executionRecords = [record];
+      value.checks = [{ id: "tests", name: "fixture", status: "failed", durationMs: 1, exitCode: 1, command: "fixture", records: [record] }];
+      Object.assign(value.summary, { checksPassed: 0, checksFailed: 1, checksSkipped: 0 });
+      return value;
+    });
+    const context = JSON.parse(readFileSync(evidence.executionRecords![0]!.testExecution!.reports![0]!.contextPath, "utf8"));
+    expect(context.pathAliasMode).toBe("exact");
+    expect(context.pathAliases).toContainEqual({ from: path.join(logical, "missing.test.js"), to: path.join(logical, "missing.test.js") });
+    rmSync(logical, { recursive: true, force: true });
+    rmSync(physical, { recursive: true, force: true });
+    expect(verifyReportArchive(evidence)).toEqual({ ok: true, reports: 1, errors: [] });
+  });
+
+  it("rejects exact replay when a required canonical decision was not retained", () => {
+    const root = temporary(), report = path.join(root, "temporary.json");
+    writeFileSync(path.join(root, "value.test.js"), "export {};\n");
+    writeFileSync(report, rawReport(root));
+    expect(() => readTestReport("vitest-json", report, root, ["value.test.js"], undefined, root, false,
+      { platform: process.platform === "win32" ? "win32" : "posix", aliases: [], exact: true })).toThrow(/Missing original canonical path observation/);
   });
 
   it("rejects evidence counts that disagree with independently replayed originals", async () => {

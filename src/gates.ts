@@ -222,6 +222,7 @@ export async function runAffectedTests(cwd: string, tools: DetectedTools, mapped
         collectedScope: observed("collectedScope"), executedScope: observed("executedScope"), skippedScope: observed("skippedScope"),
         unknownScope: scope.filter((file) => !observed("collectedScope").includes(file)),
         counts: { collected: sum("collected"), executed: sum("executed"), passed: sum("passed"), failed: sum("failed"), skipped: sum("skipped") },
+        javaRuntimeObservations: freshReports.flatMap(report => report.proof.javaRuntimeObservations ?? []),
         reportRetention: freshReports.some(report => report.proof.reports?.length) ? "retained" : "not-retained",
         ...(freshReports.some(report => report.proof.reports?.length) ? { reports: freshReports.flatMap(report => report.proof.reports ?? []) } : {}),
         ...(freshReports.length ? { reportHash: createHash("sha256").update(JSON.stringify(freshReports.map((report) => report.proof.reportHash ?? null).sort())).digest("hex") } : { reason: "No tests execution report was produced for the selected Java scope" }) };

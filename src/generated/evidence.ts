@@ -1,6 +1,6 @@
 /* This file is generated. Do not edit directly.
  * Source: schema/evidence.schema.json
- * Schema SHA-256: 9b0ffa0f05da2aa9a5ad23be1d9467992eb98b07da2bc6c94669ddbe255719d1
+ * Schema SHA-256: 8eed5e6a5378468ae0f28bca360d72d633e5c58437263eaf441e553b87086b0e
  * Compiler: json-schema-to-typescript 16.0.0
  * Regenerate with: npm run generate:protocol
  */
@@ -93,6 +93,25 @@ export type EvidenceWire = {
     manifestPath: string;
     manifestHash: string;
   };
+};
+export type JavaTestRuntimeObservation = {
+  role: "test";
+  source: "junit-properties";
+  status: "observed" | "unknown";
+  reportHash: string;
+  suite: string | null;
+  scope: string[];
+  javaVersion: string | null;
+  javaHome: string | null;
+  vendor: string | null;
+  fileEncoding: string | null;
+  nativeEncoding: string | null;
+  reason?:
+    | "missing-properties"
+    | "conflicting-properties"
+    | "invalid-properties"
+    | "missing-suite-identity"
+    | "unattributed-scope";
 };
 export type RiskLevel = "low" | "medium" | "high" | "critical";
 export type SummaryRisk = "none" | "low" | "medium" | "high" | "critical";
@@ -197,6 +216,7 @@ export interface TestExecution {
   reportStatus: "validated" | "partial" | "missing" | "invalid" | "truncated";
   reportRetention?: "retained" | "not-retained";
   reports?: ReportArtifact[];
+  javaRuntimeObservations?: JavaTestRuntimeObservation[];
 }
 export interface ReportArtifact {
   path: string;

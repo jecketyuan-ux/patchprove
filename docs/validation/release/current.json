@@ -12,7 +12,7 @@
   ],
   "ciPolicy": "Use current PR head checks, not an earlier green run.",
   "supportConditions": {
-    "windowsJava": "Previous Gradle 8.12.1/JDK17 and JDK21 UTF-8 installed attempts failed on non-ASCII/space paths. Current CI experiments with pinned Gradle 9.8.2; no Windows pass is claimed until the original scenarios pass on that candidate.",
+    "windowsJava": "Gradle 9.8.2/JDK21 with job-wide UTF-8 also failed the original Chinese/space-path native success, assertion-failure, zero and multi-module cases in CI run 39935723323 (head ea162cc39904042d251bee525d6b9a8acdf880e2). Class loading failed before assertions; installed production was not reached. No passing Windows combination is established.",
     "otherJavaPlatforms": "Linux/macOS use JDK17.",
     "fixtureDelivery": "Historical signed evidence fixture is tracked through a precise ignore exception and passed three compatibility tests in a clean export."
   },

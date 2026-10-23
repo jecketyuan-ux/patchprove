@@ -172,6 +172,19 @@ export function validateEvidence(value: unknown, source = "evidence"): Evidence 
       if (proof.reports?.some(report => report.format !== proof.format) || new Set(proof.reports?.map(report => report.path)).size !== (proof.reports?.length ?? 0)) {
         throw new Error(`${source}: ${pointer}/reports contains a conflicting format or duplicate original`);
       }
+      const runtimeIdentities = new Set<string>();
+      for (const [runtimeIndex, runtime] of (proof.javaRuntimeObservations ?? []).entries()) {
+        const runtimePointer = `${pointer}/javaRuntimeObservations/${runtimeIndex}`;
+        if (proof.format !== "java-junit") throw new Error(`${source}: ${runtimePointer} requires a Java JUnit report`);
+        if (runtime.status === "observed" && !runtime.scope.length) throw new Error(`${source}: ${runtimePointer}/scope cannot establish an observed test runtime`);
+        if (runtime.scope.some(file => !proof.requestedScope.includes(file))) throw new Error(`${source}: ${runtimePointer}/scope contains unrequested scope`);
+        if (proof.reports?.length && !proof.reports.some(report => report.hash === `sha256:${runtime.reportHash}`)) {
+          throw new Error(`${source}: ${runtimePointer}/reportHash has no matching retained original`);
+        }
+        const identity = JSON.stringify([runtime.reportHash, runtime.suite, [...runtime.scope].sort()]);
+        if (runtimeIdentities.has(identity)) throw new Error(`${source}: ${runtimePointer} duplicates a suite runtime observation`);
+        runtimeIdentities.add(identity);
+      }
       const counts = proof.counts;
       if (counts.executed !== counts.passed + counts.failed || counts.collected !== counts.executed + counts.skipped) throw new Error(`${source}: ${pointer}/counts contradicts the observed outcomes`);
       for (const field of ["requestedScope", "collectedScope", "executedScope", "skippedScope", "unknownScope"] as const) {

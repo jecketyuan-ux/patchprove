@@ -13,6 +13,7 @@ jobs:
   test:
     name: ${{ matrix.os }} / Node ${{ matrix.node }}
     runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
     strategy:
       fail-fast: false
       matrix:
@@ -33,7 +34,8 @@ jobs:
       - run: npm run check:protocol
       - run: npm run build
       - run: npm run typecheck:test
-      - run: npm test
+      - name: Full regression with retained machine results
+        run: npm test -- --reporter=default --reporter=json --outputFile=artifacts/unit-results.json
       - name: Release acceptance validator contracts
         run: node --test scripts/check-acceptance.test.mjs
       - name: Install tarball in a fresh consumer; CLI and stdio MCP smoke

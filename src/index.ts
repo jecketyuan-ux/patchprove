@@ -37,6 +37,7 @@ export type {
   EnvironmentProvenance,
   PluginProvenance,
   JavaRuntimeProvenance,
+  JavaTestRuntimeObservation,
   ReportArtifactReference,
 } from "./types.js";
 export { DEFAULT_INPUT_LIMITS, InputBudgetError, resolveInputLimits, withInputBudget } from "./input-budget.js";

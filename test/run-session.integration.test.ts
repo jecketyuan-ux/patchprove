@@ -2,7 +2,8 @@ import { execFileSync } from "node:child_process";
 import { existsSync, mkdirSync, mkdtempSync, readdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import * as commandRunner from "../src/exec.js";
 import { analyze } from "../src/run.js";
 import type { RunOptions } from "../src/types.js";
 
@@ -114,11 +115,19 @@ describe("analysis run sessions", () => {
     write(root, ".patchprove/plugins/select.mjs", "import {spawn} from 'node:child_process';\nimport {writeFileSync} from 'node:fs';\n"
       + `const child=spawn(process.execPath,['-e','setInterval(()=>{},1000)'],{detached:process.platform!=='win32',stdio:'ignore'});writeFileSync(${JSON.stringify(marker)},String(child.pid));while(true){}\n`);
     const started = Date.now();
-    const budget = process.platform === "win32" ? 8000 : 1600;
-    await expect(analyze({ ...options(root), timeoutMs: budget })).rejects.toThrow(/deadline/);
+    // The total deadline includes a fresh Node, Git snapshot and parser startup.
+    // Cold CI hosts must reach the deliberately blocking plugin to prove cleanup.
+    const budget = process.platform === "win32" ? 12_000 : 8000;
+    const pending = analyze({ ...options(root), timeoutMs: budget });
+    const rejection = expect(pending).rejects.toThrow(/deadline/);
+    try {
+      while (!existsSync(marker) && Date.now() - started < budget) await new Promise(resolve => setTimeout(resolve, 25));
+      expect(existsSync(marker)).toBe(true);
+    } finally { await rejection; }
     expect(Date.now() - started).toBeLessThan(budget + 4000);
     expect(existsSync(marker)).toBe(true);
     const pid = Number(readFileSync(marker, "utf8"));
+    expect(Number.isSafeInteger(pid) && pid > 0).toBe(true);
     let alive = true;
     for (let attempt = 0; attempt < 20; attempt++) {
       try { process.kill(pid, 0); } catch { alive = false; break; }
@@ -148,14 +157,30 @@ describe("analysis run sessions", () => {
     await rejection;
   }, 20_000);
 
-  it("removes the isolated worktree and its Git registration after hard plugin termination", async () => {
+  it.each([false, true])("removes the isolated worktree and its Git registration after hard plugin termination (aliased temp: %s)", async aliased => {
     const root = fixture();
     write(root, ".patchprove/plugins/select.mjs", "while(true){}\n");
     execFileSync("git", ["add", ".patchprove"], { cwd: root, stdio: "pipe" });
     execFileSync("git", ["-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid", "-c", "commit.gpgsign=false", "commit", "-qm", "looping plugin"], { cwd: root, stdio: "pipe" });
     const head = execFileSync("git", ["rev-parse", "HEAD"], { cwd: root, encoding: "utf8" }).trim();
     const budget = process.platform === "win32" ? 8000 : 2000;
-    await expect(analyze({ ...options(root), base: head, head, timeoutMs: budget })).rejects.toThrow(/deadline/);
+    const previous = { TMPDIR: process.env.TMPDIR, TEMP: process.env.TEMP, TMP: process.env.TMP };
+    const holder = mkdtempSync(path.join(tmpdir(), "patchprove-session-temp-alias-"));
+    roots.push(holder);
+    const physical = path.join(holder, "physical");
+    mkdirSync(physical);
+    const logical = path.join(holder, "logical");
+    if (aliased) symlinkSync(physical, logical, process.platform === "win32" ? "junction" : "dir");
+    process.env.TMPDIR = aliased ? logical : physical;
+    process.env.TEMP = process.env.TMPDIR; process.env.TMP = process.env.TMPDIR;
+    try {
+      await expect(analyze({ ...options(root), base: head, head, timeoutMs: budget })).rejects.toThrow(/deadline/);
+      expect(readdirSync(physical)).toEqual([]);
+    } finally {
+      for (const [name, value] of Object.entries(previous)) {
+        if (value === undefined) delete process.env[name]; else process.env[name] = value;
+      }
+    }
     const worktrees = execFileSync("git", ["worktree", "list", "--porcelain"], { cwd: root, encoding: "utf8" });
     expect(worktrees.match(/^worktree /gm)).toHaveLength(1);
     expect(worktrees).not.toContain("patchprove-analysis-");
@@ -171,6 +196,57 @@ describe("analysis run sessions", () => {
     for (let index = 0; index < 40; index++) write(root, `node_modules/package-${index}/index.js`, "export {};\n");
     await expect(analyze({ ...options(root), base: head, head, inputLimits: { maxFiles: 20 } })).rejects.toThrow(/Dependency traversal.*maxFiles|Input file count/);
   });
+
+  it("preserves an unrelated worktree behind a final symlink when Git enumeration is unavailable", async () => {
+    const root = fixture();
+    const holder = mkdtempSync(path.join(tmpdir(), "patchprove-unrelated-tree-"));
+    roots.push(holder);
+    const unrelated = path.join(holder, "tree");
+    execFileSync("git", ["worktree", "add", "--detach", unrelated, "HEAD"], { cwd: root, stdio: "pipe" });
+    write(unrelated, "keep.txt", "unrelated user data\n");
+    write(root, ".patchprove/plugins/select.mjs", "import{mkdirSync,symlinkSync}from'node:fs';import{tmpdir}from'node:os';import path from'node:path';\n"
+      + `const directory=path.join(tmpdir(),'patchprove-execution-unregistered');mkdirSync(directory);symlinkSync(${JSON.stringify(unrelated)},path.join(directory,'tree'),process.platform==='win32'?'junction':'dir');process.exit(23);\n`);
+    const original = commandRunner.runCommand;
+    const spy = vi.spyOn(commandRunner, "runCommand").mockImplementation((command, args, settings) =>
+      command === "git" && args[0] === "worktree" && args[1] === "list"
+        ? Promise.resolve({ command: "git worktree list", exitCode: 1, stdout: "", stderr: "Enumeration unavailable", durationMs: 0 })
+        : original(command, args, settings));
+    try {
+      await expect(analyze(options(root))).rejects.toThrow(/without evidence/);
+      expect(readFileSync(path.join(unrelated, "keep.txt"), "utf8")).toBe("unrelated user data\n");
+      const registrations = execFileSync("git", ["worktree", "list", "--porcelain"], { cwd: root, encoding: "utf8" });
+      expect(registrations.match(/^worktree /gm)).toHaveLength(2);
+    } finally { spy.mockRestore(); }
+  });
+
+  it("bounds aggregate cleanup across many session trees and reports unfinished private data", async () => {
+    const root = fixture();
+    const marker = path.join(root, "private-session");
+    write(root, ".patchprove/plugins/select.mjs", "import{mkdirSync,writeFileSync}from'node:fs';import{tmpdir}from'node:os';import path from'node:path';\n"
+      + `writeFileSync(${JSON.stringify(marker)},tmpdir());for(let i=0;i<64;i++){const tree=path.join(tmpdir(),'patchprove-execution-fake-'+i,'tree');mkdirSync(tree,{recursive:true});writeFileSync(path.join(tree,'.git'),'gitdir: unavailable');}process.exit(23);\n`);
+    const original = commandRunner.runCommand;
+    let removals = 0, cleanupStarted = 0;
+    const spy = vi.spyOn(commandRunner, "runCommand").mockImplementation((command, args, settings) => {
+      if (command === "git" && args[0] === "worktree" && args[1] === "list") return Promise.resolve({ command: "git worktree list", exitCode: 1, stdout: "", stderr: "Enumeration unavailable", durationMs: 0 });
+      if (command === "git" && args[0] === "worktree" && args[1] === "remove") {
+        removals++;
+        cleanupStarted ||= Date.now();
+        return original(process.execPath, ["-e", "setInterval(()=>{},1000)"], settings);
+      }
+      return original(command, args, settings);
+    });
+    try {
+      await expect(analyze({ ...options(root), timeoutMs: 15_000 })).rejects.toThrow(/cleanup limit.*Aggregate cleanup deadline|Aggregate cleanup deadline/);
+      expect(removals).toBeGreaterThan(0);
+      expect(removals).toBeLessThanOrEqual(3);
+      expect(Date.now() - cleanupStarted).toBeLessThan(5500);
+      const retained = readFileSync(marker, "utf8");
+      expect(existsSync(retained)).toBe(true);
+    } finally {
+      spy.mockRestore();
+      if (existsSync(marker)) rmSync(readFileSync(marker, "utf8"), { recursive: true, force: true });
+    }
+  }, 25_000);
 
   it("excludes its private request and temporary inputs when the system temp directory is inside the repository", async () => {
     const root = fixture();

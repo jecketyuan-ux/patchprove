@@ -33,6 +33,7 @@ export interface MachineReportContext {
   goListTruncated?: boolean;
   platform?: "win32" | "posix";
   pathAliases?: Array<{ from: string; to: string }>;
+  pathAliasMode?: "exact";
 }
 
 function facts(proof: TestExecution): unknown {
@@ -40,9 +41,25 @@ function facts(proof: TestExecution): unknown {
   return result;
 }
 
+/** Additive observations are compared when present; historical signed contexts remain unchanged. */
+function comparableFacts(proof: TestExecution, expected: unknown): unknown {
+  const result = facts(proof) as Record<string, unknown>;
+  if (expected && typeof expected === "object" && !Object.hasOwn(expected, "javaRuntimeObservations")) delete result.javaRuntimeObservations;
+  return result;
+}
+
 function directory(session: ArchiveSession): string {
   session.directory ??= path.join(session.destination, `run-${randomUUID()}`);
   return session.directory;
+}
+
+function cleanupArchive(directory: string | undefined): string {
+  if (!directory) return "";
+  try { rmSync(directory, { recursive: true, force: true }); return ""; }
+  catch (error) {
+    if (error && typeof error === "object" && "code" in error && (error.code === "ENOENT" || error.code === "ENOTDIR")) return "";
+    return `; archive cleanup failed: ${error instanceof Error ? error.message : String(error)}`;
+  }
 }
 
 /** Capture bytes while the runner's unique temporary report still exists. */
@@ -65,9 +82,13 @@ export function archiveMachineReport(context: MachineReportContext, proof: TestE
     const aliasInputs = [context.cwd, context.reportBase ?? context.cwd,
       ...[...(context.sourceFiles ?? []), ...context.requestedScope, ...(context.suiteFiles ?? [])].map(file => path.resolve(context.cwd, file))];
     const aliases = new Map<string, string>();
-    for (const file of aliasInputs) { try { aliases.set(path.resolve(file), realpathSync.native(file)); } catch { /* Missing or coarse scope has no alias. */ } }
+    if (context.pathAliasMode !== "exact") for (const file of aliasInputs) {
+      const resolved = path.resolve(file);
+      try { aliases.set(resolved, realpathSync.native(file)); }
+      catch { aliases.set(resolved, resolved); }
+    }
     metadata.platform = process.platform === "win32" ? "win32" : "posix";
-    metadata.pathAliases = [...aliases].map(([from, to]) => ({ from, to }));
+    metadata.pathAliases = context.pathAliasMode === "exact" ? context.pathAliases ?? [] : [...aliases].map(([from, to]) => ({ from, to }));
     const contextBytes = Buffer.from(JSON.stringify({ schemaVersion: "1.0.0", ...metadata,
       ...(goListRaw !== undefined ? { goListRawBase64: goListRaw.toString("base64"), goListRawHash: hash(goListRaw) } : {}),
       expected: facts(proof) }, null, 2) + "\n");
@@ -98,8 +119,8 @@ export async function withMachineReportArchive<T>(destination: string | undefine
     writeArtifactSet(session.entries, manifestPath);
     return { result, archive: { manifestPath, manifestHash: hash(readBoundedFile(manifestPath)) } };
   } catch (error) {
-    if (session.directory) rmSync(session.directory, { recursive: true, force: true });
-    throw new ReportArchiveError(`Report archive was not published: ${error instanceof Error ? error.message : String(error)}`);
+    const cleanup = cleanupArchive(session.directory);
+    throw new ReportArchiveError(`Report archive was not published: ${error instanceof Error ? error.message : String(error)}${cleanup}`);
   }
 }
 
@@ -113,7 +134,8 @@ export async function withReportArchive(destination: string | undefined, action:
     return validateEvidence(evidence, "completed analysis");
   }
   catch (error) {
-    if (archive) rmSync(path.dirname(archive.manifestPath), { recursive: true, force: true });
+    const cleanup = cleanupArchive(archive ? path.dirname(archive.manifestPath) : undefined);
+    if (cleanup) throw new ReportArchiveError(`${error instanceof Error ? error.message : String(error)}${cleanup}`);
     throw error;
   }
 }
@@ -124,7 +146,7 @@ type ReplayContext = Omit<MachineReportContext, "raw" | "goListRaw"> & {
 function replayContext(value: unknown, format: TestExecution["format"]): ReplayContext {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new ReportArchiveError("Machine-report context must be an object");
   const input = value as Record<string, unknown>;
-  const allowed = new Set(["schemaVersion", "format", "cwd", "requestedScope", "suiteFiles", "reportBase", "packagePath", "truncated", "sourceFiles", "goListOutput", "goListRawBase64", "goListRawHash", "goListExitCode", "goListTruncated", "platform", "pathAliases", "expected"]);
+  const allowed = new Set(["schemaVersion", "format", "cwd", "requestedScope", "suiteFiles", "reportBase", "packagePath", "truncated", "sourceFiles", "goListOutput", "goListRawBase64", "goListRawHash", "goListExitCode", "goListTruncated", "platform", "pathAliases", "pathAliasMode", "expected"]);
   const strings = (items: unknown): items is string[] => Array.isArray(items) && items.every(item => typeof item === "string");
   if (Object.keys(input).some(key => !allowed.has(key)) || input.schemaVersion !== "1.0.0" || input.format !== format ||
     typeof input.cwd !== "string" || !input.cwd || !strings(input.requestedScope) || !Object.hasOwn(input, "expected")) {
@@ -144,6 +166,13 @@ function replayContext(value: unknown, format: TestExecution["format"]): ReplayC
   if (input.platform !== "win32" && input.platform !== "posix") throw new ReportArchiveError("Missing report source platform");
   if (!Array.isArray(input.pathAliases) || input.pathAliases.some(alias => !alias || typeof alias !== "object" || Array.isArray(alias) ||
     typeof alias.from !== "string" || typeof alias.to !== "string" || Object.keys(alias).some(key => key !== "from" && key !== "to"))) throw new ReportArchiveError("Invalid report path aliases");
+  if (input.pathAliasMode !== undefined && input.pathAliasMode !== "exact") throw new ReportArchiveError("Invalid report path observation mode");
+  const aliases = new Map<string, string>();
+  for (const alias of input.pathAliases as Array<{ from: string; to: string }>) {
+    const from = input.platform === "win32" ? alias.from.toLowerCase() : alias.from;
+    if (aliases.has(from) && aliases.get(from) !== alias.to) throw new ReportArchiveError("Conflicting report path observations");
+    aliases.set(from, alias.to);
+  }
   return input as unknown as ReplayContext;
 }
 
@@ -220,6 +249,7 @@ export function verifyReportArchive(evidence: Evidence, options: { artifactRoot?
     reportArtifactEntries(evidence, artifactRoot);
     const reports = reportReferences(evidence, artifactRoot);
     const replayed = new Map<string, TestExecution>();
+    const observedJavaContexts = new Set<string>();
     for (const report of reports) {
       const context = replayContext(parseBoundedJson(readBoundedFile(path.resolve(artifactRoot, report.contextPath)).toString("utf8"), report.contextPath), report.format);
       const rawBytes = readBoundedFile(path.resolve(artifactRoot, report.path));
@@ -240,9 +270,11 @@ export function verifyReportArchive(evidence: Evidence, options: { artifactRoot?
         proof.granularity = "package";
       } else if (["vitest-json", "jest-json", "pytest-junit", "java-junit"].includes(context.format)) {
         proof = readTestReport(context.format as "vitest-json" | "jest-json" | "pytest-junit" | "java-junit", path.resolve(artifactRoot, report.path),
-          context.cwd, context.requestedScope, context.suiteFiles, context.reportBase, false, { platform: context.platform ?? "posix", aliases: context.pathAliases ?? [] });
+          context.cwd, context.requestedScope, context.suiteFiles, context.reportBase, false,
+          { platform: context.platform ?? "posix", aliases: context.pathAliases ?? [], exact: context.pathAliasMode === "exact" });
       } else throw new ReportArchiveError("No supported replay parser for the retained format");
-      if (!isDeepStrictEqual(facts(proof), context.expected)) throw new ReportArchiveError("Replayed machine-report facts differ from the archived context");
+      if (!isDeepStrictEqual(comparableFacts(proof, context.expected), context.expected)) throw new ReportArchiveError("Replayed machine-report facts differ from the archived context");
+      if (context.expected && typeof context.expected === "object" && Object.hasOwn(context.expected, "javaRuntimeObservations")) observedJavaContexts.add(report.path);
       replayed.set(report.path, proof);
     }
     for (const record of executionRecordCopies(evidence)) {
@@ -251,15 +283,19 @@ export function verifyReportArchive(evidence: Evidence, options: { artifactRoot?
       const originals = proof.reports.map(report => replayed.get(path.resolve(artifactRoot, report.path))!);
       let derived = originals[0]!;
       if (proof.format === "java-junit") {
+        if (proof.javaRuntimeObservations === undefined && proof.reports.some(report => observedJavaContexts.has(path.resolve(artifactRoot, report.path)))) {
+          throw new ReportArchiveError("Evidence omits test-JVM observations present in the archived context");
+        }
         const sum = (field: keyof TestExecution["counts"]) => originals.reduce((total, item) => total + item.counts[field], 0);
         const observed = (field: "collectedScope" | "executedScope" | "skippedScope") => proof.requestedScope.filter(file => originals.some(item => item[field].includes(file)));
         derived = { parserVersion: "1", format: "java-junit", granularity: "file", requestedScope: proof.requestedScope,
           reportStatus: originals.every(item => item.reportStatus === "validated") ? "validated" : "partial",
           collectedScope: observed("collectedScope"), executedScope: observed("executedScope"), skippedScope: observed("skippedScope"),
           unknownScope: proof.requestedScope.filter(file => !observed("collectedScope").includes(file)),
-          counts: { collected: sum("collected"), executed: sum("executed"), passed: sum("passed"), failed: sum("failed"), skipped: sum("skipped") } };
+          counts: { collected: sum("collected"), executed: sum("executed"), passed: sum("passed"), failed: sum("failed"), skipped: sum("skipped") },
+          javaRuntimeObservations: originals.flatMap(item => item.javaRuntimeObservations ?? []) };
       } else if (originals.length !== 1) throw new ReportArchiveError("Unexpected multiple originals for this report format");
-      if (!isDeepStrictEqual(facts(derived), facts(proof))) throw new ReportArchiveError("Evidence execution facts differ from replayed originals");
+      if (!isDeepStrictEqual(comparableFacts(derived, proof), facts(proof))) throw new ReportArchiveError("Evidence execution facts differ from replayed originals");
     }
     return { ok: true, reports: reports.length, errors: [] };
   } catch (error) { return { ok: false, reports: 0, errors: [error instanceof Error ? error.message : String(error)] }; }

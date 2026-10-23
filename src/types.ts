@@ -67,7 +67,24 @@ export interface TestExecution {
   reportPath?: string;
   reportRetention?: "retained" | "not-retained";
   reports?: ReportArtifactReference[];
+  /** Whitelisted facts reported by each test suite, never inferred from launcher probes. */
+  javaRuntimeObservations?: JavaTestRuntimeObservation[];
   reason?: string;
+}
+
+export interface JavaTestRuntimeObservation {
+  role: "test";
+  source: "junit-properties";
+  status: "observed" | "unknown";
+  reportHash: string;
+  suite: string | null;
+  scope: string[];
+  javaVersion: string | null;
+  javaHome: string | null;
+  vendor: string | null;
+  fileEncoding: string | null;
+  nativeEncoding: string | null;
+  reason?: "missing-properties" | "conflicting-properties" | "invalid-properties" | "missing-suite-identity" | "unattributed-scope";
 }
 
 export interface ReportArtifactReference {
