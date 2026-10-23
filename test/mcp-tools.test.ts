@@ -58,7 +58,7 @@ describe("prove_patch handler", () => {
     const result = await provePatch({ cwd: dir, failOn: "high" });
     expect(existsSync(path.join(dir, "evidence.json"))).toBe(false);
 
-    expect(result.evidence.schemaVersion).toBe("2.0.0");
+    expect(result.evidence.schemaVersion).toBe("2.1.0");
     expect(result.evidence.toolVersion).toBe("2.0.0");
     expect(result.evidence.impact.unmappedSources).toContain("src/utils/hash.ts");
     expect(result.summary).toMatch(/open gaps/);
@@ -70,7 +70,7 @@ describe("prove_patch handler", () => {
       evidence: { schemaVersion: string };
     };
     expect(payload.summary).toBe(result.summary);
-    expect(payload.evidence.schemaVersion).toBe("2.0.0");
+    expect(payload.evidence.schemaVersion).toBe("2.1.0");
   });
 
   it("writes evidence.json only when out is set", async () => {
@@ -79,7 +79,7 @@ describe("prove_patch handler", () => {
     const out = path.join(dir, "from-mcp.json");
     await provePatch({ cwd: dir, out });
     const written = readEvidenceFile(out);
-    expect(written.schemaVersion).toBe("2.0.0");
+    expect(written.schemaVersion).toBe("2.1.0");
   });
 });
 

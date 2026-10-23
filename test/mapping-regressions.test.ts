@@ -198,10 +198,10 @@ describe("dynamic dependency uncertainty", () => {
     expect(impact.unmappedReasons?.["config.yaml"]).toMatch(/configuration/);
   });
 
-  it("keeps test-only edits scoped to the changed test", () => {
+  it("keeps possible test consumers when a changed test has dynamic dependencies", () => {
     const { existing, graph } = project({ "test/dynamic.test.js": "await import(moduleName);", "test/other.test.js": "export {};" });
     const impact = buildImpact([changed("test/dynamic.test.js")], existing, { graph });
-    expect(impact.mappedTests[0]?.tests).toEqual(["test/dynamic.test.js"]);
-    expect(impact.mappingEvidence?.some((edge) => edge.origin === "dynamic-fallback")).toBe(false);
+    expect(impact.mappedTests[0]?.tests).toEqual(["test/dynamic.test.js", "test/other.test.js"]);
+    expect(impact.mappingEvidence?.some((edge) => edge.origin === "dynamic-fallback")).toBe(true);
   });
 });

@@ -1,8 +1,10 @@
-import { existsSync, readdirSync, statSync } from "node:fs";
+import { existsSync, readdirSync, realpathSync, statSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { builtinPlugins } from "./builtin.js";
 import { isLanguagePlugin, type LanguagePlugin } from "./types.js";
+import { capturePluginInputs, type PluginInputSnapshot, type PluginLoadProvenance } from "./provenance.js";
+import { withInputBudget } from "../input-budget.js";
 
 const PLUGIN_FILE_RE = /\.(mjs|cjs|js)$/i;
 
@@ -90,18 +92,49 @@ export async function resolveLanguagePlugins(
   root: string,
   options?: ResolvePluginsOptions,
 ): Promise<LanguagePlugin[]> {
+  return (await resolveLanguagePluginSession(root, options)).plugins;
+}
+
+export async function resolveLanguagePluginSession(root: string, options?: ResolvePluginsOptions): Promise<{
+  plugins: LanguagePlugin[];
+  provenance: PluginLoadProvenance[];
+  changedInputs(): string[];
+}> {
   const env = options?.env ?? process.env;
   const builtinIds = new Set(builtinPlugins.map((plugin) => plugin.id));
   const extras = new Map<string, LanguagePlugin>();
+  const snapshots: PluginInputSnapshot[] = [];
+  const builtinEntry = fileURLToPath(new URL("./builtin.js", import.meta.url));
+  // Source consumers use the shipped worker for actual analysis. Direct source
+  // loader tests retain source identity without inventing a compiled pathname.
+  const builtinSource = existsSync(builtinEntry) ? builtinEntry : builtinEntry.replace(/\.js$/, ".ts");
+  // The installed verifier's own bytes are not repository-controlled input and
+  // must not consume a caller's deliberately small repository-file budget.
+  const builtinSnapshot = withInputBudget({}, () => capturePluginInputs(builtinSource));
+  snapshots.push({ ...builtinSnapshot, changed: () => withInputBudget({}, () => builtinSnapshot.changed()) });
+  const provenance: PluginLoadProvenance[] = builtinPlugins.map((plugin, order) => ({
+    id: plugin.id, source: "builtin", entry: builtinSource,
+    entryHash: builtinSnapshot.inputs.find((input) => input.path === realpathSync.native(builtinSource))?.hash ?? null,
+    order, effective: true, ...(plugin.capabilities ? { capabilities: plugin.capabilities } : {}), inputs: builtinSnapshot.inputs,
+    dependencyCoverage: builtinSnapshot.unknownDependencies.length ? "unknown" : "static", unknownDependencies: builtinSnapshot.unknownDependencies,
+  }));
 
-  const take = async (absPath: string): Promise<void> => {
+  const take = async (absPath: string, source: PluginLoadProvenance["source"]): Promise<void> => {
     if (existsSync(absPath) && statSync(absPath).isDirectory()) {
       for (const file of listPluginFiles(absPath)) {
-        await take(file);
+        await take(file, source);
       }
       return;
     }
+    const snapshot = capturePluginInputs(absPath);
+    snapshots.push(snapshot);
     const plugin = await loadPluginModule(absPath);
+    const prior = [...provenance].reverse().find((item) => item.id === plugin.id && item.effective && item.source !== "builtin");
+    if (prior && !builtinIds.has(plugin.id)) prior.effective = false;
+    provenance.push({ id: plugin.id, source, entry: realpathSync.native(absPath),
+      entryHash: snapshot.inputs.find((input) => input.path === realpathSync.native(absPath))?.hash ?? null,
+      order: provenance.length, effective: !builtinIds.has(plugin.id), ...(plugin.capabilities ? { capabilities: plugin.capabilities } : {}),
+      inputs: snapshot.inputs, dependencyCoverage: snapshot.unknownDependencies.length ? "unknown" : "static", unknownDependencies: snapshot.unknownDependencies });
     if (builtinIds.has(plugin.id)) return;
     extras.set(plugin.id, plugin);
   };
@@ -109,18 +142,19 @@ export async function resolveLanguagePlugins(
   const autoDir = path.join(root, ".patchprove", "plugins");
   if (options?.allowAuto !== false && existsSync(autoDir) && statSync(autoDir).isDirectory()) {
     for (const file of listPluginFiles(autoDir)) {
-      await take(file);
+      await take(file, "auto");
     }
   }
 
   for (const spec of splitPluginPathList(env.PATCHPROVE_PLUGINS ?? "")) {
-    await take(resolvePluginSpec(root, spec));
+    await take(resolvePluginSpec(root, spec), "environment");
   }
 
   for (const spec of options?.configPlugins ?? []) {
-    await take(resolvePluginSpec(root, spec));
+    await take(resolvePluginSpec(root, spec), "configuration");
   }
 
   const extraList = [...extras.values()].sort((a, b) => a.id.localeCompare(b.id));
-  return [...builtinPlugins, ...extraList];
+  return { plugins: [...builtinPlugins, ...extraList], provenance,
+    changedInputs: () => [...new Set(snapshots.flatMap((snapshot) => snapshot.changed()))] };
 }

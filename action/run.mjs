@@ -8,7 +8,7 @@ const target = path.resolve(input("cwd") || process.env.GITHUB_WORKSPACE || proc
 const out = path.resolve(target, input("out") || "evidence.json");
 const comment = path.join(process.env.RUNNER_TEMP ?? process.cwd(), "patchprove-comment.md");
 const args = ["run", "--cwd", target, "--out", out, "--format", "markdown"];
-for (const name of ["fail-on", "fail-on-new-gaps", "config", "spec", "baseline", "base", "head", "protocol", "timeout-ms", "max-output-bytes", "max-input-file-bytes", "max-input-total-bytes", "max-input-files", "max-json-bytes", "max-json-depth", "max-json-nodes", "max-graph-edges"]) {
+for (const name of ["reports-dir", "fail-on", "fail-on-new-gaps", "config", "spec", "baseline", "base", "head", "protocol", "timeout-ms", "max-output-bytes", "max-input-file-bytes", "max-input-total-bytes", "max-input-files", "max-json-bytes", "max-json-depth", "max-json-nodes", "max-graph-edges"]) {
   if (input(name)) args.push(`--${name}`, input(name));
 }
 for (const name of ["accept", "ignore", "disable-gate", "adapter-input"]) {
@@ -31,9 +31,10 @@ else {
   receipt = input("receipt") ? path.resolve(target, input("receipt")) : out.replace(/\.json$/, "") + ".receipt.json";
   args.push("--receipt", receipt);
 }
-if (!input("base") && process.env.GITHUB_EVENT_NAME === "pull_request") {
+if ((!input("base") || !input("head")) && process.env.GITHUB_EVENT_NAME === "pull_request") {
   const event = JSON.parse(readFileSync(process.env.GITHUB_EVENT_PATH, "utf8"));
-  args.push("--base", event.pull_request.base.sha, "--head", event.pull_request.head.sha);
+  if (!input("base")) args.push("--base", event.pull_request.base.sha);
+  if (!input("head")) args.push("--head", event.pull_request.head.sha);
 }
 if (process.env.GITHUB_EVENT_NAME === "pull_request_target") {
   throw new Error("Run patchprove on pull_request with read-only permissions; publish the saved report from a separate trusted workflow");
@@ -43,8 +44,9 @@ const result = spawnSync(process.execPath, [process.env.PATCHPROVE_BIN, ...args]
 });
 writeFileSync(comment, result.stdout ?? "", "utf8");
 const status = result.status ?? 2;
+const reports = input("reports-dir") ? path.resolve(target, input("reports-dir")) : "";
 if (process.env.GITHUB_OUTPUT) {
-  for (const [key, value] of Object.entries({ comment, cli_status: String(status), receipt, evidence: out, sarif })) {
+  for (const [key, value] of Object.entries({ comment, cli_status: String(status), receipt, evidence: out, sarif, reports })) {
     if (/[\r\n]/.test(value)) throw new Error(`Invalid output ${key}`);
     appendFileSync(process.env.GITHUB_OUTPUT, `${key}=${value}\n`);
   }

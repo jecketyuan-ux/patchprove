@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { buildEvidence } from "../src/evidence.js";
 import { evaluateVerification } from "../src/decision.js";
 import { mergeConfig } from "../src/config.js";
+import { DEFAULT_INPUT_LIMITS } from "../src/input-budget.js";
 import type { Evidence, ExecutionRecord } from "../src/types.js";
 
 const hash = `sha256:${"ab".repeat(32)}`;
@@ -13,18 +14,56 @@ function complete(): Evidence {
   evidence.snapshot = { algorithm: "sha256", version: 1, mode: "working-tree", base: "HEAD", head: null, mergeBase: null,
     currentHead: null, tree: null, contentHash: hash, patchHash: hash, dirty: false, consistent: true };
   evidence.effectivePolicy = { protocol: 2, strict: true, failOn: null, failOnNewGaps: null, gates: { typecheck: true, lint: true, tests: true, secrets: true },
-    ignorePaths: [], acceptGaps: [], plugins: [], config: null, spec: null, baseline: null, hash };
+    ignorePaths: [], acceptGaps: [], plugins: [], pluginSetHash: hash, config: null, spec: null, baseline: null, hash };
+  evidence.environment = { platform: "linux", arch: "x64", nodeVersion: "v24.19.0", gitVersion: "git 2", tools: [], dependencyLocks: [],
+    inputLimits: DEFAULT_INPUT_LIMITS, hermetic: false, plugins: [], reportRetention: "not-requested" };
   evidence.verificationPlan = [];
   evidence.executionRecords = [];
   return evidence;
 }
 function record(scope = ["a.ts"]): ExecutionRecord {
   return { id: "tests-a", checkId: "tests", scope, status: "passed", command: "vitest", args: [], cwd: "/tmp", exitCode: 0, durationMs: 1,
-    testExecution: { parserVersion: "1", format: "vitest-json", reportStatus: "validated", granularity: "file", requestedScope: scope, collectedScope: scope, executedScope: scope, skippedScope: [], unknownScope: [],
+    testExecution: { parserVersion: "1", format: "vitest-json", reportStatus: "validated", reportRetention: "not-retained", granularity: "file", requestedScope: scope, collectedScope: scope, executedScope: scope, skippedScope: [], unknownScope: [],
       counts: { collected: scope.length, executed: scope.length, passed: scope.length, failed: 0, skipped: 0 } } };
 }
 
 describe("shared verification decision", () => {
+  it.each([
+    ["actual plugin set", (evidence: Evidence) => { delete evidence.environment!.plugins; }],
+    ["plugin policy binding", (evidence: Evidence) => { delete evidence.effectivePolicy!.pluginSetHash; }],
+    ["run report retention", (evidence: Evidence) => { delete evidence.environment!.reportRetention; }],
+    ["execution report retention", (evidence: Evidence) => { delete evidence.executionRecords![0]!.testExecution!.reportRetention; }],
+  ] as const)("requires %s provenance for a new completion decision", (_name, remove) => {
+    const evidence = complete();
+    evidence.executionRecords = [record()];
+    remove(evidence);
+    expect(evaluateVerification(evidence).status).toBe("incomplete");
+  });
+
+  it("uses available facts rather than the format minor version for new completion", () => {
+    const evidence = complete();
+    evidence.schemaVersion = "2.0.0";
+    expect(evaluateVerification(evidence).status).toBe("passed");
+    delete evidence.environment!.plugins;
+    expect(evaluateVerification(evidence, undefined, false).status).toBe("incomplete");
+  });
+
+  it("requires a bound entry identity for an observed plugin", () => {
+    const evidence = complete();
+    evidence.environment!.plugins = [{ id: "widget", source: "auto", order: 0, effective: true,
+      entry: "widget.mjs", entryHash: null, inputs: [], dependencyCoverage: "unknown", unknownDependencies: [] }];
+    expect(evaluateVerification(evidence)).toMatchObject({ status: "incomplete", reasons: [{ code: "plugin-provenance-missing" }] });
+  });
+
+  it("does not claim retained reports without the bound archive", () => {
+    const evidence = complete();
+    evidence.environment!.reportRetention = "requested";
+    evidence.executionRecords = [record()];
+    evidence.executionRecords[0]!.testExecution!.reportRetention = "retained";
+    expect(evaluateVerification(evidence).status).toBe("incomplete");
+    expect(evaluateVerification(evidence).reasons.map(reason => reason.code)).toEqual(["report-archive-unavailable", "test-report-archive-unavailable"]);
+  });
+
   it("does not treat an old argv-only test scope as a fresh execution proof", () => {
     const evidence = complete();
     evidence.verificationPlan = [{ id: "tests", checkId: "tests", scope: ["a.ts"], required: true, reason: "selected" }];

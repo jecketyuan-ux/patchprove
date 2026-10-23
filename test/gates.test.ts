@@ -22,7 +22,8 @@ describe.skipIf(process.platform === "win32")("gate execution accounting", () =>
     const result = await runTypecheck(dir, tools);
     expect(result.status).toBe("passed");
     expect(readFileSync(marker, "utf8")).toBe("tsc\npyright\nmypy\n");
-    expect(result.records?.map((record) => record.id)).toEqual(["typecheck:tsc", "typecheck:pyright", "typecheck:mypy"]);
+    expect(result.records?.map((record) => record.command)).toEqual([tools.tscBin, tools.pyrightBin, tools.mypyBin]);
+    expect(new Set(result.records?.map((record) => record.id)).size).toBe(3);
   });
 
   it("runs Ruff even when ESLint passes and retains missing-tool records", async () => {
@@ -32,7 +33,7 @@ describe.skipIf(process.platform === "win32")("gate execution accounting", () =>
     expect(result.records?.map((record) => record.status)).toEqual(["passed", "failed"]);
     const partial = await runLint(dir, { ...emptyDetectedTools(), eslint: true, eslintBin: fake(dir, "eslint"), ruff: true });
     expect(partial.status).toBe("skipped");
-    expect(partial.records?.find((record) => record.id === "lint:ruff")?.status).toBe("skipped");
+    expect(partial.records?.find((record) => record.reason?.includes("ruff configured"))?.status).toBe("skipped");
   });
 
   it("keeps Python test scope incomplete when only the JS runner is available", async () => {

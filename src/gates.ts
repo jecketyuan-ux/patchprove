@@ -2,6 +2,7 @@ import { mkdtemp, mkdir, writeFile, rm } from "node:fs/promises";
 import { closeSync, lstatSync, openSync, readSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { archiveMachineReport, ReportArchiveError } from "./report-archive.js";
 import { createHash } from "node:crypto";
 import { clip, runCommand, type CommandResult } from "./exec.js";
 import type { DiffFile } from "./git.js";
@@ -9,6 +10,7 @@ import { builtinPlugins, type LanguagePlugin } from "./plugins/index.js";
 import type { PluginContext } from "./plugins/types.js";
 import { javaClassFromPath } from "./plugins/java.js";
 import { scanSecrets } from "./secrets.js";
+import { parseAddedLines } from "./added-lines.js";
 import { cargoTestExecution, goTestExecution, readTestReport, unknownTestExecution } from "./test-results.js";
 import { configuredToolUnits, testExecutionUnits, type TestUnit, type ToolUnit } from "./execution-units.js";
 import type { CheckId, CheckResult, DetectedTools, ExecutionLimits, ExecutionRecord, Finding, TestExecution } from "./types.js";
@@ -117,7 +119,7 @@ export function collectedTestCount(output: string): number | undefined {
 interface JavaReport { stamp: string; proof: TestExecution }
 
 /** Read only bounded report headers; suite counts come from this invocation's changed files. */
-function javaReports(cwd: string, scope: string[], gradle: boolean): Map<string, JavaReport> {
+function javaReports(cwd: string, scope: string[], gradle: boolean, retainReports = false, prior?: Map<string, JavaReport>): Map<string, JavaReport> {
   const result = new Map<string, JavaReport>();
   const directories = new Map<string, Array<{ file: string; className: string }>>();
   for (const file of scope) {
@@ -149,8 +151,8 @@ function javaReports(cwd: string, scope: string[], gradle: boolean): Map<string,
         if (!matched.length) continue;
         const selected = matched.map((entry) => entry.file);
         result.set(file, { stamp: `${stat.dev}:${stat.ino}:${stat.size}:${stat.mtimeNs}:${stat.ctimeNs}`,
-          proof: readTestReport("java-junit", file, cwd, selected, selected) });
-      } catch { /* An absent, malformed, symbolic, or unreadable report supplies no execution proof. */ }
+          proof: readTestReport("java-junit", file, cwd, selected, selected, cwd, retainReports && prior?.get(file)?.stamp !== `${stat.dev}:${stat.ino}:${stat.size}:${stat.mtimeNs}:${stat.ctimeNs}`) });
+      } catch (error) { if (error instanceof ReportArchiveError) throw error; /* Unreadable reports supply no execution proof. */ }
       finally { if (fd !== undefined) closeSync(fd); }
     }
   }
@@ -190,7 +192,7 @@ export async function runAffectedTests(cwd: string, tools: DetectedTools, mapped
     try {
       result = await runCommand(cmd.command, args, { cwd: unit.cwd, timeoutMs: GATE_TIMEOUT_MS, ...limits });
       if (reportPath && fileFormat) proof = readTestReport(fileFormat, reportPath, cwd, scope, undefined, unit.cwd);
-      if (plugin.id === "rust") proof = cargoTestExecution(result.stdout, scope, result.truncated);
+      if (plugin.id === "rust") proof = archiveMachineReport({ format: "cargo-harness", raw: result.stdoutBytes ?? Buffer.from(result.stdout), cwd, requestedScope: scope, truncated: result.truncated }, cargoTestExecution(result.stdout, scope, result.truncated));
       if (plugin.id === "go") {
         const target = args.find((arg) => arg === "." || arg.startsWith("./"));
         const listed = await runCommand(cmd.command, ["list", "-json", target ?? "."], { cwd: unit.cwd, timeoutMs: GATE_TIMEOUT_MS, ...limits });
@@ -204,11 +206,13 @@ export async function runAffectedTests(cwd: string, tools: DetectedTools, mapped
           }
         } catch { proof = unknownTestExecution("go-json", scope, "No usable go list package metadata"); }
         proof.granularity = "package";
+        proof = archiveMachineReport({ format: "go-json", raw: result.stdoutBytes ?? Buffer.from(result.stdout), cwd, requestedScope: scope, sourceFiles,
+          truncated: result.truncated, goListOutput: listed.stdout, goListRaw: listed.stdoutBytes ?? Buffer.from(listed.stdout), goListExitCode: listed.exitCode, goListTruncated: listed.truncated }, proof);
       }
     } finally {
       if (reportDir) await rm(reportDir, { recursive: true, force: true });
     }
-    const freshReports = previousReports ? [...javaReports(cwd, sourceFiles, gradle)].filter(([file, report]) =>
+    const freshReports = previousReports ? [...javaReports(cwd, sourceFiles, gradle, true, previousReports)].filter(([file, report]) =>
       previousReports.get(file)?.stamp !== report.stamp).map(([, report]) => report) : undefined;
     if (freshReports) {
       const sum = (field: keyof TestExecution["counts"]) => freshReports.reduce((total, report) => total + report.proof.counts[field], 0);
@@ -218,14 +222,18 @@ export async function runAffectedTests(cwd: string, tools: DetectedTools, mapped
         collectedScope: observed("collectedScope"), executedScope: observed("executedScope"), skippedScope: observed("skippedScope"),
         unknownScope: scope.filter((file) => !observed("collectedScope").includes(file)),
         counts: { collected: sum("collected"), executed: sum("executed"), passed: sum("passed"), failed: sum("failed"), skipped: sum("skipped") },
+        reportRetention: freshReports.some(report => report.proof.reports?.length) ? "retained" : "not-retained",
+        ...(freshReports.some(report => report.proof.reports?.length) ? { reports: freshReports.flatMap(report => report.proof.reports ?? []) } : {}),
         ...(freshReports.length ? { reportHash: createHash("sha256").update(JSON.stringify(freshReports.map((report) => report.proof.reportHash ?? null).sort())).digest("hex") } : { reason: "No tests execution report was produced for the selected Java scope" }) };
     }
     proof ??= unknownTestExecution("unavailable", scope, `No supported result adapter for plugin ${plugin.id}`);
     proof.sourceFiles = sourceFiles;
     const count = proof.reportStatus === "validated" || proof.reportStatus === "partial" ? proof.counts.collected : undefined;
-    const part = fromProcess(unit.cwd, "tests", unit.id.slice(6), cmd.name, cmd.command, args, scope, result,
+    const persistedArgs = reportPath ? args.map(arg => arg.replace(reportPath, "<test-report>")) : args;
+    const part = fromProcess(unit.cwd, "tests", unit.id.slice(6), cmd.name, cmd.command, persistedArgs, scope, result,
       unitTools.versions?.[plugin.id === "javascript" ? unitTools.vitestBin === cmd.command ? "vitest" : "jest" :
         plugin.id === "python" ? "pytest" : plugin.id === "rust" ? "cargo" : plugin.id === "java" ? unitTools.gradleBin === cmd.command ? "gradle" : "mvn" : plugin.id], count);
+    if (reportPath) part.command = [cmd.command, ...persistedArgs].join(" ");
     part.records![0]!.required = unit.required;
     if (proof) {
       const execution = part.records![0]!;
@@ -259,8 +267,7 @@ export async function runAffectedTests(cwd: string, tools: DetectedTools, mapped
 }
 
 function selectedAddedText(file: DiffFile): string {
-  return file.patch.split("\n").filter((line) => line.startsWith("+") && !line.startsWith("+++"))
-    .map((line) => line.slice(1)).join("\n");
+  return parseAddedLines(file).map((line) => line.text).join("\n");
 }
 
 export async function runSecretScan(cwd: string, tools: DetectedTools, files: DiffFile[],
@@ -269,6 +276,9 @@ export async function runSecretScan(cwd: string, tools: DetectedTools, files: Di
   if (!enabled) return { check: skipped(cwd, "secrets", "disabled", "Disabled by config (gates.secrets: false)"), findings: [] };
   const started = Date.now();
   const scope = files.map((file) => file.path);
+  // Validate every selected patch even when a detector intentionally ignores
+  // that file type. Missing input must not become a successful empty scan.
+  for (const file of files) parseAddedLines(file);
   const findings = scanSecrets(files);
   const status = findings.length ? "failed" : "passed";
   const reason = findings.length ? `${findings.length} potential secret(s)` : "no known key patterns or high-entropy tokens in added lines";

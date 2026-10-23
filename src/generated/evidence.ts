@@ -1,6 +1,6 @@
 /* This file is generated. Do not edit directly.
  * Source: schema/evidence.schema.json
- * Schema SHA-256: 5da3d8468802141051f5d6e050edee9a3b97988dc2dbf2a944cde4d4adcb4bf4
+ * Schema SHA-256: 9b0ffa0f05da2aa9a5ad23be1d9467992eb98b07da2bc6c94669ddbe255719d1
  * Compiler: json-schema-to-typescript 16.0.0
  * Regenerate with: npm run generate:protocol
  */
@@ -10,7 +10,7 @@
  */
 export type EvidenceWire = {
   /**
-   * Evidence semver: protocol 2 emits 2.0.0; explicit protocol 1 compatibility emits 1.3.0. Readers accept known-major additive fields.
+   * Evidence semver: protocol 2 emits 2.1.0; protocol 1 compatibility emits 1.3.0. Readers retain historical formats without inventing missing facts.
    */
   schemaVersion: string;
   generatedAt: string;
@@ -18,6 +18,7 @@ export type EvidenceWire = {
   repo: {
     cwd: string;
     root: string;
+    repositoryId?: string;
   };
   range: {
     mode: "working-tree" | "range";
@@ -87,6 +88,10 @@ export type EvidenceWire = {
       kind: "builtin" | "external" | "internal-resolved" | "internal-unresolved";
       targets: string[];
     }[];
+  };
+  reportArchive?: {
+    manifestPath: string;
+    manifestHash: string;
   };
 };
 export type RiskLevel = "low" | "medium" | "high" | "critical";
@@ -190,6 +195,17 @@ export interface TestExecution {
   sourceFiles?: string[];
   eligibleSourceFiles?: string[];
   reportStatus: "validated" | "partial" | "missing" | "invalid" | "truncated";
+  reportRetention?: "retained" | "not-retained";
+  reports?: ReportArtifact[];
+}
+export interface ReportArtifact {
+  path: string;
+  hash: string;
+  bytes: number;
+  format:
+    "vitest-json" | "jest-json" | "pytest-junit" | "java-junit" | "go-json" | "cargo-harness" | "unavailable";
+  contextPath: string;
+  contextHash: string;
 }
 export interface Gap {
   id: string;
@@ -339,6 +355,7 @@ export interface EffectivePolicy {
       secrets?: ProjectGatePolicy;
     };
   }[];
+  pluginSetHash?: string;
 }
 export interface Verification {
   status: "passed" | "failed" | "incomplete";
@@ -388,6 +405,13 @@ export interface Environment {
     hash: string;
   }[];
   javaToolOptionsFileEncoding?: "UTF-8" | "UTF8" | "UTF-16" | "US-ASCII" | "ISO-8859-1" | "windows-1252";
+  plugins?: PluginProvenance[];
+  reportRetention?: "requested" | "not-requested";
+  parser?: {
+    engine: "typescript";
+    version: string;
+  };
+  javaRuntimes?: JavaRuntime[];
 }
 export interface InputLimits {
   maxFileBytes: number;
@@ -397,6 +421,47 @@ export interface InputLimits {
   maxJsonDepth: number;
   maxJsonNodes: number;
   maxGraphEdges: number;
+}
+export interface PluginProvenance {
+  id: string;
+  source: "builtin" | "auto" | "environment" | "configuration";
+  entry: string | null;
+  entryHash: string | null;
+  order: number;
+  effective?: boolean;
+  capabilities?: {
+    contractVersion: 1;
+    testedRunners: string[];
+    granularity: "file" | "package" | "crate";
+    reportFormats: (
+      | "vitest-json"
+      | "jest-json"
+      | "pytest-junit"
+      | "java-junit"
+      | "go-json"
+      | "cargo-harness"
+      | "unavailable"
+    )[];
+    unknownResult: "incomplete";
+  };
+  inputs: {
+    path: string;
+    hash: string;
+  }[];
+  dependencyCoverage: "static" | "unknown";
+  unknownDependencies: string[];
+}
+export interface JavaRuntime {
+  runner: "maven" | "gradle";
+  runnerPath: string;
+  source: "runner-version" | "runner-settings";
+  javaVersion: string | null;
+  javaHome: string | null;
+  vendor: string | null;
+  fileEncoding: string | null;
+  nativeEncoding: string | null;
+  role?: "launcher" | "daemon" | "test";
+  project?: string;
 }
 
 /** Required fields derived from the protocol-2 conditional in the JSON schema. */

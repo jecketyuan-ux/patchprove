@@ -395,9 +395,12 @@ export function verifyReceipt(
     hashMatches ? "hash matches" : `hash mismatch (receipt ${receipt.contentHash}, computed ${computedHash})`,
   ];
   if (!protocolMatches) parts.push("evidence and receipt protocol versions do not match");
-  if (modern) parts.push(payloadMatches ? "authenticated payload matches" : "receipt payload mismatch");
-  if (legacyScope) parts.push("legacy test scope has no observed result facts; completion remains unproven");
-  else parts.push("legacy evidence-only receipt; metadata is not authenticated");
+  if (modern) {
+    parts.push(payloadMatches ? "authenticated payload matches" : "receipt payload mismatch");
+    if (legacyScope) parts.push("legacy test scope has no observed result facts; completion remains unproven");
+  } else {
+    parts.push("legacy evidence-only receipt; metadata is not authenticated");
+  }
   if (signature === "verified") parts.push(`${receipt.signature?.alg} signature verified`);
   else if (signature === "mismatch") parts.push(`${receipt.signature?.alg} signature mismatch`);
   else if (signature === "skipped") parts.push(`${receipt.signature?.alg} signature not verified (no key)`);

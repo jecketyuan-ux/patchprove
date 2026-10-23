@@ -23,7 +23,7 @@
     "schemaVersion": {
       "type": "string",
       "pattern": "^(1|2)\\.[0-9]+\\.[0-9]+$",
-      "description": "Evidence semver: protocol 2 emits 2.0.0; explicit protocol 1 compatibility emits 1.3.0. Readers accept known-major additive fields."
+      "description": "Evidence semver: protocol 2 emits 2.1.0; protocol 1 compatibility emits 1.3.0. Readers retain historical formats without inventing missing facts."
     },
     "generatedAt": {
       "type": "string",
@@ -46,6 +46,11 @@
         },
         "root": {
           "type": "string"
+        },
+        "repositoryId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
         }
       }
     },
@@ -372,6 +377,23 @@
               }
             }
           }
+        }
+      }
+    },
+    "reportArchive": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifestPath",
+        "manifestHash"
+      ],
+      "properties": {
+        "manifestPath": {
+          "type": "string"
+        },
+        "manifestHash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
         }
       }
     }
@@ -1485,6 +1507,10 @@
               "gates"
             ]
           }
+        },
+        "pluginSetHash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
         }
       },
       "required": [
@@ -1666,6 +1692,18 @@
             "invalid",
             "truncated"
           ]
+        },
+        "reportRetention": {
+          "enum": [
+            "retained",
+            "not-retained"
+          ]
+        },
+        "reports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/reportArtifact"
+          }
         }
       },
       "required": [
@@ -1822,6 +1860,40 @@
             "ISO-8859-1",
             "windows-1252"
           ]
+        },
+        "plugins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/pluginProvenance"
+          }
+        },
+        "reportRetention": {
+          "enum": [
+            "requested",
+            "not-requested"
+          ]
+        },
+        "parser": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "engine",
+            "version"
+          ],
+          "properties": {
+            "engine": {
+              "const": "typescript"
+            },
+            "version": {
+              "type": "string"
+            }
+          }
+        },
+        "javaRuntimes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/javaRuntime"
+          }
         }
       },
       "required": [
@@ -1873,6 +1945,250 @@
           }
         }
       ]
+    },
+    "reportArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "hash",
+        "bytes",
+        "format",
+        "contextPath",
+        "contextHash"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "hash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "format": {
+          "enum": [
+            "vitest-json",
+            "jest-json",
+            "pytest-junit",
+            "java-junit",
+            "go-json",
+            "cargo-harness",
+            "unavailable"
+          ]
+        },
+        "contextPath": {
+          "type": "string"
+        },
+        "contextHash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        }
+      }
+    },
+    "pluginProvenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "source",
+        "entry",
+        "entryHash",
+        "order",
+        "inputs",
+        "dependencyCoverage",
+        "unknownDependencies"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "enum": [
+            "builtin",
+            "auto",
+            "environment",
+            "configuration"
+          ]
+        },
+        "entry": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "entryHash": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "effective": {
+          "type": "boolean"
+        },
+        "capabilities": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "contractVersion",
+            "testedRunners",
+            "granularity",
+            "reportFormats",
+            "unknownResult"
+          ],
+          "properties": {
+            "contractVersion": {
+              "const": 1
+            },
+            "testedRunners": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "granularity": {
+              "enum": [
+                "file",
+                "package",
+                "crate"
+              ]
+            },
+            "reportFormats": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "vitest-json",
+                  "jest-json",
+                  "pytest-junit",
+                  "java-junit",
+                  "go-json",
+                  "cargo-harness",
+                  "unavailable"
+                ]
+              }
+            },
+            "unknownResult": {
+              "const": "incomplete"
+            }
+          }
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "hash"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        },
+        "dependencyCoverage": {
+          "enum": [
+            "static",
+            "unknown"
+          ]
+        },
+        "unknownDependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "javaRuntime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runner",
+        "runnerPath",
+        "javaVersion",
+        "javaHome",
+        "vendor",
+        "fileEncoding",
+        "nativeEncoding",
+        "source"
+      ],
+      "properties": {
+        "runner": {
+          "enum": [
+            "maven",
+            "gradle"
+          ]
+        },
+        "runnerPath": {
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "runner-version",
+            "runner-settings"
+          ]
+        },
+        "javaVersion": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "javaHome": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "vendor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fileEncoding": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "nativeEncoding": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "role": {
+          "enum": [
+            "launcher",
+            "daemon",
+            "test"
+          ]
+        },
+        "project": {
+          "type": "string"
+        }
+      }
     }
   },
   "allOf": [

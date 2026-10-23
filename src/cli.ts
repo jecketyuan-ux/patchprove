@@ -1,6 +1,7 @@
 #!/usr/bin/env node
 import { Command } from "commander";
 import { verifyArtifactSet } from "./artifacts.js";
+import { verifyReportArchive } from "./report-archive.js";
 import path from "node:path";
 import { resolveInputLimits, withInputBudget, type InputLimits } from "./input-budget.js";
 import { DEFAULT_BASELINE_REL, writeBaseline } from "./baseline.js";
@@ -32,6 +33,7 @@ function addPipelineOptions(cmd: Command): Command {
     .option("--spec <file>", "Explicit SPEC.md or .patchprove/spec.yml")
     .option("--baseline <file>", "Compare open gaps against this evidence.json")
     .option("--out <file>", "Write evidence JSON")
+    .option("--reports-dir <dir>", "Retain original machine reports for offline replay")
     .option("--sarif <file>", "Write SARIF 2.1")
     .option("--receipt [file]", "Write an evidence receipt")
     .option("--no-receipt", "Do not write an evidence receipt")
@@ -326,6 +328,23 @@ artifacts
   });
 
 const receipt = program.command("receipt").description("Verify or inspect an evidence receipt");
+
+program.command("reports").description("Verify retained machine reports without running project code")
+  .command("verify")
+  .argument("<evidence>", "Path to evidence.json")
+  .option("--max-json-bytes <bytes>", "Maximum bytes per input JSON")
+  .action((evidencePath: string, opts: { maxJsonBytes?: string }) => {
+    try {
+      const limits = opts.maxJsonBytes === undefined ? {} : { maxJsonBytes: Number(opts.maxJsonBytes) };
+      resolveInputLimits(limits);
+      const result = withInputBudget({ limits }, () => verifyReportArchive(readEvidenceFile(evidencePath), { artifactRoot: path.dirname(path.resolve(evidencePath)) }));
+      process.stdout.write(`${JSON.stringify(result, null, 2)}\n`);
+      process.exitCode = result.ok ? 0 : 1;
+    } catch (error) {
+      process.stderr.write(`patchprove: ${error instanceof Error ? error.message : String(error)}\n`);
+      process.exitCode = 2;
+    }
+  });
 
 receipt
   .command("verify")

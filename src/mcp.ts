@@ -25,6 +25,7 @@ const provePatchShape = {
   accept: acceptSchema.describe("Gap ids or path patterns to accept (added to config acceptGaps)"),
   config: z.string().optional().describe("Explicit .patchprove.yml / .yaml path"),
   out: z.string().optional().describe("If set, write evidence.json to this path"),
+  reportsDir: z.string().optional().describe("Retain original machine reports in a private per-run archive"),
   spec: z.string().optional(),
   baseline: z.string().optional(),
   failOnNewGaps: failOnSchema,

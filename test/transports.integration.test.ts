@@ -87,7 +87,7 @@ describe("real MCP stdio transport", () => {
         cwd, out, sarif, receipt, disableGate: ["typecheck", "lint", "tests", "secrets"], strict: false,
         protocol: 2, timeoutMs: process.platform === "win32" ? 30_000 : 5000, maxOutputBytes: 8192,
       } }));
-      expect(baseline.evidence.schemaVersion).toBe("2.0.0");
+      expect(baseline.evidence.schemaVersion).toBe("2.1.0");
       expect(existsSync(sarif)).toBe(true);
       expect(existsSync(receipt)).toBe(true);
       const unsigned = spawnSync(process.execPath, [cli, "receipt", "verify", out, receipt, "--require-signature"], { encoding: "utf8" });

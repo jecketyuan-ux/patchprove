@@ -10,12 +10,17 @@ export function evaluateVerification(
   config?: ResolvedConfig,
   strict = config?.strict ?? evidence.effectivePolicy?.strict ?? true,
 ): VerificationDecision {
-  return evaluate(evidence, config, strict, true);
+  return evaluate(evidence, config, strict, "current");
 }
 
 /** Reader-only compatibility calculation; never use it for a new completion signal. */
 export function evaluateHistoricalVerification(evidence: Evidence): VerificationDecision {
-  return evaluate(evidence, undefined, evidence.effectivePolicy?.strict ?? true, false);
+  return evaluate(evidence, undefined, evidence.effectivePolicy?.strict ?? true, "historical");
+}
+
+/** Validate an earlier report-aware producer's stored decision without changing its signed payload. */
+export function evaluateStoredVerification(evidence: Evidence): VerificationDecision {
+  return evaluate(evidence, undefined, evidence.effectivePolicy?.strict ?? true, "stored");
 }
 
 function successfulTestWithoutReport(record: ExecutionRecord): boolean {
@@ -31,13 +36,27 @@ export function hasUnprovenTestSuccess(evidence: Evidence): boolean {
       (item.scope.length === 0 || item.scope.some((scope) => record.scope.includes(scope)))))));
 }
 
-function evaluate(evidence: Evidence, config: ResolvedConfig | undefined, strict: boolean, requireReports: boolean): VerificationDecision {
+function evaluate(evidence: Evidence, config: ResolvedConfig | undefined, strict: boolean, mode: "current" | "stored" | "historical"): VerificationDecision {
+  const requireReports = mode !== "historical";
   const reasons: VerificationDecision["reasons"] = [];
   let failed = false;
   const add = (code: string, message: string, detail: { checkId?: CheckId; scope?: string[] } = {}) => {
     reasons.push({ code, message, ...detail });
   };
   const gates = config?.gates ?? evidence.effectivePolicy?.gates;
+  if (mode === "current") {
+    const plugins = evidence.environment?.plugins;
+    if (!plugins || !evidence.effectivePolicy?.pluginSetHash || plugins.some(plugin => plugin.effective === undefined || !plugin.entry || !plugin.entryHash ||
+      !plugin.inputs.some(input => input.path === plugin.entry && input.hash === plugin.entryHash))) {
+      add("plugin-provenance-missing", "Evidence lacks the actual loaded plugin identities or their effective-policy binding; run verification again to establish them");
+    }
+    if (evidence.environment?.reportRetention === undefined) {
+      add("report-retention-unrecorded", "Evidence does not record whether original machine reports were retained; run verification again to establish their availability");
+    }
+    if (evidence.environment?.reportRetention === "requested" && !evidence.reportArchive) {
+      add("report-archive-unavailable", "Original machine reports were requested but their archive is unavailable");
+    }
+  }
   const requiredGates = new Set<CheckId>(evidence.contract.clauses
     .filter((clause) => clause.kind === "required-gate")
     .map((clause) => clause.id.replace(/^required-gate-/, "") as CheckId));
@@ -75,6 +94,12 @@ function evaluate(evidence: Evidence, config: ResolvedConfig | undefined, strict
     }
     if (record.testExecution && !disabled("tests")) {
       const proof = record.testExecution;
+      if (mode === "current" && record.checkId === "tests" && record.required !== false && ["passed", "cached", "imported"].includes(record.status)) {
+        if (proof.reportRetention === undefined) add("test-report-retention-unrecorded", `Execution ${record.id} does not establish original-report availability`, { checkId: "tests", scope: proof.requestedScope });
+        if (proof.reportRetention === "retained" && (!proof.reports?.length || !evidence.reportArchive)) {
+          add("test-report-archive-unavailable", `Execution ${record.id} claims retained reports without a bound archive`, { checkId: "tests", scope: proof.requestedScope });
+        }
+      }
       if (proof.unknownScope.length) add("test-scope-unknown", proof.reason ?? `Execution ${record.id} could not establish every selected scope`, { checkId: "tests", scope: proof.unknownScope });
       if (proof.counts.skipped > 0) add("tests-skipped", `Execution ${record.id} skipped ${proof.counts.skipped} selected tests`, { checkId: "tests", scope: proof.skippedScope });
     }

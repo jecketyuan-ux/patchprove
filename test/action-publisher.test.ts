@@ -102,3 +102,30 @@ it("passes action inputs as literal argv and retains the verification status for
     expect(readFileSync(path.join(dir, "patchprove-comment.md"), "utf8")).toContain(MARKER);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+
+it.each([
+  { label: "neither revision", base: "", head: "" },
+  { label: "base only", base: "b".repeat(40), head: "" },
+  { label: "head only", base: "", head: "c".repeat(40) },
+  { label: "both revisions", base: "b".repeat(40), head: "c".repeat(40) },
+])("fills only missing PR revisions when given $label", ({ base, head }) => {
+  const dir = mkdtempSync(path.join(tmpdir(), "patchprove-action-revisions-"));
+  const fixtureCli = path.join(dir, "cli.cjs");
+  const argsFile = path.join(dir, "argv.json");
+  const eventPath = path.join(dir, "event.json");
+  const eventBase = "d".repeat(40), eventHead = "e".repeat(40);
+  writeFileSync(fixtureCli, `require("node:fs").writeFileSync(process.env.ARGS_FILE, JSON.stringify(process.argv.slice(2)));`);
+  writeFileSync(eventPath, JSON.stringify({ pull_request: { base: { sha: eventBase }, head: { sha: eventHead } } }));
+  try {
+    execFileSync(process.execPath, [path.resolve("action/run.mjs")], { env: {
+      ...process.env, PATCHPROVE_BIN: fixtureCli, ARGS_FILE: argsFile, RUNNER_TEMP: dir,
+      INPUT_CWD: dir, INPUT_BASE: base, INPUT_HEAD: head, INPUT_RECEIPT: "false",
+      GITHUB_EVENT_NAME: "pull_request", GITHUB_EVENT_PATH: eventPath,
+    } });
+    const args: string[] = JSON.parse(readFileSync(argsFile, "utf8"));
+    expect(args.filter((arg) => arg === "--base")).toHaveLength(1);
+    expect(args.filter((arg) => arg === "--head")).toHaveLength(1);
+    expect(args[args.indexOf("--base") + 1]).toBe(base || eventBase);
+    expect(args[args.indexOf("--head") + 1]).toBe(head || eventHead);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});

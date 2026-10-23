@@ -21,6 +21,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
@@ -33,8 +34,18 @@ jobs:
       - run: npm run build
       - run: npm run typecheck:test
       - run: npm test
+      - name: Release acceptance validator contracts
+        run: node --test scripts/check-acceptance.test.mjs
       - name: Install tarball in a fresh consumer; CLI and stdio MCP smoke
         run: npm run test:package
+        env:
+          PATCHPROVE_PACKAGE_REPORT: artifacts/installed-package.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        if: always()
+        with:
+          name: installed-package-${{ matrix.os }}-node-${{ matrix.node }}
+          path: artifacts/
+          if-no-files-found: error
 
   runtimes:
     name: Real runtime fixtures / ${{ matrix.os }}
@@ -50,6 +61,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
@@ -71,7 +83,9 @@ jobs:
           java-version: ${{ matrix.os == 'windows-latest' && '21' || '17' }}
       - uses: gradle/actions/setup-gradle@748248ddd2a24f49513d8f472f81c3a07d4d50e1 # v4.4.4
         with:
-          gradle-version: "8.12.1"
+          # Candidate upgrade includes the upstream argument-file encoding fix.
+          # Non-ASCII installed cases remain required; this pin is not a support claim.
+          gradle-version: "9.8.2"
       - run: npm ci
       - run: npm run build
       - name: Keep temporary fixture repositories byte-stable
@@ -104,6 +118,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
@@ -144,6 +159,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
         with:
@@ -167,6 +183,7 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           fetch-depth: 0
           persist-credentials: false
       - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
@@ -187,6 +204,7 @@ jobs:
             --max-json-nodes 2000000 --max-json-bytes 16777216 \
             --ignore 'docs/validation/release/**' \
             --out artifacts/evidence.json --receipt artifacts/evidence.receipt.json \
+            --reports-dir artifacts/machine-reports \
             --sarif artifacts/patchprove.sarif --format markdown > artifacts/comment.md
           status=$?
           set -e
@@ -201,4 +219,5 @@ jobs:
             artifacts/evidence.receipt.json
             artifacts/evidence.json.manifest.json
             artifacts/patchprove.sarif
+            artifacts/machine-reports/
           if-no-files-found: error

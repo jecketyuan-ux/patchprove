@@ -1,4 +1,5 @@
 import type { DiffFile } from "./git.js";
+import { parseAddedLines } from "./added-lines.js";
 import { isLockfilePath } from "./risk.js";
 import type { Finding } from "./types.js";
 
@@ -63,30 +64,6 @@ function looksLikeKnownHash(value: string, line: string): boolean {
   return false;
 }
 
-function addedLines(patch: string): Array<{ line: number; text: string }> {
-  const out: Array<{ line: number; text: string }> = [];
-  let newLine = 0;
-  for (const raw of patch.split("\n")) {
-    if (raw.startsWith("@@")) {
-      const match = /@@ -\d+(?:,\d+)? \+(\d+)/.exec(raw);
-      newLine = match ? Number(match[1]) : 0;
-      continue;
-    }
-    if (raw.startsWith("+++") || raw.startsWith("---") || raw.startsWith("diff ") || raw.startsWith("index ")) {
-      continue;
-    }
-    if (raw.startsWith("+")) {
-      out.push({ line: newLine, text: raw.slice(1) });
-      newLine += 1;
-    } else if (raw.startsWith("-")) {
-      continue;
-    } else {
-      newLine += 1;
-    }
-  }
-  return out;
-}
-
 export function scanSecrets(files: DiffFile[]): Finding[] {
   const findings: Finding[] = [];
   let counter = 0;
@@ -94,7 +71,7 @@ export function scanSecrets(files: DiffFile[]): Finding[] {
   for (const file of files) {
     if (file.status === "deleted") continue;
     if (skipSecretFile(file.path)) continue;
-    const lines = file.patch ? addedLines(file.patch) : [];
+    const lines = parseAddedLines(file);
     if (lines.length === 0) continue;
 
     for (const { line, text } of lines) {

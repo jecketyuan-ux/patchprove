@@ -3,7 +3,7 @@ import { spawnSync } from "node:child_process";
 import path from "node:path";
 import { InputBudgetError, readBoundedFile, readJsonInput } from "./input-budget.js";
 import { childEnvironment, commandInvocation, localBin, whichSync } from "./exec.js";
-import type { DetectedTools } from "./types.js";
+import type { DetectedTools, JavaRuntimeProvenance } from "./types.js";
 
 function readJson(filePath: string): Record<string, unknown> | null {
   try {
@@ -79,32 +79,70 @@ function remainingProbeMs(limits: ToolDetectionLimits): number {
   return Math.min(2_000, perProbe, remaining);
 }
 
-function probe(command: string, name: string, cwd: string, limits: ToolDetectionLimits, prefix: string[] = []): string | null {
+/** Observe only the JVM that launches this runner, not daemon or test toolchains. */
+function javaRuntimeFromOutput(runner: "maven" | "gradle", runnerPath: string, output: string): JavaRuntimeProvenance {
+  const properties = new Map<string, Set<string>>();
+  for (const match of output.matchAll(/^[ \t]*(java\.version|java\.home|java\.vendor|file\.encoding|native\.encoding)[ \t]*=[ \t]*([^\r\n]*)$/gm)) {
+    const values = properties.get(match[1]!) ?? new Set<string>();
+    values.add(match[2]!.trim()); properties.set(match[1]!, values);
+  }
+  const bounded = (value: string | undefined, max = 1024): string | null => {
+    const text = value?.trim();
+    return text && text.length <= max && !/[\u0000-\u001f\u007f]/.test(text) ? text : null;
+  };
+  const observed = (key: string, fallback: string | undefined, max?: number): string | null => {
+    const values = properties.get(key);
+    if (values) return values.size === 1 ? bounded([...values][0], max) : null;
+    return bounded(fallback, max);
+  };
+  const mavenJava = runner === "maven" ? /^Java version:[ \t]*([^,\r\n]+),[ \t]*vendor:[ \t]*([^,\r\n]+),[ \t]*runtime:[ \t]*([^\r\n]+)$/im.exec(output) : null;
+  const gradleJava = runner === "gradle" ? /^(?:Launcher JVM|JVM):[ \t]*([^\s(]+)/im.exec(output)?.[1] : undefined;
+  return {
+    runner, runnerPath, role: "launcher", source: properties.size ? "runner-settings" : "runner-version",
+    javaVersion: observed("java.version", mavenJava?.[1] ?? gradleJava, 120),
+    javaHome: observed("java.home", mavenJava?.[3], 4096),
+    vendor: observed("java.vendor", mavenJava?.[2], 256),
+    fileEncoding: observed("file.encoding", runner === "maven" ? /\bplatform encoding:[ \t]*([^\s,\r\n]+)/i.exec(output)?.[1] : undefined, 64),
+    nativeEncoding: observed("native.encoding", undefined, 64),
+  };
+}
+
+function probe(command: string, name: string, cwd: string, limits: ToolDetectionLimits, prefix: string[] = [], observeJava?: (runtime: JavaRuntimeProvenance) => void): string | null {
   const remaining = remainingProbeMs(limits);
   if (remaining <= 0) return null;
   const identity = IDENTITIES[name];
   if (!identity) return null;
   try {
     const invocation = commandInvocation(command, [...prefix, ...identity.args]);
+    const env = childEnvironment();
+    const javaRunner = name === "mvn" ? "maven" : name === "gradle" ? "gradle" : undefined;
+    if (javaRunner) {
+      const option = javaRunner === "maven" ? "MAVEN_OPTS" : "JAVA_OPTS";
+      // Ask the selected runner's launcher to describe itself. A separate java
+      // command could resolve to a different runtime and cannot establish this.
+      env[option] = `${env[option] ?? ""} -XshowSettings:properties`.trim();
+    }
     const result = spawnSync(invocation.command, invocation.args, {
-      cwd, env: childEnvironment(), encoding: "utf8", timeout: Math.max(1, Math.floor(remaining)),
-      killSignal: "SIGKILL", maxBuffer: 8192, windowsHide: true,
+      cwd, env, encoding: "utf8", timeout: Math.max(1, Math.floor(remaining)),
+      killSignal: "SIGKILL", maxBuffer: javaRunner ? 32 * 1024 : 8192, windowsHide: true,
       windowsVerbatimArguments: invocation.windowsVerbatimArguments,
     });
     if (result.error || result.status !== 0 || remainingProbeMs(limits) <= 0) return null;
     const output = `${result.stdout}\n${result.stderr}`.replace(/\x1b\[[0-9;]*m/g, "");
-    return output.match(identity.pattern)?.[0].slice(0, 120) ?? null;
+    const version = output.match(identity.pattern)?.[0].slice(0, 120) ?? null;
+    if (version && javaRunner) observeJava?.(javaRuntimeFromOutput(javaRunner, command, output));
+    return version;
   } catch { return null; }
 }
 
-function resolveBin(cwd: string, names: string[], configured: boolean, versions: Record<string, string>, limits: ToolDetectionLimits): string | null {
+function resolveBin(cwd: string, names: string[], configured: boolean, versions: Record<string, string>, limits: ToolDetectionLimits, javaRuntimes?: JavaRuntimeProvenance[]): string | null {
   if (!configured || remainingProbeMs(limits) <= 0) return null;
   for (const name of names) {
     const candidates = [localBin(cwd, name), whichSync(name)];
     for (const candidate of new Set(candidates)) {
       if (remainingProbeMs(limits) <= 0) return null;
       if (!candidate) continue;
-      const version = probe(candidate, name, cwd, limits);
+      const version = probe(candidate, name, cwd, limits, [], (runtime) => javaRuntimes?.push(runtime));
       if (version) { versions[name] = version; return candidate; }
     }
   }
@@ -113,6 +151,7 @@ function resolveBin(cwd: string, names: string[], configured: boolean, versions:
 
 export function detectTools(cwd: string, limits: ToolDetectionLimits = {}): DetectedTools {
   const versions: Record<string, string> = {};
+  const javaRuntimes: JavaRuntimeProvenance[] = [];
   const pkg = readJson(path.join(cwd, "package.json"));
   const pyproject = readText(path.join(cwd, "pyproject.toml"));
   const requirements = [
@@ -185,12 +224,13 @@ export function detectTools(cwd: string, limits: ToolDetectionLimits = {}): Dete
 
   const goBin = resolveBin(cwd, ["go"], goPresent, versions, limits);
   const cargoBin = resolveBin(cwd, ["cargo"], cargoPresent, versions, limits);
-  const mavenBin = resolveBin(cwd, ["mvn"], mavenPresent, versions, limits);
+  const mavenBin = resolveBin(cwd, ["mvn"], mavenPresent, versions, limits, javaRuntimes);
   // A wrapper may download a distribution even for --version. Only use an installed Gradle.
-  const gradleBin = resolveBin(cwd, ["gradle"], gradlePresent, versions, limits);
+  const gradleBin = resolveBin(cwd, ["gradle"], gradlePresent, versions, limits, javaRuntimes);
 
   return {
     versions,
+    javaRuntimes,
     typescript,
     tscBin,
     eslint: eslintConfigured,

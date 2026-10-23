@@ -1,4 +1,5 @@
 import path from "node:path";
+import { executionUnitId } from "./execution-identity.js";
 import { builtinPlugins, type LanguagePlugin } from "./plugins/index.js";
 import { findCrateRoot } from "./plugins/rust.js";
 import type { PluginContext } from "./plugins/types.js";
@@ -22,11 +23,11 @@ export interface ToolUnit extends ExecutionUnitBase {
 
 export function configuredToolUnits(cwd: string, checkId: "typecheck" | "lint", tools: DetectedTools, enabled = true, project?: { path: string; policy: ProjectGatePolicy }): ToolUnit[] {
   const policy = project?.policy;
-  const prefix = `${checkId}:${project ? `project:${project.path}:` : ""}`;
+  const identity = (executor: string) => executionUnitId({ checkId, project: project?.path, executor, granularity: "repository" });
   const scope = [project?.path ?? "."];
   const base = { checkId, cwd, scope, ...(project ? { policy: { ...project.policy, project: project.path } } : {}) };
   if (policy?.mode === "not-applicable" || !enabled && policy?.mode !== "required") {
-    return [{ ...base, id: `${prefix}${policy?.mode === "not-applicable" ? "not-applicable" : "disabled"}`, name: checkId, command: null, args: [], required: false,
+    return [{ ...base, id: identity(policy?.mode === "not-applicable" ? "not-applicable" : "disabled"), name: checkId, command: null, args: [], required: false,
       reason: policy?.mode === "not-applicable" ? `Not applicable: ${policy.reason}` : `Disabled by config (gates.${checkId}: false)` }];
   }
   const templates = checkId === "typecheck" ? [
@@ -37,9 +38,9 @@ export function configuredToolUnits(cwd: string, checkId: "typecheck" | "lint", 
     { name: "eslint", configured: tools.eslint, command: tools.eslintBin, args: ["."] },
     { name: "ruff", configured: tools.ruff, command: tools.ruffBin, args: ["check", "."] },
   ];
-  const units = templates.filter((item) => item.configured || item.command).map((item) => ({ ...base, id: `${prefix}${item.name}`, name: item.name,
+  const units = templates.filter((item) => item.configured || item.command).map((item) => ({ ...base, id: identity(item.name), name: item.name,
     command: item.command, args: item.args, required: true, reason: item.command ? `${item.name} is configured` : `${item.name} configured but binary not found`, toolVersion: tools.versions?.[item.name] }));
-  return units.length ? units : [{ ...base, id: `${prefix}unconfigured`, name: checkId, command: null, args: [], required: policy?.mode === "required",
+  return units.length ? units : [{ ...base, id: identity("unconfigured"), name: checkId, command: null, args: [], required: policy?.mode === "required",
     reason: policy?.mode === "required" ? `Required ${checkId} has no configured executor` : `No ${checkId === "lint" ? "linter" : "typechecker"} configured` }];
 }
 
@@ -54,7 +55,7 @@ export interface TestUnit extends ExecutionUnitBase {
 }
 
 /** Plans and execution use the same unit identities and declared granularity. */
-export function testExecutionUnits(files: string[], plugins: readonly LanguagePlugin[] = builtinPlugins, context?: PluginContext): TestUnit[] {
+export function testExecutionUnits(files: string[], plugins: readonly LanguagePlugin[] = builtinPlugins, context?: PluginContext, identity?: { project: string }): TestUnit[] {
   const units: TestUnit[] = [];
   for (const plugin of plugins) {
     const selected = [...new Set(files)].filter((file) => plugin.extensions.includes(path.extname(file)));
@@ -67,7 +68,7 @@ export function testExecutionUnits(files: string[], plugins: readonly LanguagePl
     for (const [root, sourceFiles] of grouped) {
       const granularity = plugin.id === "rust" ? "crate" : plugin.id === "go" ? "package" : "file";
       const scope = granularity === "file" ? sourceFiles : [`${granularity}:${root}`];
-      units.push({ id: `tests:${plugin.id}${granularity === "file" ? "" : `:${root}`}`, plugin, sourceFiles, commandFiles: sourceFiles, scope, granularity, cwd: context?.cwd ?? ".", context, required: true });
+      units.push({ id: executionUnitId({ checkId: "tests", project: identity?.project, executor: plugin.id, granularity, target: root }), plugin, sourceFiles, commandFiles: sourceFiles, scope, granularity, cwd: context?.cwd ?? ".", context, required: true });
     }
   }
   return units;

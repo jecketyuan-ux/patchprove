@@ -1,7 +1,9 @@
 #!/usr/bin/env node
 import { validationIdentity } from "./validation-identity.mjs";
+import { verifyPackagedRuntime } from "./check-acceptance.mjs";
 import assert from "node:assert/strict";
-import { mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
+import { createHash } from "node:crypto";
+import { cp, mkdir, mkdtemp, readFile, rm, symlink, writeFile } from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
@@ -13,9 +15,22 @@ const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const temp = await mkdtemp(path.join(os.tmpdir(), "patchprove-package-"));
 const npmCli = process.env.npm_execpath;
 assert(npmCli, "Run this check with npm run test:package so npm's JS entry is known on all platforms");
-const report = { identity: validationIdentity(import.meta.url), schemaVersion: 1, node: process.version, platform: process.platform, install: "Local project tarball in a fresh consumer; declared dependencies downloaded with install scripts disabled", runtimeNetwork: "No application network calls are required for CLI and stdio MCP checks" };
+const reportOutput = process.env.PATCHPROVE_PACKAGE_REPORT ? path.resolve(process.env.PATCHPROVE_PACKAGE_REPORT) : null;
+const retained = reportOutput ? `${reportOutput}.data` : null;
+if (retained) await mkdir(retained, { recursive: true, mode: 0o700 });
+const report = { identity: validationIdentity(import.meta.url), schemaVersion: 1, status: "running", node: process.version, platform: process.platform, install: "Local project tarball in a fresh consumer; declared dependencies downloaded with install scripts disabled", runtimeNetwork: "No application network calls are required for CLI and stdio MCP checks", commands: [] };
 async function command(program, args, cwd = root, expected = 0, env) {
   const result = await runCommand(program, args, { cwd, timeoutMs: 180000, maxOutputBytes: 4 * 1024 * 1024, env });
+  if (retained) {
+    const stdout = result.stdoutBytes ?? Buffer.from(result.stdout), stderr = result.stderrBytes ?? Buffer.from(result.stderr);
+    const bytes = Buffer.concat([stdout, Buffer.from("\n"), stderr]);
+    const log = path.join(retained, `command-${report.commands.length + 1}.log`);
+    await writeFile(log, bytes, { mode: 0o600 });
+    report.commands.push({ command: program, args, cwd, exitCode: result.exitCode, expectedExitCode: expected,
+      timedOut: result.timedOut, aborted: result.aborted, truncated: result.truncated,
+      stdoutByteLength: stdout.length, stderrByteLength: stderr.length,
+      log: { path: log, bytes: bytes.length, sha256: createHash("sha256").update(bytes).digest("hex") } });
+  }
   assert.equal(result.exitCode, expected, `${result.command}\n${result.stdout}\n${result.stderr}`); return result;
 }
 try {
@@ -24,7 +39,16 @@ try {
   assert(pack.files.some((item) => item.path === "dist/cli.js"));
   assert(pack.files.some((item) => item.path === "dist/mcp.js"));
   assert(!pack.files.some((item) => item.path.startsWith("docs/reviews/")), "Historical audit materials must not ship as product docs");
-  const { mkdir } = await import("node:fs/promises");
+  assert(!pack.files.some((item) => item.path.startsWith("docs/validation/")), "Raw candidate ledgers must remain in the repository, outside the ordinary installation package");
+  assert(pack.files.some((item) => item.path === "docs/host-acceptance.md"), "Current support and acceptance instructions must ship");
+  report.package = { filename: pack.filename, integrity: pack.integrity, shasum: pack.shasum, version: pack.version, compressedBytes: pack.size, unpackedBytes: pack.unpackedSize, files: pack.entryCount };
+  const archive = await readFile(path.join(temp, pack.filename));
+  report.package.runtimeInputsMatched = verifyPackagedRuntime(archive, report.identity.inputs).inputsMatched;
+  if (retained) {
+    const destination = path.join(retained, "patchprove.tgz");
+    await writeFile(destination, archive, { mode: 0o600 });
+    report.package.archive = { path: destination, bytes: archive.length, sha256: createHash("sha256").update(archive).digest("hex") };
+  }
   const consumer = path.join(temp, "consumer"); await mkdir(consumer);
   await writeFile(path.join(consumer, "package.json"), JSON.stringify({ name: "patchprove-empty-consumer", private: true, type: "module" }));
   await command(process.execPath, [npmCli, "install", "--ignore-scripts", "--no-audit", "--no-fund", "--cache", path.join(temp, "npm-cache"), path.join(temp, pack.filename)], consumer);
@@ -42,7 +66,7 @@ try {
   const evidence = path.join(temp, "evidence.json"), receipt = path.join(temp, "evidence.receipt.json");
   await command(process.execPath, [cli, "run", "--cwd", repo, "--disable-gate", "typecheck", "--disable-gate", "lint", "--disable-gate", "tests", "--out", evidence, "--receipt", receipt], consumer);
   const json = JSON.parse(await readFile(evidence, "utf8"));
-  assert.equal(json.schemaVersion, "2.0.0");
+  assert.equal(json.schemaVersion, "2.1.0");
   await command(process.execPath, [cli, "receipt", "verify", evidence, receipt], consumer);
   const exports = await import(pathToFileURL(path.join(installed, "dist/index.js")).href);
   assert.equal(typeof exports.analyze, "function");
@@ -81,17 +105,48 @@ try {
   const artifact = JSON.parse(await readFile(path.join(incoming, "evidence.json"), "utf8"));
   artifact.summary.risk = "critical"; await writeFile(path.join(incoming, "evidence.json"), JSON.stringify(artifact));
   await command(process.execPath, publisherArgs, consumer, 1, { GITHUB_EVENT_PATH: eventPath });
-  report.publisher = "trusted rendering accepts matching receipt/head and rejects wrong head or tampered evidence; no publication performed";
+  // A genuine installed runner creates a portable archive; verify a moved pack
+  // after deleting the original location, then reject a modified raw report.
+  await writeFile(path.join(repo, "package.json"), JSON.stringify({ private: true, type: "module", devDependencies: { vitest: "4.1.12" } }));
+  await writeFile(path.join(repo, ".gitignore"), "node_modules/\n");
+  await mkdir(path.join(repo, "test"));
+  await writeFile(path.join(repo, "test/smoke.test.js"), "import { test, expect } from 'vitest';\ntest('installed archive', () => expect(2 + 2).toBe(4));\n");
+  await symlink(path.join(root, "node_modules"), path.join(repo, "node_modules"), process.platform === "win32" ? "junction" : "dir");
+  await command("git", ["add", "."], repo);
+  await command("git", ["-c", "user.name=package-smoke", "-c", "user.email=smoke@example.invalid", "-c", "commit.gpgsign=false", "commit", "-m", "archive baseline"], repo);
+  const archiveBase = (await command("git", ["rev-parse", "HEAD"], repo)).stdout.trim();
+  await writeFile(path.join(repo, "test/smoke.test.js"), (await readFile(path.join(repo, "test/smoke.test.js"), "utf8")) + "// archive verification change\n");
+  await command("git", ["add", "."], repo);
+  await command("git", ["-c", "user.name=package-smoke", "-c", "user.email=smoke@example.invalid", "-c", "commit.gpgsign=false", "commit", "-m", "archive change"], repo);
+  const archiveHead = (await command("git", ["rev-parse", "HEAD"], repo)).stdout.trim();
+  const archived = path.join(temp, "archived"); await mkdir(archived);
+  await command(process.execPath, [cli, "run", "--cwd", repo, "--base", archiveBase, "--head", archiveHead, "--disable-gate", "typecheck", "--disable-gate", "lint", "--out", path.join(archived, "evidence.json"), "--reports-dir", path.join(archived, "machine-reports")], consumer);
+  const archivedEvidence = JSON.parse(await readFile(path.join(archived, "evidence.json"), "utf8"));
+  const rawReport = archivedEvidence.executionRecords.flatMap((record) => record.testExecution?.reports ?? [])[0];
+  assert(rawReport && !path.isAbsolute(rawReport.path), "Persisted raw-report references must be portable");
+  const relocated = path.join(temp, "relocated"); await cp(archived, relocated, { recursive: true }); await rm(archived, { recursive: true, force: true });
+  event.workflow_run.head_sha = archiveHead; await writeFile(eventPath, JSON.stringify(event));
+  await command(process.execPath, [path.join(root, "scripts/verify-publish.mjs"), relocated], consumer, 0, { GITHUB_EVENT_PATH: eventPath });
+  if (retained) {
+    const destination = path.join(retained, "publisher-valid");
+    await cp(relocated, destination, { recursive: true });
+    report.publisherArtifacts = destination;
+  }
+  await writeFile(path.join(relocated, rawReport.path), "{}\n");
+  await command(process.execPath, [path.join(root, "scripts/verify-publish.mjs"), relocated], consumer, 1, { GITHUB_EVENT_PATH: eventPath });
+  report.publisher = "trusted rendering validates matching head/receipt, portable raw-report replay after relocation, and rejects wrong head or tampered evidence/report; no publication performed";
   if (process.env.PATCHPROVE_PRODUCTION_ENGINES) {
     const { verifyProductionChain } = await import("./test-production.mjs");
     const production = await verifyProductionChain(installed, process.env.PATCHPROVE_PRODUCTION_ENGINES.split(","));
     report.productionCases = production.cases.length;
   }
-  report.package = { filename: pack.filename, integrity: pack.integrity, shasum: pack.shasum, version: metadata.version };
+  report.package.version = metadata.version;
   report.cli = "version, help, strict protocol-2 evidence, receipt verification, public module import";
-  if (process.env.PATCHPROVE_PACKAGE_REPORT) {
-    const out = path.resolve(process.env.PATCHPROVE_PACKAGE_REPORT);
-    await mkdir(path.dirname(out), { recursive: true }); await writeFile(out, JSON.stringify(report, null, 2) + "\n");
-  }
+  report.status = "passed";
   console.log(JSON.stringify(report, null, 2));
-} finally { await rm(temp, { recursive: true, force: true }); }
+} catch (error) {
+  report.status = "failed"; report.error = String(error); throw error;
+} finally {
+  if (reportOutput) { await mkdir(path.dirname(reportOutput), { recursive: true }); await writeFile(reportOutput, JSON.stringify(report, null, 2) + "\n", { mode: 0o600 }); }
+  await rm(temp, { recursive: true, force: true });
+}

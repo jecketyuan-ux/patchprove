@@ -1,18 +1,26 @@
 {
   "schemaVersion": 1,
-  "candidateCodeCommit": "fbaa4cbe8bd436dc67026d6cbdf5f3d8d5bb4740",
-  "candidateCodeTree": "3f3939c0a7c77b06828874b6466d01ddf6bfcddf",
-  "runtimeDigest": "22b315219c13ae0c25810318f12dd78a9158974c2f2ec3f7ec5957221f1f008e",
-  "record": "fbaa4cb/candidate.json",
+  "candidateCodeCommit": null,
+  "candidateCodeTree": null,
+  "runtimeDigest": null,
+  "record": null,
   "pullRequest": "https://github.com/jecketyuan-ux/patchprove/pull/18",
-  "releaseStatus": "unreleased; live host/publisher acceptance remains experimental",
+  "releaseStatus": "blocked: R01\u2013R10 stabilization; Windows production failed and complete live host/publisher acceptance is not-run",
   "historicalRecords": [
+    "fbaa4cb/candidate.json",
     "21a1d15/candidate.json"
   ],
   "ciPolicy": "Use current PR head checks, not an earlier green run.",
   "supportConditions": {
-    "windowsJava": "Current runtime CI uses Gradle 8.12.1 with JDK21 and explicit UTF-8 before daemon startup. Windows JDK17 non-ASCII production attempts failed, including step-only UTF-8; the archived pending condition is superseded. Check current PR head results.",
+    "windowsJava": "Previous Gradle 8.12.1/JDK17 and JDK21 UTF-8 installed attempts failed on non-ASCII/space paths. Current CI experiments with pinned Gradle 9.8.2; no Windows pass is claimed until the original scenarios pass on that candidate.",
     "otherJavaPlatforms": "Linux/macOS use JDK17.",
     "fixtureDelivery": "Historical signed evidence fixture is tracked through a precise ignore exception and passed three compatibility tests in a clean export."
+  },
+  "currentAcceptance": {
+    "status": "blocked",
+    "record": null,
+    "pullRequest": "https://github.com/jecketyuan-ux/patchprove/pull/18",
+    "implementation": "../../upgrades/2.0-stabilization.md",
+    "identityNotice": "Current candidate identity is unset until a committed implementation and its actual CI/acceptance records are bound; historical successes do not establish current acceptance"
   }
 }

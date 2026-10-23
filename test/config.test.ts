@@ -11,6 +11,17 @@ import {
 } from "../src/config.js";
 
 describe("parseConfigText", () => {
+  it("retains an explicit repository identity through resolved configuration", () => {
+    const parsed = parseConfigText("repositoryId: '  example.org/team/project  '\n", "cfg");
+    expect(parsed.repositoryId).toBe("example.org/team/project");
+    expect(mergeConfig({ ...parsed, sourcePath: "/tmp/.patchprove.yml" }, {}).repositoryId).toBe("example.org/team/project");
+    expect(parseConfigObject({}, "cfg").repositoryId).toBeUndefined();
+  });
+
+  it.each([null, 42, "", "   ", "line\nbreak", "x".repeat(257), "界".repeat(86)])("rejects an invalid explicit repository identity %j", (repositoryId) => {
+    expect(() => parseConfigObject({ repositoryId }, "cfg")).toThrow(/repositoryId/);
+  });
+
   it.each([
     { path: "../escape", gates: { tests: "required" } },
     { path: "api", gates: { tests: "not-applicable" } },

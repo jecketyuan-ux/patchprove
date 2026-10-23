@@ -35,9 +35,13 @@ export type {
   EffectivePolicy,
   TestExecution,
   EnvironmentProvenance,
+  PluginProvenance,
+  JavaRuntimeProvenance,
+  ReportArtifactReference,
 } from "./types.js";
 export { DEFAULT_INPUT_LIMITS, InputBudgetError, resolveInputLimits, withInputBudget } from "./input-budget.js";
 export type { InputLimits } from "./input-budget.js";
+export { verifyReportArchive } from "./report-archive.js";
 export { emptyContractResult, emptyDetectedTools, RECEIPT_SCHEMA_VERSION } from "./types.js";
 export {
   classifyPath,

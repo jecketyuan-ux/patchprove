@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import { buildEvidence } from "../src/evidence.js";
 import { buildHookResponse, hookFailurePayload, parseHookContext } from "../src/hook.js";
+import { DEFAULT_INPUT_LIMITS } from "../src/input-budget.js";
 import type { ProvePatchResult } from "../src/mcp-tools.js";
 import type { Evidence } from "../src/types.js";
 
@@ -25,7 +26,10 @@ function pack(partial: Pick<Evidence, "gaps"> & Partial<Pick<Evidence, "findings
     mergeBase: null, currentHead: "abc", tree: "abc", contentHash: "sha256:fixture", patchHash: "sha256:patch", dirty: false, consistent: true };
   evidence.effectivePolicy = { protocol: 2, strict: true, failOn: "high", failOnNewGaps: null,
     gates: { typecheck: false, lint: false, tests: false, secrets: false }, ignorePaths: [], acceptGaps: [], plugins: [],
-    config: null, spec: null, baseline: null, hash: "sha256:policy" };
+    config: null, spec: null, baseline: null, hash: "sha256:policy", pluginSetHash: `sha256:${"ab".repeat(32)}` };
+  evidence.environment = { platform: "linux", arch: "x64", nodeVersion: "v24.19.0", gitVersion: "git 2",
+    tools: [], dependencyLocks: [], inputLimits: DEFAULT_INPUT_LIMITS, hermetic: false,
+    plugins: [], reportRetention: "not-requested" };
   evidence.executionRecords = [];
   evidence.verificationPlan = [];
   return {
@@ -37,11 +41,18 @@ function pack(partial: Pick<Evidence, "gaps"> & Partial<Pick<Evidence, "findings
 }
 
 describe("buildHookResponse", () => {
-  it("returns empty payload when there are no open gaps", () => {
+  it("returns empty payload when current provenance is complete and there are no open gaps", () => {
     const result = pack({ gaps: [] });
     expect(buildHookResponse(result, "claude-code", "stop").payload).toEqual({});
     expect(buildHookResponse(result, "cursor", "stop").payload).toEqual({});
     expect(buildHookResponse(result, "claude-code", "post").blocked).toBe(false);
+  });
+
+  it("blocks a new completion when an otherwise successful old pack lacks plugin provenance", () => {
+    const result = pack({ gaps: [] });
+    delete result.evidence.environment;
+    expect(buildHookResponse(result, "claude-code", "stop").blocked).toBe(true);
+    expect(buildHookResponse(result, "cursor", "stop").payload.followup_message).toMatch(/incomplete/);
   });
 
   it("blocks Claude Code Stop when open gaps remain", () => {

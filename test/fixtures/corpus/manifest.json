@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "corpusKind": "seeded-local",
-  "description": "Three deterministic local patches. No claim of real-world accuracy or a 50-patch corpus.",
+  "description": "Five deterministic local patches, including independent full-suite truth for changed-test importers and static imports between comment-marker strings. No population accuracy claim.",
   "commit": {
     "authorName": "patchprove fixtures",
     "authorEmail": "fixtures@example.invalid",
@@ -83,6 +83,60 @@
         "src/spare.test.js",
         "test/dynamic.test.js"
       ]
+    },
+    {
+      "id": "changed-test-importer",
+      "repository": {
+        "kind": "seed",
+        "path": "dependency-regressions",
+        "baseCommit": "57d46d19a97920e0e4e39a760fbfa5f121bd3205"
+      },
+      "patch": "patches/changed-test-importer.patch",
+      "patchHash": "ae67d4354ef7e45c74ab7cc462a3b699265912d2f2045f9fa3183695f9385e1e",
+      "license": {
+        "spdx": "MIT",
+        "path": "dependency-regressions/LICENSE"
+      },
+      "environment": {
+        "runtime": "node",
+        "minimumMajor": 22,
+        "platform": "any",
+        "network": false
+      },
+      "tests": [
+        "test/value.test.js",
+        "test/dependent.test.js",
+        "test/shared.test.js",
+        "test/consumer.test.js"
+      ],
+      "requireNoMisses": true
+    },
+    {
+      "id": "comment-string-import",
+      "repository": {
+        "kind": "seed",
+        "path": "dependency-regressions",
+        "baseCommit": "57d46d19a97920e0e4e39a760fbfa5f121bd3205"
+      },
+      "patch": "patches/comment-string-import.patch",
+      "patchHash": "b735970fb99daf7631211196adc3d97f0457365f9e118d465f5b6163c71b36ab",
+      "license": {
+        "spdx": "MIT",
+        "path": "dependency-regressions/LICENSE"
+      },
+      "environment": {
+        "runtime": "node",
+        "minimumMajor": 22,
+        "platform": "any",
+        "network": false
+      },
+      "tests": [
+        "test/value.test.js",
+        "test/dependent.test.js",
+        "test/shared.test.js",
+        "test/consumer.test.js"
+      ],
+      "requireNoMisses": true
     }
   ]
 }

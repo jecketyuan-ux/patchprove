@@ -3,13 +3,13 @@ import { generateKeyPairSync } from "node:crypto";
 import { mkdirSync, mkdtempSync, readFileSync, realpathSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, describe, expect, it } from "vitest";
 import { buildEvidence } from "../src/evidence.js";
-import * as graph from "../src/graph.js";
 import { attachReceiptRef, buildReceipt, hashCanonical, hashEvidence, hashReceiptPayload, publicKeyFingerprint, verifyReceipt } from "../src/receipt.js";
 import type { EffectivePolicy, Evidence, EvidenceReceipt, ExecutionRecord, RunOptions } from "../src/types.js";
 import { validateEvidence, validateReceipt } from "../src/validation.js";
 import { failOnOutcomeOf } from "../src/run.js";
+import { DEFAULT_INPUT_LIMITS } from "../src/input-budget.js";
 
 const fixtureKey = "hmac:receipt-v2-fixture-key";
 const roots: string[] = [];
@@ -20,7 +20,7 @@ function modernEvidence(): Evidence {
     id: "tests:fixture", checkId: "tests", scope: ["src/value.test.ts"], status: "passed",
     command: "node", args: ["--test", "src/value.test.ts"], cwd: "/tmp/fixture",
     exitCode: 0, durationMs: 12, collectedTests: 1, outputHash: digest("b"),
-    testExecution: { parserVersion: "1", format: "vitest-json", reportStatus: "validated", granularity: "file", requestedScope: ["src/value.test.ts"], collectedScope: ["src/value.test.ts"], executedScope: ["src/value.test.ts"], skippedScope: [], unknownScope: [], counts: { collected: 1, executed: 1, passed: 1, failed: 0, skipped: 0 } },
+    testExecution: { parserVersion: "1", format: "vitest-json", reportStatus: "validated", reportRetention: "not-retained", granularity: "file", requestedScope: ["src/value.test.ts"], collectedScope: ["src/value.test.ts"], executedScope: ["src/value.test.ts"], skippedScope: [], unknownScope: [], counts: { collected: 1, executed: 1, passed: 1, failed: 0, skipped: 0 } },
   };
   const base = buildEvidence({
     cwd: "/tmp/fixture", root: "/tmp/fixture", generatedAt: "2026-10-22T00:00:00.000Z",
@@ -32,7 +32,7 @@ function modernEvidence(): Evidence {
   const policy: Omit<EffectivePolicy, "hash"> = {
     protocol: 2, strict: true, failOn: null, failOnNewGaps: null,
     gates: { typecheck: false, lint: false, tests: true, secrets: false },
-    ignorePaths: [], acceptGaps: [], plugins: [], config: null, spec: null, baseline: null,
+    ignorePaths: [], acceptGaps: [], plugins: [], pluginSetHash: `sha256:${digest("f")}`, config: null, spec: null, baseline: null,
   };
   const evidence: Evidence = {
     ...base, schemaVersion: "2.0.0", toolVersion: "2.0.0",
@@ -41,6 +41,8 @@ function modernEvidence(): Evidence {
     verificationPlan: [{ id: record.id, checkId: "tests", scope: record.scope, required: true, reason: "changed test" }],
     verification: { status: "passed", strict: true, reasons: [] },
     effectivePolicy: { ...policy, hash: hashCanonical(policy) },
+    environment: { platform: "linux", arch: "x64", nodeVersion: "v24.19.0", gitVersion: "git 2", tools: [], dependencyLocks: [],
+      inputLimits: DEFAULT_INPUT_LIMITS, hermetic: false, plugins: [], reportRetention: "not-requested" },
   };
   return validateEvidence(evidence, "v2 fixture");
 }
@@ -74,7 +76,6 @@ function repo(): string {
   return root;
 }
 afterEach(() => {
-  vi.restoreAllMocks();
   for (const root of roots.splice(0)) rmSync(root, { recursive: true, force: true });
 });
 
@@ -86,6 +87,10 @@ describe("protocol 2 receipt authentication", () => {
     expect(receipt.schemaVersion).toBe("2.0.0");
     expect(receipt.canonicalizationVersion).toBe("2");
     expect(verifyReceipt(evidence, receipt, fixtureKey, { requireSignature: true, allowLegacy: false })).toMatchObject({ ok: true, hashMatches: true, payloadMatches: true, signature: "verified", legacy: false });
+    const explanation = verifyReceipt(evidence, receipt, fixtureKey, { requireSignature: true, allowLegacy: false }).message;
+    expect(explanation).toContain("authenticated payload matches");
+    expect(explanation).not.toContain("legacy");
+    expect(explanation).not.toContain("metadata is not authenticated");
     expect(hashEvidence(attachReceiptRef(evidence, receipt, { path: "evidence.receipt.json" }))).toBe(receipt.contentHash);
   });
 
@@ -192,6 +197,8 @@ describe("legacy receipt hash compatibility", () => {
     const receipt = buildReceipt({ evidence, exitCode: 0, failOnOutcome: { failed: false, reason: "ok" } });
     expect(receipt.schemaVersion).toBe("1.2.0");
     expect(verifyReceipt(evidence, receipt)).toMatchObject({ ok: true, legacy: true });
+    expect(verifyReceipt(evidence, receipt).message).toContain("legacy evidence-only receipt; metadata is not authenticated");
+    expect(verifyReceipt(evidence, receipt).message).not.toContain("authenticated payload matches");
     expect(verifyReceipt(evidence, receipt, null, { allowLegacy: false }).ok).toBe(false);
   });
 });
@@ -204,7 +211,7 @@ describe("real analyzed snapshot receipt identity", () => {
     write(root, "src/value.ts", "export const value = 2;\n");
     const first = validateEvidence(await analyze(options));
     const second = validateEvidence(await analyze(options));
-    expect(first.schemaVersion).toBe("2.0.0");
+    expect(first.schemaVersion).toBe("2.1.0");
     expect(first.snapshot?.contentHash).toBe(second.snapshot?.contentHash);
     expect(hashEvidence(first)).toBe(hashEvidence(second));
     const firstReceipt = receiptFor(first);
@@ -265,7 +272,7 @@ describe("real analyzed snapshot receipt identity", () => {
     const options: RunOptions = { cwd: root, out: path.join(root, "evidence.json"), format: "json", json: true, protocol: 2, disableGate: ["typecheck", "lint", "tests", "secrets"] };
     const first = validateEvidence(await analyze(options));
     expect(first.effectivePolicy?.spec?.inputs).toEqual([
-      { path: path.join(root, "SPEC.md"), hash: hashCanonical(readFileSync(path.join(root, "SPEC.md"), "utf8")) },
+      { path: "SPEC.md", hash: hashCanonical(readFileSync(path.join(root, "SPEC.md"), "utf8")) },
       { path: linked, hash: hashCanonical(initialYaml) },
     ]);
     writeFileSync(linked, "requiredGates: []\nmaxResidualRisk: high\n");
@@ -287,13 +294,17 @@ describe("real analyzed snapshot receipt identity", () => {
     const linked = path.join(external, "policy.yml");
     writeFileSync(linked, "requiredGates: []\nmaxResidualRisk: medium\n");
     write(root, "SPEC.md", `[Policy](${linked})\n`);
-    const original = graph.buildImportGraph;
-    vi.spyOn(graph, "buildImportGraph").mockImplementation((...args) => {
-      const result = original(...args);
-      writeFileSync(linked, "requiredGates: []\nmaxResidualRisk: high\n");
-      return result;
-    });
-    const evidence = await analyze({ cwd: root, out: path.join(root, "evidence.json"), format: "json", json: true, protocol: 2, disableGate: ["typecheck", "lint", "tests", "secrets"] });
+    // An authorized plugin is loaded after the contract. Its real side effect
+    // crosses the same process boundary as normal plugin execution.
+    write(root, ".patchprove/plugins/policy-mutator.mjs", `
+      import { writeFileSync } from "node:fs";
+      writeFileSync(${JSON.stringify(linked)}, "requiredGates: []\\nmaxResidualRisk: high\\n");
+      export default {
+        id: "policy-mutator", languages: ["other"], extensions: [".widget"],
+        isTestFile() { return false; }, testCandidates() { return []; }
+      };
+    `);
+    const evidence = await analyze({ cwd: root, out: path.join(root, "evidence.json"), format: "json", json: true, protocol: 2, allowPlugins: true, disableGate: ["typecheck", "lint", "tests", "secrets"] });
     expect(evidence.snapshot?.consistent).toBe(false);
     expect(evidence.verification?.status).not.toBe("passed");
   });

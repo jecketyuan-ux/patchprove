@@ -2,14 +2,14 @@
 title: Execution facts and strict completion
 ---
 
-Windows Gradle 8.12.1 acceptance uses JDK 21 and explicit
-`JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8` from the beginning of the runtime job,
-before any Gradle daemon starts. Linux/macOS exercise JDK 17. JDK 17 on Windows
-with non-ASCII fixture paths failed to load test classes, including the attempt
-that set UTF-8 only for the later installation step; that combination is not
-claimed as supported. An infrastructure failure remains failed/unknown, never
-an attributed failing assertion. Current-head CI results, rather than a configured
-matrix alone, establish which candidate has passed these conditions.
+Windows Gradle 8.12.1 installed acceptance remains **failed**. JDK17 and the
+JDK21 attempt with explicit `JAVA_TOOL_OPTIONS=-Dfile.encoding=UTF-8` both failed
+to load test classes on the retained non-ASCII/space paths. Linux/macOS exercise
+JDK17. Changing the declared encoding or JDK is not a demonstrated fix. An
+infrastructure failure remains failed/unknown, never an attributed failing
+assertion. Current-head CI results, rather than a configured matrix alone,
+establish which candidate has passed these conditions. See the
+[release gates](upgrades/2.0-stabilization.md).
 
 An argument passed to a runner is a request, not evidence that a test ran. New producer records include `testExecution`: requested, collected, executed, skipped and unknown scopes; separate case counts; parser/format identity; report status and digest. `ExecutionRecord.scope` contains observed execution scopes. Required unknown or skipped work keeps strict verification incomplete, even when the process exits zero. A report with failed cases establishes failure.
 

@@ -111,20 +111,15 @@ export function buildImpact(
 
   for (const file of visible) {
     const test = isTestFile(file.path, plugins, file.status === "deleted" ? options?.basePluginContext : context);
-    const inlineSourceTest = test && !isTestFile(file.path, plugins);
-    if (test && !inlineSourceTest) {
+    if (test) {
       if (file.status === "deleted") {
         unmapped(file.path, "Deleted test removes verification coverage; surviving coverage cannot be inferred");
-      } else if (existing.has(normalizeRel(file.path))) {
-        mappedTests.push({ source: file.path, tests: [file.path], via: "naming" });
-        mappingEvidence.push({ source: file.path, test: file.path, via: "naming", precision: "structural", origin: "changed-test", freshness: "current" });
-        vias.push("naming");
-      } else {
+      } else if (!existing.has(normalizeRel(file.path))) {
         unmapped(file.path, "Changed test is absent from the execution snapshot");
+        continue;
       }
-      continue;
     }
-    if (!isMappableSource(file.path, plugins)) {
+    if (!test && !isMappableSource(file.path, plugins)) {
       const reason = unsupportedMappingReason(file.path);
       if (reason) unmapped(file.path, reason);
       continue;
@@ -138,13 +133,13 @@ export function buildImpact(
       plugins,
       file.status === "deleted" ? options?.basePluginContext ?? context : context,
     );
-    if (inlineSourceTest && file.status !== "deleted" && existing.has(normalizeRel(file.path))) {
+    if (test && file.status !== "deleted" && existing.has(normalizeRel(file.path))) {
       if (!tests.includes(file.path)) tests.push(file.path);
       evidence.push({ source: file.path, test: file.path, via: "naming", precision: "structural", origin: "changed-test", freshness: "current" });
       if (!origins.includes("naming")) origins.push("naming");
       tests.sort();
     }
-    if (file.status === "deleted" && !options?.baseGraph) {
+    if (file.status === "deleted" && !options?.baseGraph && !unmappedReasons[file.path]) {
       unmapped(file.path, "Deleted source requires a base revision dependency graph to establish affected tests");
     }
     if (tests.length > 0) {
@@ -158,15 +153,17 @@ export function buildImpact(
 
   const availableGraphs = [graph, options?.baseGraph].filter((candidate): candidate is ImportGraph => candidate != null);
   const dynamicGraph = availableGraphs.find((candidate) => candidate.diagnostics?.some((diagnostic) =>
-    ["mapping-dynamic-dependency", "mapping-unresolved-internal-import", "mapping-unreadable-file", "mapping-invalid-configuration"].includes(diagnostic.code)));
+    ["mapping-dynamic-dependency", "mapping-unresolved-internal-import", "mapping-unreadable-file", "mapping-invalid-configuration", "mapping-parse-error"].includes(diagnostic.code)));
   if (dynamicGraph) {
+    const fallbackOrigin = dynamicGraph.diagnostics?.some((item) => item.code === "mapping-dynamic-dependency")
+      ? "dynamic-fallback" : dynamicGraph.diagnostics?.some((item) => item.code === "mapping-parse-error")
+        ? "parse-error-fallback" : "unresolved-internal-fallback";
     const fallbackTests = [...new Set(availableGraphs.flatMap((candidate) =>
       [...(candidate.tests ?? new Set([...candidate.importers.values()].flat()))],
     ))].filter((test) => existing.has(test)).sort();
     for (const file of visible) {
-      // Test-only edits already select the changed test. Production, fixtures,
-      // and configuration can affect a dependency expression anywhere in the suite.
-      if (isTestFile(file.path, plugins)) continue;
+      // Tests can export shared helpers or contain dependencies used by other
+      // tests. Uncertainty must not discard their possible consumers either.
       if (!isSourceFile(file.path, plugins) && unsupportedMappingReason(file.path) === null) continue;
       if (fallbackTests.length === 0) continue;
       const mapped = mappedTests.find((entry) => entry.source === file.path);
@@ -178,7 +175,7 @@ export function buildImpact(
         mappedTests.push({ source: file.path, tests: fallbackTests, via: "graph" });
       }
       for (const test of fallbackTests) {
-        mappingEvidence.push({ source: file.path, test, via: "graph", precision: "heuristic", origin: dynamicGraph.diagnostics?.some((item) => item.code === "mapping-dynamic-dependency") ? "dynamic-fallback" : "unresolved-internal-fallback", freshness: "unknown", inputHash: dynamicGraph.inputHash });
+        mappingEvidence.push({ source: file.path, test, via: "graph", precision: "heuristic", origin: fallbackOrigin, freshness: "unknown", inputHash: dynamicGraph.inputHash });
       }
       vias.push("graph");
       if (file.status !== "deleted" && isSourceFile(file.path, plugins)) {

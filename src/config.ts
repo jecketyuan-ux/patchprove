@@ -17,7 +17,7 @@ import type {
 
 const CONFIG_NAMES = [".patchprove.yml", ".patchprove.yaml"] as const;
 const CHECK_IDS: CheckId[] = ["typecheck", "lint", "tests", "secrets"];
-const CONFIG_KEYS = ["failOn", "ignorePaths", "gates", "acceptGaps", "baseline", "failOnNewGaps", "spec", "plugins", "projects"];
+const CONFIG_KEYS = ["failOn", "ignorePaths", "gates", "acceptGaps", "baseline", "failOnNewGaps", "spec", "plugins", "projects", "repositoryId"];
 
 export interface ConfigParseOptions {
   strict?: boolean;
@@ -159,6 +159,14 @@ export interface FileConfig {
   plugins: string[];
   diagnostics?: Diagnostic[];
   projects?: ProjectPolicy[];
+  repositoryId?: string;
+}
+
+function parseRepositoryId(value: unknown, source: string): string {
+  if (typeof value !== "string" || !value.trim() || /[\x00-\x1f\x7f]/.test(value) || Buffer.byteLength(value.trim(), "utf8") > 256) {
+    throw new Error(`${source}: repositoryId must be a nonempty string of at most 256 UTF-8 bytes without control characters`);
+  }
+  return value.trim();
 }
 
 function parseProjects(value: unknown, source: string): ProjectPolicy[] {
@@ -216,6 +224,7 @@ export function parseConfigObject(raw: unknown, source: string, options: ConfigP
     failOnNewGaps: parseFailOn(rec.failOnNewGaps, `${source}: failOnNewGaps`),
     spec: parseOptionalPath(rec.spec, `${source}: spec`),
     plugins: parseStringList(rec.plugins, `${source}: plugins`),
+    ...(rec.repositoryId !== undefined ? { repositoryId: parseRepositoryId(rec.repositoryId, source) } : {}),
     ...(rec.projects !== undefined ? { projects: parseProjects(rec.projects, source) } : {}),
   };
 }
@@ -299,6 +308,7 @@ export function mergeConfig(
     failOnNewGaps,
     spec: options.spec ?? file?.spec ?? null,
     plugins: file?.plugins ?? [],
+    ...(file?.repositoryId ? { repositoryId: file.repositoryId } : {}),
     ...(file?.projects ? { projects: file.projects } : {}),
     strict: options.strict ?? options.protocol !== 1,
     protocol: options.protocol ?? 2,

@@ -1,0 +1,9 @@
+{
+  "sourceCommit": "4d83579a2cbfe352aadee1e920f78475d2581988",
+  "generatedAt": "2026-10-23T09:38:20.061Z",
+  "compiler": "typescript@5.9.3",
+  "runner": "vitest@4.1.12",
+  "node": "v24.19.0",
+  "fixtureKey": "hmac:public-legacy-v2-observed-fixture-key",
+  "interpretation": "Generated from the immutable earlier 2.0 producer with a real Vitest execution. This is a compatibility control generated now, not a claim that this fixture ran at the historical commit date."
+}

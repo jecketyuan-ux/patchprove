@@ -6,6 +6,7 @@ import { basenameNoExt, extname, normalizeRel, parentDir } from "../paths.js";
 import type { DetectedTools } from "../types.js";
 import type { LanguagePlugin, PluginContext, PluginTestCommand } from "./types.js";
 import { uniqueSorted } from "./types.js";
+import { parseJsDependencies } from "./js-parser.js";
 
 export const JS_EXTS = new Set([".js", ".jsx", ".mjs", ".cjs"]);
 export const TS_EXTS = new Set([".ts", ".tsx", ".mts", ".cts"]);
@@ -55,26 +56,8 @@ export function jsTestCandidates(filePath: string): string[] {
   return uniqueSorted(candidates);
 }
 
-const IMPORT_FROM_RE =
-  /(?:^|[^.\w$])(?:import(?:\s+type)?|export(?:\s+type)?)\s+(?:\*\s+as\s+[\w$]+|\*|\{[^}]*\}|[\w$]+(?:\s*,\s*\{[^}]*\})?)\s+from\s*['"]([^'"]+)['"]/g;
-const SIDE_EFFECT_IMPORT_RE = /(?:^|[^.\w$])import\s*['"]([^'"]+)['"]/g;
-const REQUIRE_OR_DYNAMIC_RE = /(?:^|[^.\w$])(?:require|import)\s*\(\s*['"]([^'"]+)['"]/g;
-const STATIC_TEMPLATE_IMPORT_RE = /(?:^|[^.\w$])(?:require|import)\s*\(\s*`((?:(?!\$\{)[^`])+)`/g;
-
-export function parseJsImports(sourceText: string): string[] {
-  const stripped = sourceText
-    .replace(/\/\*[\s\S]*?\*\//g, " ")
-    .replace(/(^|[^:\\\w])\/\/.*$/gm, "$1");
-  const specs: string[] = [];
-  for (const re of [IMPORT_FROM_RE, SIDE_EFFECT_IMPORT_RE, REQUIRE_OR_DYNAMIC_RE, STATIC_TEMPLATE_IMPORT_RE]) {
-    re.lastIndex = 0;
-    let match: RegExpExecArray | null;
-    while ((match = re.exec(stripped))) {
-      const spec = match[1];
-      if (spec) specs.push(spec);
-    }
-  }
-  return uniqueSorted(specs);
+export function parseJsImports(sourceText: string, file = "module.ts"): string[] {
+  return parseJsDependencies(sourceText, file).specifiers;
 }
 
 const RESOLVE_EXTS = [".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs", ".json"];
@@ -314,7 +297,7 @@ export const jsPlugin: LanguagePlugin = {
   extensions: [...JS_EXTS, ...TS_EXTS],
   isTestFile: isJsTestFile,
   testCandidates: jsTestCandidates,
-  parseImports: (sourceText) => parseJsImports(sourceText),
+  parseImports: parseJsImports,
   classifyImport: classifyJsImport,
   configurationDiagnostics(ctx) {
     const diagnostics = [];

@@ -1,6 +1,6 @@
 /* This file is generated. Do not edit directly.
  * Source: schema/receipt.schema.json
- * Schema SHA-256: 29e3894ae3d2d3472cea497d8f28dfdd649922a7358be029e49eca69c6bd6583
+ * Schema SHA-256: f80e36efe01bc652d0055410078e372b4f925bdd868809fed041339faa5d9ea3
  * Compiler: json-schema-to-typescript 16.0.0
  * Regenerate with: npm run generate:protocol
  */
@@ -124,6 +124,7 @@ export interface EffectivePolicy {
       secrets?: ProjectGatePolicy;
     };
   }[];
+  pluginSetHash?: string;
 }
 
 /** Required fields derived from the protocol-2 conditional in the JSON schema. */

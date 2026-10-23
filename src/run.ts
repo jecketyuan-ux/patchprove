@@ -1,6 +1,7 @@
-import { existsSync, readFileSync, readdirSync, realpathSync, statSync, symlinkSync } from "node:fs";
+import { existsSync, readFileSync, readdirSync, opendirSync, realpathSync, statSync, symlinkSync } from "node:fs";
 import { createHash } from "node:crypto";
 import path from "node:path";
+import { analyzeInFreshProcess } from "./analysis-session.js";
 import { loadAdapterEvidence } from "./adapters.js";
 import { writeArtifactSet, writeJsonAtomic } from "./artifacts.js";
 import { compareToBaseline, findBaselinePath, loadBaselineInput, newGapsMeetFailOn } from "./baseline.js";
@@ -8,7 +9,7 @@ import { resolveConfig } from "./config.js";
 import { loadCoverageMap } from "./coverage.js";
 import { evaluateVerification } from "./decision.js";
 import { detectTools } from "./detect.js";
-import { readBoundedFile, readJsonInput, resolveInputLimits, stringifyBoundedJson, withInputBudget } from "./input-budget.js";
+import { accountInput, assertInputActive, inputLimits, readBoundedFile, readJsonInput, resolveInputLimits, stringifyBoundedJson, withInputBudget } from "./input-budget.js";
 import { configuredToolUnits, testExecutionUnits, type TestUnit, type ToolUnit } from "./execution-units.js";
 import { buildEvidence, buildImpact, collectGaps, failedCheckFindings, filterIgnored, pathFindings } from "./evidence.js";
 import { gapFingerprint, findingFingerprint } from "./fingerprint.js";
@@ -16,7 +17,10 @@ import { runAffectedTests, runLint, runSecretScan, runTypecheck } from "./gates.
 import { collectGitSnapshot, type DiffFile } from "./git.js";
 import { buildImportGraph } from "./graph.js";
 import { canonicalPathParent } from "./paths.js";
-import { createPluginContext, resolveLanguagePlugins } from "./plugins/index.js";
+import { createPluginContext } from "./plugins/index.js";
+import { resolveLanguagePluginSession, resolvePluginSpec } from "./plugins/load.js";
+import { JS_PARSER_IDENTITY } from "./plugins/js-parser.js";
+import { relativizeReportArtifacts, reportArtifactEntries, withReportArchive } from "./report-archive.js";
 import { attachReceiptRef, buildReceipt, defaultReceiptPath, findPreviousReceiptHash, hashCanonical, parseSigningKey } from "./receipt.js";
 import { formatHumanReport, formatMarkdownReport } from "./report.js";
 import { meetsFailOn } from "./risk.js";
@@ -24,8 +28,7 @@ import { toSarif } from "./sarif.js";
 import { captureSnapshotIdentity, checkedGit, createExecutionSnapshot, listVersionedFiles, readVersionedFile, repositoryRoot, withGitExecutionBudget } from "./snapshot.js";
 import { evaluateContract, loadContract } from "./spec.js";
 import { COMPAT_SCHEMA_VERSION, SCHEMA_VERSION, TOOL_VERSION } from "./types.js";
-import type { DetectedTools, EffectivePolicy, Evidence, ExecutionRecord, FailOnOutcomeReason, PatchproveContract, ProjectGatePolicy, ResolvedConfig, RunOptions, VerificationPlanItem } from "./types.js";
-import { validateEvidence } from "./validation.js";
+import type { DetectedTools, EffectivePolicy, Evidence, ExecutionRecord, FailOnOutcomeReason, PatchproveContract, PluginProvenance, ProjectGatePolicy, ResolvedConfig, RunOptions, VerificationPlanItem } from "./types.js";
 
 let retainedSigningKey: string | undefined;
 function retainSigningKey(): string | undefined {
@@ -38,7 +41,7 @@ function retainSigningKey(): string | undefined {
 export function validateArtifactOptions(options: Pick<RunOptions, "sign" | "receipt" | "protocol">, signingKey?: string | null): void {
   if (!options.sign) return;
   if (options.receipt === false) throw new Error("Signing requires a receipt; sign:true conflicts with receipt:false");
-  if ((options.protocol ?? 2) === 2 && !parseSigningKey(signingKey ?? process.env.PATCHPROVE_SIGNING_KEY)) {
+  if ((options.protocol ?? 2) === 2 && !parseSigningKey(signingKey ?? process.env.PATCHPROVE_SIGNING_KEY ?? retainedSigningKey)) {
     throw new Error("Signing was required but no signing key was provided");
   }
 }
@@ -128,12 +131,39 @@ function policyFor(config: ResolvedConfig, protocol: 1 | 2, contract: Patchprove
   return policy;
 }
 function portablePolicy(policy: EffectivePolicy, executionRoot: string, sourceRoot: string): EffectivePolicy {
-  const normalize = (item: { path: string; hash: string } | null) => item ? { ...item, path: item.path.startsWith(`${executionRoot}${path.sep}`) ? path.join(sourceRoot, path.relative(executionRoot, item.path)) : item.path } : null;
+  const portableInputPath = (file: string) => {
+    const relative = path.relative(executionRoot, file);
+    return relative !== ".." && !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative) ? relative.split(path.sep).join("/") || "." : file;
+  };
+  const normalize = (item: { path: string; hash: string } | null) => item ? { ...item, path: portableInputPath(item.path) } : null;
   const spec = normalize(policy.spec);
-  const result: EffectivePolicy = { ...policy, config: normalize(policy.config), spec: spec && policy.spec?.inputs ? { ...spec, inputs: policy.spec.inputs.map((item) => normalize(item)!) } : spec, baseline: normalize(policy.baseline) };
+  const result: EffectivePolicy = { ...policy, plugins: policy.plugins.map((file) => portableInputPath(resolvePluginSpec(executionRoot, file))), config: normalize(policy.config), spec: spec && policy.spec?.inputs ? { ...spec, inputs: policy.spec.inputs.map((item) => normalize(item)!) } : spec, baseline: normalize(policy.baseline) };
   const { baseline: _baseline, hash: _hash, ...effective } = result;
   result.hash = hashCanonical(effective);
   return result;
+}
+
+/** Installation paths do not change plugin semantics; repository/external roles do. */
+export function pluginSetHash(plugins: PluginProvenance[], root: string): string {
+  return hashCanonical(plugins.map((plugin) => {
+    const toolRoot = plugin.source === "builtin" && plugin.entry ? path.resolve(path.dirname(plugin.entry), "../..") : undefined;
+    const identity = (file: string): string => {
+      const base = toolRoot ?? root;
+      const relative = path.relative(base, file);
+      if (toolRoot && (relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative) || relative.split(path.sep)[0] === "node_modules")) {
+        const segments = path.resolve(file).split(path.sep);
+        const dependency = segments.lastIndexOf("node_modules");
+        if (dependency !== -1 && dependency + 1 < segments.length) return `dependency:${segments.slice(dependency + 1).join("/")}`;
+      }
+      return relative !== ".." && !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative)
+        ? `${toolRoot ? "tool" : "repository"}:${relative.split(path.sep).join("/")}` : `external:${file}`;
+    };
+    const observedPaths = [...new Set([...plugin.inputs.map(input => input.path), ...(plugin.entry ? [plugin.entry] : [])])].sort((a, b) => b.length - a.length);
+    return { ...plugin, entry: plugin.entry ? identity(plugin.entry) : null,
+      inputs: plugin.inputs.map((input) => ({ ...input, path: identity(input.path) })).sort((a, b) => a.path.localeCompare(b.path)),
+      unknownDependencies: plugin.unknownDependencies.map((message) => observedPaths.reduce((text, file) => text.replaceAll(file, identity(file)), message)
+        .replaceAll(toolRoot ?? root, toolRoot ? "<tool>" : "<repository>")) };
+  }));
 }
 function planFor(config: ResolvedConfig, tools: ToolUnit[], units: TestUnit[], tests: string[], changed: string[]): VerificationPlanItem[] {
   const plan: VerificationPlanItem[] = tools.map((unit) => ({ id: `plan:${unit.id}`, unitId: unit.id, checkId: unit.checkId, scope: unit.scope, required: unit.required, reason: unit.reason, granularity: "repository", ...(unit.policy ? { policy: unit.policy } : {}) }));
@@ -167,17 +197,29 @@ async function provisionMatchingNodeDependencies(source: string, target: string,
   // package manifests match. Such links would escape the isolated code tree.
   const dependencyRoot = realpathSync.native(path.join(source, "node_modules"));
   const pending = [dependencyRoot];
+  const visited = new Set<string>();
+  let entries = 0;
   while (pending.length) {
+    assertInputActive();
     const directory = pending.pop()!;
-    for (const entry of readdirSync(directory, { withFileTypes: true })) {
-      const candidate = path.join(directory, entry.name);
-      if (entry.isSymbolicLink()) {
-        let resolved: string;
-        try { resolved = realpathSync.native(candidate); } catch { return false; }
-        const relative = path.relative(dependencyRoot, resolved);
-        if (relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) return false;
-      } else if (entry.isDirectory()) pending.push(candidate);
-    }
+    const canonical = realpathSync.native(directory);
+    if (visited.has(canonical)) continue;
+    visited.add(canonical);
+    const handle = opendirSync(directory);
+    try {
+      for (let entry = handle.readSync(); entry !== null; entry = handle.readSync()) {
+        assertInputActive();
+        if (++entries > inputLimits().maxFiles) throw new Error("Dependency traversal exceeded maxFiles budget");
+        const candidate = path.join(directory, entry.name);
+        accountInput(candidate, 0);
+        if (entry.isSymbolicLink()) {
+          let resolved: string;
+          try { resolved = realpathSync.native(candidate); } catch { return false; }
+          const relative = path.relative(dependencyRoot, resolved);
+          if (relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) return false;
+        } else if (entry.isDirectory()) pending.push(candidate);
+      }
+    } finally { handle.closeSync(); }
   }
   symlinkSync(path.join(source, "node_modules"), path.join(target, "node_modules"), process.platform === "win32" ? "junction" : "dir");
   return true;
@@ -193,6 +235,11 @@ function remapOptions(options: RunOptions, source: string, target: string): RunO
 
 export async function analyze(options: RunOptions): Promise<Evidence> {
   retainSigningKey();
+  return analyzeInFreshProcess(options);
+}
+
+/** Internal worker entry. Public callers use analyze so module state never crosses runs. */
+export async function analyzeInCurrentProcess(options: RunOptions, temporaryRoot?: string): Promise<Evidence> {
   const protocol = options.protocol ?? 2;
   const timeout = options.timeoutMs ?? 180_000;
   if (!Number.isSafeInteger(timeout) || timeout < 1) throw new Error("timeoutMs must be a positive integer");
@@ -205,7 +252,7 @@ export async function analyze(options: RunOptions): Promise<Evidence> {
   const deadline = setTimeout(() => controller.abort(), timeout);
   let execution: Awaited<ReturnType<typeof createExecutionSnapshot>> | undefined;
   let reusedDependencies = false;
-  return withInputBudget({ limits: limitsInput, signal: controller.signal, deadline: deadlineAt }, () => withGitExecutionBudget({ signal: controller.signal, deadline: deadlineAt }, async () => {
+  return withReportArchive(options.reportsDir, () => withInputBudget({ limits: limitsInput, signal: controller.signal, deadline: deadlineAt }, () => withGitExecutionBudget({ signal: controller.signal, deadline: deadlineAt }, async () => {
   try {
     const sourceRoot = await repositoryRoot(path.resolve(options.cwd));
     if ((options.base !== undefined || options.head !== undefined) && options.isolate !== false) {
@@ -214,8 +261,22 @@ export async function analyze(options: RunOptions): Promise<Evidence> {
     }
     const root = execution?.root ?? sourceRoot;
     const input = remapOptions(options, sourceRoot, root);
-    const excluded = artifactPaths({ ...options, cwd: sourceRoot }).map(canonicalPathParent);
-    if (protocol === 2) assertArtifactDestinations(excluded);
+    const destinations = artifactPaths({ ...options, cwd: sourceRoot }).map(canonicalPathParent);
+    const reportDestination = options.reportsDir ? canonicalPathParent(path.resolve(options.cwd, options.reportsDir)) : null;
+    if (reportDestination && existsSync(reportDestination)) {
+      const relative = path.relative(sourceRoot, reportDestination);
+      if (relative !== ".." && !relative.startsWith(`..${path.sep}`) && !path.isAbsolute(relative)) {
+        if (!statSync(reportDestination).isDirectory()) throw new Error("Report destination must be a directory");
+        for (const entry of readdirSync(reportDestination, { withFileTypes: true })) {
+          if (!entry.isDirectory() || !/^run-[a-f0-9-]{36}$/.test(entry.name)) throw new Error("Report destination contains unrelated repository input");
+          const index = readJsonInput(path.join(reportDestination, entry.name, "index.json")) as Record<string, unknown>;
+          if (!index || index.kind !== "patchprove-machine-report-archive") throw new Error("Report destination contains unrelated repository input");
+        }
+      }
+    }
+    const excluded = [...destinations, ...(reportDestination ? [reportDestination] : []),
+      ...(temporaryRoot ? [canonicalPathParent(temporaryRoot)] : [])];
+    if (protocol === 2) assertArtifactDestinations(destinations);
     const relativeExclusions = excluded.map((file) => path.relative(sourceRoot, file)).filter((file) => file !== ".." && !file.startsWith(`..${path.sep}`) && !path.isAbsolute(file));
     const trackedInputs = [...new Set((await checkedGit(sourceRoot, ["ls-files", "--cached", "-z"])).split("\0").filter(Boolean)
       .concat(execution ? (await checkedGit(root, ["ls-files", "--cached", "-z"])).split("\0").filter(Boolean) : []))];
@@ -240,8 +301,12 @@ export async function analyze(options: RunOptions): Promise<Evidence> {
     const allowPlugins = protocol === 1 || options.allowPlugins === true;
     const autoDirectory = path.join(root, ".patchprove", "plugins");
     const hasPlugins = config.plugins.length > 0 || Boolean(process.env.PATCHPROVE_PLUGINS) || existsSync(autoDirectory) && readdirSync(autoDirectory).some((file) => /\.(?:mjs|cjs|js)$/i.test(file));
-    const plugins = await resolveLanguagePlugins(root, { configPlugins: allowPlugins ? config.plugins : [], allowAuto: allowPlugins,
+    const pluginSession = await resolveLanguagePluginSession(root, { configPlugins: allowPlugins ? config.plugins : [], allowAuto: allowPlugins,
       env: allowPlugins ? process.env : { ...process.env, PATCHPROVE_PLUGINS: "" } });
+    const plugins = pluginSession.plugins;
+    policy.pluginSetHash = pluginSetHash(pluginSession.provenance, root);
+    const { baseline: _baselinePolicy, hash: _policyHash, ...effectivePolicy } = policy;
+    policy.hash = hashCanonical(effectivePolicy);
     const context = createPluginContext(root, existing);
     const graph = buildImportGraph(root, existing, plugins, undefined, context);
     let baseGraph;
@@ -276,6 +341,12 @@ export async function analyze(options: RunOptions): Promise<Evidence> {
       dependencyLocks: [...existing].filter((file) => /(^|\/)(?:package-lock\.json|npm-shrinkwrap\.json|pnpm-lock\.yaml|yarn\.lock|bun\.lockb?|Cargo\.lock|go\.sum|poetry\.lock|uv\.lock|Pipfile\.lock)$/.test(file))
         .sort().map((file) => ({ path: file, hash: createHash("sha256").update(readBoundedFile(path.join(root, file))).digest("hex") })),
       inputLimits: limitsInput, hermetic: false as const,
+      parser: JS_PARSER_IDENTITY,
+      javaRuntimes: [...(tools.javaRuntimes ?? [])],
+      plugins: pluginSession.provenance.map((plugin) => ({ ...plugin,
+        entry: plugin.entry ? portablePath(plugin.entry, root, sourceRoot) : null,
+        inputs: plugin.inputs.map((input) => ({ ...input, path: portablePath(input.path, root, sourceRoot) })),
+        unknownDependencies: plugin.unknownDependencies.map((message) => message.replaceAll(root, sourceRoot)) })),
       ...(javaFileEncoding ? { javaToolOptionsFileEncoding: javaFileEncoding } : {}),
       configurations: [...existing].filter((file) => /(^|\/)(?:[tj]sconfig[^/]*\.json|package\.json|(?:vitest|vite|jest|eslint)\.config\.[^/]+|\.eslintrc[^/]*|pytest\.ini|pyproject\.toml|conftest\.py|setup\.cfg|tox\.ini|\.gitleaks(?:\.toml|ignore)|gitleaks\.toml|Cargo\.toml|go\.(?:mod|work)|pom\.xml|(?:build|settings)\.gradle(?:\.kts)?|gradle\.properties)$/.test(file))
         .sort().map((file) => ({ path: file, hash: createHash("sha256").update(readBoundedFile(path.join(root, file))).digest("hex") })),
@@ -317,6 +388,7 @@ export async function analyze(options: RunOptions): Promise<Evidence> {
         toolUnits.push(...configuredToolUnits(directory, gate, detected, config.gates[gate], { path: project.path, policy: projectPolicy }));
       }
       environment.tools.push(...Object.entries(detected).filter(([name, value]) => name.endsWith("Bin") && typeof value === "string").map(([name, value]) => ({ name: `${project.path}:${name.slice(0, -3)}`, version: detected.versions?.[name.slice(0, -3) === "maven" ? "mvn" : name.slice(0, -3)] ?? null, path: realpathSync.native(value as string) })));
+      environment.javaRuntimes.push(...(detected.javaRuntimes ?? []).map((runtime) => ({ ...runtime, project: project.path })));
     }
     const testUnits: TestUnit[] = [];
     const owner = (file: string) => projectContexts.filter((project) => inside(file, project.path)).sort((a, b) => b.path.length - a.path.length)[0];
@@ -329,11 +401,11 @@ export async function analyze(options: RunOptions): Promise<Evidence> {
         projectTests = [...existing].filter((file) => owner(file) === project && plugins.some((plugin) => plugin.isTestFile(file, context)));
       }
       const prefix = project.path === "." ? "" : `${project.path}/`;
-      const scoped = testExecutionUnits(projectTests.map((file) => prefix ? file.slice(prefix.length) : file), plugins, project.context);
+      const scoped = testExecutionUnits(projectTests.map((file) => prefix ? file.slice(prefix.length) : file), plugins, project.context, { project: project.path });
       const required = declared.mode === "required" || config.gates.tests && declared.mode !== "not-applicable";
       const inactiveReason = declared.mode === "not-applicable" ? `Not applicable: ${declared.reason}` : !required ? "Disabled by config (gates.tests: false)" : undefined;
       for (const unit of scoped) {
-        testUnits.push({ ...unit, id: `${unit.id}:project:${project.path}`, sourceFiles: unit.sourceFiles.map((file) => `${prefix}${file}`),
+        testUnits.push({ ...unit, sourceFiles: unit.sourceFiles.map((file) => `${prefix}${file}`),
           scope: unit.granularity === "file" ? unit.scope.map((file) => `${prefix}${file}`) : unit.scope.map((item) => `${item.slice(0, item.indexOf(":") + 1)}${path.posix.join(project.path, item.slice(item.indexOf(":") + 1))}`),
           tools: project.tools, required, inactiveReason, policy: { ...declared, project: project.path } });
       }
@@ -363,6 +435,7 @@ export async function analyze(options: RunOptions): Promise<Evidence> {
       secretScan.check.records = [...(secretScan.check.records ?? []), record];
       plan.push({ id: `plan:${id}`, unitId: id, checkId: "secrets", scope: record.scope, required: false, reason, policy: { ...project.gates.secrets!, project: project.path } });
     }
+    const changedPluginInputs = pluginSession.changedInputs();
     const after = await (async () => {
       try { return await captureSnapshotIdentity(root, snapshotOptions); }
       catch (error) {
@@ -376,11 +449,12 @@ export async function analyze(options: RunOptions): Promise<Evidence> {
     records.push(...adapters.records);
     let evidence = buildEvidence({ cwd: path.resolve(options.cwd), root: sourceRoot, range: gitSnapshot.range, impact, checks,
       gaps: collectGaps(impact, checks, tools, plugins), findings: [...pathFindings(impact.changedFiles), ...secretScan.findings, ...failedCheckFindings(checks)], acceptGaps: config.acceptGaps });
-    evidence = { ...evidence, schemaVersion: protocol === 1 ? COMPAT_SCHEMA_VERSION : SCHEMA_VERSION, toolVersion: TOOL_VERSION,
+    evidence = { ...evidence, repo: { ...evidence.repo, ...(config.repositoryId ? { repositoryId: config.repositoryId } : {}) }, schemaVersion: protocol === 1 ? COMPAT_SCHEMA_VERSION : SCHEMA_VERSION, toolVersion: TOOL_VERSION,
       snapshot: { ...before, consistent: before.consistent && after.consistent && before.contentHash === after.contentHash,
         ...((before.contentHash !== after.contentHash || !after.consistent) ? { reason: "Verification inputs changed during execution" } : {}) },
       executionRecords: records, verificationPlan: plan, effectivePolicy: policy, environment, resolutionProvenance: graph.provenance, ...(config.projects ? { projectScopes } : {}),
       diagnostics: [...(evidence.diagnostics ?? []), ...(config.diagnostics ?? []), ...adapters.diagnostics,
+        ...(changedPluginInputs.length ? [{ code: "plugin-input-drift", message: "Plugin inputs changed during execution", severity: "error" as const, files: changedPluginInputs.map((file) => portablePath(file, root, sourceRoot)) }] : []),
         ...(!allowPlugins && hasPlugins ? [{ code: "plugins-not-authorized", message: "Local plugins were not executed; use --allow-plugins only for trusted repository code", severity: "error" as const }] : []),
         ...(reusedDependencies ? [{ code: "dependencies-reused", message: "Reused local node_modules after matching all discovered dependency manifests; installed dependency bytes are not a hermetic environment", severity: "warning" as const }] : []),
         ...(controller.signal.aborted ? [{ code: "run-deadline", message: "The total verification deadline was exceeded", severity: "error" as const }] : [])],
@@ -388,19 +462,22 @@ export async function analyze(options: RunOptions): Promise<Evidence> {
     if ([originalPolicy.config, originalPolicy.spec, ...(originalPolicy.spec?.inputs ?? []), originalPolicy.baseline].some((item) => item && fileIdentity(item.path)?.hash !== item.hash)) {
       evidence.snapshot!.consistent = false; evidence.snapshot!.reason = "Policy input changed during execution";
     }
+    if (changedPluginInputs.length) {
+      evidence.snapshot!.consistent = false; evidence.snapshot!.reason = "Plugin inputs changed during execution";
+    }
     evidence.gaps = evidence.gaps.map((gap) => ({ ...gap, fingerprint: gapFingerprint(gap) }));
     evidence.findings = evidence.findings.map((finding) => ({ ...finding, fingerprint: findingFingerprint(finding) }));
     evidence.contract = evaluateContract(contract, evidence);
     if (evidence.contract.source) evidence.contract.source = portablePath(evidence.contract.source, root, sourceRoot);
     if (baseline && baselinePath) evidence.baselineComparison = compareToBaseline(evidence, baseline, portablePath(baselinePath, root, sourceRoot), config.failOnNewGaps);
     evidence.verification = evaluateVerification(evidence, config);
-    return validateEvidence(evidence, "generated evidence");
+    return evidence;
   } finally {
     clearTimeout(deadline);
     options.signal?.removeEventListener("abort", cancel);
     if (execution) await execution.cleanup();
   }
-  }));
+  })), evidence => { evidence.verification = evaluateVerification(evidence); });
 }
 
 export function writeEvidence(outPath: string, evidence: Evidence): string { return writeJsonAtomic(outPath, evidence); }
@@ -410,20 +487,23 @@ export function render(evidence: Evidence, format: RunOptions["format"]): string
 }
 
 export function produceArtifacts(evidence: Evidence, options: RunOptions, signingKey?: string | null): Evidence {
-  validateArtifactOptions(options, signingKey);
+  const material = signingKey ?? retainSigningKey();
+  validateArtifactOptions(options, material);
   const output = outputPath(options, options.out);
   const receiptPath = resolveReceiptPath(options);
+  evidence = relativizeReportArtifacts(evidence, path.dirname(output));
   let result = evidence;
-  const entries: Array<{ path: string; content: string }> = [];
+  const entries: import("./artifacts.js").ArtifactEntry[] = [];
   const serialize = (value: unknown) => withInputBudget({ limits: options.inputLimits }, () => stringifyBoundedJson(value));
   if (receiptPath) {
     const outcome = failOnOutcomeOf(evidence);
-    const receipt = buildReceipt({ evidence, argv: options.argv ?? process.argv.slice(2), options, exitCode: outcome.failed ? 1 : 0, failOnOutcome: outcome, sign: options.sign, signingKey });
+    const receipt = buildReceipt({ evidence, argv: options.argv ?? process.argv.slice(2), options, exitCode: outcome.failed ? 1 : 0, failOnOutcome: outcome, sign: options.sign, signingKey: material });
     result = attachReceiptRef(evidence, receipt, { path: path.relative(evidence.repo.root, canonicalPathParent(receiptPath)), previousContentHash: findPreviousReceiptHash(evidence.baselineComparison?.baselinePath) });
     entries.push({ path: receiptPath, content: serialize(receipt) });
   }
   entries.push({ path: output, content: serialize(result) });
   if (options.sarif) entries.push({ path: outputPath(options, options.sarif), content: serialize(toSarif(result)) });
+  entries.push(...reportArtifactEntries(result, path.dirname(output)));
   writeArtifactSet(entries, `${output}.manifest.json`);
   return result;
 }

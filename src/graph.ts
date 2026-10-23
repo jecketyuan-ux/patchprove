@@ -7,6 +7,7 @@ import { builtinPlugins, isPluginTestFile, type LanguagePlugin } from "./plugins
 import type { PluginContext } from "./plugins/types.js";
 import { uniqueSorted } from "./plugins/types.js";
 import type { Diagnostic } from "./types.js";
+import { parseJsDependencies } from "./plugins/js-parser.js";
 
 const SKIP_RE = /(^|\/)(node_modules|dist|coverage|\.git|vendor|target|build|\.patchprove)(\/|$)/;
 
@@ -51,22 +52,18 @@ export function dynamicDependencyDiagnostics(rel: string, sourceText: string): D
   const extension = extname(rel);
   const python = extension === ".py";
   if (!python && ![".js", ".jsx", ".mjs", ".cjs", ".ts", ".tsx", ".mts", ".cts"].includes(extension)) return [];
+  if (!python) return parseJsDependencies(sourceText, rel).diagnostics;
   // Preserve offsets while hiding comments and literal contents, so examples
   // in strings/comments cannot masquerade as dependency calls.
-  const nonCode = python
-    ? /'''[\s\S]*?'''|"""[\s\S]*?"""|#[^\r\n]*|"(?:\\[\s\S]|[^"\\])*"|'(?:\\[\s\S]|[^'\\])*'/g
-    : /\/\*[\s\S]*?\*\/|\/\/[^\r\n]*|"(?:\\[\s\S]|[^"\\])*"|'(?:\\[\s\S]|[^'\\])*'|`(?:\\[\s\S]|[^`\\])*`/g;
+  const nonCode = /'''[\s\S]*?'''|"""[\s\S]*?"""|#[^\r\n]*|"(?:\\[\s\S]|[^"\\])*"|'(?:\\[\s\S]|[^'\\])*'/g;
   const code = sourceText.replace(nonCode, (literal) => " ".repeat(literal.length));
-  const calls = python
-    ? /(?:^|[^\w$])(?:__import__|(?:importlib\s*\.\s*)?import_module)\s*\(/g
-    : /(?:^|[^\w$])(?:import|require)\s*\(/g;
+  const calls = /(?:^|[^\w$])(?:__import__|(?:importlib\s*\.\s*)?import_module)\s*\(/g;
   const diagnostics: Diagnostic[] = [];
   let match: RegExpExecArray | null;
   while ((match = calls.exec(code))) {
     const argumentStart = match.index + match[0].length;
-    const argument = sourceText.slice(argumentStart).replace(python ? /^\s*/ : /^(?:\s|\/\*[\s\S]*?\*\/|\/\/[^\r\n]*(?:\r?\n|$))*/, "");
-    const staticLiteral = /^(?:"(?:\\[\s\S]|[^"\\])*"|'(?:\\[\s\S]|[^'\\])*')\s*(?:,|\))/.test(argument)
-      || (!python && /^`(?:(?!\$\{)[^`])*`\s*(?:,|\))/.test(argument));
+    const argument = sourceText.slice(argumentStart).replace(/^\s*/, "");
+    const staticLiteral = /^(?:"(?:\\[\s\S]|[^"\\])*"|'(?:\\[\s\S]|[^'\\])*')\s*(?:,|\))/.test(argument);
     if (staticLiteral) continue;
     diagnostics.push({
       code: "mapping-dynamic-dependency",
@@ -86,10 +83,11 @@ export function resolvedImportsFor(
   ctx?: PluginContext,
   diagnostics?: Diagnostic[],
   resolutions?: NonNullable<ImportGraph["provenance"]>["resolutions"],
+  parsedSpecifiers?: readonly string[],
 ): string[] {
   const plugin = plugins.find((p) => p.extensions.includes(extname(rel)));
   if (!plugin?.parseImports) return [];
-  const specs = plugin.parseImports(sourceText, rel);
+  const specs = parsedSpecifiers ?? plugin.parseImports(sourceText, rel);
   const resolved: string[] = [];
   for (const spec of specs) {
     let hits: string[];
@@ -164,8 +162,9 @@ export function buildImportGraph(
       diagnostics.push({ code: "mapping-unreadable-file", message: `Cannot read ${rel} to map dependencies`, severity: "warning", files: [rel] });
       continue;
     }
-    diagnostics.push(...dynamicDependencyDiagnostics(rel, text));
-    imports.set(rel, resolvedImportsFor(rel, text, existing, plugins, context, diagnostics, resolutions));
+    const parsed = plugin.id === "javascript" ? parseJsDependencies(text, rel) : undefined;
+    diagnostics.push(...(parsed?.diagnostics ?? dynamicDependencyDiagnostics(rel, text)));
+    imports.set(rel, resolvedImportsFor(rel, text, existing, plugins, context, diagnostics, resolutions, parsed?.specifiers));
   }
 
   const reachableFrom = new Map<string, Set<string>>();

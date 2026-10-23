@@ -15,7 +15,7 @@ node dist/cli.js run --out /tmp/evidence-v2.json
 node dist/cli.js run --protocol 1 --out /tmp/evidence-v1.json
 ```
 
-第一条生成默认 2.0 证据与 2.0 receipt；第二条生成兼容的 1.3 证据与历史算法的 1.2 receipt。它们是两次验证运行，不能假设执行身份或 digest 相同。把输出放在分析范围之外可避免它们影响下一次 working-tree 捕获。
+第一条生成默认 2.1 证据与 2.0 receipt；第二条生成兼容的 1.3 证据与历史算法的 1.2 receipt。证据版本与包版本独立。它们是两次验证运行，不能假设执行身份或 digest 相同。把输出放在分析范围之外可避免它们影响下一次 working-tree 捕获。
 
 ## 默认行为变化
 
@@ -64,3 +64,15 @@ New records separate requested/collected/executed/skipped/unknown scopes and cou
 See [execution reports](execution-reports.md), [project policy](project-policy.md), [budgets](resource-budgets.md) and [live-host acceptance](host-acceptance.md). Historical signed bytes are never silently rewritten or re-signed by the reader.
 
 Earlier unpublished 2.0 packs may contain successful test records whose scope only reflected requested argv. Readers retain those historical signed objects unchanged. New completion evaluation requires observed machine-result facts; MCP completion stays false for missing facts. Receipt verification requires explicit `--allow-legacy` for this historical scope contract, even if the v2 envelope signature itself is valid. A genuine old-producer signed fixture protects this compatibility boundary. Imported/cache task metadata cannot replace missing test-result facts in a required execution plan.
+
+## 2.1 evidence stabilization
+
+Update readers before enabling the 2.1 producer. Historical 1.x/2.0 signed bytes remain readable according to their original contract; missing new provenance is not invented. Re-run validation when a new completion guarantee is required. Execution IDs are opaque and may change when the collision-free identity encoder is introduced. Use recorded project, check, executor and scope fields instead of splitting IDs.
+
+An older 2.0 pack can contain genuine observed test results and a valid original HMAC while its stored `passed` remains insufficient for new completion evaluation. Actual plugin identities, their effective-policy `pluginSetHash`, and explicit run/proof report-retention facts are also required; missing facts make new SDK/MCP completion `incomplete`. This check depends on available facts, not the minor version number, and does not rewrite the historical signed decision.
+
+`--reports-dir /absolute/path/outside-the-repository` enables raw machine-report retention. SDK and MCP use `reportsDir`; the Action uses `reports-dir`. Ordinary runs retain facts and digests without claiming a deleted temporary file is downloadable. CI/release acceptance must enable retention. Archives can contain test-generated values, so keep them in a restricted directory and apply an explicit retention policy. Digest/manifest checks establish byte integrity, not the honesty of a report producer.
+
+Optional configuration `repositoryId` enables portable baseline identity. Use the same reviewed ID only for checkouts of the same repository; matching policy and verifiable Git history are also required. Old baselines retain the previous directory checks. Create a fresh baseline with the new producer for cross-machine use; never edit or silently re-sign an old evidence pack.
+
+All current live-host, GitHub and Windows cases must pass on the same candidate before stable release. An unavailable host remains `not-run`, and any not-run/failed/incomplete case blocks `check:acceptance`. Raising a Gradle/JDK minimum is allowed only after the original non-ASCII/space-path cases pass. See [acceptance instructions](host-acceptance.md) and the [implementation/measurement status](upgrades/2.0-stabilization.md).

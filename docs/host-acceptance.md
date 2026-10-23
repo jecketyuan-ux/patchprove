@@ -23,3 +23,28 @@ Retain a JSON record with `candidate`, `tarballSha256`, `host{name,version}`, `p
 For GitHub publication, use separate read-only analysis and trusted publisher workflows. Exercise same-repository and fork PRs with passed/failed/incomplete verification, missing artifact, wrong digest/head, cancellation, old-success/new-failure ordering, rerun attempts, pagination/spoofed authors, and denied permissions. Record run/attempt/artifact/comment URLs and preserve the original verification exit. Per-PR concurrency must serialize publishers; GitHub comments have no atomic compare-and-swap contract. Publication remains experimental until these live cases are recorded. Never execute fork artifact scripts or run PR code with the publisher token.
 
 These are runnable acceptance criteria, not claims that the live cases have passed. No npm publication, tag, release, or external test message is performed by these instructions.
+
+## Candidate-bound acceptance ledger
+
+Stable release now requires every current external feature's live cases to pass. Use `scripts/check-acceptance.mjs` to generate a **not-run** template after building a reviewed candidate archive:
+
+```sh
+npm run build
+npm pack --ignore-scripts --pack-destination /tmp
+node scripts/check-acceptance.mjs --template --tarball /tmp/patchprove-2.0.0.tgz > /tmp/acceptance.json
+```
+
+Run this from a clean candidate checkout. Keep acceptance records/logs outside that checkout. Every record must repeat the exact commit/tree/runtime/tarball identity. Populate only observations actually performed, retaining a relative raw `log: { path, bytes, sha256 }` and `method: "live"`. A discovered binary, CLI substitute, previous candidate or human expectation cannot change `not-run` into `passed`.
+
+Required IDs are emitted by the template: `host:claude-code:*`, `host:cursor:*`, `github:same-repository:*`, `github:fork:*`, and `windows:*`. Host records include actual host/version, platform/Node and verification. Claude failure/incomplete cases record `hostAction: "blocked"`; Cursor records `"advised"`. Cancellation establishes `orphanProcesses: 0`.
+
+GitHub records include repository/headRepository, real run URL/attempt, original and preserved exits, actual resulting comment URL when publication is expected, and explicit absence of stale/unverified publication for rejection cases. Windows records retain non-ASCII and space paths, actual JVM/Gradle, executed/failed assertions and infrastructure errors. The native group requires all thirty declared fixture scenarios with no skipped/failed cases.
+
+The top-level CI record identifies the exact successful current-head run/attempt and all twelve required successful jobs, with a raw log reference. Run:
+
+```sh
+node scripts/check-acceptance.mjs --ledger /tmp/acceptance.json --tarball /tmp/patchprove-2.0.0.tgz
+node scripts/check-acceptance.mjs --ledger /tmp/acceptance.json --tarball /tmp/patchprove-2.0.0.tgz --matrix
+```
+
+Both forms fail closed for missing, failed, incomplete, not-run, stale or internally inconsistent records. This verifies recorded bytes and relationships; it is not proof that an untrusted producer honestly ran a host. The actual source runs require review. See [implementation and remaining release blockers](upgrades/2.0-stabilization.md).

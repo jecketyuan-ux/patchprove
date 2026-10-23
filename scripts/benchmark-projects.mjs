@@ -14,6 +14,7 @@ import { runAffectedTests } from "../dist/gates.js";
 import { builtinPlugins } from "../dist/plugins/index.js";
 import { testExecutionUnits } from "../dist/execution-units.js";
 import { withInputBudget } from "../dist/input-budget.js";
+import { withMachineReportArchive } from "../dist/report-archive.js";
 
 const manifestPath = process.argv.find((arg) => arg.startsWith("--manifest="))?.slice(11);
 assert(manifestPath, "Supply --manifest=<local fixed-project manifest>; this command never clones projects or installs dependencies");
@@ -86,10 +87,16 @@ for (const project of manifest.projects) {
     if (project.engine === "maven") { const { rm } = await import("node:fs/promises"); await rm(path.join(cwd, "target/surefire-reports"), { recursive: true, force: true }); }
     const args = project.full.args.map((arg) => arg.replaceAll("{report}", machine));
     const result = await command(project.full.command, args);
-    await writeFile(path.join(artifacts, `${project.id}-${id}.log`), `${result.stdout}\n${result.stderr}`);
+    const stdout = result.stdoutBytes ?? Buffer.from(result.stdout), stderr = result.stderrBytes ?? Buffer.from(result.stderr);
+    await writeFile(path.join(artifacts, `${project.id}-${id}.log`), Buffer.concat([stdout, Buffer.from("\n"), stderr]), { mode: 0o600 });
     let observed;
     try { observed = await truth(project, result, machine); } catch (error) { observed = { failedUnits: [], passedUnits: [], cases: 0, skipped: 0, unknown: String(error) }; }
     const machineReports = [];
+    for (const [stream, bytes] of [["stdout", stdout], ["stderr", stderr]]) {
+      const relative = `${project.id}-${id}.${stream}.raw`;
+      await writeFile(path.join(artifacts, relative), bytes, { mode: 0o600 });
+      machineReports.push({ path: relative, bytes: bytes.length, sha256: digest(bytes) });
+    }
     if (project.engine === "maven") {
       const reports = await walk(path.join(cwd, "target/surefire-reports"));
       for (const file of reports) {
@@ -119,8 +126,13 @@ for (const project of manifest.projects) {
       const selected = [...new Set(impact.mappedTests.flatMap((item) => item.tests))].sort();
       const units = testExecutionUnits(selected, builtinPlugins, context).flatMap((unit) => unit.scope);
       // Environment is scoped to the child commands. detectTools/runAffectedTests need the same explicitly supplied tool PATH/PYTHONPATH.
-      const previous = { ...process.env }; let result;
-      try { Object.assign(process.env, project.env); result = await runAffectedTests(cwd, detectTools(cwd), selected, true, builtinPlugins, context, { timeoutMs: 240_000, maxOutputBytes: 16 * 1024 * 1024 }); }
+      const previous = { ...process.env }; let result, selectedArchive;
+      try {
+        Object.assign(process.env, project.env);
+        const selectedRun = await withMachineReportArchive(path.join(artifacts, `${project.id}-${patch.id}-selected`),
+          () => runAffectedTests(cwd, detectTools(cwd), selected, true, builtinPlugins, context, { timeoutMs: 240_000, maxOutputBytes: 16 * 1024 * 1024 }));
+        result = selectedRun.result; selectedArchive = selectedRun.archive;
+      }
       finally { for (const key of Object.keys(process.env)) if (!(key in previous)) delete process.env[key]; Object.assign(process.env, previous); }
       const native = await full(patch.id);
       const unknown = native.unknown ?? (result.records?.some((record) => record.testExecution?.reportStatus === "missing" || record.testExecution?.reportStatus === "invalid") ? "Selected execution report unusable" : null);
@@ -128,7 +140,7 @@ for (const project of manifest.projects) {
       const detected = unknown ? null : native.failedUnits.filter((unit) => units.includes(unit));
       const executedUnits = [...new Set(result.records?.flatMap((record) => record.testExecution?.executedScope ?? []) ?? [])];
       entry.cases.push({ id: patch.id, kind: patch.kind, attribution: patch.attribution, snapshot: snapshot.identity, inputLimits: project.inputLimits, patchArtifact, patchSha256: digest(diff.stdout),
-        selection: { files: selected, units, diagnostics: impact.mappingDiagnostics, execution: result }, full: native, unknown,
+        selection: { files: selected, units, diagnostics: impact.mappingDiagnostics, execution: result, reportArchive: selectedArchive }, full: native, unknown,
         metrics: { missedFailingUnits: missed, selectedFailingUnits: detected, unverifiedFailingUnits: unknown ? null : native.failedUnits.filter((unit) => !executedUnits.includes(unit)),
           neutralBlockedDespiteNativeSuccess: patch.kind === "neutral" && native.exitCode === 0 && result.status !== "passed",
           unknownRequestedScopes: [...new Set(result.records?.flatMap((record) => record.testExecution?.unknownScope ?? []) ?? [])],

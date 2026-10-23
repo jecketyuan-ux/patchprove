@@ -31,7 +31,7 @@ function writeBytesAtomic(destination: string, content: Buffer): string {
   }
 }
 
-export interface ArtifactEntry { path: string; content: string }
+export interface ArtifactEntry { path: string; content: string | Buffer }
 
 /** Publish the manifest last. Readers must validate its digests before consuming a set. */
 export function writeArtifactSet(entries: ArtifactEntry[], manifestPath: string): string {

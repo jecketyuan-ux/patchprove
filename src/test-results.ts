@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { lstatSync, realpathSync } from "node:fs";
 import path from "node:path";
 import { parseBoundedJson, readBoundedFile } from "./input-budget.js";
+import { archiveMachineReport, ReportArchiveError } from "./report-archive.js";
 import type { TestExecution } from "./types.js";
 
 const MAX_REPORT_BYTES = 16 * 1024 * 1024;
@@ -11,10 +12,23 @@ function object(value: unknown): JsonObject {
   if (!value || typeof value !== "object" || Array.isArray(value)) throw new Error("Expected machine-report object");
   return value as JsonObject;
 }
-function relativeFile(cwd: string, value: unknown, reportBase = cwd): string {
+export interface ReportReplayPaths { platform: "win32" | "posix"; aliases: Array<{ from: string; to: string }> }
+function relativeFile(cwd: string, value: unknown, reportBase = cwd, replay?: ReportReplayPaths): string {
   if (typeof value !== "string" || !value) throw new Error("Machine report has no test file");
-  const canonical = (file: string) => { try { return realpathSync.native(file); } catch { return path.resolve(file); } };
-  const rel = path.relative(canonical(cwd), canonical(path.resolve(reportBase, value))).split(path.sep).join("/");
+  const paths = replay ? replay.platform === "win32" ? path.win32 : path.posix : path;
+  const canonical = (file: string): string => {
+    const resolved = paths.resolve(file);
+    if (replay) {
+      const comparable = replay.platform === "win32" ? resolved.toLowerCase() : resolved;
+      for (const alias of [...replay.aliases].sort((a, b) => b.from.length - a.from.length)) {
+        const from = replay.platform === "win32" ? alias.from.toLowerCase() : alias.from;
+        if (comparable === from || comparable.startsWith(`${from}${paths.sep}`)) return alias.to + resolved.slice(alias.from.length);
+      }
+      return resolved;
+    }
+    try { return realpathSync.native(file); } catch { return resolved; }
+  };
+  const rel = paths.relative(canonical(cwd), canonical(paths.resolve(reportBase, value))).split(paths.sep).join("/");
   if (!rel || rel === ".." || rel.startsWith("../") || path.isAbsolute(rel)) throw new Error("Machine report test file is outside the project");
   return rel;
 }
@@ -40,19 +54,24 @@ function summarize(format: TestExecution["format"], requested: string[], files: 
 }
 
 /** Only accept this invocation's unique, regular, bounded report file. */
-export function readTestReport(format: "vitest-json" | "jest-json" | "pytest-junit" | "java-junit", reportPath: string, cwd: string, requested: string[], suiteFiles?: string[], reportBase = cwd): TestExecution {
+export function readTestReport(format: "vitest-json" | "jest-json" | "pytest-junit" | "java-junit", reportPath: string, cwd: string, requested: string[], suiteFiles?: string[], reportBase = cwd, retainReport = true, replay?: ReportReplayPaths): TestExecution {
+  let raw: Buffer | undefined;
+  const retain = (proof: TestExecution): TestExecution => {
+    if (!raw || !retainReport) { delete proof.reportPath; proof.reportRetention = "not-retained"; return proof; }
+    return archiveMachineReport({ format, raw, cwd, requestedScope: requested, suiteFiles, reportBase }, proof);
+  };
   try {
     const stat = lstatSync(reportPath);
     if (!stat.isFile() || stat.isSymbolicLink() || stat.size > MAX_REPORT_BYTES) throw new Error("Test report is not a bounded regular file");
-    const raw = readBoundedFile(reportPath, MAX_REPORT_BYTES);
+    raw = readBoundedFile(reportPath, MAX_REPORT_BYTES);
     if (raw.length > MAX_REPORT_BYTES) throw new Error("Test report exceeded the size budget");
-    if (format === "pytest-junit" || format === "java-junit") return parseJunit(format, raw, cwd, requested, reportPath, suiteFiles, reportBase);
+    if (format === "pytest-junit" || format === "java-junit") return retain(parseJunit(format, raw, cwd, requested, reportPath, suiteFiles, reportBase, replay));
     const data = object(parseBoundedJson(raw.toString("utf8"), reportPath));
     if (!Array.isArray(data.testResults)) throw new Error("Machine report lacks testResults");
     const files = new Map<string, FileResult>();
     for (const value of data.testResults) {
       const suite = object(value);
-      const file = relativeFile(cwd, suite.name ?? suite.testFilePath, reportBase);
+      const file = relativeFile(cwd, suite.name ?? suite.testFilePath, reportBase, replay);
       if (!requested.includes(file)) continue;
       if (files.has(file)) throw new Error(`Duplicate test file in report: ${file}`);
       if (!Array.isArray(suite.assertionResults)) throw new Error("Machine report lacks assertionResults");
@@ -66,9 +85,10 @@ export function readTestReport(format: "vitest-json" | "jest-json" | "pytest-jun
       }
       files.set(file, facts);
     }
-    return summarize(format, requested, files, raw, reportPath);
+    return retain(summarize(format, requested, files, raw, reportPath));
   } catch (error) {
-    return { ...unknownTestExecution(format, requested, `No usable fresh machine report: ${error instanceof Error ? error.message : String(error)}`, error instanceof Error && "code" in error && error.code === "ENOENT" ? "missing" : "invalid"), reportPath };
+    if (error instanceof ReportArchiveError) throw error;
+    return retain({ ...unknownTestExecution(format, requested, `No usable fresh machine report: ${error instanceof Error ? error.message : String(error)}`, error instanceof Error && "code" in error && error.code === "ENOENT" ? "missing" : "invalid"), reportPath });
   }
 }
 
@@ -84,7 +104,8 @@ function attributes(text: string): Record<string, string> {
 }
 
 /** Deliberately bounded JUnit subset; never interprets DTDs or external entities. */
-function parseJunit(format: "pytest-junit" | "java-junit", raw: Buffer, cwd: string, requested: string[], reportPath: string, suiteFiles?: string[], reportBase = cwd): TestExecution {
+function parseJunit(format: "pytest-junit" | "java-junit", raw: Buffer, cwd: string, requested: string[], reportPath: string, suiteFiles?: string[], reportBase = cwd, replay?: ReportReplayPaths): TestExecution {
+  const paths = replay ? replay.platform === "win32" ? path.win32 : path.posix : path;
   const text = raw.toString("utf8");
   if (/<!DOCTYPE|<!ENTITY/i.test(text) || !/<testsuites?\b/.test(text)) throw new Error("Unsupported JUnit document");
   const files = new Map<string, FileResult>();
@@ -101,10 +122,10 @@ function parseJunit(format: "pytest-junit" | "java-junit", raw: Buffer, cwd: str
     // pytest's xunit1 `file` is the definition location. For inherited tests,
     // classname identifies the collected module, which is the requested scope.
     const collectedModules = format === "pytest-junit" && attrs.classname ? requested.filter((file) => {
-      const module = path.relative(reportBase, path.resolve(cwd, file)).split(path.sep).join(".").replace(/\.py$/, "");
+      const module = paths.relative(reportBase, paths.resolve(cwd, file)).split(paths.sep).join(".").replace(/\.py$/, "");
       return attrs.classname === module || attrs.classname!.startsWith(`${module}.`);
     }).sort((a, b) => b.length - a.length) : [];
-    const targets = suiteFiles ?? (collectedModules.length ? [collectedModules[0]!] : [relativeFile(cwd, attrs.file, reportBase)]);
+    const targets = suiteFiles ?? (collectedModules.length ? [collectedModules[0]!] : [relativeFile(cwd, attrs.file, reportBase, replay)]);
     const skipped = /<skipped\b/.test(body);
     const failed = /<(?:failure|error)\b/.test(body);
     for (const file of targets) {

@@ -4,8 +4,9 @@ import { Ajv, type AnySchema, type ValidateFunction } from "ajv";
 import addFormatsModule from "ajv-formats";
 import type { FormatsPlugin } from "ajv-formats";
 import { maxRisk } from "./risk.js";
-import { evaluateHistoricalVerification, evaluateVerification, hasUnprovenTestSuccess } from "./decision.js";
+import { evaluateHistoricalVerification, evaluateStoredVerification, evaluateVerification, hasUnprovenTestSuccess } from "./decision.js";
 import { emptyContractResult } from "./types.js";
+import { reportReferences } from "./report-references.js";
 import type { Evidence, EvidenceReceipt } from "./types.js";
 
 type RecordValue = Record<string, unknown>;
@@ -100,6 +101,35 @@ export function validateEvidence(value: unknown, source = "evidence"): Evidence 
   const normalized = major === 1 ? normalizeHistorical(value as RecordValue) : value;
   assertSchema(normalized, "evidence", source);
   const evidence = normalized as Evidence;
+  const modernProvenance = major === 2 && Number(evidence.schemaVersion.split(".")[1]) >= 1;
+  if (modernProvenance && (!evidence.environment?.plugins || evidence.environment.reportRetention === undefined)) {
+    throw new Error(`${source}: /environment requires actual plugin provenance and report retention for schema 2.1+`);
+  }
+  if (evidence.environment?.reportRetention === "requested" && !evidence.reportArchive) {
+    throw new Error(`${source}: /reportArchive is required when report retention was requested`);
+  }
+  if (evidence.reportArchive && evidence.environment && evidence.environment.reportRetention !== "requested") {
+    throw new Error(`${source}: /environment/reportRetention contradicts the report archive`);
+  }
+  const activePlugins = new Set<string>();
+  const pluginOrders = new Set<number>();
+  for (const [index, plugin] of (evidence.environment?.plugins ?? []).entries()) {
+    const pointer = `/environment/plugins/${index}`;
+    if (pluginOrders.has(plugin.order)) throw new Error(`${source}: ${pointer}/order duplicate plugin precedence`);
+    pluginOrders.add(plugin.order);
+    if (plugin.effective) {
+      if (activePlugins.has(plugin.id)) throw new Error(`${source}: ${pointer}/id duplicate effective plugin`);
+      activePlugins.add(plugin.id);
+    }
+    if (modernProvenance && (plugin.effective === undefined || !plugin.entry || !plugin.entryHash ||
+      !plugin.inputs.some(input => input.path === plugin.entry && input.hash === plugin.entryHash))) {
+      throw new Error(`${source}: ${pointer} lacks a bound loaded entry identity`);
+    }
+    if (plugin.dependencyCoverage === "static" && plugin.unknownDependencies.length) {
+      throw new Error(`${source}: ${pointer}/dependencyCoverage contradicts unknown dependencies`);
+    }
+    if (new Set(plugin.inputs.map(input => input.path)).size !== plugin.inputs.length) throw new Error(`${source}: ${pointer}/inputs duplicate plugin input`);
+  }
   unique(evidence.checks, source, "/checks");
   unique(evidence.gaps, source, "/gaps");
   unique(evidence.findings, source, "/findings");
@@ -107,6 +137,8 @@ export function validateEvidence(value: unknown, source = "evidence"): Evidence 
   if (evidence.verificationPlan) unique(evidence.verificationPlan, source, "/verificationPlan");
   const nestedIds = new Set<string>();
   const authoritativeRecords = new Map(evidence.executionRecords?.map((item) => [item.id, item]));
+  try { reportReferences(evidence); }
+  catch (error) { throw new Error(`${source}: /executionRecords reports ${error instanceof Error ? error.message : String(error)}`); }
   for (const [checkIndex, check] of evidence.checks.entries()) {
     for (const [recordIndex, execution] of (check.records ?? []).entries()) {
       const pointer = `/checks/${checkIndex}/records/${recordIndex}`;
@@ -131,6 +163,15 @@ export function validateEvidence(value: unknown, source = "evidence"): Evidence 
     const proof = execution.testExecution;
     if (proof) {
       const pointer = `/executionRecords/${index}/testExecution`;
+      if (proof.reportRetention === "retained" && (!proof.reports?.length || !evidence.reportArchive)) {
+        throw new Error(`${source}: ${pointer}/reports lacks its retained archive`);
+      }
+      if (proof.reports?.length && proof.reportRetention !== "retained" || proof.reportRetention === "not-retained" && proof.reportPath !== undefined) {
+        throw new Error(`${source}: ${pointer}/reportRetention contradicts retained report references`);
+      }
+      if (proof.reports?.some(report => report.format !== proof.format) || new Set(proof.reports?.map(report => report.path)).size !== (proof.reports?.length ?? 0)) {
+        throw new Error(`${source}: ${pointer}/reports contains a conflicting format or duplicate original`);
+      }
       const counts = proof.counts;
       if (counts.executed !== counts.passed + counts.failed || counts.collected !== counts.executed + counts.skipped) throw new Error(`${source}: ${pointer}/counts contradicts the observed outcomes`);
       for (const field of ["requestedScope", "collectedScope", "executedScope", "skippedScope", "unknownScope"] as const) {
@@ -160,7 +201,8 @@ export function validateEvidence(value: unknown, source = "evidence"): Evidence 
   if (evidence.summary.risk !== risk) throw new Error(`${source}: /summary/risk does not match detail risk ${risk}`);
   if (major === 2) {
     const historicalScope = !evidence.environment && !evidence.resolutionProvenance && hasUnprovenTestSuccess(evidence);
-    const decision = historicalScope ? evaluateHistoricalVerification(evidence) : evaluateVerification(evidence);
+    const decision = historicalScope ? evaluateHistoricalVerification(evidence)
+      : modernProvenance ? evaluateVerification(evidence) : evaluateStoredVerification(evidence);
     if (evidence.verification!.status !== decision.status) throw new Error(`${source}: /verification/status contradicts policy, plan, or execution facts (${decision.status})`);
     if (evidence.verification!.strict !== decision.strict) throw new Error(`${source}: /verification/strict contradicts the effective policy`);
   }
