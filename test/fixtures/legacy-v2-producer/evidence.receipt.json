@@ -1,0 +1,86 @@
+{
+  "schemaVersion": "2.0.0",
+  "algorithm": "sha256",
+  "contentHash": "sha256:eb9c757b5dcdef6109a2beecf128de8eae50dde9947b63ba6572401a65c464c4",
+  "toolVersion": "2.0.0",
+  "evidenceSchemaVersion": "2.0.0",
+  "argv": [],
+  "options": {
+    "failOn": null,
+    "failOnNewGaps": null,
+    "base": null,
+    "head": null,
+    "out": "/tmp/patchprove-legacy-producer-fixture/evidence.json",
+    "sarif": null,
+    "spec": null,
+    "baseline": null,
+    "format": "json",
+    "sign": true
+  },
+  "exitCode": 0,
+  "failOnOutcome": {
+    "failed": false,
+    "reason": "ok"
+  },
+  "checks": [
+    {
+      "id": "typecheck",
+      "command": null,
+      "exitCode": null,
+      "status": "skipped"
+    },
+    {
+      "id": "lint",
+      "command": null,
+      "exitCode": null,
+      "status": "skipped"
+    },
+    {
+      "id": "tests",
+      "command": "/tmp/patchprove-legacy-producer-fixture/node_modules/.bin/vitest run value.test.js",
+      "exitCode": 0,
+      "status": "passed"
+    },
+    {
+      "id": "secrets",
+      "command": null,
+      "exitCode": null,
+      "status": "skipped"
+    }
+  ],
+  "generatedAt": "2026-10-23T05:42:47.858Z",
+  "canonicalizationVersion": "2",
+  "evidenceHash": "sha256:9a98e3fde64ec8b9c31c93a736a35b5b55ab4a3f511d43b451e3de68282f3b5d",
+  "executionHash": "sha256:35229531af7dea044f5cee63084028935fdc700d5946bd28b801b5d392283725",
+  "snapshotHash": "fab2f859948a15909c879785e0edcfbf8cff04dd5bcd0920eaf480a7145a516e",
+  "policyHash": "sha256:cfdbc2a5d08149a0a01b6e9f7e65c7b72357fdcfea4321eeb64c9b8ae433482e",
+  "verification": {
+    "status": "passed",
+    "strict": true,
+    "reasons": []
+  },
+  "effectivePolicy": {
+    "protocol": 2,
+    "strict": true,
+    "failOn": null,
+    "failOnNewGaps": null,
+    "gates": {
+      "typecheck": false,
+      "lint": false,
+      "tests": true,
+      "secrets": false
+    },
+    "ignorePaths": [],
+    "acceptGaps": [],
+    "plugins": [],
+    "config": null,
+    "spec": null,
+    "baseline": null,
+    "hash": "sha256:cfdbc2a5d08149a0a01b6e9f7e65c7b72357fdcfea4321eeb64c9b8ae433482e"
+  },
+  "payloadHash": "sha256:f507c1069559d9ab5fc37a6660d7ff0d6b180eb87312e9b26291d6705317dd31",
+  "signature": {
+    "alg": "hmac-sha256",
+    "value": "WiG4Jb8T6fak+jpI6P1/VlnACpp9VkvQvnzt+25BCYI="
+  }
+}

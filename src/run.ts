@@ -111,6 +111,10 @@ function assertArtifactDestinations(outputs: string[]): void {
 function fileIdentity(file: string | null): { path: string; hash: string } | null {
   return file ? { path: file, hash: hashCanonical(readBoundedFile(file).toString("utf8")) } : null;
 }
+function declaredJavaFileEncoding() {
+  const value = /(?:^|\s)-Dfile\.encoding=(UTF-8|UTF8|UTF-16|US-ASCII|ISO-8859-1|windows-1252)(?=\s|$)/i.exec(process.env.JAVA_TOOL_OPTIONS ?? "")?.[1]?.toUpperCase();
+  return (["UTF-8", "UTF8", "UTF-16", "US-ASCII", "ISO-8859-1", "windows-1252"] as const).find((encoding) => encoding.toUpperCase() === value);
+}
 function policyFor(config: ResolvedConfig, protocol: 1 | 2, contract: PatchproveContract | null, baseline: { path: string; hash: string } | null): EffectivePolicy {
   const spec = contract?.inputIdentities?.[0] ?? fileIdentity(contract?.sourcePath ?? null);
   const specInputs = contract?.inputIdentities ?? contract?.inputPaths?.map((file) => fileIdentity(file)!);
@@ -261,6 +265,7 @@ export async function analyze(options: RunOptions): Promise<Evidence> {
     }
     const impact = buildImpact(files, existing, { ignorePaths: config.ignorePaths, coverage, graph, plugins, pluginContext: context, baseGraph, basePluginContext: baseContext });
     const tools = detectTools(root, { deadlineAt, signal: controller.signal });
+    const javaFileEncoding = declaredJavaFileEncoding();
     const environment = {
       platform: process.platform, arch: process.arch, nodeVersion: process.version,
       gitVersion: (await checkedGit(root, ["--version"])).trim(),
@@ -271,6 +276,7 @@ export async function analyze(options: RunOptions): Promise<Evidence> {
       dependencyLocks: [...existing].filter((file) => /(^|\/)(?:package-lock\.json|npm-shrinkwrap\.json|pnpm-lock\.yaml|yarn\.lock|bun\.lockb?|Cargo\.lock|go\.sum|poetry\.lock|uv\.lock|Pipfile\.lock)$/.test(file))
         .sort().map((file) => ({ path: file, hash: createHash("sha256").update(readBoundedFile(path.join(root, file))).digest("hex") })),
       inputLimits: limitsInput, hermetic: false as const,
+      ...(javaFileEncoding ? { javaToolOptionsFileEncoding: javaFileEncoding } : {}),
       configurations: [...existing].filter((file) => /(^|\/)(?:[tj]sconfig[^/]*\.json|package\.json|(?:vitest|vite|jest|eslint)\.config\.[^/]+|\.eslintrc[^/]*|pytest\.ini|pyproject\.toml|conftest\.py|setup\.cfg|tox\.ini|\.gitleaks(?:\.toml|ignore)|gitleaks\.toml|Cargo\.toml|go\.(?:mod|work)|pom\.xml|(?:build|settings)\.gradle(?:\.kts)?|gradle\.properties)$/.test(file))
         .sort().map((file) => ({ path: file, hash: createHash("sha256").update(readBoundedFile(path.join(root, file))).digest("hex") })),
     };

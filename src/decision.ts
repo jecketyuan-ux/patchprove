@@ -10,6 +10,28 @@ export function evaluateVerification(
   config?: ResolvedConfig,
   strict = config?.strict ?? evidence.effectivePolicy?.strict ?? true,
 ): VerificationDecision {
+  return evaluate(evidence, config, strict, true);
+}
+
+/** Reader-only compatibility calculation; never use it for a new completion signal. */
+export function evaluateHistoricalVerification(evidence: Evidence): VerificationDecision {
+  return evaluate(evidence, undefined, evidence.effectivePolicy?.strict ?? true, false);
+}
+
+function successfulTestWithoutReport(record: ExecutionRecord): boolean {
+  return record.checkId === "tests" && record.required !== false && ["passed", "cached", "imported"].includes(record.status) && !record.testExecution;
+}
+
+export function hasUnprovenTestSuccess(evidence: Evidence): boolean {
+  const required = evidence.effectivePolicy?.gates.tests !== false ||
+    evidence.contract.clauses.some((clause) => clause.kind === "required-gate" && clause.id === "required-gate-tests") ||
+    evidence.verificationPlan?.some((item) => item.checkId === "tests" && item.required && item.policy?.mode === "required");
+  return Boolean(required && (evidence.executionRecords ?? evidence.checks.flatMap((check) => check.records ?? [])).some((record) => successfulTestWithoutReport(record) &&
+    (record.status === "passed" || evidence.verificationPlan?.some((item) => item.required && item.checkId === "tests" && (!item.unitId || item.unitId === record.id) &&
+      (item.scope.length === 0 || item.scope.some((scope) => record.scope.includes(scope)))))));
+}
+
+function evaluate(evidence: Evidence, config: ResolvedConfig | undefined, strict: boolean, requireReports: boolean): VerificationDecision {
   const reasons: VerificationDecision["reasons"] = [];
   let failed = false;
   const add = (code: string, message: string, detail: { checkId?: CheckId; scope?: string[] } = {}) => {
@@ -31,6 +53,9 @@ export function evaluateVerification(
   const records = evidence.executionRecords ?? evidence.checks.flatMap((check) => check.records ?? []);
   const identities = new Map<string, ExecutionRecord>();
   for (const record of records) {
+    if (requireReports && !disabled("tests") && record.status === "passed" && successfulTestWithoutReport(record)) {
+      add("test-execution-unproven", `Execution ${record.id} has no observed test-result facts; requested argv cannot establish execution`, { checkId: "tests", scope: record.scope });
+    }
     if (identities.has(record.id)) add("execution-identity-duplicate", `Execution identity ${record.id} is repeated`, { checkId: record.checkId });
     identities.set(record.id, record);
   }
@@ -87,6 +112,8 @@ export function evaluateVerification(
   }
   const completed = (record: ExecutionRecord): boolean => {
     if (record.checkId === "tests" && record.collectedTests === 0) return false;
+    if (record.checkId === "tests" && requireReports && (!record.testExecution || record.testExecution.reportStatus !== "validated" || record.testExecution.counts.executed <= 0 ||
+      record.scope.some((item) => !record.testExecution!.executedScope.includes(item) || record.testExecution!.unknownScope.includes(item)))) return false;
     if (record.status === "passed") return record.exitCode === 0;
     if (record.status !== "cached" && record.status !== "imported") return false;
     if (record.status === "imported" && record.exitCode !== 0) return false;

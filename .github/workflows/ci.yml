@@ -87,6 +87,9 @@ jobs:
           PATCHPROVE_PRODUCTION_ENGINES: node,python,go,cargo,maven,gradle
           PATCHPROVE_PRODUCTION_REPORT: artifacts/production-chain.json
           PATCHPROVE_PACKAGE_REPORT: artifacts/installed-package.json
+          # JDK 17's Windows default encoding cannot round-trip non-ASCII
+          # Gradle worker classpaths. Keep the tested JVM setting explicit.
+          JAVA_TOOL_OPTIONS: ${{ matrix.os == 'windows-latest' && '-Dfile.encoding=UTF-8' || '' }}
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         if: always()
         with:

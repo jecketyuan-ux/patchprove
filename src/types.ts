@@ -389,6 +389,7 @@ export interface EnvironmentProvenance {
   configurations?: Array<{ path: string; hash: string }>;
   inputLimits: Required<InputLimits>;
   hermetic: false;
+  javaToolOptionsFileEncoding?: "UTF-8" | "UTF8" | "UTF-16" | "US-ASCII" | "ISO-8859-1" | "windows-1252";
 }
 
 export interface DetectedTools {

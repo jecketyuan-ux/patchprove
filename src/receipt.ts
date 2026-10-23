@@ -11,7 +11,7 @@ import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
 import { readJsonInput } from "./input-budget.js";
 import { writeJsonAtomic } from "./artifacts.js";
-import { evaluateVerification } from "./decision.js";
+import { evaluateVerification, hasUnprovenTestSuccess } from "./decision.js";
 import { validateEvidence, validateReceipt } from "./validation.js";
 import type {
   CheckDigest,
@@ -388,13 +388,15 @@ export function verifyReceipt(
   const fingerprint = receipt.signature?.publicKey ? publicKeyFingerprint(receipt.signature.publicKey) : null;
   const trust: NonNullable<VerifyReceiptResult["trust"]> = trustedKeys.length === 0 ? "unconfigured" : signature === "verified" && fingerprint && trustedKeys.includes(fingerprint) ? "trusted" : "untrusted";
   const signatureRequired = policy.requireSignature || trustedKeys.length > 0;
-  const legacyAllowed = modern || policy.allowLegacy !== false;
+  const legacyScope = modern && hasUnprovenTestSuccess(evidence);
+  const legacyAllowed = modern ? !legacyScope || policy.allowLegacy === true : policy.allowLegacy !== false;
   const ok = protocolMatches && hashMatches && payloadMatches && signature !== "mismatch" && (!signatureRequired || signature === "verified") && trust !== "untrusted" && legacyAllowed;
   const parts = [
     hashMatches ? "hash matches" : `hash mismatch (receipt ${receipt.contentHash}, computed ${computedHash})`,
   ];
   if (!protocolMatches) parts.push("evidence and receipt protocol versions do not match");
   if (modern) parts.push(payloadMatches ? "authenticated payload matches" : "receipt payload mismatch");
+  if (legacyScope) parts.push("legacy test scope has no observed result facts; completion remains unproven");
   else parts.push("legacy evidence-only receipt; metadata is not authenticated");
   if (signature === "verified") parts.push(`${receipt.signature?.alg} signature verified`);
   else if (signature === "mismatch") parts.push(`${receipt.signature?.alg} signature mismatch`);
@@ -412,7 +414,7 @@ export function verifyReceipt(
     message: parts.join("; "),
     payloadMatches,
     trust,
-    legacy: !modern,
+    legacy: !modern || legacyScope,
   };
 }
 

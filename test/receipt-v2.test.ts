@@ -20,6 +20,7 @@ function modernEvidence(): Evidence {
     id: "tests:fixture", checkId: "tests", scope: ["src/value.test.ts"], status: "passed",
     command: "node", args: ["--test", "src/value.test.ts"], cwd: "/tmp/fixture",
     exitCode: 0, durationMs: 12, collectedTests: 1, outputHash: digest("b"),
+    testExecution: { parserVersion: "1", format: "vitest-json", reportStatus: "validated", granularity: "file", requestedScope: ["src/value.test.ts"], collectedScope: ["src/value.test.ts"], executedScope: ["src/value.test.ts"], skippedScope: [], unknownScope: [], counts: { collected: 1, executed: 1, passed: 1, failed: 0, skipped: 0 } },
   };
   const base = buildEvidence({
     cwd: "/tmp/fixture", root: "/tmp/fixture", generatedAt: "2026-10-22T00:00:00.000Z",

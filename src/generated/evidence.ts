@@ -1,6 +1,6 @@
 /* This file is generated. Do not edit directly.
  * Source: schema/evidence.schema.json
- * Schema SHA-256: 88274f61ad414e809da042fd9d6d7f4d6355684bd0bd0b0d12d29725318b1c57
+ * Schema SHA-256: 5da3d8468802141051f5d6e050edee9a3b97988dc2dbf2a944cde4d4adcb4bf4
  * Compiler: json-schema-to-typescript 16.0.0
  * Regenerate with: npm run generate:protocol
  */
@@ -387,6 +387,7 @@ export interface Environment {
     path: string;
     hash: string;
   }[];
+  javaToolOptionsFileEncoding?: "UTF-8" | "UTF8" | "UTF-16" | "US-ASCII" | "ISO-8859-1" | "windows-1252";
 }
 export interface InputLimits {
   maxFileBytes: number;

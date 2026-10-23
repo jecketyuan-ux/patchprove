@@ -23,3 +23,5 @@
 外部出口继续保留 `not-run`：[真实宿主与 GitHub 验收表](../host-acceptance.md)。没有记录，不能宣称 Claude/Cursor 强制行为或完整 fork publisher 已稳定。十项目/五十历史补丁和更多构建模型属于语料扩展，不把十个受控样本改名成五十个真实变更。SaaS、遥测、LLM 主判定、重写及通用缓存按方案继续暂缓。
 
 本次公开 registry 只读查询返回 `1.0.0`、`1.1.0`，未发现 `2.0.0`，因此保留未发布候选版本；查询不构成发布授权。没有发布 npm 包、tag 或 release。
+
+后续 CI 暴露并保留两项条件：大型自审报告需显式匹配生成/reader/publisher 的 JSON 预算；Windows Gradle 8.12.1/JDK17 的中文路径验收使用明确的 UTF-8 JVM 配置，默认 ANSI 环境的 ClassNotFound 失败不计作断言执行。旧 2.0 无机器事实的数据可按原签名字节读取，但新的完成判定保持 incomplete，收据兼容验证需显式 allow-legacy。

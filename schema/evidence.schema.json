@@ -1811,6 +1811,17 @@
               }
             }
           }
+        },
+        "javaToolOptionsFileEncoding": {
+          "type": "string",
+          "enum": [
+            "UTF-8",
+            "UTF8",
+            "UTF-16",
+            "US-ASCII",
+            "ISO-8859-1",
+            "windows-1252"
+          ]
         }
       },
       "required": [

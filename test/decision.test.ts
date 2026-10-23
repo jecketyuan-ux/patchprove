@@ -19,10 +19,27 @@ function complete(): Evidence {
   return evidence;
 }
 function record(scope = ["a.ts"]): ExecutionRecord {
-  return { id: "tests-a", checkId: "tests", scope, status: "passed", command: "vitest", args: [], cwd: "/tmp", exitCode: 0, durationMs: 1 };
+  return { id: "tests-a", checkId: "tests", scope, status: "passed", command: "vitest", args: [], cwd: "/tmp", exitCode: 0, durationMs: 1,
+    testExecution: { parserVersion: "1", format: "vitest-json", reportStatus: "validated", granularity: "file", requestedScope: scope, collectedScope: scope, executedScope: scope, skippedScope: [], unknownScope: [],
+      counts: { collected: scope.length, executed: scope.length, passed: scope.length, failed: 0, skipped: 0 } } };
 }
 
 describe("shared verification decision", () => {
+  it("does not treat an old argv-only test scope as a fresh execution proof", () => {
+    const evidence = complete();
+    evidence.verificationPlan = [{ id: "tests", checkId: "tests", scope: ["a.ts"], required: true, reason: "selected" }];
+    evidence.executionRecords = [record()];
+    delete evidence.executionRecords[0]!.testExecution;
+    expect(evaluateVerification(evidence).status).toBe("incomplete");
+  });
+  it("does not let an auxiliary imported task erase already proven required execution", () => {
+    const evidence = complete();
+    evidence.verificationPlan = [{ id: "tests", checkId: "tests", scope: ["a.ts"], required: true, reason: "selected" }];
+    const auxiliary = { ...record(["other.ts"]), id: "nx:other", status: "imported" as const };
+    delete auxiliary.testExecution;
+    evidence.executionRecords = [record(), auxiliary];
+    expect(evaluateVerification(evidence).status).toBe("passed");
+  });
   it("cannot pass contradictory copies of an execution supplied directly by an SDK caller", () => {
     const evidence = complete();
     evidence.executionRecords = [record()];

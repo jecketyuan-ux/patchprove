@@ -4,7 +4,7 @@ import { Ajv, type AnySchema, type ValidateFunction } from "ajv";
 import addFormatsModule from "ajv-formats";
 import type { FormatsPlugin } from "ajv-formats";
 import { maxRisk } from "./risk.js";
-import { evaluateVerification } from "./decision.js";
+import { evaluateHistoricalVerification, evaluateVerification, hasUnprovenTestSuccess } from "./decision.js";
 import { emptyContractResult } from "./types.js";
 import type { Evidence, EvidenceReceipt } from "./types.js";
 
@@ -159,7 +159,8 @@ export function validateEvidence(value: unknown, source = "evidence"): Evidence 
   const risk = maxRisk([...evidence.gaps.filter((gap) => gap.accepted !== true).map((gap) => gap.risk), ...evidence.findings.map((finding) => finding.risk)]);
   if (evidence.summary.risk !== risk) throw new Error(`${source}: /summary/risk does not match detail risk ${risk}`);
   if (major === 2) {
-    const decision = evaluateVerification(evidence);
+    const historicalScope = !evidence.environment && !evidence.resolutionProvenance && hasUnprovenTestSuccess(evidence);
+    const decision = historicalScope ? evaluateHistoricalVerification(evidence) : evaluateVerification(evidence);
     if (evidence.verification!.status !== decision.status) throw new Error(`${source}: /verification/status contradicts policy, plan, or execution facts (${decision.status})`);
     if (evidence.verification!.strict !== decision.strict) throw new Error(`${source}: /verification/strict contradicts the effective policy`);
   }
