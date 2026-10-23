@@ -1,9 +1,12 @@
 import { readFileSync } from "node:fs";
+import { isDeepStrictEqual } from "node:util";
 import { Ajv, type AnySchema, type ValidateFunction } from "ajv";
 import addFormatsModule from "ajv-formats";
 import type { FormatsPlugin } from "ajv-formats";
 import { maxRisk } from "./risk.js";
+import { evaluateHistoricalVerification, evaluateStoredVerification, evaluateVerification, hasUnprovenTestSuccess } from "./decision.js";
 import { emptyContractResult } from "./types.js";
+import { reportReferences } from "./report-references.js";
 import type { Evidence, EvidenceReceipt } from "./types.js";
 
 type RecordValue = Record<string, unknown>;
@@ -98,11 +101,102 @@ export function validateEvidence(value: unknown, source = "evidence"): Evidence 
   const normalized = major === 1 ? normalizeHistorical(value as RecordValue) : value;
   assertSchema(normalized, "evidence", source);
   const evidence = normalized as Evidence;
+  const modernProvenance = major === 2 && Number(evidence.schemaVersion.split(".")[1]) >= 1;
+  if (modernProvenance && (!evidence.environment?.plugins || evidence.environment.reportRetention === undefined)) {
+    throw new Error(`${source}: /environment requires actual plugin provenance and report retention for schema 2.1+`);
+  }
+  if (evidence.environment?.reportRetention === "requested" && !evidence.reportArchive) {
+    throw new Error(`${source}: /reportArchive is required when report retention was requested`);
+  }
+  if (evidence.reportArchive && evidence.environment && evidence.environment.reportRetention !== "requested") {
+    throw new Error(`${source}: /environment/reportRetention contradicts the report archive`);
+  }
+  const activePlugins = new Set<string>();
+  const pluginOrders = new Set<number>();
+  for (const [index, plugin] of (evidence.environment?.plugins ?? []).entries()) {
+    const pointer = `/environment/plugins/${index}`;
+    if (pluginOrders.has(plugin.order)) throw new Error(`${source}: ${pointer}/order duplicate plugin precedence`);
+    pluginOrders.add(plugin.order);
+    if (plugin.effective) {
+      if (activePlugins.has(plugin.id)) throw new Error(`${source}: ${pointer}/id duplicate effective plugin`);
+      activePlugins.add(plugin.id);
+    }
+    if (modernProvenance && (plugin.effective === undefined || !plugin.entry || !plugin.entryHash ||
+      !plugin.inputs.some(input => input.path === plugin.entry && input.hash === plugin.entryHash))) {
+      throw new Error(`${source}: ${pointer} lacks a bound loaded entry identity`);
+    }
+    if (plugin.dependencyCoverage === "static" && plugin.unknownDependencies.length) {
+      throw new Error(`${source}: ${pointer}/dependencyCoverage contradicts unknown dependencies`);
+    }
+    if (new Set(plugin.inputs.map(input => input.path)).size !== plugin.inputs.length) throw new Error(`${source}: ${pointer}/inputs duplicate plugin input`);
+  }
   unique(evidence.checks, source, "/checks");
   unique(evidence.gaps, source, "/gaps");
   unique(evidence.findings, source, "/findings");
   if (evidence.executionRecords) unique(evidence.executionRecords, source, "/executionRecords");
   if (evidence.verificationPlan) unique(evidence.verificationPlan, source, "/verificationPlan");
+  const nestedIds = new Set<string>();
+  const authoritativeRecords = new Map(evidence.executionRecords?.map((item) => [item.id, item]));
+  try { reportReferences(evidence); }
+  catch (error) { throw new Error(`${source}: /executionRecords reports ${error instanceof Error ? error.message : String(error)}`); }
+  for (const [checkIndex, check] of evidence.checks.entries()) {
+    for (const [recordIndex, execution] of (check.records ?? []).entries()) {
+      const pointer = `/checks/${checkIndex}/records/${recordIndex}`;
+      if (nestedIds.has(execution.id)) throw new Error(`${source}: ${pointer}/id duplicate identity "${execution.id}"`);
+      nestedIds.add(execution.id);
+      if (execution.checkId !== check.id) throw new Error(`${source}: ${pointer}/checkId does not match its check`);
+      if (evidence.executionRecords) {
+        const authoritative = authoritativeRecords.get(execution.id);
+        if (!authoritative || !isDeepStrictEqual(authoritative, execution)) {
+          throw new Error(`${source}: ${pointer} conflicts with /executionRecords for identity "${execution.id}"`);
+        }
+      }
+      if (check.status === "passed" && (execution.status === "failed" || execution.status === "timed-out" || execution.status === "skipped" && execution.required !== false)) {
+        throw new Error(`${source}: ${pointer}/status contradicts the passed check`);
+      }
+    }
+  }
+  for (const [index, execution] of (evidence.executionRecords ?? evidence.checks.flatMap((check) => check.records ?? [])).entries()) {
+    if (execution.status === "passed" && execution.exitCode !== 0) {
+      throw new Error(`${source}: /executionRecords/${index}/exitCode must be zero for a passed execution`);
+    }
+    const proof = execution.testExecution;
+    if (proof) {
+      const pointer = `/executionRecords/${index}/testExecution`;
+      if (proof.reportRetention === "retained" && (!proof.reports?.length || !evidence.reportArchive)) {
+        throw new Error(`${source}: ${pointer}/reports lacks its retained archive`);
+      }
+      if (proof.reports?.length && proof.reportRetention !== "retained" || proof.reportRetention === "not-retained" && proof.reportPath !== undefined) {
+        throw new Error(`${source}: ${pointer}/reportRetention contradicts retained report references`);
+      }
+      if (proof.reports?.some(report => report.format !== proof.format) || new Set(proof.reports?.map(report => report.path)).size !== (proof.reports?.length ?? 0)) {
+        throw new Error(`${source}: ${pointer}/reports contains a conflicting format or duplicate original`);
+      }
+      const runtimeIdentities = new Set<string>();
+      for (const [runtimeIndex, runtime] of (proof.javaRuntimeObservations ?? []).entries()) {
+        const runtimePointer = `${pointer}/javaRuntimeObservations/${runtimeIndex}`;
+        if (proof.format !== "java-junit") throw new Error(`${source}: ${runtimePointer} requires a Java JUnit report`);
+        if (runtime.status === "observed" && !runtime.scope.length) throw new Error(`${source}: ${runtimePointer}/scope cannot establish an observed test runtime`);
+        if (runtime.scope.some(file => !proof.requestedScope.includes(file))) throw new Error(`${source}: ${runtimePointer}/scope contains unrequested scope`);
+        if (proof.reports?.length && !proof.reports.some(report => report.hash === `sha256:${runtime.reportHash}`)) {
+          throw new Error(`${source}: ${runtimePointer}/reportHash has no matching retained original`);
+        }
+        const identity = JSON.stringify([runtime.reportHash, runtime.suite, [...runtime.scope].sort()]);
+        if (runtimeIdentities.has(identity)) throw new Error(`${source}: ${runtimePointer} duplicates a suite runtime observation`);
+        runtimeIdentities.add(identity);
+      }
+      const counts = proof.counts;
+      if (counts.executed !== counts.passed + counts.failed || counts.collected !== counts.executed + counts.skipped) throw new Error(`${source}: ${pointer}/counts contradicts the observed outcomes`);
+      for (const field of ["requestedScope", "collectedScope", "executedScope", "skippedScope", "unknownScope"] as const) {
+        if (new Set(proof[field]).size !== proof[field].length || field !== "requestedScope" && proof[field].some((item) => !proof.requestedScope.includes(item))) {
+          throw new Error(`${source}: ${pointer}/${field} contains duplicate or unrequested scope`);
+        }
+      }
+      if (execution.scope.some((item) => !proof.executedScope.includes(item) || proof.unknownScope.includes(item))) throw new Error(`${source}: ${pointer}/executedScope does not establish the execution's scope`);
+      if (execution.status === "passed" && counts.executed === 0) throw new Error(`${source}: ${pointer}/counts/executed cannot establish a passed execution`);
+      if (counts.failed > 0 && execution.status !== "failed" && execution.status !== "timed-out") throw new Error(`${source}: ${pointer}/counts/failed contradicts the execution status`);
+    }
+  }
   const counts = {
     checksPassed: evidence.checks.filter((check) => check.status === "passed").length,
     checksFailed: evidence.checks.filter((check) => check.status === "failed").length,
@@ -118,6 +212,13 @@ export function validateEvidence(value: unknown, source = "evidence"): Evidence 
   }
   const risk = maxRisk([...evidence.gaps.filter((gap) => gap.accepted !== true).map((gap) => gap.risk), ...evidence.findings.map((finding) => finding.risk)]);
   if (evidence.summary.risk !== risk) throw new Error(`${source}: /summary/risk does not match detail risk ${risk}`);
+  if (major === 2) {
+    const historicalScope = !evidence.environment && !evidence.resolutionProvenance && hasUnprovenTestSuccess(evidence);
+    const decision = historicalScope ? evaluateHistoricalVerification(evidence)
+      : modernProvenance ? evaluateVerification(evidence) : evaluateStoredVerification(evidence);
+    if (evidence.verification!.status !== decision.status) throw new Error(`${source}: /verification/status contradicts policy, plan, or execution facts (${decision.status})`);
+    if (evidence.verification!.strict !== decision.strict) throw new Error(`${source}: /verification/strict contradicts the effective policy`);
+  }
   return evidence;
 }
 

@@ -1,9 +1,12 @@
 import path from "node:path";
+import { isBuiltin } from "node:module";
+import { InputBudgetError, parseBoundedJson } from "../input-budget.js";
 import { readProjectFile } from "./context.js";
 import { basenameNoExt, extname, normalizeRel, parentDir } from "../paths.js";
 import type { DetectedTools } from "../types.js";
 import type { LanguagePlugin, PluginContext, PluginTestCommand } from "./types.js";
 import { uniqueSorted } from "./types.js";
+import { parseJsDependencies } from "./js-parser.js";
 
 export const JS_EXTS = new Set([".js", ".jsx", ".mjs", ".cjs"]);
 export const TS_EXTS = new Set([".ts", ".tsx", ".mts", ".cts"]);
@@ -53,26 +56,8 @@ export function jsTestCandidates(filePath: string): string[] {
   return uniqueSorted(candidates);
 }
 
-const IMPORT_FROM_RE =
-  /(?:^|[^.\w$])(?:import(?:\s+type)?|export(?:\s+type)?)\s+(?:\*\s+as\s+[\w$]+|\*|\{[^}]*\}|[\w$]+(?:\s*,\s*\{[^}]*\})?)\s+from\s*['"]([^'"]+)['"]/g;
-const SIDE_EFFECT_IMPORT_RE = /(?:^|[^.\w$])import\s*['"]([^'"]+)['"]/g;
-const REQUIRE_OR_DYNAMIC_RE = /(?:^|[^.\w$])(?:require|import)\s*\(\s*['"]([^'"]+)['"]/g;
-const STATIC_TEMPLATE_IMPORT_RE = /(?:^|[^.\w$])(?:require|import)\s*\(\s*`((?:(?!\$\{)[^`])+)`/g;
-
-export function parseJsImports(sourceText: string): string[] {
-  const stripped = sourceText
-    .replace(/\/\*[\s\S]*?\*\//g, " ")
-    .replace(/(^|[^:\\\w])\/\/.*$/gm, "$1");
-  const specs: string[] = [];
-  for (const re of [IMPORT_FROM_RE, SIDE_EFFECT_IMPORT_RE, REQUIRE_OR_DYNAMIC_RE, STATIC_TEMPLATE_IMPORT_RE]) {
-    re.lastIndex = 0;
-    let match: RegExpExecArray | null;
-    while ((match = re.exec(stripped))) {
-      const spec = match[1];
-      if (spec) specs.push(spec);
-    }
-  }
-  return uniqueSorted(specs);
+export function parseJsImports(sourceText: string, file = "module.ts"): string[] {
+  return parseJsDependencies(sourceText, file).specifiers;
 }
 
 const RESOLVE_EXTS = [".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs", ".json"];
@@ -97,10 +82,11 @@ function readJson(ctx: PluginContext | undefined, rel: string): Record<string, u
   try {
     const cleaned = text.replace(/"(?:\\.|[^"\\])*"|\/\*[\s\S]*?\*\/|\/\/[^\r\n]*/g,
       (token) => token.startsWith("/") ? " " : token);
-    const value: unknown = JSON.parse(cleaned.replace(/"(?:\\.|[^"\\])*"|,\s*(?=[}\]])/g, (token) => token.startsWith('"') ? token : ""));
+    const value: unknown = parseBoundedJson(cleaned.replace(/"(?:\\.|[^"\\])*"|,\s*(?=[}\]])/g, (token) => token.startsWith('"') ? token : ""), rel);
     return value !== null && typeof value === "object" && !Array.isArray(value)
       ? value as Record<string, unknown> : null;
-  } catch {
+  } catch (error) {
+    if (error instanceof InputBudgetError) throw error;
     return null;
   }
 }
@@ -140,6 +126,25 @@ function aliasConfig(ctx: PluginContext | undefined, rel: string, seen = new Set
     : inherited ?? { base, paths: {}, hasBaseUrl };
 }
 
+function completeAliasConfiguration(ctx: PluginContext, file: string, seen = new Set<string>()): boolean {
+  if (seen.has(file)) return false;
+  seen.add(file);
+  const config = readJson(ctx, file);
+  if (!config) return false;
+  const options = config.compilerOptions;
+  if (options !== undefined) {
+    if (!options || typeof options !== "object" || Array.isArray(options)) return false;
+    const value = options as Record<string, unknown>;
+    if (value.baseUrl !== undefined && typeof value.baseUrl !== "string") return false;
+    if (value.paths !== undefined && (!value.paths || typeof value.paths !== "object" || Array.isArray(value.paths) ||
+      Object.values(value.paths).some((targets) => !Array.isArray(targets) || !targets.every((target) => typeof target === "string")))) return false;
+  }
+  if (config.extends === undefined) return true;
+  if (typeof config.extends !== "string" || !config.extends.startsWith(".")) return false;
+  const target = normalizeRel(path.posix.join(parentDir(file) || ".", config.extends.endsWith(".json") ? config.extends : `${config.extends}.json`));
+  return completeAliasConfiguration(ctx, target, seen);
+}
+
 function matchPattern(pattern: string, specifier: string): string | null {
   const star = pattern.indexOf("*");
   if (star < 0) return pattern === specifier ? "" : null;
@@ -161,14 +166,46 @@ export function resolveJsImportFiles(
   specifier: string,
   existing: ReadonlySet<string>,
   ctx?: PluginContext,
+  seen = new Set<string>(),
 ): string[] {
   const from = normalizeRel(fromFile);
+  const identity = `${from}\0${specifier}`;
+  if (seen.has(identity) || seen.size > 32) return [];
+  seen.add(identity);
   const dir = parentDir(from) || ".";
   if (specifier.startsWith(".") || specifier.startsWith("/")) {
     const hit = resolveJsPath(specifier.startsWith("/") ? specifier.slice(1) : path.posix.join(dir, specifier), existing);
     return hit ? [hit] : [];
   }
   const hits: string[] = [];
+  if (specifier.startsWith("#")) {
+    for (const ancestor of ancestorDirs(from)) {
+      const manifest = ancestor === "." ? "package.json" : `${ancestor}/package.json`;
+      if (!existing.has(manifest)) continue;
+      const pkg = readJson(ctx, manifest);
+      const imports = pkg?.imports;
+      if (!imports || typeof imports !== "object" || Array.isArray(imports)) return [];
+      // Exact keys win over patterns; the nearest package defines this scope.
+      const candidates = Object.entries(imports).filter(([pattern]) => matchPattern(pattern, specifier) !== null)
+        .sort(([a], [b]) => Number(b === specifier) - Number(a === specifier) || b.indexOf("*") - a.indexOf("*") || b.length - a.length);
+      const match = candidates[0];
+      if (!match) return [];
+      const capture = matchPattern(match[0], specifier)!;
+      for (const value of exportTargets(match[1])) {
+        const target = value.replaceAll("*", capture);
+        if (target.startsWith("./")) {
+          const resolved = path.posix.normalize(path.posix.join(ancestor, target));
+          if (resolved === ".." || resolved.startsWith("../") || target.split("/").includes("..")) continue;
+          const hit = resolveJsPath(resolved, existing);
+          if (hit) hits.push(hit);
+        } else if (!target.startsWith(".") && !target.startsWith("/")) {
+          hits.push(...resolveJsImportFiles(from, target, existing, ctx, seen));
+        }
+      }
+      return uniqueSorted(hits);
+    }
+    return [];
+  }
   // The nearest config defines the importer's aliases. Every configured target
   // is retained because conditional builds can choose different files.
   for (const ancestor of ancestorDirs(from)) {
@@ -224,13 +261,56 @@ export function resolveJsImport(
   return resolveJsImportFiles(fromFile, specifier, existing, ctx)[0] ?? null;
 }
 
+export function classifyJsImport(fromFile: string, specifier: string, ctx?: PluginContext): "internal" | "external" | "builtin" {
+  if (isBuiltin(specifier)) return "builtin";
+  if (/^[.#/]/.test(specifier)) return "internal";
+  let baseUrl = false;
+  for (const ancestor of ancestorDirs(normalizeRel(fromFile))) {
+    const prefix = ancestor === "." ? "" : `${ancestor}/`;
+    const config = aliasConfig(ctx, `${prefix}tsconfig.json`) ?? aliasConfig(ctx, `${prefix}jsconfig.json`);
+    if (!config) continue;
+    if (Object.keys(config.paths).some((pattern) => matchPattern(pattern, specifier) !== null)) return "internal";
+    baseUrl = config.hasBaseUrl;
+    break;
+  }
+  for (const manifest of ctx?.existing ?? []) {
+    if (!/(^|\/)package\.json$/.test(manifest) || manifest.split("/").includes("node_modules")) continue;
+    const name = readJson(ctx, manifest)?.name;
+    if (typeof name === "string" && (specifier === name || specifier.startsWith(`${name}/`))) return "internal";
+  }
+  for (const ancestor of ancestorDirs(normalizeRel(fromFile))) {
+    const pkg = readJson(ctx, ancestor === "." ? "package.json" : `${ancestor}/package.json`);
+    if (!pkg) continue;
+    for (const field of ["dependencies", "devDependencies", "optionalDependencies", "peerDependencies"]) {
+      const dependencies = pkg[field];
+      if (dependencies && typeof dependencies === "object" && Object.keys(dependencies).some((name) => specifier === name || specifier.startsWith(`${name}/`))) return "external";
+    }
+  }
+  if (baseUrl) return "internal";
+  return "external";
+}
+
 export const jsPlugin: LanguagePlugin = {
   id: "javascript",
+  capabilities: { contractVersion: 1, testedRunners: ["vitest@3.0.5", "vitest@4.1.12"], granularity: "file", reportFormats: ["vitest-json", "jest-json"], unknownResult: "incomplete" },
   languages: ["javascript", "typescript"],
   extensions: [...JS_EXTS, ...TS_EXTS],
   isTestFile: isJsTestFile,
   testCandidates: jsTestCandidates,
-  parseImports: (sourceText) => parseJsImports(sourceText),
+  parseImports: parseJsImports,
+  classifyImport: classifyJsImport,
+  configurationDiagnostics(ctx) {
+    const diagnostics = [];
+    for (const file of ctx.existing) {
+      if (!/(^|\/)(?:package\.json|[tj]sconfig[^/]*\.json)$/.test(file)) continue;
+      const config = readJson(ctx, file);
+      if (!config || /(^|\/)[tj]sconfig[^/]*\.json$/.test(file) && !completeAliasConfiguration(ctx, file)) diagnostics.push({
+        code: "mapping-invalid-configuration", severity: "warning" as const, files: [file],
+        message: `Dependency configuration ${file} is unreadable or uses an external extends source outside the static resolver; selecting all known tests`,
+      });
+    }
+    return diagnostics;
+  },
   resolveImport: resolveJsImport,
   resolveImportFiles: resolveJsImportFiles,
   testCommand(cwd: string, mappedTests: string[], tools: DetectedTools): PluginTestCommand | null {

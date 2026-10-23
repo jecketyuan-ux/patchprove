@@ -1,0 +1,39 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-10-23 06:39:50 UTC",
+  "candidate": "969ad02e34cb169d120900afada2020554d1e428",
+  "run": {
+    "id": 39911537497,
+    "url": "https://github.com/jecketyuan-ux/patchprove/actions/runs/39911537497",
+    "conclusion": "failure"
+  },
+  "job": {
+    "id": 120275438020,
+    "url": "https://github.com/jecketyuan-ux/patchprove/actions/runs/39911537497/job/120275438020",
+    "name": "Real runtime fixtures / windows-latest",
+    "conclusion": "failure"
+  },
+  "conditions": {
+    "java": "Temurin JDK17",
+    "gradle": "8.12.1",
+    "fixturePaths": "spaces and Chinese characters",
+    "javaToolOptions": "-Dfile.encoding=UTF-8 only in the installed-package step; earlier executor step may already have started Gradle daemons"
+  },
+  "observation": {
+    "passedExecutorHarness": 30,
+    "installedFailures": [
+      "gradle-success",
+      "gradle-failure",
+      "gradle-multimodule"
+    ],
+    "error": "Could not execute test class fixture.ValueTest; java.lang.ClassNotFoundException: fixture.ValueTest",
+    "assertions": "No attributed case executed; positive/multi cases fail and the negative case is correctly rejected as infrastructure failure"
+  },
+  "artifact": {
+    "id": 12483123652,
+    "url": "https://github.com/jecketyuan-ux/patchprove/actions/runs/39911537497/artifacts/12483123652",
+    "digest": "sha256:e007660a9e00d51a9e3ae0004fd3b7b12342c2dab05e55187d1530ceec552be3",
+    "contents": "runtime/corpus, installed production JSON and retained worker XML"
+  },
+  "interpretation": "This disproves step-only UTF-8 as a sufficient supported condition. The precise upstream cause is not established by these logs. The next candidate tests Windows JDK21 and consistent UTF-8 before any daemon; no success is asserted before its CI completes."
+}

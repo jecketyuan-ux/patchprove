@@ -1,10 +1,8 @@
-import { fileURLToPath } from "node:url";
 import path from "node:path";
 import { evaluateVerification } from "./decision.js";
-import { runCommand } from "./exec.js";
 import { type ProvePatchInput, type ProvePatchResult, runOptionsFromInput } from "./mcp-tools.js";
-import { produceArtifacts } from "./run.js";
-import { validateEvidence } from "./validation.js";
+import { analyze, produceArtifacts, shouldFailRun, validateArtifactOptions } from "./run.js";
+import { formatShortSummary } from "./report.js";
 
 export type HookAdapter = "claude-code" | "cursor";
 export type HookEvent = "stop" | "post" | "session" | "subagent-stop";
@@ -131,6 +129,7 @@ export async function executeHook(options: HookOptions): Promise<number> {
   const started = Date.now();
   const budget = options.timeoutMs ?? 30_000;
   try {
+    validateArtifactOptions(options);
     const context = await readHookContext(process.stdin, Math.min(1000, budget));
     if (context.stopHookActive || context.loopCount >= LOOP_LIMIT) {
       process.stdout.write("{}\n");
@@ -141,20 +140,15 @@ export async function executeHook(options: HookOptions): Promise<number> {
     const effective = {
       ...options,
       cwd: options.cwdExplicit ? options.cwd : context.cwd ?? options.cwd,
-      timeoutMs: Math.max(1, remaining - Math.min(500, remaining / 4)),
+      timeoutMs: Math.max(1, Math.floor(remaining - Math.min(500, remaining / 4))),
     };
-    // A separate process bounds snapshot/config/plugin work as well as subprocess execution.
-    const worker = fileURLToPath(new URL("./hook-worker.js", import.meta.url));
-    const result = await runCommand(process.execPath, [worker, Buffer.from(JSON.stringify({
-      ...effective, sign: false,
-    })).toString("base64")], {
-      cwd: effective.cwd ?? process.cwd(), timeoutMs: remaining, maxOutputBytes: 16 * 1024 * 1024,
-    });
-    if (result.timedOut) throw new Error("Hook total execution budget exceeded");
-    if (result.exitCode !== 0 || result.truncated) throw new Error(result.stderr.trim() || "Hook worker failed");
-    const proved = JSON.parse(result.stdout) as ProvePatchResult;
-    proved.evidence = validateEvidence(proved.evidence, "hook worker");
-    if (options.out !== undefined || options.sarif !== undefined || options.receipt === true || typeof options.receipt === "string") {
+    // Every entry uses the same fresh-process lifecycle and cancellation rules.
+    const evidence = await analyze({ ...runOptionsFromInput(effective), sign: false });
+    const failOn = evidence.effectivePolicy?.failOn ?? undefined;
+    const failOnMet = shouldFailRun(evidence);
+    const proved: ProvePatchResult = { evidence, failOn, failOnMet,
+      summary: formatShortSummary(evidence, { failOn, failOnMet }) };
+    if (options.sign === true || options.out !== undefined || options.sarif !== undefined || options.receipt === true || typeof options.receipt === "string") {
       proved.evidence = produceArtifacts(proved.evidence, runOptionsFromInput(effective));
     }
     process.stdout.write(`${JSON.stringify(buildHookResponse(proved, options.adapter, options.event).payload)}\n`);

@@ -8,6 +8,9 @@ This section describes the current checkout. It does not announce an npm publica
 
 ### Added
 
+- Evidence 2.1 stabilization adds per-analysis process lifetime, actual plugin provenance, optional raw-report retention through `--reports-dir`, and explicit repository identity for portable baselines. Readers retain historical signed bytes; new provenance is not backfilled into old evidence. See [migration](docs/migration-v2.md).
+- Candidate-bound release acceptance validates the actual tarball, clean source/runtime identity, current-head CI and forty-four real host/GitHub/Windows cases. Missing/failed/incomplete/not-run cases block stable release. Validator contract tests do not establish live acceptance.
+- Two independent full-suite seed regressions exercise changed-test importers and static imports between comment-marker strings. The ordinary npm package excludes historical raw validation archives while retaining current support instructions.
 - Protocol 2 evidence with required snapshot identity, verification plan, per-unit execution records, effective policy, and a shared `passed | failed | incomplete` decision. Strict verification is the default; `--protocol 1` emits compatibility evidence 1.3.0.
 - Final-working-tree and resolved-range capture, content/patch digests, drift detection, and optional isolated execution trees. Range evidence cannot silently claim verification of a different checkout.
 - Bounded subprocess output/deadlines, timeout/cancellation metadata, process-tree cleanup, tool-version evidence, and signing/authentication-variable filtering for child processes.
@@ -18,6 +21,7 @@ This section describes the current checkout. It does not announce an npm publica
 
 ### Fixed
 
+- Added-line parsing preserves valid `++` source lines for both secret scanners. Changed tests retain known dependent tests, JS/TS import extraction uses an AST, execution identities preserve legal special paths, explicit Action head parameters take precedence, and receipt explanations distinguish modern authenticated metadata from historical scope.
 - Git state/path boundaries, changed-test selection, partial multilingual execution, conservative mapping unions, and missing-runner/zero-collection handling.
 - Invalid acceptance-policy types, external-plugin source classification in contracts, and aggregate gap acceptance requiring complete path coverage. Acceptance rules support identity, ownership, expiry, and ticket metadata; findings remain independent.
 - Protocol 2 unknown-config-key errors, explicit external-plugin permission, effective-policy provenance, and protocol 2 missing-key signing errors.

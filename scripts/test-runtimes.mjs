@@ -1,4 +1,6 @@
 #!/usr/bin/env node
+import { validationIdentity } from "./validation-identity.mjs";
+import { javaFixtureAssertions } from "./runtime-assertions.mjs";
 import assert from "node:assert/strict";
 import { realpathSync } from "node:fs";
 import { cp, mkdir, mkdtemp, readFile, readdir, rm, symlink, writeFile } from "node:fs/promises";
@@ -10,6 +12,9 @@ import { collectedTestCount, runAffectedTests } from "../dist/gates.js";
 import { builtinPlugins } from "../dist/plugins/index.js";
 import { emptyDetectedTools } from "../dist/types.js";
 import { detectTools } from "../dist/detect.js";
+import { withMachineReportArchive } from "../dist/report-archive.js";
+import { createHash } from "node:crypto";
+import { retainRuntimeFailure, runtimeReportState } from "./runtime-failure-retention.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const fixtures = path.join(root, "test/fixtures/runtimes");
@@ -26,7 +31,8 @@ const probes = {
   maven: { command: whichSync("mvn"), args: ["--version"], pattern: /Apache Maven \d/ },
   gradle: { command: whichSync("gradle"), args: ["--version"], pattern: /^Gradle \d/m },
 };
-const report = { schemaVersion: 1, generatedAt: new Date().toISOString(), node: process.version, platform: process.platform, toolchains: {}, cases: [], limitations: ["Minimal local fixtures exercise execution and collection behavior; they do not measure real-world mapping accuracy.", "Durations include local build/tool caches and are not speedup measurements."] };
+const report = { identity: validationIdentity(import.meta.url), schemaVersion: 1, generatedAt: new Date().toISOString(), node: process.version, platform: process.platform, toolchains: {}, cases: [], limitations: ["Minimal local fixtures exercise execution and collection behavior; they do not measure real-world mapping accuracy.", "Durations include local build/tool caches and are not speedup measurements."] };
+const retainedRoot = `${path.resolve(process.env.PATCHPROVE_RUNTIME_REPORT ?? path.join(os.tmpdir(), "patchprove-runtime-report.json"))}.data`;
 let failures = 0;
 async function filesIn(dir, prefix = "") {
   const files = [];
@@ -37,20 +43,24 @@ async function filesIn(dir, prefix = "") {
   }
   return files;
 }
-async function javaTestCount(dir) {
-  let count = 0;
+async function javaReportFiles(dir) {
+  const files = [];
   async function walk(current) {
     for (const item of await readdir(current, { withFileTypes: true })) {
       const file = path.join(current, item.name);
       if (item.isDirectory() && ![".git", ".gradle", "node_modules"].includes(item.name)) await walk(file);
-      if (item.isFile() && /^TEST-.*\.xml$/.test(item.name)) {
-        const xml = await readFile(file, "utf8");
-        const match = /<testsuite\b[^>]*\btests="(\d+)"/.exec(xml);
-        if (match) count += Number(match[1]);
-      }
+      if (item.isFile() && /^TEST-.*\.xml$/.test(item.name)) files.push(file);
     }
   }
-  await walk(dir); return count;
+  await walk(dir); return files;
+}
+async function javaTestCount(dir) {
+  let count = 0;
+  for (const file of await javaReportFiles(dir)) {
+    const match = /<testsuite\b[^>]*\btests="(\d+)"/.exec(await readFile(file, "utf8"));
+    if (match) count += Number(match[1]);
+  }
+  return count;
 }
 for (const engine of engines) {
   const probe = probes[engine];
@@ -69,8 +79,9 @@ for (const engine of engines) {
     if (!available && item.scenario !== "missing") { report.cases.push({ id: item.id, outcome: "skipped", reason: report.toolchains[engine].reason }); continue; }
     // Maven compares selected project paths against canonical reactor basedirs.
     // Windows temp directories may use 8.3 aliases such as RUNNER~1.
-    const requestedCwd = await mkdtemp(path.join(os.tmpdir(), "patchprove-runtime-"));
+    const requestedCwd = await mkdtemp(path.join(os.tmpdir(), "patchprove-runtime-测试 space-"));
     const dir = realpathSync.native(requestedCwd);
+    let selectedRun = null, fullResult = null, phase = "setup", priorReports = new Map();
     try {
       await cp(path.join(fixtures, item.path), dir, { recursive: true });
       if (engine === "node" && item.scenario !== "missing") await symlink(path.join(root, "node_modules"), path.join(dir, "node_modules"), process.platform === "win32" ? "junction" : "dir");
@@ -91,9 +102,16 @@ for (const engine of engines) {
       }
       const files = await filesIn(dir);
       const context = { cwd: dir, existing: new Set(files) };
-      const selected = await runAffectedTests(dir, tools, item.tests, true, plugins, context, { timeoutMs: 180000, maxOutputBytes: 2 * 1024 * 1024 });
+      phase = "selected";
+      if (["maven", "gradle"].includes(engine)) priorReports = await runtimeReportState(dir);
+      selectedRun = await withMachineReportArchive(path.join(retainedRoot, item.id, "selected"),
+        () => runAffectedTests(dir, tools, item.tests, true, plugins, context, { timeoutMs: 180000, maxOutputBytes: 2 * 1024 * 1024 }));
+      const selected = selectedRun.result;
       assert.equal(selected.status, item.expected, `${item.id}: ${selected.reason}\n${selected.detail ?? ""}`);
       const selectedCount = ["maven", "gradle"].includes(engine) ? await javaTestCount(dir) : selected.records?.reduce((sum, record) => sum + (record.collectedTests ?? 0), 0);
+      const javaAssertions = ["maven", "gradle"].includes(engine) ? javaFixtureAssertions(await Promise.all((await javaReportFiles(dir)).map((file) => readFile(file)))) : undefined;
+      if (javaAssertions) assert.equal(javaAssertions.infrastructureErrors, 0, `${item.id}: class-loading/runner errors are not fixture assertion failures`);
+      if (item.scenario === "failure" && javaAssertions) assert(javaAssertions.assertionFailures > 0, `${item.id}: an actual JUnit assertion must fail`);
       if (["success", "failure", "multimodule"].includes(item.scenario)) {
         assert(selected.records?.some((record) => record.command), `${item.id}: expected a real executed command`);
         assert(selectedCount > 0, `${item.id}: no executed test was established; infrastructure failures do not prove a failing test\n${selected.detail ?? ""}`);
@@ -106,17 +124,50 @@ for (const engine of engines) {
           go: ["test", "-json", "./..."], cargo: ["test", "--workspace"], maven: ["test", "--batch-mode"],
           gradle: ["cleanTest", "test", "--console=plain", "--no-daemon"],
         }[engine];
+        if (["maven", "gradle"].includes(engine)) for (const file of await javaReportFiles(dir)) await rm(file);
+        phase = "full";
+        if (["maven", "gradle"].includes(engine)) priorReports = await runtimeReportState(dir);
         const raw = await runCommand(probe.command, fullArgs, { cwd: dir, timeoutMs: 180000, maxOutputBytes: 2 * 1024 * 1024 });
+        fullResult = raw;
+        assert(!raw.timedOut && !raw.aborted && !raw.truncated, `${item.id}: full-suite process/output incomplete`);
+        const retained = path.join(retainedRoot, item.id, "full"); await mkdir(retained, { recursive: true, mode: 0o700 });
+        const machineReports = [];
+        for (const [name, bytes] of [["stdout.raw", raw.stdoutBytes ?? Buffer.from(raw.stdout)], ["stderr.raw", raw.stderrBytes ?? Buffer.from(raw.stderr)]]) {
+          const destination = path.join(retained, name); await writeFile(destination, bytes, { mode: 0o600 });
+          machineReports.push({ path: destination, bytes: bytes.length, sha256: createHash("sha256").update(bytes).digest("hex") });
+        }
+        if (["maven", "gradle"].includes(engine)) for (const file of await javaReportFiles(dir)) {
+          const bytes = await readFile(file), destination = path.join(retained, path.relative(dir, file));
+          await mkdir(path.dirname(destination), { recursive: true, mode: 0o700 }); await writeFile(destination, bytes, { mode: 0o600 });
+          machineReports.push({ path: destination, bytes: bytes.length, sha256: createHash("sha256").update(bytes).digest("hex") });
+        }
         const count = ["maven", "gradle"].includes(engine) ? await javaTestCount(dir) : collectedTestCount(`${raw.stdout}\n${raw.stderr}`);
-        const status = raw.exitCode !== 0 || raw.timedOut ? "failed" : count === 0 ? "skipped" : "passed";
+        const fullJavaAssertions = ["maven", "gradle"].includes(engine) ? javaFixtureAssertions(await Promise.all((await javaReportFiles(dir)).map((file) => readFile(file)))) : undefined;
+        if (fullJavaAssertions) assert.equal(fullJavaAssertions.infrastructureErrors, 0, `${item.id}: full-suite infrastructure errors do not prove an assertion failure`);
+        if (item.scenario === "failure" && fullJavaAssertions) assert(fullJavaAssertions.assertionFailures > 0, `${item.id}: full suite must fail an actual JUnit assertion`);
+        // Gradle 9 explicitly rejects zero discovered tests where earlier versions
+        // exited zero. Preserve that exit while classifying the same empty full
+        // suite; arbitrary compile/class-loading failures do not match this case.
+        const rejectedZeroCollection = engine === "gradle" && item.scenario === "zero" && count === 0 &&
+          !raw.timedOut && !raw.aborted && /did not discover any tests to execute/.test(`${raw.stdout}\n${raw.stderr}`);
+        const status = rejectedZeroCollection ? "skipped" : raw.exitCode !== 0 || raw.timedOut ? "failed" : count === 0 ? "skipped" : "passed";
         assert.equal(status, item.fullExpected ?? item.expected, `${item.id}: full-suite result differs\n${raw.stdout}\n${raw.stderr}`);
         if (["success", "failure", "multimodule"].includes(item.scenario)) assert(count > 0, `${item.id}: full suite did not establish executed tests\n${raw.stdout}\n${raw.stderr}`);
-        full = { status, command: raw.command, args: fullArgs, cwd: dir, exitCode: raw.exitCode, collectedTests: count ?? null, durationMs: raw.durationMs, outputHash: raw.outputHash };
+        full = { status, command: raw.command, args: fullArgs, cwd: dir, exitCode: raw.exitCode, collectedTests: count ?? null, durationMs: raw.durationMs, outputHash: raw.outputHash, machineReports, ...(fullJavaAssertions ? { javaAssertions: fullJavaAssertions } : {}),
+          ...(rejectedZeroCollection ? { reason: "Gradle explicitly rejected zero discovered tests; no assertion failure is claimed" } : {}) };
       }
-      report.cases.push({ id: item.id, requestedCwd, executionCwd: dir, outcome: "passed", expected: item.expected, selected: { status: selected.status, collectedTests: selectedCount ?? null, durationMs: selected.durationMs, records: selected.records }, full });
+      report.cases.push({ id: item.id, requestedCwd, executionCwd: dir, outcome: "passed", expected: item.expected, selected: { status: selected.status, collectedTests: selectedCount ?? null, durationMs: selected.durationMs, records: selected.records, reportArchive: selectedRun.archive, ...(javaAssertions ? { javaAssertions } : {}) }, full });
       console.log(`PASS ${item.id}: ${selected.status}`);
     } catch (error) {
-      failures++; report.cases.push({ id: item.id, requestedCwd, executionCwd: dir, outcome: "failed", reason: String(error) }); console.error(`FAIL ${item.id}: ${error}`);
+      let failureDiagnostics = null, retentionError = null;
+      try {
+        const destination = path.join(retainedRoot, item.id, "failure-diagnostics");
+        const index = await retainRuntimeFailure({ fixtureRoot: dir, destination, phase, selectedRun, fullResult, priorReports });
+        failureDiagnostics = { ...index, pathBase: path.basename(retainedRoot), path: path.relative(retainedRoot, path.join(destination, index.path)).split(path.sep).join("/") };
+      } catch (retentionFailure) { retentionError = String(retentionFailure); }
+      failures++; report.cases.push({ id: item.id, requestedCwd, executionCwd: dir, outcome: "failed", reason: String(error),
+        ...(selectedRun ? { selected: selectedRun.result, reportArchive: selectedRun.archive } : {}),
+        failureDiagnostics, ...(retentionError ? { retentionError } : {}) }); console.error(`FAIL ${item.id}: ${error}`);
     } finally { await rm(dir, { recursive: true, force: true }); }
   }
 }

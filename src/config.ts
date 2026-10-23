@@ -1,6 +1,7 @@
-import { existsSync, readFileSync } from "node:fs";
+import { existsSync } from "node:fs";
 import { createHash } from "node:crypto";
 import path from "node:path";
+import { readBoundedFile } from "./input-budget.js";
 import { parse as parseYaml } from "yaml";
 import type {
   AcceptGapRule,
@@ -10,11 +11,13 @@ import type {
   PatchproveGates,
   ResolvedConfig,
   RunOptions,
+  ProjectPolicy,
+  ProjectGatePolicy,
 } from "./types.js";
 
 const CONFIG_NAMES = [".patchprove.yml", ".patchprove.yaml"] as const;
 const CHECK_IDS: CheckId[] = ["typecheck", "lint", "tests", "secrets"];
-const CONFIG_KEYS = ["failOn", "ignorePaths", "gates", "acceptGaps", "baseline", "failOnNewGaps", "spec", "plugins"];
+const CONFIG_KEYS = ["failOn", "ignorePaths", "gates", "acceptGaps", "baseline", "failOnNewGaps", "spec", "plugins", "projects", "repositoryId"];
 
 export interface ConfigParseOptions {
   strict?: boolean;
@@ -155,6 +158,45 @@ export interface FileConfig {
   spec: string | null;
   plugins: string[];
   diagnostics?: Diagnostic[];
+  projects?: ProjectPolicy[];
+  repositoryId?: string;
+}
+
+function parseRepositoryId(value: unknown, source: string): string {
+  if (typeof value !== "string" || !value.trim() || /[\x00-\x1f\x7f]/.test(value) || Buffer.byteLength(value.trim(), "utf8") > 256) {
+    throw new Error(`${source}: repositoryId must be a nonempty string of at most 256 UTF-8 bytes without control characters`);
+  }
+  return value.trim();
+}
+
+function parseProjects(value: unknown, source: string): ProjectPolicy[] {
+  if (!Array.isArray(value)) throw new Error(`${source}: projects must be an array`);
+  const seen = new Set<string>();
+  return value.map((item, index) => {
+    const location = `${source}: projects/${index}`;
+    const entry = asRecord(item);
+    if (!entry) throw new Error(`${location} must be an object`);
+    checkKeys(entry, ["path", "gates"], location, {});
+    if (typeof entry.path !== "string" || !entry.path.trim() || path.isAbsolute(entry.path) || /^[a-z]:/i.test(entry.path) || entry.path.includes("\\") || entry.path.split("/").includes("..")) throw new Error(`${location}/path must stay inside the repository`);
+    const directory = path.posix.normalize(entry.path).replace(/\/$/, "") || ".";
+    if (seen.has(directory)) throw new Error(`${location}/path duplicates project ${directory}`);
+    seen.add(directory);
+    const gates = asRecord(entry.gates);
+    if (!gates || !Object.keys(gates).length) throw new Error(`${location}/gates must declare at least one policy`);
+    checkKeys(gates, CHECK_IDS, `${location}/gates`, {});
+    const parsed: ProjectPolicy["gates"] = {};
+    for (const [gate, raw] of Object.entries(gates)) {
+      const policy = typeof raw === "string" ? { mode: raw } : asRecord(raw);
+      if (!policy) throw new Error(`${location}/gates/${gate} must be a mode or policy`);
+      checkKeys(policy, ["mode", "reason", "expiresAt"], `${location}/gates/${gate}`, {});
+      if (!["required", "optional", "not-applicable"].includes(String(policy.mode))) throw new Error(`${location}/gates/${gate}/mode is invalid`);
+      if (policy.reason !== undefined && (typeof policy.reason !== "string" || !policy.reason.trim())) throw new Error(`${location}/gates/${gate}/reason must be nonempty`);
+      if (policy.mode === "not-applicable" && !policy.reason) throw new Error(`${location}/gates/${gate} not-applicable requires a reason`);
+      if (policy.expiresAt !== undefined && (typeof policy.expiresAt !== "string" || !/^\d{4}-\d{2}-\d{2}(?:T\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:\d{2}))?$/.test(policy.expiresAt) || !Number.isFinite(Date.parse(policy.expiresAt)) || new Date(`${policy.expiresAt.slice(0, 10)}T00:00:00Z`).toISOString().slice(0, 10) !== policy.expiresAt.slice(0, 10))) throw new Error(`${location}/gates/${gate}/expiresAt must be an ISO date`);
+      parsed[gate as CheckId] = policy as unknown as ProjectGatePolicy;
+    }
+    return { path: directory, gates: parsed };
+  });
 }
 
 export function parseConfigObject(raw: unknown, source: string, options: ConfigParseOptions = {}): Omit<FileConfig, "sourcePath"> {
@@ -182,6 +224,8 @@ export function parseConfigObject(raw: unknown, source: string, options: ConfigP
     failOnNewGaps: parseFailOn(rec.failOnNewGaps, `${source}: failOnNewGaps`),
     spec: parseOptionalPath(rec.spec, `${source}: spec`),
     plugins: parseStringList(rec.plugins, `${source}: plugins`),
+    ...(rec.repositoryId !== undefined ? { repositoryId: parseRepositoryId(rec.repositoryId, source) } : {}),
+    ...(rec.projects !== undefined ? { projects: parseProjects(rec.projects, source) } : {}),
   };
 }
 
@@ -214,7 +258,7 @@ export function findConfigPath(root: string, explicit?: string): string | null {
 export function loadConfigFile(root: string, explicit?: string, options: ConfigParseOptions = {}): FileConfig | null {
   const sourcePath = findConfigPath(root, explicit);
   if (!sourcePath) return null;
-  const text = readFileSync(sourcePath, "utf8");
+  const text = readBoundedFile(sourcePath).toString("utf8");
   const diagnostics = options.diagnostics ?? [];
   return { ...parseConfigText(text, sourcePath, { ...options, diagnostics }), sourcePath,
     sourceHash: `sha256:${createHash("sha256").update(JSON.stringify(text)).digest("hex")}`, diagnostics };
@@ -264,6 +308,8 @@ export function mergeConfig(
     failOnNewGaps,
     spec: options.spec ?? file?.spec ?? null,
     plugins: file?.plugins ?? [],
+    ...(file?.repositoryId ? { repositoryId: file.repositoryId } : {}),
+    ...(file?.projects ? { projects: file.projects } : {}),
     strict: options.strict ?? options.protocol !== 1,
     protocol: options.protocol ?? 2,
     diagnostics: file?.diagnostics ?? [],

@@ -1,0 +1,398 @@
+{
+  "schemaVersion": "2.0.0",
+  "generatedAt": "2026-10-23T05:42:47.765Z",
+  "toolVersion": "2.0.0",
+  "repo": {
+    "cwd": "/tmp/patchprove-legacy-producer-fixture",
+    "root": "/tmp/patchprove-legacy-producer-fixture"
+  },
+  "range": {
+    "mode": "working-tree",
+    "base": "cd22e21ed0cf92eff2922b2ca35870d545367970",
+    "head": null
+  },
+  "impact": {
+    "changedFiles": [
+      {
+        "path": "value.js",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 1,
+        "highRisk": false,
+        "riskKind": null
+      },
+      {
+        "path": "value.test.js",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 1,
+        "highRisk": false,
+        "riskKind": null
+      }
+    ],
+    "mappedTests": [
+      {
+        "source": "value.js",
+        "tests": [
+          "value.test.js"
+        ],
+        "via": "graph",
+        "origins": [
+          "naming",
+          "graph"
+        ]
+      },
+      {
+        "source": "value.test.js",
+        "tests": [
+          "value.test.js"
+        ],
+        "via": "naming"
+      }
+    ],
+    "unmappedSources": [],
+    "languages": [
+      "javascript"
+    ],
+    "mappingStrategy": "graph",
+    "mappingFallbacks": [
+      "naming"
+    ],
+    "mappingEvidence": [
+      {
+        "source": "value.js",
+        "test": "value.test.js",
+        "via": "naming",
+        "precision": "heuristic",
+        "origin": "filename",
+        "freshness": "current",
+        "inputHash": "c7c27f2ae8139b28150913aedb43a1ac90ec2e22f7c88393f80ba742bc792f71"
+      },
+      {
+        "source": "value.js",
+        "test": "value.test.js",
+        "via": "graph",
+        "precision": "structural",
+        "origin": "import-graph",
+        "freshness": "current",
+        "inputHash": "1e40c44bea5dbed49c9e112b8d85a38024728b55264472d36a5118dfd6f23b10"
+      },
+      {
+        "source": "value.test.js",
+        "test": "value.test.js",
+        "via": "naming",
+        "precision": "structural",
+        "origin": "changed-test",
+        "freshness": "current"
+      }
+    ],
+    "mappingDiagnostics": [
+      {
+        "code": "mapping-unresolved-import",
+        "message": "Import \"vitest\" in value.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+        "severity": "warning",
+        "files": [
+          "value.test.js"
+        ]
+      }
+    ]
+  },
+  "checks": [
+    {
+      "id": "typecheck",
+      "name": "typecheck",
+      "status": "skipped",
+      "reason": "Disabled by config (gates.typecheck: false)",
+      "command": null,
+      "exitCode": null,
+      "durationMs": 0,
+      "records": [
+        {
+          "id": "typecheck:disabled",
+          "checkId": "typecheck",
+          "scope": [
+            "."
+          ],
+          "status": "skipped",
+          "command": null,
+          "args": [],
+          "cwd": "/tmp/patchprove-legacy-producer-fixture",
+          "exitCode": null,
+          "durationMs": 0,
+          "reason": "Disabled by config (gates.typecheck: false)"
+        }
+      ]
+    },
+    {
+      "id": "lint",
+      "name": "lint",
+      "status": "skipped",
+      "reason": "Disabled by config (gates.lint: false)",
+      "command": null,
+      "exitCode": null,
+      "durationMs": 0,
+      "records": [
+        {
+          "id": "lint:disabled",
+          "checkId": "lint",
+          "scope": [
+            "."
+          ],
+          "status": "skipped",
+          "command": null,
+          "args": [],
+          "cwd": "/tmp/patchprove-legacy-producer-fixture",
+          "exitCode": null,
+          "durationMs": 0,
+          "reason": "Disabled by config (gates.lint: false)"
+        }
+      ]
+    },
+    {
+      "id": "tests",
+      "name": "affected tests (vitest)",
+      "status": "passed",
+      "reason": "ok",
+      "command": "/tmp/patchprove-legacy-producer-fixture/node_modules/.bin/vitest run value.test.js",
+      "exitCode": 0,
+      "durationMs": 478,
+      "detail": "RUN  v4.1.12 /tmp/patchprove-legacy-producer-fixture\n\n\n Test Files  1 passed (1)\n      Tests  1 passed (1)\n   Start at  05:42:47\n   Duration  156ms (transform 17ms, setup 0ms, import 30ms, tests 2ms, environment 0ms)",
+      "timedOut": false,
+      "truncated": false,
+      "records": [
+        {
+          "id": "tests:javascript",
+          "checkId": "tests",
+          "scope": [
+            "value.test.js"
+          ],
+          "status": "passed",
+          "command": "/tmp/patchprove-legacy-producer-fixture/node_modules/.bin/vitest",
+          "args": [
+            "run",
+            "value.test.js"
+          ],
+          "cwd": "/tmp/patchprove-legacy-producer-fixture",
+          "exitCode": 0,
+          "durationMs": 478,
+          "reason": "ok",
+          "toolVersion": "vitest/4.1.12",
+          "collectedTests": 1,
+          "signal": null,
+          "truncated": false,
+          "outputHash": "f60ce384a607d4e898a31fd06be2f7d245e1a09a4019a3d476af3c0fd16340ee"
+        }
+      ]
+    },
+    {
+      "id": "secrets",
+      "name": "secrets",
+      "status": "skipped",
+      "reason": "Disabled by config (gates.secrets: false)",
+      "command": null,
+      "exitCode": null,
+      "durationMs": 0,
+      "records": [
+        {
+          "id": "secrets:disabled",
+          "checkId": "secrets",
+          "scope": [
+            "."
+          ],
+          "status": "skipped",
+          "command": null,
+          "args": [],
+          "cwd": "/tmp/patchprove-legacy-producer-fixture",
+          "exitCode": null,
+          "durationMs": 0,
+          "reason": "Disabled by config (gates.secrets: false)"
+        }
+      ]
+    }
+  ],
+  "gaps": [],
+  "findings": [],
+  "summary": {
+    "risk": "none",
+    "checksPassed": 1,
+    "checksFailed": 0,
+    "checksSkipped": 3,
+    "gapCount": 0,
+    "acceptedGapCount": 0,
+    "findingCount": 0
+  },
+  "contract": {
+    "loaded": false,
+    "passed": true,
+    "source": null,
+    "format": null,
+    "clauses": []
+  },
+  "baselineComparison": null,
+  "mappingEvidence": [
+    {
+      "source": "value.js",
+      "test": "value.test.js",
+      "via": "naming",
+      "precision": "heuristic",
+      "origin": "filename",
+      "freshness": "current",
+      "inputHash": "c7c27f2ae8139b28150913aedb43a1ac90ec2e22f7c88393f80ba742bc792f71"
+    },
+    {
+      "source": "value.js",
+      "test": "value.test.js",
+      "via": "graph",
+      "precision": "structural",
+      "origin": "import-graph",
+      "freshness": "current",
+      "inputHash": "1e40c44bea5dbed49c9e112b8d85a38024728b55264472d36a5118dfd6f23b10"
+    },
+    {
+      "source": "value.test.js",
+      "test": "value.test.js",
+      "via": "naming",
+      "precision": "structural",
+      "origin": "changed-test",
+      "freshness": "current"
+    }
+  ],
+  "diagnostics": [
+    {
+      "code": "mapping-unresolved-import",
+      "message": "Import \"vitest\" in value.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+      "severity": "warning",
+      "files": [
+        "value.test.js"
+      ]
+    }
+  ],
+  "snapshot": {
+    "algorithm": "sha256",
+    "version": 1,
+    "mode": "working-tree",
+    "base": "cd22e21ed0cf92eff2922b2ca35870d545367970",
+    "head": null,
+    "mergeBase": null,
+    "currentHead": "cd22e21ed0cf92eff2922b2ca35870d545367970",
+    "tree": "225bfef107cfaa9f7230e463a01a9b6293f730a3",
+    "contentHash": "fab2f859948a15909c879785e0edcfbf8cff04dd5bcd0920eaf480a7145a516e",
+    "patchHash": "71915ccd94275393463272bc0b89a89a68792ea325869ca1621793e232d8937b",
+    "dirty": true,
+    "consistent": true,
+    "excludedPaths": [
+      "evidence.json",
+      "evidence.json.patchprove-lock",
+      "evidence.receipt.json",
+      "evidence.receipt.json.patchprove-lock",
+      "evidence.json.manifest.json",
+      "evidence.json.manifest.json.patchprove-lock"
+    ]
+  },
+  "executionRecords": [
+    {
+      "id": "typecheck:disabled",
+      "checkId": "typecheck",
+      "scope": [
+        "."
+      ],
+      "status": "skipped",
+      "command": null,
+      "args": [],
+      "cwd": "/tmp/patchprove-legacy-producer-fixture",
+      "exitCode": null,
+      "durationMs": 0,
+      "reason": "Disabled by config (gates.typecheck: false)"
+    },
+    {
+      "id": "lint:disabled",
+      "checkId": "lint",
+      "scope": [
+        "."
+      ],
+      "status": "skipped",
+      "command": null,
+      "args": [],
+      "cwd": "/tmp/patchprove-legacy-producer-fixture",
+      "exitCode": null,
+      "durationMs": 0,
+      "reason": "Disabled by config (gates.lint: false)"
+    },
+    {
+      "id": "tests:javascript",
+      "checkId": "tests",
+      "scope": [
+        "value.test.js"
+      ],
+      "status": "passed",
+      "command": "/tmp/patchprove-legacy-producer-fixture/node_modules/.bin/vitest",
+      "args": [
+        "run",
+        "value.test.js"
+      ],
+      "cwd": "/tmp/patchprove-legacy-producer-fixture",
+      "exitCode": 0,
+      "durationMs": 478,
+      "reason": "ok",
+      "toolVersion": "vitest/4.1.12",
+      "collectedTests": 1,
+      "signal": null,
+      "truncated": false,
+      "outputHash": "f60ce384a607d4e898a31fd06be2f7d245e1a09a4019a3d476af3c0fd16340ee"
+    },
+    {
+      "id": "secrets:disabled",
+      "checkId": "secrets",
+      "scope": [
+        "."
+      ],
+      "status": "skipped",
+      "command": null,
+      "args": [],
+      "cwd": "/tmp/patchprove-legacy-producer-fixture",
+      "exitCode": null,
+      "durationMs": 0,
+      "reason": "Disabled by config (gates.secrets: false)"
+    }
+  ],
+  "verificationPlan": [
+    {
+      "id": "plan:tests",
+      "checkId": "tests",
+      "scope": [
+        "value.test.js"
+      ],
+      "required": true,
+      "reason": "Changed tests and conservative dependency selection"
+    }
+  ],
+  "effectivePolicy": {
+    "protocol": 2,
+    "strict": true,
+    "failOn": null,
+    "failOnNewGaps": null,
+    "gates": {
+      "typecheck": false,
+      "lint": false,
+      "tests": true,
+      "secrets": false
+    },
+    "ignorePaths": [],
+    "acceptGaps": [],
+    "plugins": [],
+    "config": null,
+    "spec": null,
+    "baseline": null,
+    "hash": "sha256:cfdbc2a5d08149a0a01b6e9f7e65c7b72357fdcfea4321eeb64c9b8ae433482e"
+  },
+  "verification": {
+    "status": "passed",
+    "strict": true,
+    "reasons": []
+  },
+  "receipt": {
+    "algorithm": "sha256",
+    "contentHash": "sha256:eb9c757b5dcdef6109a2beecf128de8eae50dde9947b63ba6572401a65c464c4",
+    "path": "evidence.receipt.json"
+  }
+}

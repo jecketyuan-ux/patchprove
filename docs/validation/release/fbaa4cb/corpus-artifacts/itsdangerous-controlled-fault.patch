@@ -1,0 +1,13 @@
+diff --git a/src/itsdangerous/serializer.py b/src/itsdangerous/serializer.py
+index 5ddf387..6566cf4 100644
+--- a/src/itsdangerous/serializer.py
++++ b/src/itsdangerous/serializer.py
+@@ -338,7 +338,7 @@ class Serializer(t.Generic[_TSerialized]):
+ 
+         for signer in self.iter_unsigners(salt):
+             try:
+-                return self.load_payload(signer.unsign(s))
++                return None
+             except BadSignature as err:
+                 last_exception = err
+ 

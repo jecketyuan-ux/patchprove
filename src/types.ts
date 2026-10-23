@@ -1,4 +1,6 @@
-export const SCHEMA_VERSION = "2.0.0" as const;
+import type { InputLimits } from "./input-budget.js";
+
+export const SCHEMA_VERSION = "2.1.0" as const;
 export const TOOL_VERSION = "2.0.0";
 export const RECEIPT_SCHEMA_VERSION = "2.0.0" as const;
 export const COMPAT_SCHEMA_VERSION = "1.3.0" as const;
@@ -37,12 +39,74 @@ export interface ExecutionRecord {
   exitCode: number | null;
   durationMs: number;
   reason?: string;
+  required?: boolean;
   toolVersion?: string;
   collectedTests?: number;
+  testExecution?: TestExecution;
   signal?: string | null;
   truncated?: boolean;
   outputHash?: string;
   provenance?: { adapter: string; version: string; inputHash: string; snapshotHash?: string };
+}
+
+/** Observed machine-report facts. A requested path alone never proves execution. */
+export interface TestExecution {
+  parserVersion: "1";
+  format: "vitest-json" | "jest-json" | "pytest-junit" | "java-junit" | "go-json" | "cargo-harness" | "unavailable";
+  reportStatus: "validated" | "partial" | "missing" | "invalid" | "truncated";
+  granularity: "file" | "package" | "crate";
+  sourceFiles?: string[];
+  eligibleSourceFiles?: string[];
+  requestedScope: string[];
+  collectedScope: string[];
+  executedScope: string[];
+  skippedScope: string[];
+  unknownScope: string[];
+  counts: { collected: number; executed: number; passed: number; failed: number; skipped: number };
+  reportHash?: string;
+  reportPath?: string;
+  reportRetention?: "retained" | "not-retained";
+  reports?: ReportArtifactReference[];
+  /** Whitelisted facts reported by each test suite, never inferred from launcher probes. */
+  javaRuntimeObservations?: JavaTestRuntimeObservation[];
+  reason?: string;
+}
+
+export interface JavaTestRuntimeObservation {
+  role: "test";
+  source: "junit-properties";
+  status: "observed" | "unknown";
+  reportHash: string;
+  suite: string | null;
+  scope: string[];
+  javaVersion: string | null;
+  javaHome: string | null;
+  vendor: string | null;
+  fileEncoding: string | null;
+  nativeEncoding: string | null;
+  reason?: "missing-properties" | "conflicting-properties" | "invalid-properties" | "missing-suite-identity" | "unattributed-scope";
+}
+
+export interface ReportArtifactReference {
+  path: string;
+  hash: string;
+  bytes: number;
+  format: TestExecution["format"];
+  contextPath: string;
+  contextHash: string;
+}
+
+export interface PluginProvenance {
+  id: string;
+  source: "builtin" | "auto" | "environment" | "configuration";
+  entry: string | null;
+  entryHash: string | null;
+  order: number;
+  effective?: boolean;
+  capabilities?: import("./plugins/types.js").PluginCapabilities;
+  inputs: Array<{ path: string; hash: string }>;
+  dependencyCoverage: "static" | "unknown";
+  unknownDependencies: string[];
 }
 
 export interface VerificationPlanItem {
@@ -52,6 +116,19 @@ export interface VerificationPlanItem {
   scope: string[];
   required: boolean;
   reason: string;
+  sourceFiles?: string[];
+  granularity?: "file" | "package" | "crate" | "repository";
+  policy?: ProjectGatePolicy & { project: string };
+}
+
+export interface ProjectGatePolicy {
+  mode: "required" | "optional" | "not-applicable";
+  reason?: string;
+  expiresAt?: string;
+}
+export interface ProjectPolicy {
+  path: string;
+  gates: Partial<Record<CheckId, ProjectGatePolicy>>;
 }
 
 export interface VerificationDecision {
@@ -77,10 +154,13 @@ export interface EffectivePolicy {
   ignorePaths: string[];
   acceptGaps: AcceptGapRule[];
   plugins: string[];
+  /** Actual imported plugin identities, including shadowed modules that executed. */
+  pluginSetHash?: string;
   config: { path: string; hash: string } | null;
   spec: { path: string; hash: string; inputs?: Array<{ path: string; hash: string }> } | null;
   baseline: { path: string; hash: string } | null;
   hash: string;
+  projects?: ProjectPolicy[];
 }
 
 export type RiskLevel = "low" | "medium" | "high" | "critical";
@@ -298,6 +378,7 @@ export interface Evidence {
   repo: {
     cwd: string;
     root: string;
+    repositoryId?: string;
   };
   range: {
     mode: "working-tree" | "range";
@@ -335,12 +416,47 @@ export interface Evidence {
   verificationPlan?: VerificationPlanItem[];
   verification?: VerificationDecision;
   effectivePolicy?: EffectivePolicy;
+  environment?: EnvironmentProvenance;
+  reportArchive?: { manifestPath: string; manifestHash: string };
+  resolutionProvenance?: import("./graph.js").ImportGraph["provenance"];
+  projectScopes?: Array<{ path: string; applicable: boolean; reason: string }>;
   diagnostics?: Diagnostic[];
   mappingEvidence?: Array<{ source: string; test: string; via: MappingStrategy; precision: "heuristic" | "structural" | "historical"; origin?: string; freshness?: "current" | "unknown" | "stale"; inputHash?: string }>;
 }
 
+export interface EnvironmentProvenance {
+  platform: string;
+  arch: string;
+  nodeVersion: string;
+  gitVersion: string;
+  tools: Array<{ name: string; version: string | null; path: string }>;
+  dependencyLocks: Array<{ path: string; hash: string }>;
+  configurations?: Array<{ path: string; hash: string }>;
+  inputLimits: Required<InputLimits>;
+  hermetic: false;
+  javaToolOptionsFileEncoding?: "UTF-8" | "UTF8" | "UTF-16" | "US-ASCII" | "ISO-8859-1" | "windows-1252";
+  plugins?: PluginProvenance[];
+  reportRetention?: "requested" | "not-requested";
+  parser?: { engine: "typescript"; version: string };
+  javaRuntimes?: JavaRuntimeProvenance[];
+}
+
+export interface JavaRuntimeProvenance {
+  runner: "maven" | "gradle";
+  role?: "launcher" | "daemon" | "test";
+  project?: string;
+  runnerPath: string;
+  javaVersion: string | null;
+  javaHome: string | null;
+  vendor: string | null;
+  fileEncoding: string | null;
+  nativeEncoding: string | null;
+  source: "runner-version" | "runner-settings";
+}
+
 export interface DetectedTools {
   versions?: Record<string, string>;
+  javaRuntimes?: JavaRuntimeProvenance[];
   typescript: boolean;
   tscBin: string | null;
   eslint: boolean;
@@ -409,6 +525,7 @@ export interface PatchproveContract {
 }
 
 export interface ResolvedConfig {
+  repositoryId?: string;
   strict?: boolean;
   protocol?: 1 | 2;
   diagnostics?: Diagnostic[];
@@ -423,6 +540,7 @@ export interface ResolvedConfig {
   spec: string | null;
   /** Local JS plugin module paths (config `plugins:`). */
   plugins: string[];
+  projects?: ProjectPolicy[];
 }
 
 export interface RunOptions {
@@ -430,6 +548,8 @@ export interface RunOptions {
   json: boolean;
   format: "human" | "json" | "markdown";
   out: string;
+  /** Explicitly retain raw machine reports and their verification manifest. */
+  reportsDir?: string;
   failOn?: FailOnLevel | "none";
   base?: string;
   head?: string;
@@ -450,6 +570,9 @@ export interface RunOptions {
   isolate?: boolean;
   timeoutMs?: number;
   maxOutputBytes?: number;
+  inputLimits?: InputLimits;
+  /** SDK cancellation; wire/CLI callers use their own transport/process cancellation. */
+  signal?: AbortSignal;
   allowPlugins?: boolean;
   strictConfig?: boolean;
   adapterInputs?: Array<{ adapter: "nx" | "turbo" | "testmon"; path: string }>;

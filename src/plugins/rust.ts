@@ -308,11 +308,17 @@ export function rustPackageTests(
 
 export const rustPlugin: LanguagePlugin = {
   id: "rust",
+  capabilities: { contractVersion: 1, testedRunners: ["cargo@1.85.0"], granularity: "crate", reportFormats: ["cargo-harness"], unknownResult: "incomplete" },
   languages: ["rust"],
   extensions: [".rs"],
   isTestFile: isRustTestFile,
   testCandidates: rustTestCandidates,
   parseImports: (sourceText) => parseRustImports(sourceText),
+  classifyImport(_from, specifier, ctx) {
+    const first = specifier.split("::")[0] ?? "";
+    if (["std", "core", "alloc"].includes(first)) return "builtin";
+    return /^(?:mod:|crate::|self::|super::)/.test(specifier) || loadCargoCrates(ctx).some((crate) => crate.name.replaceAll("-", "_") === first) ? "internal" : "external";
+  },
   resolveImport: resolveRustImport,
   packageTests: rustPackageTests,
   testCommand(cwd, mappedTests, tools: DetectedTools, ctx?: PluginContext): PluginTestCommand | null {

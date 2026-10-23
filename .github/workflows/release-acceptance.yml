@@ -1,0 +1,39 @@
+name: Release acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      acceptance_run:
+        description: Workflow run holding the reviewed release-acceptance artifact for this candidate
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  acceptance:
+    name: All live acceptance gates
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4
+        with:
+          node-version: 22
+          cache: npm
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: release-acceptance
+          path: ${{ runner.temp }}/patchprove-acceptance
+          run-id: ${{ inputs.acceptance_run }}
+          github-token: ${{ github.token }}
+      - name: Verify current candidate, archive, raw logs and every live scenario
+        env:
+          ACCEPTANCE_DIR: ${{ runner.temp }}/patchprove-acceptance
+        run: node scripts/check-acceptance.mjs --ledger "$ACCEPTANCE_DIR/acceptance.json" --tarball "$ACCEPTANCE_DIR/patchprove.tgz"
+      # This read-only workflow deliberately has no npm/tag/release publication step.

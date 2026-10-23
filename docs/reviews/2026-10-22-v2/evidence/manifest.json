@@ -1,0 +1,95 @@
+{
+  "purpose": "Unsigned audit report and evidence inventory; not a product receipt",
+  "reviewDate": "2026-10-22",
+  "reviewedHead": "6fa50972f424ee0b6c8e2b1a8506b7ee3f804f0d",
+  "reviewedTree": "a617c4a025c3ec598d451092b9c5c3035698995e",
+  "algorithm": "sha256",
+  "basePath": "docs/reviews/2026-10-22-v2",
+  "files": [
+    {
+      "path": "01-code-audit.md",
+      "bytes": 26848,
+      "sha256": "80d4c89a1d173b931e8c1cfa62efc8b212607291a0c6a272920651ea89aa854e"
+    },
+    {
+      "path": "02-product-modules.md",
+      "bytes": 26447,
+      "sha256": "71d804f45a65cd92a69a611112888500c7edc18a286b7e50cb618028f96e57fd"
+    },
+    {
+      "path": "03-upgrade-roadmap.md",
+      "bytes": 20909,
+      "sha256": "147050a8d9927574c1cca6135a7d69189076df51838a58775ac2c13a0bd70c21"
+    },
+    {
+      "path": "evidence/README.md",
+      "bytes": 5521,
+      "sha256": "60e69b422918248285e9b723ef82792146cb7216aa786662544e47be35f9d264"
+    },
+    {
+      "path": "evidence/contradictory-evidence.json",
+      "bytes": 2773,
+      "sha256": "0d7bf4a3ff1d91b261a78ae15a40accae3c94b6fa3efc4579fa65e07a8686b71"
+    },
+    {
+      "path": "evidence/entry-boundaries.json",
+      "bytes": 914,
+      "sha256": "35bf3bf5974389c653983bc56d69b93407f832bd32f227a35b9af749795a09c8"
+    },
+    {
+      "path": "evidence/external-sources.json",
+      "bytes": 49817,
+      "sha256": "c72aab342e81f2855d0f30c26a6b459fe72ffbad80feb7f93f1be53fc719aa11"
+    },
+    {
+      "path": "evidence/local-validation.json",
+      "bytes": 7410,
+      "sha256": "1b2bb190a3ac0201d03be04db9ffcd2158f0d5797bd016c3c3fcddd299b906d9"
+    },
+    {
+      "path": "evidence/npm-audit-all.json",
+      "bytes": 8926,
+      "sha256": "0e35337a41563ae2014720dcbddf05dbb08fa112d5515108fdf25b07a7e64320"
+    },
+    {
+      "path": "evidence/npm-audit-production.json",
+      "bytes": 530,
+      "sha256": "8012a32840b90f6218d40e9d495f34761fea38407f41506467abb39858ed7276"
+    },
+    {
+      "path": "evidence/probe-entry-boundaries.mjs",
+      "bytes": 3209,
+      "sha256": "bdcdb1d4d678e9da77916d9d1733bd01db4d9398604e5c3da61902f112f09790"
+    },
+    {
+      "path": "evidence/probe-record-consistency.mjs",
+      "bytes": 4641,
+      "sha256": "919d8734748d93372ed99a270901f5833e7ace40e2d1a2499bfc44ed64083cdb"
+    },
+    {
+      "path": "evidence/probe-spec.mjs",
+      "bytes": 9210,
+      "sha256": "49f9652799cf5075755736989bf4dbf9879cb755e797117d28912159155977b0"
+    },
+    {
+      "path": "evidence/record-consistency.json",
+      "bytes": 962,
+      "sha256": "42f6396a32b9119ebc6b609a17195b74c1132380c73692a6df4801a2d78314af"
+    },
+    {
+      "path": "evidence/remote-ci.json",
+      "bytes": 34982,
+      "sha256": "9d99dac6fc4fc1f228a5acd7d7bc8bc70727552eb4c268c7ce92baaca4a5ccd7"
+    },
+    {
+      "path": "evidence/spec-probe-notes.md",
+      "bytes": 3237,
+      "sha256": "7f995c9a1c67027b22a6621b5644162dabf46e561a489bfeb5001b27a37f61f5"
+    },
+    {
+      "path": "evidence/spec-results.json",
+      "bytes": 75350,
+      "sha256": "932aa417fe883e365e1432069ab77447039515c8315af1467e0cc18e86ed4479"
+    }
+  ]
+}

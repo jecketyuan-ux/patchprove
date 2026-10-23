@@ -2,6 +2,9 @@
 title: Validation and delivery
 ---
 
+**Current candidate:** see the [R01–R10 stabilization record](upgrades/2.0-stabilization.md) and [candidate-bound live acceptance](host-acceptance.md). The reports and counts below describe earlier implementation runs and are retained as history. They do not validate changed candidate code. Windows installed Gradle and the unrun live-host/publisher matrix currently block stable release.
+
+
 The repository separates unit checks, real runtime execution, installed-package checks, and measured selection experiments. CI configuration is an intended gate; a checked-in workflow is not evidence that a remote runner has already passed.
 
 Run the checks from a Node 22 or 24 checkout after `npm ci`:
@@ -31,7 +34,7 @@ The [runtime report](validation/runtime-linux-node24.json), [installed-package r
 
 The separate [Node 22 Linux report](validation/node22-linux.json) records an official Node 22.23.4 distribution, verified against Node.js's versioned SHA-256 manifest, with its npm 10.9.9. Build, source/test typechecking, all 414 tests across 46 files, and fresh tarball installation/CLI/MCP/publisher checks passed under that runtime. The project dependencies were reused and its lockfile remained unchanged. Linux is locally verified under Node 22 and 24; macOS and Windows results still require an actual remote CI run.
 
-`test:corpus` starts with three deterministic local seed patches. Its manifest fixes the seed repository commit, patch SHA-256, runtime requirement, test list, and license information. It verifies the baseline, applies a patch, selects affected tests using the core mapping code, and executes selected/full suites. Each result reports failing-test misses, additional selected passing tests, unknown outcomes, dependency diagnostics, and durations. No accuracy percentage or real-world 50-patch result is claimed. A variable dynamic import is included to expose conservative fallback behavior.
+`test:corpus` contains five deterministic local seed patches. Two regressions cover changed-test importers and a real static import between strings containing comment delimiters; those cases fail the harness on an observed miss. Its manifest fixes the seed repository commit, patch SHA-256, runtime requirement, test list, and license information. It verifies the baseline, applies a patch, selects affected tests using the core mapping code, and executes selected/full suites. Each result reports failing-test misses, additional selected passing tests, unknown outcomes, dependency diagnostics, and durations. No accuracy percentage or real-world 50-patch result is claimed. A variable dynamic import is included to expose conservative fallback behavior.
 
 Set `PATCHPROVE_CORPUS_REPORT` to retain the JSON report. Additional cases can use `repository.kind: local-checkout` with a prepared local repository path and immutable `baseCommit`, plus a patch/digest, license, environment, and test paths. Pass the manifest with `npm run test:corpus -- --manifest=/absolute/path/manifest.json`. The harness currently runs Node's built-in test runner; other runtimes require an explicit harness implementation. It does not automatically clone or execute downloaded external projects. Review external fixtures and licenses before adding them. Measured misses belong in the report; infrastructure errors and unknown test outcomes fail the harness.
 

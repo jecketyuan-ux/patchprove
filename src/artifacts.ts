@@ -2,6 +2,7 @@ import { createHash, randomUUID } from "node:crypto";
 import { closeSync, constants, existsSync, fstatSync, fsyncSync, lstatSync, mkdirSync, openSync, readFileSync, readSync, realpathSync, renameSync, rmSync, writeFileSync } from "node:fs";
 import type { BigIntStats } from "node:fs";
 import path from "node:path";
+import { parseBoundedJson, readBoundedFile } from "./input-budget.js";
 
 export function writeJsonAtomic(destination: string, value: unknown): string {
   return writeTextAtomic(destination, `${JSON.stringify(value, null, 2)}\n`);
@@ -30,7 +31,7 @@ function writeBytesAtomic(destination: string, content: Buffer): string {
   }
 }
 
-export interface ArtifactEntry { path: string; content: string }
+export interface ArtifactEntry { path: string; content: string | Buffer }
 
 /** Publish the manifest last. Readers must validate its digests before consuming a set. */
 export function writeArtifactSet(entries: ArtifactEntry[], manifestPath: string): string {
@@ -59,7 +60,7 @@ export function writeArtifactSet(entries: ArtifactEntry[], manifestPath: string)
     for (const [index, entry] of entries.entries()) {
       const target = destinations[index]!;
       const file = `${target}.${runId}.tmp`;
-      const backup = existsSync(target) ? readFileSync(target) : undefined;
+      const backup = existsSync(target) ? readBoundedFile(target) : undefined;
       const fd = openSync(file, "wx", 0o600);
       staged.push({ file, target, backup });
       try { writeFileSync(fd, entry.content, "utf8"); fsyncSync(fd); } finally { closeSync(fd); }
@@ -152,7 +153,7 @@ export function verifyArtifactSet(manifestPath: string): ArtifactSetVerification
       chunks.push(buffer.subarray(0, count));
     }
     if (!artifactUnchanged(manifestFile.canonical, manifestFile.fd, manifestFile.stat)) throw new Error("manifest changed during verification");
-    try { manifest = JSON.parse(Buffer.concat(chunks).toString("utf8")); }
+    try { manifest = parseBoundedJson(Buffer.concat(chunks).toString("utf8"), manifestPath); }
     catch { throw new Error("manifest is not valid JSON"); }
   } catch (error) {
     errors.push(`manifest: ${verificationReadError(error)}`);

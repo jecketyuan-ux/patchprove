@@ -4,7 +4,7 @@ title: Schema and receipts
 
 # Evidence, receipt, and artifact contracts
 
-This checkout emits evidence **2.0.0** by default and **1.3.0** with `--protocol 1`. Tool/package version is 2.0.0; shape versions and package releases are separate concepts. [Migration](migration-v2.md) explains changed defaults. The published [evidence](../schema/evidence.schema.json), [receipt](../schema/receipt.schema.json), and [spec](../schema/spec.schema.json) schemas define producer structure.
+The stabilization checkout emits evidence **2.1.0** by default and **1.3.0** with `--protocol 1`. Tool/package version is 2.0.0; shape versions and package releases are separate concepts. [Migration](migration-v2.md) explains changed defaults. The published [evidence](../schema/evidence.schema.json), [receipt](../schema/receipt.schema.json), and [spec](../schema/spec.schema.json) schemas define producer structure.
 
 ## Evidence
 

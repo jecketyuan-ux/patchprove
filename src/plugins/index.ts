@@ -3,7 +3,7 @@ import type { Language } from "../types.js";
 import { builtinPlugins } from "./builtin.js";
 import type { LanguagePlugin, PluginContext } from "./types.js";
 
-export type { LanguagePlugin, PluginContext, PluginTestCommand } from "./types.js";
+export type { LanguagePlugin, PluginCapabilities, PluginContext, PluginTestCommand } from "./types.js";
 export { isLanguagePlugin } from "./types.js";
 export { createPluginContext, readProjectFile } from "./context.js";
 export { resolveLanguagePlugins, loadPluginModule, splitPluginPathList } from "./load.js";

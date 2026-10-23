@@ -136,7 +136,7 @@ describe("run policy and execution boundaries", () => {
     expect(evidence.diagnostics?.some((item) => item.code === "adapter-invalid")).toBe(false);
     expect(evidence.impact.mappedTests).toEqual([{ source: "src/value.ts", tests: ["suite/selected.test.ts"], via: "coverage" }]);
     expect(evidence.mappingEvidence?.some((item) => item.origin === "testmon-export" && item.inputHash === adapterInputHash(data))).toBe(true);
-    const execution = evidence.executionRecords?.find((record) => record.id === "tests:javascript");
+    const execution = evidence.executionRecords?.find((record) => record.checkId === "tests" && record.scope.includes("suite/selected.test.ts"));
     expect(execution).toMatchObject({ status: "passed", exitCode: 0, scope: ["suite/selected.test.ts"], collectedTests: 1 });
     expect(execution?.args).toContain("suite/selected.test.ts");
     expect(execution?.args).not.toContain("suite/unrelated.test.ts");

@@ -191,11 +191,16 @@ export function collapseGoTestTargets(pkgDirs: readonly string[]): string[] {
 
 export const goPlugin: LanguagePlugin = {
   id: "go",
+  capabilities: { contractVersion: 1, testedRunners: ["go@1.23.6"], granularity: "package", reportFormats: ["go-json"], unknownResult: "incomplete" },
   languages: ["go"],
   extensions: [".go"],
   isTestFile: isGoTestFile,
   testCandidates: goTestCandidates,
   parseImports: (sourceText) => parseGoImports(sourceText),
+  classifyImport(_from, specifier, ctx) {
+    const module = loadGoModulePath(ctx);
+    return specifier.startsWith(".") || module && (specifier === module || specifier.startsWith(`${module}/`)) ? "internal" : !specifier.split("/")[0]?.includes(".") ? "builtin" : "external";
+  },
   resolveImport: resolveGoImport,
   resolveImportFiles: resolveGoImportFiles,
   packageTests: goPackageTests,

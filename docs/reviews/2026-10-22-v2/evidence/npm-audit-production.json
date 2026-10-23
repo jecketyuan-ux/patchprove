@@ -1,0 +1,26 @@
+{
+  "capturedAt": "2026-10-22T17:26:44.907Z",
+  "command": "npm audit --json --package-lock-only --omit=dev",
+  "result": {
+    "auditReportVersion": 2,
+    "vulnerabilities": {},
+    "metadata": {
+      "vulnerabilities": {
+        "info": 0,
+        "low": 0,
+        "moderate": 0,
+        "high": 0,
+        "critical": 0,
+        "total": 0
+      },
+      "dependencies": {
+        "prod": 97,
+        "dev": 115,
+        "optional": 53,
+        "peer": 0,
+        "peerOptional": 0,
+        "total": 211
+      }
+    }
+  }
+}

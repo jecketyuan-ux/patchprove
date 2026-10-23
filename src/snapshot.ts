@@ -1,9 +1,13 @@
 import { AsyncLocalStorage } from "node:async_hooks";
 import { createHash } from "node:crypto";
-import { lstat, mkdir, mkdtemp, readFile, readlink, rm, writeFile } from "node:fs/promises";
+import { lstat, mkdir, mkdtemp, open, readlink, rename, rm } from "node:fs/promises";
+import { constants, createWriteStream, type Stats } from "node:fs";
+import { Readable } from "node:stream";
+import { pipeline } from "node:stream/promises";
 import { tmpdir } from "node:os";
 import path from "node:path";
-import { deflateSync } from "node:zlib";
+import { createDeflate } from "node:zlib";
+import { accountInput, assertInputActive, InputBudgetError } from "./input-budget.js";
 import { runCommand } from "./exec.js";
 import type { SnapshotIdentity } from "./types.js";
 import { canonicalPath, canonicalPathParent } from "./paths.js";
@@ -151,25 +155,46 @@ export async function captureWorktreeTree(root: string, options: SnapshotOptions
     const entries: Buffer[] = [];
     const files: string[] = [];
     for (const filePath of candidates) {
+      assertInputActive();
       const absolute = path.join(root, filePath);
-      let stat;
+      let stat: Stats;
       try { stat = await lstat(absolute); } catch (error) {
         if ((error as NodeJS.ErrnoException).code === "ENOENT" || (error as NodeJS.ErrnoException).code === "ENOTDIR") continue;
         throw error;
       }
       if (!stat.isFile() && !stat.isSymbolicLink()) continue;
-      const bytes = stat.isSymbolicLink() ? Buffer.from(await readlink(absolute)) : await readFile(absolute);
+      const link = stat.isSymbolicLink() ? Buffer.from(await readlink(absolute)) : undefined;
+      const size = link?.length ?? stat.size;
+      accountInput(absolute, size);
       const mode = stat.isSymbolicLink() ? "120000" : (stat.mode & 0o111) !== 0 ? "100755" : "100644";
-      const blob = Buffer.concat([Buffer.from(`blob ${bytes.length}\0`), bytes]);
-      const oid = createHash(format).update(blob).digest("hex");
+      const digest = createHash(format);
+      const pending = path.join(temporary, `blob-${files.length}`);
+      content.update(JSON.stringify([filePath, mode, size])); content.update("\0");
+      async function* chunks() {
+        const header = Buffer.from(`blob ${size}\0`); digest.update(header); yield header;
+        if (link) { digest.update(link); content.update(link); yield link; return; }
+        const handle = await open(absolute, constants.O_RDONLY | (constants.O_NOFOLLOW ?? 0));
+        try {
+          const before = await handle.stat();
+          if (!before.isFile() || before.ino !== stat.ino || before.dev !== stat.dev || before.size !== size) throw new InputBudgetError(`Snapshot input changed before capture: ${filePath}`);
+          let captured = 0;
+          for await (const value of handle.createReadStream({ autoClose: false, highWaterMark: 64 * 1024 })) {
+            assertInputActive();
+            const chunk = value as Buffer; captured += chunk.length;
+            if (captured > size) throw new InputBudgetError(`Snapshot input grew during capture: ${filePath}`);
+            digest.update(chunk); content.update(chunk); yield chunk;
+          }
+          const after = await handle.stat();
+          if (captured !== size || after.size !== size || after.mtimeMs !== before.mtimeMs) throw new InputBudgetError(`Snapshot input changed during capture: ${filePath}`);
+        } finally { await handle.close(); }
+      }
+      await pipeline(Readable.from(chunks()), createDeflate(), createWriteStream(pending, { mode: 0o600 }), { signal: gitBudget.getStore()?.signal });
+      const oid = digest.digest("hex");
       const directory = path.join(objectDirectory, oid.slice(0, 2));
       await mkdir(directory, { recursive: true });
-      await writeFile(path.join(directory, oid.slice(2)), deflateSync(blob));
+      await rename(pending, path.join(directory, oid.slice(2)));
       entries.push(Buffer.from(`${mode} ${oid}\t${filePath}\0`));
       files.push(filePath);
-      content.update(JSON.stringify([filePath, mode, bytes.length]));
-      content.update("\0");
-      content.update(bytes);
       content.update("\0");
     }
     await checkedGit(root, ["read-tree", "--empty"], { env });
@@ -225,6 +250,12 @@ export async function createExecutionSnapshot(cwd: string, head: string): Promis
   const temporary = await mkdtemp(path.join(tmpdir(), "patchprove-execution-"));
   const root = path.join(temporary, "tree");
   try {
+    const entries = await checkedGit(source, ["ls-tree", "-r", "-l", "-z", resolved]);
+    for (const entry of entries.split("\0").filter(Boolean)) {
+      const tab = entry.indexOf("\t");
+      const [, kind, , bytes] = entry.slice(0, tab).trim().split(/\s+/);
+      if (kind === "blob") accountInput(path.join(root, entry.slice(tab + 1)), Number(bytes));
+    }
     await checkedGit(source, ["-c", `core.hooksPath=${path.join(temporary, "no-hooks")}`, "-c", "submodule.recurse=false", "-c", "core.autocrlf=false", "-c", "core.eol=lf", "worktree", "add", "--detach", root, resolved]);
   } catch (error) {
     await rm(temporary, { recursive: true, force: true });

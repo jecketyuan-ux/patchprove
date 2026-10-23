@@ -1,0 +1,211 @@
+{
+  "schemaVersion": "1",
+  "generatedAt": "2026-10-23T05:17:50.103Z",
+  "platform": "linux",
+  "architecture": "x64",
+  "node": "v24.19.0",
+  "sdk": "verifyCosignBundle",
+  "provenance": {
+    "schemaVersion": "1",
+    "upstreamRepository": "https://github.com/sigstore/cosign",
+    "release": "v3.1.4",
+    "sourceCommit": "0e48502cf5ef34e2e60bbd3617aa19945712f705",
+    "retrievedOn": "2026-10-22",
+    "license": "Apache-2.0; retained COSIGN-LICENSE is unchanged upstream text.",
+    "certificateIdentity": "keyless@projectsigstore.iam.gserviceaccount.com",
+    "certificateOidcIssuer": "https://accounts.google.com",
+    "binary": {
+      "asset": "cosign-linux-amd64",
+      "url": "https://github.com/sigstore/cosign/releases/download/v3.1.4/cosign-linux-amd64",
+      "bytes": 145688404,
+      "sha256": "424e2c97d0b45fd7a6b608a87f090f35633f4c23ece5f092d48bba11aaf4bbfa"
+    },
+    "files": [
+      {
+        "file": "cosign_checksums.txt",
+        "sourceUrl": "https://github.com/sigstore/cosign/releases/download/v3.1.4/cosign_checksums.txt",
+        "bytes": 3906,
+        "sha256": "e70e59b328d52949b3a9ae3e0d04721ea8f380c4e91c28197aa91df02afbf4c0"
+      },
+      {
+        "file": "cosign_checksums.txt.sigstore.json",
+        "sourceUrl": "https://github.com/sigstore/cosign/releases/download/v3.1.4/cosign_checksums.txt.sigstore.json",
+        "bytes": 6651,
+        "sha256": "8fc87b5562359b0414655ee281b80eb3752f58c4e137d5f0e4881f095bc26309"
+      },
+      {
+        "file": "trusted_root_pgi.json",
+        "sourceUrl": "https://github.com/sigstore/cosign/blob/0e48502cf5ef34e2e60bbd3617aa19945712f705/pkg/cosign/testdata/trusted_root_pgi.json",
+        "bytes": 4537,
+        "sha256": "f44a1b88128e55ebfb62189becbc0fa48d4ec9915c65ac54ba0e46a008b12d5b"
+      },
+      {
+        "file": "COSIGN-LICENSE",
+        "sourceUrl": "https://github.com/sigstore/cosign/blob/0e48502cf5ef34e2e60bbd3617aa19945712f705/LICENSE",
+        "bytes": 11357,
+        "sha256": "c71d239df91726fc519c6eb72d318ec65820627232b2f796219e87dcf35d0ab4"
+      }
+    ]
+  },
+  "unusableHttpProxies": true,
+  "cases": [
+    {
+      "name": "valid-offline",
+      "expectedExit": 0,
+      "artifactSha256": "e70e59b328d52949b3a9ae3e0d04721ea8f380c4e91c28197aa91df02afbf4c0",
+      "argv": [
+        "verify-blob",
+        "--offline",
+        "--bundle",
+        "/workspace/patchprove/test/fixtures/cosign/cosign_checksums.txt.sigstore.json",
+        "--trusted-root",
+        "/workspace/patchprove/test/fixtures/cosign/trusted_root_pgi.json",
+        "--certificate-identity",
+        "keyless@projectsigstore.iam.gserviceaccount.com",
+        "--certificate-oidc-issuer",
+        "https://accounts.google.com",
+        "/workspace/patchprove/test/fixtures/cosign/cosign_checksums.txt"
+      ],
+      "result": {
+        "command": "/tmp/patchprove-cosign-3.1.4 verify-blob --offline --bundle /workspace/patchprove/test/fixtures/cosign/cosign_checksums.txt.sigstore.json --trusted-root /workspace/patchprove/test/fixtures/cosign/trusted_root_pgi.json --certificate-identity keyless@projectsigstore.iam.gserviceaccount.com --certificate-oidc-issuer https://accounts.google.com /workspace/patchprove/test/fixtures/cosign/cosign_checksums.txt",
+        "exitCode": 0,
+        "stdout": "",
+        "stderr": "Flag --offline has been deprecated, To verify in an airgapped environment, provide a --bundle with the signature and verification material, and a --trusted-root file with the service keys and certificates\nVerified OK\n",
+        "durationMs": 44,
+        "timedOut": false,
+        "aborted": false,
+        "signal": null,
+        "truncated": false,
+        "stdoutHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrHash": "9d25d6c1808feeb45965a458d4eb657547adab11c8f209d12ccadc6b9494282e",
+        "outputHash": "4a5d11169d8844a1c648f32e1ce4998b528bcb6703adf376d04030af9769bd50"
+      }
+    },
+    {
+      "name": "tampered-blob",
+      "expectedExit": 1,
+      "artifactSha256": "2fe2424b1473d54d842baef293f5dc1bfe86e5430dee52b836d89296b4539dee",
+      "argv": [
+        "verify-blob",
+        "--offline",
+        "--bundle",
+        "/workspace/patchprove/test/fixtures/cosign/cosign_checksums.txt.sigstore.json",
+        "--trusted-root",
+        "/workspace/patchprove/test/fixtures/cosign/trusted_root_pgi.json",
+        "--certificate-identity",
+        "keyless@projectsigstore.iam.gserviceaccount.com",
+        "--certificate-oidc-issuer",
+        "https://accounts.google.com",
+        "/tmp/patchprove-cosign-smoke-GqidaZ/tampered-checksums.txt"
+      ],
+      "result": {
+        "command": "/tmp/patchprove-cosign-3.1.4 verify-blob --offline --bundle /workspace/patchprove/test/fixtures/cosign/cosign_checksums.txt.sigstore.json --trusted-root /workspace/patchprove/test/fixtures/cosign/trusted_root_pgi.json --certificate-identity keyless@projectsigstore.iam.gserviceaccount.com --certificate-oidc-issuer https://accounts.google.com /tmp/patchprove-cosign-smoke-GqidaZ/tampered-checksums.txt",
+        "exitCode": 1,
+        "stdout": "",
+        "stderr": "Flag --offline has been deprecated, To verify in an airgapped environment, provide a --bundle with the signature and verification material, and a --trusted-root file with the service keys and certificates\nError: failed to verify signature: could not verify message: invalid signature when validating ASN.1 encoded signature\nerror during command execution: failed to verify signature: could not verify message: invalid signature when validating ASN.1 encoded signature\n",
+        "durationMs": 37,
+        "timedOut": false,
+        "aborted": false,
+        "signal": null,
+        "truncated": false,
+        "stdoutHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrHash": "0fbc133725fa010145ddded5e0cac0639f56e36ec4f5b94882fd8d32dd95c9f1",
+        "outputHash": "8610189f675dbda7ce7b9b31524e4e5130ecb6e5fbd945848ba89687d07ed211"
+      }
+    },
+    {
+      "name": "wrong-identity",
+      "expectedExit": 1,
+      "artifactSha256": "e70e59b328d52949b3a9ae3e0d04721ea8f380c4e91c28197aa91df02afbf4c0",
+      "argv": [
+        "verify-blob",
+        "--offline",
+        "--bundle",
+        "/workspace/patchprove/test/fixtures/cosign/cosign_checksums.txt.sigstore.json",
+        "--trusted-root",
+        "/workspace/patchprove/test/fixtures/cosign/trusted_root_pgi.json",
+        "--certificate-identity",
+        "not-the-signer@example.invalid",
+        "--certificate-oidc-issuer",
+        "https://accounts.google.com",
+        "/workspace/patchprove/test/fixtures/cosign/cosign_checksums.txt"
+      ],
+      "result": {
+        "command": "/tmp/patchprove-cosign-3.1.4 verify-blob --offline --bundle /workspace/patchprove/test/fixtures/cosign/cosign_checksums.txt.sigstore.json --trusted-root /workspace/patchprove/test/fixtures/cosign/trusted_root_pgi.json --certificate-identity not-the-signer@example.invalid --certificate-oidc-issuer https://accounts.google.com /workspace/patchprove/test/fixtures/cosign/cosign_checksums.txt",
+        "exitCode": 1,
+        "stdout": "",
+        "stderr": "Flag --offline has been deprecated, To verify in an airgapped environment, provide a --bundle with the signature and verification material, and a --trusted-root file with the service keys and certificates\nError: failed to verify certificate identity: no matching CertificateIdentity found, last error: expected SAN value \"not-the-signer@example.invalid\", got \"keyless@projectsigstore.iam.gserviceaccount.com\"\nerror during command execution: failed to verify certificate identity: no matching CertificateIdentity found, last error: expected SAN value \"not-the-signer@example.invalid\", got \"keyless@projectsigstore.iam.gserviceaccount.com\"\n",
+        "durationMs": 46,
+        "timedOut": false,
+        "aborted": false,
+        "signal": null,
+        "truncated": false,
+        "stdoutHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrHash": "d750aa9f62cfd18b0ba749f25fbd72be06b5b886fcb8a342cb157631432d4999",
+        "outputHash": "b194c29853e527eb2d2f8d87aade4838e449752835e66bfe7e9e770a4740cc9f"
+      }
+    },
+    {
+      "name": "wrong-issuer",
+      "expectedExit": 1,
+      "artifactSha256": "e70e59b328d52949b3a9ae3e0d04721ea8f380c4e91c28197aa91df02afbf4c0",
+      "argv": [
+        "verify-blob",
+        "--offline",
+        "--bundle",
+        "/workspace/patchprove/test/fixtures/cosign/cosign_checksums.txt.sigstore.json",
+        "--trusted-root",
+        "/workspace/patchprove/test/fixtures/cosign/trusted_root_pgi.json",
+        "--certificate-identity",
+        "keyless@projectsigstore.iam.gserviceaccount.com",
+        "--certificate-oidc-issuer",
+        "https://issuer.example.invalid",
+        "/workspace/patchprove/test/fixtures/cosign/cosign_checksums.txt"
+      ],
+      "result": {
+        "command": "/tmp/patchprove-cosign-3.1.4 verify-blob --offline --bundle /workspace/patchprove/test/fixtures/cosign/cosign_checksums.txt.sigstore.json --trusted-root /workspace/patchprove/test/fixtures/cosign/trusted_root_pgi.json --certificate-identity keyless@projectsigstore.iam.gserviceaccount.com --certificate-oidc-issuer https://issuer.example.invalid /workspace/patchprove/test/fixtures/cosign/cosign_checksums.txt",
+        "exitCode": 1,
+        "stdout": "",
+        "stderr": "Flag --offline has been deprecated, To verify in an airgapped environment, provide a --bundle with the signature and verification material, and a --trusted-root file with the service keys and certificates\nError: failed to verify certificate identity: no matching CertificateIdentity found, last error: expected issuer value \"https://issuer.example.invalid\", got \"https://accounts.google.com\"\nerror during command execution: failed to verify certificate identity: no matching CertificateIdentity found, last error: expected issuer value \"https://issuer.example.invalid\", got \"https://accounts.google.com\"\n",
+        "durationMs": 34,
+        "timedOut": false,
+        "aborted": false,
+        "signal": null,
+        "truncated": false,
+        "stdoutHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderrHash": "e079743a5d30cb6a1350a211386cd22d489ba239d3e0fc2647c9198043896151",
+        "outputHash": "acae84bc8057683fee370a4554467c87b352d103f26e1b22b7477a736144d860"
+      }
+    }
+  ],
+  "cosign": {
+    "binary": "/tmp/patchprove-cosign-3.1.4",
+    "asset": "cosign-linux-amd64",
+    "bytes": 145688404,
+    "sha256": "424e2c97d0b45fd7a6b608a87f090f35633f4c23ece5f092d48bba11aaf4bbfa",
+    "version": {
+      "gitVersion": "v3.1.4",
+      "gitCommit": "0e48502cf5ef34e2e60bbd3617aa19945712f705",
+      "gitTreeState": "clean",
+      "buildDate": "2026-10-20T17:33:02Z",
+      "goVersion": "go1.27.3",
+      "compiler": "gc",
+      "platform": "linux/amd64"
+    },
+    "versionResult": {
+      "command": "/tmp/patchprove-cosign-3.1.4 version --json",
+      "exitCode": 0,
+      "stdout": "{\n  \"gitVersion\": \"v3.1.4\",\n  \"gitCommit\": \"0e48502cf5ef34e2e60bbd3617aa19945712f705\",\n  \"gitTreeState\": \"clean\",\n  \"buildDate\": \"2026-10-20T17:33:02Z\",\n  \"goVersion\": \"go1.27.3\",\n  \"compiler\": \"gc\",\n  \"platform\": \"linux/amd64\"\n}\n",
+      "stderr": "",
+      "durationMs": 92,
+      "timedOut": false,
+      "aborted": false,
+      "signal": null,
+      "truncated": false,
+      "stdoutHash": "256be9bf9d2aebf60efb8478ea084fe391de63eaef748d6267e1bb92dec5fe85",
+      "stderrHash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "outputHash": "141edaed70474a2e31ca15cb187aee8f3afb3a82fe531bf7eaadcf5769b45b58"
+    }
+  },
+  "passed": true
+}

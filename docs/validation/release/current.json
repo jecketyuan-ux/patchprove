@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "candidateCodeCommit": null,
+  "candidateCodeTree": null,
+  "runtimeDigest": null,
+  "record": null,
+  "pullRequest": "https://github.com/jecketyuan-ux/patchprove/pull/18",
+  "releaseStatus": "blocked: R01\u2013R10 stabilization; Windows production failed and complete live host/publisher acceptance is not-run",
+  "historicalRecords": [
+    "fbaa4cb/candidate.json",
+    "21a1d15/candidate.json"
+  ],
+  "ciPolicy": "Use current PR head checks, not an earlier green run.",
+  "supportConditions": {
+    "windowsJava": "Gradle 9.8.2/JDK21 with job-wide UTF-8 also failed the original Chinese/space-path native success, assertion-failure, zero and multi-module cases in CI run 39935723323 (head ea162cc39904042d251bee525d6b9a8acdf880e2). Class loading failed before assertions; installed production was not reached. No passing Windows combination is established.",
+    "otherJavaPlatforms": "Linux/macOS use JDK17.",
+    "fixtureDelivery": "Historical signed evidence fixture is tracked through a precise ignore exception and passed three compatibility tests in a clean export."
+  },
+  "currentAcceptance": {
+    "status": "blocked",
+    "record": null,
+    "pullRequest": "https://github.com/jecketyuan-ux/patchprove/pull/18",
+    "implementation": "../../upgrades/2.0-stabilization.md",
+    "identityNotice": "Current candidate identity is unset until a committed implementation and its actual CI/acceptance records are bound; historical successes do not establish current acceptance"
+  }
+}

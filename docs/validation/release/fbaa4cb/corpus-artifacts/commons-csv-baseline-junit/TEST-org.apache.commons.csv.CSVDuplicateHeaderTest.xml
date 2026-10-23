@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd" version="3.0.2" name="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.571" tests="348" errors="0" skipped="0" failures="0">
+  <properties>
+    <property name="java.specification.version" value="17"/>
+    <property name="sun.jnu.encoding" value="UTF-8"/>
+    <property name="java.class.path" value="/tmp/patchprove-real-projects/commons-csv/target/test-classes:/tmp/patchprove-real-projects/commons-csv/target/classes:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter/5.11.0/junit-jupiter-5.11.0.jar:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter-api/5.11.0/junit-jupiter-api-5.11.0.jar:/tmp/patchprove-maven-repo/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/tmp/patchprove-maven-repo/org/junit/platform/junit-platform-commons/1.11.0/junit-platform-commons-1.11.0.jar:/tmp/patchprove-maven-repo/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter-params/5.11.0/junit-jupiter-params-5.11.0.jar:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter-engine/5.11.0/junit-jupiter-engine-5.11.0.jar:/tmp/patchprove-maven-repo/org/junit/platform/junit-platform-engine/1.11.0/junit-platform-engine-1.11.0.jar:/tmp/patchprove-maven-repo/org/hamcrest/hamcrest/3.0/hamcrest-3.0.jar:/tmp/patchprove-maven-repo/org/mockito/mockito-core/4.11.0/mockito-core-4.11.0.jar:/tmp/patchprove-maven-repo/net/bytebuddy/byte-buddy/1.12.19/byte-buddy-1.12.19.jar:/tmp/patchprove-maven-repo/net/bytebuddy/byte-buddy-agent/1.12.19/byte-buddy-agent-1.12.19.jar:/tmp/patchprove-maven-repo/org/objenesis/objenesis/3.3/objenesis-3.3.jar:/tmp/patchprove-maven-repo/commons-io/commons-io/2.17.0/commons-io-2.17.0.jar:/tmp/patchprove-maven-repo/commons-codec/commons-codec/1.17.1/commons-codec-1.17.1.jar:/tmp/patchprove-maven-repo/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar:/tmp/patchprove-maven-repo/com/h2database/h2/2.2.224/h2-2.2.224.jar:/tmp/patchprove-maven-repo/org/openjdk/jmh/jmh-core/1.37/jmh-core-1.37.jar:/tmp/patchprove-maven-repo/net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar:/tmp/patchprove-maven-repo/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar:"/>
+    <property name="java.vm.vendor" value="Eclipse Adoptium"/>
+    <property name="sun.arch.data.model" value="64"/>
+    <property name="java.vendor.url" value="https://adoptium.net/"/>
+    <property name="user.timezone" value="Etc/UTC"/>
+    <property name="os.name" value="Linux"/>
+    <property name="java.vm.specification.version" value="17"/>
+    <property name="rat.skip" value="true"/>
+    <property name="sun.java.launcher" value="SUN_STANDARD"/>
+    <property name="sun.boot.library.path" value="/tmp/patchprove-toolchains/jdk-17.0.13+11/lib"/>
+    <property name="sun.java.command" value="/tmp/patchprove-real-projects/commons-csv/target/surefire/surefirebooter-20261023060423408_3.jar /tmp/patchprove-real-projects/commons-csv/target/surefire 2026-10-23T06-04-23_246-jvmRun1 surefire-20261023060423408_1tmp surefire_0-20261023060423408_2tmp"/>
+    <property name="jdk.debug" value="release"/>
+    <property name="surefire.test.class.path" value="/tmp/patchprove-real-projects/commons-csv/target/test-classes:/tmp/patchprove-real-projects/commons-csv/target/classes:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter/5.11.0/junit-jupiter-5.11.0.jar:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter-api/5.11.0/junit-jupiter-api-5.11.0.jar:/tmp/patchprove-maven-repo/org/opentest4j/opentest4j/1.3.0/opentest4j-1.3.0.jar:/tmp/patchprove-maven-repo/org/junit/platform/junit-platform-commons/1.11.0/junit-platform-commons-1.11.0.jar:/tmp/patchprove-maven-repo/org/apiguardian/apiguardian-api/1.1.2/apiguardian-api-1.1.2.jar:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter-params/5.11.0/junit-jupiter-params-5.11.0.jar:/tmp/patchprove-maven-repo/org/junit/jupiter/junit-jupiter-engine/5.11.0/junit-jupiter-engine-5.11.0.jar:/tmp/patchprove-maven-repo/org/junit/platform/junit-platform-engine/1.11.0/junit-platform-engine-1.11.0.jar:/tmp/patchprove-maven-repo/org/hamcrest/hamcrest/3.0/hamcrest-3.0.jar:/tmp/patchprove-maven-repo/org/mockito/mockito-core/4.11.0/mockito-core-4.11.0.jar:/tmp/patchprove-maven-repo/net/bytebuddy/byte-buddy/1.12.19/byte-buddy-1.12.19.jar:/tmp/patchprove-maven-repo/net/bytebuddy/byte-buddy-agent/1.12.19/byte-buddy-agent-1.12.19.jar:/tmp/patchprove-maven-repo/org/objenesis/objenesis/3.3/objenesis-3.3.jar:/tmp/patchprove-maven-repo/commons-io/commons-io/2.17.0/commons-io-2.17.0.jar:/tmp/patchprove-maven-repo/commons-codec/commons-codec/1.17.1/commons-codec-1.17.1.jar:/tmp/patchprove-maven-repo/org/apache/commons/commons-lang3/3.17.0/commons-lang3-3.17.0.jar:/tmp/patchprove-maven-repo/com/h2database/h2/2.2.224/h2-2.2.224.jar:/tmp/patchprove-maven-repo/org/openjdk/jmh/jmh-core/1.37/jmh-core-1.37.jar:/tmp/patchprove-maven-repo/net/sf/jopt-simple/jopt-simple/5.0.4/jopt-simple-5.0.4.jar:/tmp/patchprove-maven-repo/org/apache/commons/commons-math3/3.6.1/commons-math3-3.6.1.jar:"/>
+    <property name="sun.cpu.endian" value="little"/>
+    <property name="user.home" value="/home/agent"/>
+    <property name="user.language" value="en"/>
+    <property name="java.specification.vendor" value="Oracle Corporation"/>
+    <property name="java.version.date" value="2024-10-15"/>
+    <property name="java.home" value="/tmp/patchprove-toolchains/jdk-17.0.13+11"/>
+    <property name="jacoco.skip" value="true"/>
+    <property name="file.separator" value="/"/>
+    <property name="basedir" value="/tmp/patchprove-real-projects/commons-csv"/>
+    <property name="java.vm.compressedOopsMode" value="Zero based"/>
+    <property name="checkstyle.skip" value="true"/>
+    <property name="line.separator" value="&#10;"/>
+    <property name="java.specification.name" value="Java Platform API Specification"/>
+    <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
+    <property name="surefire.real.class.path" value="/tmp/patchprove-real-projects/commons-csv/target/surefire/surefirebooter-20261023060423408_3.jar"/>
+    <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
+    <property name="java.runtime.version" value="17.0.13+11"/>
+    <property name="user.name" value="agent"/>
+    <property name="path.separator" value=":"/>
+    <property name="os.version" value="6.18.55"/>
+    <property name="java.runtime.name" value="OpenJDK Runtime Environment"/>
+    <property name="file.encoding" value="UTF-8"/>
+    <property name="java.vm.name" value="OpenJDK 64-Bit Server VM"/>
+    <property name="java.vendor.version" value="Temurin-17.0.13+11"/>
+    <property name="localRepository" value="/tmp/patchprove-maven-repo"/>
+    <property name="java.vendor.url.bug" value="https://github.com/adoptium/adoptium-support/issues"/>
+    <property name="java.io.tmpdir" value="/tmp"/>
+    <property name="java.version" value="17.0.13"/>
+    <property name="user.dir" value="/tmp/patchprove-real-projects/commons-csv"/>
+    <property name="os.arch" value="amd64"/>
+    <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
+    <property name="pmd.skip" value="true"/>
+    <property name="native.encoding" value="UTF-8"/>
+    <property name="spotbugs.skip" value="true"/>
+    <property name="java.library.path" value="/usr/java/packages/lib:/usr/lib64:/lib64:/lib:/usr/lib"/>
+    <property name="java.vm.info" value="mixed mode, sharing"/>
+    <property name="java.vendor" value="Eclipse Adoptium"/>
+    <property name="java.vm.version" value="17.0.13+11"/>
+    <property name="java.specification.maintenance.version" value="1"/>
+    <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
+    <property name="java.class.version" value="61.0"/>
+  </properties>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[1]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.007"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[2]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[3]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[4]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[5]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[6]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[7]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[8]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[9]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[10]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[11]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[12]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[13]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[14]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[15]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[16]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[17]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[18]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[19]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[20]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[21]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.006"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[22]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[23]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[24]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[25]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[26]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[27]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[28]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[29]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[30]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[31]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[32]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[33]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[34]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[35]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[36]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.002"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[37]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[38]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[39]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[40]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.004"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[41]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[42]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[43]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[44]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[45]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[46]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[47]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[48]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[49]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[50]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[51]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[52]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[53]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[54]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[55]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[56]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[57]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[58]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[59]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[60]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[61]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[62]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.002"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[63]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[64]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[65]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[66]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[67]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.002"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[68]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[69]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[70]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[71]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[72]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[73]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[74]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[75]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[76]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[77]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[78]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[79]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[80]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[81]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[82]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.002"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[83]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[84]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[85]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[86]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[87]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[88]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.003"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[89]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[90]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[91]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[92]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[93]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.003"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[94]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[95]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[96]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[97]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[98]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[99]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[100]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.008"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[101]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[102]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[103]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[104]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[105]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[106]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[107]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[108]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.003"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[109]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[110]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[111]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[112]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[113]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[114]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[115]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[116]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[117]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[118]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[119]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[120]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[121]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[122]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[123]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[124]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[125]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[126]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[127]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[128]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[129]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[130]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[131]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[132]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[133]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[134]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[135]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[136]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[137]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[138]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[139]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[140]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[141]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[142]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[143]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[144]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[145]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[146]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[147]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[148]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[149]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[150]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[151]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[152]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[153]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[154]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[155]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[156]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[157]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[158]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[159]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.004"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[160]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[161]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[162]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[163]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[164]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.004"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[165]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.004"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[166]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.002"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[167]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.003"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[168]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[169]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[170]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.003"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[171]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.025"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[172]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[173]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[174]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[175]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[176]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.002"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[177]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[178]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[179]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[180]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[181]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[182]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[183]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[184]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[185]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[186]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[187]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[188]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[189]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[190]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[191]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[192]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[193]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.002"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[194]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[195]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.003"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[196]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[197]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[198]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[199]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[200]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.005"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[201]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[202]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[203]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[204]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[205]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[206]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[207]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[208]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[209]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[210]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[211]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[212]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[213]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[214]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[215]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVFormat(DuplicateHeaderMode, boolean, boolean, String[], boolean)[216]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[1]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.005"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[2]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[3]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[4]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[5]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[6]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[7]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[8]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[9]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.003"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[10]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[11]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[12]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[13]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.002"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[14]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[15]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[16]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[17]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[18]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[19]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[20]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[21]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[22]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.002"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[23]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[24]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[25]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.005"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[26]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[27]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[28]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[29]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[30]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[31]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[32]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[33]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[34]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[35]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[36]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[37]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[38]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[39]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[40]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[41]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[42]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.002"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[43]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[44]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[45]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[46]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[47]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[48]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[49]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[50]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[51]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.011"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[52]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[53]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[54]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[55]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[56]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[57]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[58]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[59]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[60]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[61]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[62]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[63]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[64]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[65]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[66]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[67]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[68]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[69]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[70]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[71]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[72]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[73]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[74]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[75]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[76]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[77]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[78]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[79]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[80]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[81]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[82]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[83]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[84]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[85]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[86]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.003"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[87]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[88]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[89]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[90]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[91]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[92]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[93]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.022"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[94]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[95]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[96]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[97]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[98]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[99]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[100]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[101]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[102]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[103]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[104]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[105]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[106]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[107]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[108]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[109]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[110]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[111]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.002"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[112]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[113]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[114]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[115]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[116]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[117]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[118]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[119]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[120]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[121]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[122]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[123]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.005"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[124]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[125]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[126]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[127]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[128]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[129]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[130]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[131]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.001"/>
+  <testcase name="testCSVParser(DuplicateHeaderMode, boolean, boolean, String[], boolean)[132]" classname="org.apache.commons.csv.CSVDuplicateHeaderTest" time="0.0"/>
+</testsuite>

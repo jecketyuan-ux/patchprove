@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
-import { readFileSync } from "node:fs";
 import path from "node:path";
+import { readJsonInput } from "./input-budget.js";
 import { runCommand, type CommandResult } from "./exec.js";
 import type { Diagnostic, Evidence, ExecutionLimits, ExecutionRecord } from "./types.js";
 
@@ -51,21 +51,66 @@ export function adapterInputHash(data: unknown): string {
   return createHash("sha256").update(JSON.stringify(canonical(data))).digest("hex");
 }
 
+/** Tested native contract: Turborepo 2.5.0 JSON dry plan and optional run summary.
+ * Keeps caller binding distinct from producer trust; does not infer test counts from task exit codes.
+ */
+export function exportTurboEvidence(options: { plan: unknown; summary?: unknown; snapshotHash: string }): Record<string, unknown> {
+  const plan = object(options.plan);
+  const summary = options.summary === undefined ? undefined : object(options.summary);
+  for (const value of [plan, ...(summary ? [summary] : [])]) {
+    if (value.version !== "1" || value.turboVersion !== "2.5.0" || !Array.isArray(value.tasks)) throw new Error("Supported native Turbo contract requires version 1 / turboVersion 2.5.0 / tasks");
+  }
+  if (!/^[a-f\d]{64}$/.test(options.snapshotHash)) throw new Error("snapshotHash must be a SHA-256 digest");
+  const planned = new Map<string, Record<string, unknown>>();
+  for (const value of plan.tasks as unknown[]) {
+    const task = object(value), id = string(task.taskId, "taskId");
+    if (planned.has(id)) throw new Error(`Duplicate planned task: ${id}`);
+    relative(task.directory); string(task.task, "task"); planned.set(id, task);
+  }
+  const tasks = (summary?.tasks ?? plan.tasks) as unknown[];
+  const data = { mode: summary ? "run" : "plan", producer: { format: "turbo-task-summary/1", version: "2.5.0", planHash: adapterInputHash(plan), ...(summary ? { summaryHash: adapterInputHash(summary) } : {}) },
+    tasks: tasks.map((value) => {
+      const task = object(value), id = string(task.taskId, "taskId"), definition = planned.get(id);
+      if (!definition || task.task !== definition.task) throw new Error(`Run task is absent from the supplied plan: ${id}`);
+      return { taskId: id, task: task.task, directory: relative(definition.directory),
+        ...(typeof task.command === "string" ? { command: task.command } : {}),
+        ...(summary && task.execution !== undefined ? { execution: task.execution } : {}),
+        ...(summary && task.cache !== undefined ? { cache: task.cache } : {}) };
+    }) };
+  return { schemaVersion: "1", adapter: "turbo", adapterVersion: "2.5.0", snapshotHash: options.snapshotHash, inputHash: adapterInputHash(data), data };
+}
+
 function stateOf(task: Record<string, unknown>, plan: boolean): AdapterTaskState {
-  if (plan) return "imported";
+  if (task.status !== undefined && typeof task.status !== "string") throw new Error("Task status must be a string");
+  const status = typeof task.status === "string" ? task.status.toLowerCase() : "";
+  const states = ["", "failed", "failure", "skipped", "cancelled", "canceled", "cached", "local-cache", "remote-cache", "local-cache-kept-existing", "executed", "success", "succeeded", "passed", "imported", "pending"];
+  if (!states.includes(status)) throw new Error(`Unknown task status: ${status}`);
   const cache = task.cache;
+  if (cache !== undefined && cache !== null && typeof cache !== "boolean" && typeof cache !== "string" && (typeof cache !== "object" || Array.isArray(cache))) throw new Error("Task cache must be a boolean, status, or cache object");
+  const cacheState = typeof cache === "string" ? cache : cache && typeof cache === "object" ? (cache as Record<string, unknown>).status : undefined;
+  if (cacheState !== undefined && (typeof cacheState !== "string" || !["HIT", "MISS", "hit", "miss", "BYPASS", "DISABLED"].includes(cacheState))) throw new Error("Unknown task cache status");
   const cacheHit = cache === true || cache === "HIT" || cache === "hit" ||
     (cache != null && typeof cache === "object" && !Array.isArray(cache) && ["HIT", "hit"].includes(String((cache as Record<string, unknown>).status)));
   const execution = task.execution == null ? {} : object(task.execution);
   const exit = task.exitCode ?? execution.exitCode;
   if (exit !== undefined && (typeof exit !== "number" || !Number.isInteger(exit))) throw new Error("Task exitCode must be an integer");
-  const status = String(task.status ?? "").toLowerCase();
+  for (const field of ["collectedTests", "durationMs"] as const) {
+    const value = task[field];
+    if (value !== undefined && (typeof value !== "number" || !Number.isFinite(value) || value < 0 || field === "collectedTests" && !Number.isInteger(value))) {
+      throw new Error(`Task ${field} must be a nonnegative ${field === "collectedTests" ? "integer" : "number"}`);
+    }
+  }
+  for (const field of ["startTime", "endTime"] as const) {
+    if (execution[field] !== undefined && (typeof execution[field] !== "number" || !Number.isFinite(execution[field]) || (execution[field] as number) < 0)) throw new Error(`Task execution.${field} must be a nonnegative number`);
+  }
+  if (typeof execution.startTime === "number" && typeof execution.endTime === "number" && execution.endTime < execution.startTime) throw new Error("Task execution.endTime precedes startTime");
+  if (plan) return "imported";
   if (status === "failed" || status === "failure" || (typeof exit === "number" && exit !== 0)) return "failed";
   if (["skipped", "cancelled", "canceled"].includes(status)) return "skipped";
   if (cacheHit || ["cached", "local-cache", "remote-cache", "local-cache-kept-existing"].includes(status)) return "cached";
   if (exit === 0 || ["executed", "success", "succeeded", "passed"].includes(status)) return "executed";
   if (!status || status === "imported" || status === "pending") return "imported";
-  throw new Error(`Unknown task status: ${status}`);
+  throw new Error(`Task status cannot establish execution: ${status}`);
 }
 
 /** Imports caller-exported machine JSON. This function never invokes a task runner or opens testmon's database. */
@@ -76,7 +121,7 @@ export function loadAdapterEvidence(
   const result: AdapterEvidence = { records: [], tasks: [], mappingEvidence: [], diagnostics: [] };
   for (const input of inputs) {
     try {
-      const envelope = object(JSON.parse(readFileSync(path.resolve(options.cwd, input.path), "utf8")) as unknown);
+      const envelope = object(readJsonInput(path.resolve(options.cwd, input.path)));
       if (envelope.schemaVersion !== "1" || envelope.adapter !== input.adapter) throw new Error("Adapter envelope schemaVersion/adapter mismatch");
       const adapterVersion = string(envelope.adapterVersion, "adapterVersion");
       const snapshotHash = string(envelope.snapshotHash, "snapshotHash");
@@ -84,7 +129,13 @@ export function loadAdapterEvidence(
       if (!/^[a-f\d]{64}$/.test(snapshotHash) || snapshotHash !== options.snapshotHash) throw new Error("Adapter snapshotHash does not match the analyzed snapshot");
       if (!/^[a-f\d]{64}$/.test(inputHash) || inputHash !== adapterInputHash(envelope.data)) throw new Error("Adapter inputHash does not match exported data");
       const data = object(envelope.data);
+      if (data.producer !== undefined) {
+        const producer = object(data.producer);
+        if (input.adapter !== "turbo" || producer.format !== "turbo-task-summary/1" || producer.version !== "2.5.0" || adapterVersion !== producer.version) throw new Error("Unsupported native producer contract/version");
+        for (const key of ["planHash", ...(data.mode === "run" ? ["summaryHash"] : [])]) if (typeof producer[key] !== "string" || !/^[a-f\d]{64}$/.test(producer[key] as string)) throw new Error(`Invalid producer ${key}`);
+      }
       if (data.mode !== undefined && data.mode !== "plan" && data.mode !== "run") throw new Error("Adapter data.mode must be plan or run");
+      if (data.dryRun !== undefined && typeof data.dryRun !== "boolean") throw new Error("Adapter data.dryRun must be boolean");
       // Build per-input results atomically: a bad later task must not retain earlier tasks.
       const imported: AdapterEvidence = { records: [], tasks: [], mappingEvidence: [], diagnostics: [] };
       if (input.adapter === "testmon") {
@@ -103,8 +154,11 @@ export function loadAdapterEvidence(
           ? taskContainer.map((task) => object(task))
           : Object.entries(object(taskContainer)).map(([id, task]) => ({ ...object(task), id }));
         const taskResults = data.taskResults === undefined ? {} : object(data.taskResults);
+        const ids = new Set<string>();
         for (const task of tasks) {
           const id = string(task.id ?? task.taskId, "task id");
+          if (ids.has(id) || result.tasks.some((item) => item.adapter === input.adapter && item.id === id)) throw new Error(`Duplicate task identity: ${id}`);
+          ids.add(id);
           const completion = taskResults[id] === undefined ? {} : object(taskResults[id]);
           const merged = { ...task, ...completion };
           const scope = paths(merged.scope ?? (merged.directory ? [merged.directory] : undefined));

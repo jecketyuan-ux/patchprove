@@ -1,4 +1,4 @@
-import { spawn } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { accessSync, constants, statSync } from "node:fs";
 import path from "node:path";
@@ -9,6 +9,9 @@ export interface CommandResult {
   exitCode: number;
   stdout: string;
   stderr: string;
+  /** Retained original bytes only; bounded by maxOutputBytes, never evidence/IPC fields. */
+  stdoutBytes?: Buffer;
+  stderrBytes?: Buffer;
   durationMs: number;
   timedOut?: boolean;
   aborted?: boolean;
@@ -82,8 +85,7 @@ export function commandInvocation(command: string, args: string[], platform = pr
   };
 }
 
-function decodeCaptured(chunks: Buffer[]): string {
-  const buffer = Buffer.concat(chunks);
+export function decodeCommandOutput(buffer: Buffer): string {
   const decoded = buffer.toString("utf8");
   if (Buffer.byteLength(decoded) <= buffer.length) return decoded;
   let kept = "";
@@ -144,11 +146,15 @@ export function runCommand(
       options.signal?.removeEventListener("abort", abort);
       const stdoutHash = hashes.stdout.digest("hex");
       const stderrHash = hashes.stderr.digest("hex");
+      const stdoutBytes = Buffer.concat(chunks.stdout);
+      const stderrBytes = Buffer.concat(chunks.stderr);
       resolve({
         command: rendered,
         exitCode: timedOut ? 124 : aborted ? 130 : inputFailed ? 127 : exitCode ?? 127,
-        stdout: decodeCaptured(chunks.stdout),
-        stderr: decodeCaptured(chunks.stderr),
+        stdout: decodeCommandOutput(stdoutBytes),
+        stderr: decodeCommandOutput(stderrBytes),
+        stdoutBytes,
+        stderrBytes,
         durationMs: Date.now() - started,
         timedOut,
         aborted,
@@ -161,6 +167,9 @@ export function runCommand(
     };
 
     let child: ReturnType<typeof spawn>;
+    // Runner processes may create their own groups. Remember descendants before
+    // the analysis leader exits so escalation still reaches those processes.
+    const descendantPids = new Set<number>();
     const killTree = (force: boolean): Promise<void> => {
       if (!child.pid) return Promise.resolve();
       if (process.platform === "win32") {
@@ -183,6 +192,29 @@ export function runCommand(
           killer.on("error", () => finishKill(true));
           killer.on("exit", (code) => finishKill(code !== 0));
         });
+      }
+      try {
+        const listing = spawnSync("/bin/ps", ["-A", "-o", "pid=", "-o", "ppid="], {
+          encoding: "utf8", timeout: 250, maxBuffer: 1024 * 1024,
+          stdio: ["ignore", "pipe", "ignore"], env: childEnvironment(),
+        });
+        if (listing.status === 0 && listing.stdout) {
+          const rows = listing.stdout.trim().split("\n").map((line) => line.trim().split(/\s+/).map(Number));
+          const parents = new Set([child.pid, ...descendantPids]);
+          let changed = true;
+          while (changed) {
+            changed = false;
+            for (const [pid, ppid] of rows) {
+              if (pid && pid !== process.pid && ppid && parents.has(ppid) && !parents.has(pid)) {
+                parents.add(pid); descendantPids.add(pid); changed = true;
+              }
+            }
+          }
+        }
+      } catch { /* Group termination remains available if process enumeration is unavailable. */ }
+      for (const pid of [...descendantPids].reverse()) {
+        try { process.kill(-pid, force ? "SIGKILL" : "SIGTERM"); }
+        catch { try { process.kill(pid, force ? "SIGKILL" : "SIGTERM"); } catch { /* Already exited. */ } }
       }
       try { process.kill(-child.pid, force ? "SIGKILL" : "SIGTERM"); }
       catch { try { child.kill(force ? "SIGKILL" : "SIGTERM"); } catch { /* Already exited. */ } }

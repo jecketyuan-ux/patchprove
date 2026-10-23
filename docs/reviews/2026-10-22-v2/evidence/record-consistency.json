@@ -1,0 +1,34 @@
+{
+  "schemaVersion": 1,
+  "head": "6fa50972f424ee0b6c8e2b1a8506b7ee3f804f0d",
+  "inputClass": "synthetic unsigned evidence import",
+  "signatureSupplied": false,
+  "signatureModified": false,
+  "trustBoundary": "Reader consistency only; previously signed-pack tampering is not tested or claimed to bypass receipt verification.",
+  "cases": [
+    {
+      "id": "control-consistent-records",
+      "readerAccepted": true,
+      "decision": "passed"
+    },
+    {
+      "id": "conflicting-nested-execution",
+      "readerAccepted": true,
+      "nestedStatus": "failed",
+      "topLevelStatus": "passed",
+      "decision": {
+        "status": "passed",
+        "strict": true,
+        "reasons": []
+      },
+      "mcpClaimDone": true,
+      "evidencePath": "/tmp/patchprove-v2-contradictory-records.json"
+    },
+    {
+      "id": "duplicate-nested-identities",
+      "readerAccepted": true,
+      "nestedCount": 2,
+      "repeatedId": "tests:javascript"
+    }
+  ]
+}

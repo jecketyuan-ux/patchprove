@@ -502,6 +502,45 @@
         "hash": {
           "type": "string",
           "pattern": "^(sha256:)?[0-9a-f]{64}$"
+        },
+        "projects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "gates": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "typecheck": {
+                    "$ref": "#/definitions/projectGatePolicy"
+                  },
+                  "lint": {
+                    "$ref": "#/definitions/projectGatePolicy"
+                  },
+                  "tests": {
+                    "$ref": "#/definitions/projectGatePolicy"
+                  },
+                  "secrets": {
+                    "$ref": "#/definitions/projectGatePolicy"
+                  }
+                }
+              }
+            },
+            "required": [
+              "path",
+              "gates"
+            ]
+          }
+        },
+        "pluginSetHash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
         }
       },
       "required": [
@@ -517,6 +556,45 @@
         "spec",
         "baseline",
         "hash"
+      ]
+    },
+    "projectGatePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "enum": [
+            "required",
+            "optional",
+            "not-applicable"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expiresAt": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "mode"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "not-applicable"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "reason"
+            ]
+          }
+        }
       ]
     }
   },

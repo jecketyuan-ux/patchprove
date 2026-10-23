@@ -33,7 +33,16 @@ export type {
   VerificationDecision,
   Diagnostic,
   EffectivePolicy,
+  TestExecution,
+  EnvironmentProvenance,
+  PluginProvenance,
+  JavaRuntimeProvenance,
+  JavaTestRuntimeObservation,
+  ReportArtifactReference,
 } from "./types.js";
+export { DEFAULT_INPUT_LIMITS, InputBudgetError, resolveInputLimits, withInputBudget } from "./input-budget.js";
+export type { InputLimits } from "./input-budget.js";
+export { verifyReportArchive } from "./report-archive.js";
 export { emptyContractResult, emptyDetectedTools, RECEIPT_SCHEMA_VERSION } from "./types.js";
 export {
   classifyPath,
@@ -153,7 +162,11 @@ export { findingFingerprint, gapFingerprint } from "./fingerprint.js";
 export { captureSnapshotIdentity, createExecutionSnapshot } from "./snapshot.js";
 export type { SnapshotOptions } from "./snapshot.js";
 export { writeArtifactSet, verifyArtifactSet, writeJsonAtomic, writeTextAtomic } from "./artifacts.js";
-export { loadAdapterEvidence, adapterInputHash, verifyCosignBundle } from "./adapters.js";
+export { loadAdapterEvidence, adapterInputHash, exportTurboEvidence, verifyCosignBundle } from "./adapters.js";
 export type { AdapterKind, AdapterTaskEvidence, AdapterEvidence } from "./adapters.js";
 export type { EvidenceWire, EvidenceV2Wire, EvidenceV2RequiredFields } from "./generated/evidence.js";
 export type { ReceiptWire, ReceiptV2Wire, ReceiptV2RequiredFields } from "./generated/receipt.js";
+
+export type { ProjectPolicy, ProjectGatePolicy } from "./types.js";
+export type { PluginCapabilities } from "./plugins/types.js";
+export type { ExecutionUnitBase, ToolUnit, TestUnit } from "./execution-units.js";

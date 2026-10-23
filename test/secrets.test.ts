@@ -36,6 +36,19 @@ describe("secret scan", () => {
     expect(findings.some((f) => /Private key/i.test(f.message))).toBe(true);
   });
 
+  it("scans legal prefix increment lines and keeps following finding positions", () => {
+    const token = `ghp_${"NghUptVC4VHT44k466VnxRmcDxLPLaD1HP7Q"}`;
+    const findings = scanSecrets([added("src/counter.js", `++counter; const token="${token}";\nconst next="${token}";`)]);
+    expect(findings.filter((finding) => /GitHub personal/.test(finding.message)).map((finding) => finding.line)).toEqual([1, 2]);
+  });
+
+  it("rejects a truncated textual patch instead of claiming no secrets", () => {
+    const file = added("src/counter.js", "ordinary");
+    file.patch = "@@ -0,0 +1,2 @@\n+ordinary\n";
+    file.additions = 2;
+    expect(() => scanSecrets([file])).toThrow(/patch|hunk/i);
+  });
+
   it("does not treat lockfile integrity hashes as secrets", () => {
     const findings = scanSecrets([
       added(

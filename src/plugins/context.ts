@@ -1,5 +1,6 @@
-import { existsSync, readFileSync, statSync } from "node:fs";
+import { existsSync, realpathSync, statSync } from "node:fs";
 import path from "node:path";
+import { InputBudgetError, readBoundedFile } from "../input-budget.js";
 import { normalizeRel } from "../paths.js";
 import type { PluginContext } from "./types.js";
 
@@ -13,18 +14,20 @@ export function createPluginContext(
 
 export function readProjectFile(ctx: PluginContext | undefined, rel: string): string | null {
   const n = normalizeRel(rel);
-  if (!n) return null;
+  if (!n || path.isAbsolute(n) || /^[a-z]:/i.test(n) || n === ".." || n.startsWith("../")) return null;
   if (ctx?.readFile) {
-    const hit = ctx.readFile(n);
-    if (hit != null) return hit;
+    return ctx.readFile(n);
   }
   if (ctx?.cwd) {
     try {
       const full = path.join(ctx.cwd, n);
       if (existsSync(full) && statSync(full).isFile()) {
-        return readFileSync(full, "utf8");
+        const relative = path.relative(realpathSync.native(ctx.cwd), realpathSync.native(full));
+        if (relative === ".." || relative.startsWith(`..${path.sep}`) || path.isAbsolute(relative)) return null;
+        return readBoundedFile(full).toString("utf8");
       }
-    } catch {
+    } catch (error) {
+      if (error instanceof InputBudgetError) throw error;
       return null;
     }
   }

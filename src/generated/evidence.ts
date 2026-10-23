@@ -1,6 +1,6 @@
 /* This file is generated. Do not edit directly.
  * Source: schema/evidence.schema.json
- * Schema SHA-256: 642bfb95f23165b4bf1352e531f1a7f7a0cb72cd8c9993be3e4a8935d6b23b98
+ * Schema SHA-256: 8eed5e6a5378468ae0f28bca360d72d633e5c58437263eaf441e553b87086b0e
  * Compiler: json-schema-to-typescript 16.0.0
  * Regenerate with: npm run generate:protocol
  */
@@ -10,7 +10,7 @@
  */
 export type EvidenceWire = {
   /**
-   * Evidence semver: protocol 2 emits 2.0.0; explicit protocol 1 compatibility emits 1.3.0. Readers accept known-major additive fields.
+   * Evidence semver: protocol 2 emits 2.1.0; protocol 1 compatibility emits 1.3.0. Readers retain historical formats without inventing missing facts.
    */
   schemaVersion: string;
   generatedAt: string;
@@ -18,6 +18,7 @@ export type EvidenceWire = {
   repo: {
     cwd: string;
     root: string;
+    repositoryId?: string;
   };
   range: {
     mode: "working-tree" | "range";
@@ -68,9 +69,57 @@ export type EvidenceWire = {
   verificationPlan?: PlanItem[];
   diagnostics?: Diagnostic[];
   mappingEvidence?: MappingEvidence[];
+  environment?: Environment;
+  projectScopes?: {
+    path: string;
+    applicable: boolean;
+    reason: string;
+  }[];
+  resolutionProvenance?: {
+    parserVersion: "2";
+    inputHash: string;
+    configurations: {
+      path: string;
+      hash: string;
+    }[];
+    resolutions: {
+      from: string;
+      specifier: string;
+      kind: "builtin" | "external" | "internal-resolved" | "internal-unresolved";
+      targets: string[];
+    }[];
+  };
+  reportArchive?: {
+    manifestPath: string;
+    manifestHash: string;
+  };
+};
+export type JavaTestRuntimeObservation = {
+  role: "test";
+  source: "junit-properties";
+  status: "observed" | "unknown";
+  reportHash: string;
+  suite: string | null;
+  scope: string[];
+  javaVersion: string | null;
+  javaHome: string | null;
+  vendor: string | null;
+  fileEncoding: string | null;
+  nativeEncoding: string | null;
+  reason?:
+    | "missing-properties"
+    | "conflicting-properties"
+    | "invalid-properties"
+    | "missing-suite-identity"
+    | "unattributed-scope";
 };
 export type RiskLevel = "low" | "medium" | "high" | "critical";
 export type SummaryRisk = "none" | "low" | "medium" | "high" | "critical";
+export type ProjectGatePolicy = {
+  mode: "required" | "optional" | "not-applicable";
+  reason?: string;
+  expiresAt?: string;
+};
 
 export interface ChangedFile {
   path: string;
@@ -139,6 +188,44 @@ export interface ExecutionRecord {
     inputHash: string;
     snapshotHash?: string;
   };
+  testExecution?: TestExecution;
+  required?: boolean;
+}
+export interface TestExecution {
+  parserVersion: "1";
+  format:
+    "vitest-json" | "jest-json" | "pytest-junit" | "java-junit" | "go-json" | "cargo-harness" | "unavailable";
+  granularity: "file" | "package" | "crate";
+  requestedScope: string[];
+  collectedScope: string[];
+  executedScope: string[];
+  skippedScope: string[];
+  unknownScope: string[];
+  counts: {
+    collected: number;
+    executed: number;
+    passed: number;
+    failed: number;
+    skipped: number;
+  };
+  reportHash?: string;
+  reportPath?: string;
+  reason?: string;
+  sourceFiles?: string[];
+  eligibleSourceFiles?: string[];
+  reportStatus: "validated" | "partial" | "missing" | "invalid" | "truncated";
+  reportRetention?: "retained" | "not-retained";
+  reports?: ReportArtifact[];
+  javaRuntimeObservations?: JavaTestRuntimeObservation[];
+}
+export interface ReportArtifact {
+  path: string;
+  hash: string;
+  bytes: number;
+  format:
+    "vitest-json" | "jest-json" | "pytest-junit" | "java-junit" | "go-json" | "cargo-harness" | "unavailable";
+  contextPath: string;
+  contextHash: string;
 }
 export interface Gap {
   id: string;
@@ -279,6 +366,16 @@ export interface EffectivePolicy {
     hash: string;
   };
   hash: string;
+  projects?: {
+    path: string;
+    gates: {
+      typecheck?: ProjectGatePolicy;
+      lint?: ProjectGatePolicy;
+      tests?: ProjectGatePolicy;
+      secrets?: ProjectGatePolicy;
+    };
+  }[];
+  pluginSetHash?: string;
 }
 export interface Verification {
   status: "passed" | "failed" | "incomplete";
@@ -298,6 +395,93 @@ export interface PlanItem {
   required: boolean;
   reason: string;
   unitId?: string;
+  sourceFiles?: string[];
+  granularity?: "file" | "package" | "crate" | "repository";
+  policy?: {
+    mode: "required" | "optional" | "not-applicable";
+    reason?: string;
+    expiresAt?: string;
+    project: string;
+  };
+}
+export interface Environment {
+  platform: string;
+  arch: string;
+  nodeVersion: string;
+  gitVersion: string;
+  hermetic: false;
+  inputLimits: InputLimits;
+  tools: {
+    name: string;
+    version: string | null;
+    path: string;
+  }[];
+  dependencyLocks: {
+    path: string;
+    hash: string;
+  }[];
+  configurations?: {
+    path: string;
+    hash: string;
+  }[];
+  javaToolOptionsFileEncoding?: "UTF-8" | "UTF8" | "UTF-16" | "US-ASCII" | "ISO-8859-1" | "windows-1252";
+  plugins?: PluginProvenance[];
+  reportRetention?: "requested" | "not-requested";
+  parser?: {
+    engine: "typescript";
+    version: string;
+  };
+  javaRuntimes?: JavaRuntime[];
+}
+export interface InputLimits {
+  maxFileBytes: number;
+  maxTotalBytes: number;
+  maxFiles: number;
+  maxJsonBytes: number;
+  maxJsonDepth: number;
+  maxJsonNodes: number;
+  maxGraphEdges: number;
+}
+export interface PluginProvenance {
+  id: string;
+  source: "builtin" | "auto" | "environment" | "configuration";
+  entry: string | null;
+  entryHash: string | null;
+  order: number;
+  effective?: boolean;
+  capabilities?: {
+    contractVersion: 1;
+    testedRunners: string[];
+    granularity: "file" | "package" | "crate";
+    reportFormats: (
+      | "vitest-json"
+      | "jest-json"
+      | "pytest-junit"
+      | "java-junit"
+      | "go-json"
+      | "cargo-harness"
+      | "unavailable"
+    )[];
+    unknownResult: "incomplete";
+  };
+  inputs: {
+    path: string;
+    hash: string;
+  }[];
+  dependencyCoverage: "static" | "unknown";
+  unknownDependencies: string[];
+}
+export interface JavaRuntime {
+  runner: "maven" | "gradle";
+  runnerPath: string;
+  source: "runner-version" | "runner-settings";
+  javaVersion: string | null;
+  javaHome: string | null;
+  vendor: string | null;
+  fileEncoding: string | null;
+  nativeEncoding: string | null;
+  role?: "launcher" | "daemon" | "test";
+  project?: string;
 }
 
 /** Required fields derived from the protocol-2 conditional in the JSON schema. */

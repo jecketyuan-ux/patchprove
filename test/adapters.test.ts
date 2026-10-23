@@ -3,7 +3,7 @@ import { mkdtempSync, rmSync, writeFileSync } from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { adapterInputHash, loadAdapterEvidence, verifyCosignBundle } from "../src/adapters.js";
+import { adapterInputHash, exportTurboEvidence, loadAdapterEvidence, verifyCosignBundle } from "../src/adapters.js";
 import * as exec from "../src/exec.js";
 
 const dirs: string[] = [];
@@ -16,6 +16,22 @@ function fixture(adapter: "nx" | "turbo" | "testmon", data: unknown, extra: obje
 afterEach(() => { for (const dir of dirs.splice(0)) rmSync(dir, { recursive: true, force: true }); vi.restoreAllMocks(); });
 
 describe("optional ecosystem evidence", () => {
+  it("rejects an untested native producer version without guessing compatibility", () => {
+    expect(() => exportTurboEvidence({ plan: { version: "1", turboVersion: "2.6.0", tasks: [] }, snapshotHash })).toThrow(/2.5.0/);
+  });
+  it.each([
+    { status: "unknown-new-upstream-state", exitCode: 0 },
+    { status: "success", exitCode: 0, collectedTests: "0" },
+    { status: "success", exitCode: 0, collectedTests: -1 },
+    { status: "success", exitCode: 0, durationMs: "1" },
+    { status: "success", exitCode: 0, cache: { status: "UNKNOWN" } },
+  ])("rejects malformed task fields atomically: %j", (outcome) => {
+    const f = fixture("nx", { tasks: [{ id: "good", task: "test", status: "success", exitCode: 0 }, { id: "bad", task: "test", ...outcome }] });
+    const result = loadAdapterEvidence(f.inputs, { cwd: f.cwd, snapshotHash });
+    expect(result.records).toEqual([]);
+    expect(result.tasks).toEqual([]);
+    expect(result.diagnostics[0]).toMatchObject({ code: "adapter-invalid", severity: "error" });
+  });
   it("keeps Nx plans, executions, cache hits, failures, and skips distinct", () => {
     const data = { tasks: Object.fromEntries(["plan", "run", "cache", "fail", "skip"].map((id) => [id, { target: { project: "api", target: "test" }, scope: ["api"] }])), taskResults: { run: { status: "success", exitCode: 0 }, cache: { status: "local-cache" }, fail: { status: "failed", exitCode: 1 }, skip: { status: "skipped" } } };
     const f = fixture("nx", data); const result = loadAdapterEvidence(f.inputs, { cwd: f.cwd, snapshotHash });

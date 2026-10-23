@@ -1,0 +1,80 @@
+{
+  "candidate": "21a1d15c653f7076f3bc912a080a47304ef74c6b",
+  "runId": 39904290204,
+  "statusAtCapture": "in_progress",
+  "knownFailure": "Read-only evidence refused artifact JSON above 200000 structural tokens; do not merge this run",
+  "jobs": [
+    {
+      "id": 120252560331,
+      "name": "Go thin launcher",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120252560566,
+      "name": "Real runtime fixtures / macos-latest",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120252560578,
+      "name": "Resource budgets and pinned upstream contracts",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120252560608,
+      "name": "Read-only PR evidence",
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    {
+      "id": 120252560620,
+      "name": "Real runtime fixtures / ubuntu-latest",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120252560671,
+      "name": "macos-latest / Node 24",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120252560676,
+      "name": "Real runtime fixtures / windows-latest",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 120252560733,
+      "name": "ubuntu-latest / Node 22",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120252560734,
+      "name": "ubuntu-latest / Node 24",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120252560736,
+      "name": "macos-latest / Node 22",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    {
+      "id": 120252560786,
+      "name": "windows-latest / Node 22",
+      "status": "in_progress",
+      "conclusion": null
+    },
+    {
+      "id": 120252561245,
+      "name": "windows-latest / Node 24",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  ]
+}

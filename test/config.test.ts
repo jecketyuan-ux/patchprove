@@ -11,6 +11,26 @@ import {
 } from "../src/config.js";
 
 describe("parseConfigText", () => {
+  it("retains an explicit repository identity through resolved configuration", () => {
+    const parsed = parseConfigText("repositoryId: '  example.org/team/project  '\n", "cfg");
+    expect(parsed.repositoryId).toBe("example.org/team/project");
+    expect(mergeConfig({ ...parsed, sourcePath: "/tmp/.patchprove.yml" }, {}).repositoryId).toBe("example.org/team/project");
+    expect(parseConfigObject({}, "cfg").repositoryId).toBeUndefined();
+  });
+
+  it.each([null, 42, "", "   ", "line\nbreak", "x".repeat(257), "界".repeat(86)])("rejects an invalid explicit repository identity %j", (repositoryId) => {
+    expect(() => parseConfigObject({ repositoryId }, "cfg")).toThrow(/repositoryId/);
+  });
+
+  it.each([
+    { path: "../escape", gates: { tests: "required" } },
+    { path: "api", gates: { tests: "not-applicable" } },
+    { path: "api", gates: { tests: { mode: "optional", expiresAt: "2026-02-30" } } },
+    { path: "api", gates: { tests: { mode: "optional", expiresAt: "2026-10-23T12:00:00" } } },
+    { path: "api", gates: { test: "required" } },
+  ])("rejects an ambiguous or invalid project policy %j", (policy) => {
+    expect(() => parseConfigObject({ projects: [policy] }, "cfg")).toThrow(/projects/);
+  });
   it("rejects unknown keys in strict mode and diagnoses them in compatibility mode", () => {
     expect(() => parseConfigText("gates: { test: false }", "cfg")).toThrow(/unknown key "test"/);
     const diagnostics: import("../src/types.js").Diagnostic[] = [];

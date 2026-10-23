@@ -1,0 +1,250 @@
+{
+  "capturedAt": "2026-10-23T05:12:36.439658+00:00",
+  "uniqueAdvisories": 10,
+  "beforeAffectedPackages": 7,
+  "currentFullAudit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "currentProductionAudit": {
+    "info": 0,
+    "low": 0,
+    "moderate": 0,
+    "high": 0,
+    "critical": 0,
+    "total": 0
+  },
+  "advisories": [
+    {
+      "url": "https://github.com/advisories/GHSA-82fw-gwwq-j7x9",
+      "title": "Vitest: Path Traversal / Arbitrary File Read via @vitest/mocker Redirect Mock",
+      "severity": "moderate",
+      "affectedPackages": [
+        "@vitest/mocker",
+        "vitest"
+      ],
+      "versions": [
+        {
+          "package": "@vitest/mocker",
+          "before": "3.2.7",
+          "after": "4.1.12",
+          "removed": false
+        },
+        {
+          "package": "vitest",
+          "before": "3.2.7",
+          "after": "4.1.12",
+          "removed": false
+        }
+      ],
+      "disposition": "fixed-version-or-removed",
+      "owner": "patchprove maintainers",
+      "remainingException": false,
+      "validation": "Node 22/24 regression, real runner/reporter contracts and complete/production npm audit",
+      "scope": "Development/CI toolchain; not shipped as runtime dependencies. This is not a reason to dismiss maintainer risk.",
+      "reachability": "Affected Vitest mocking/server paths are part of the development toolchain; unauthenticated endpoint exposure is configuration dependent. No exploit or public server exposure was demonstrated. Vitest/mocker upgraded."
+    },
+    {
+      "url": "https://github.com/advisories/GHSA-qxg6-89mg-rqv8",
+      "title": "Vitest: Code injection via unauthenticated manual mock registration",
+      "severity": "moderate",
+      "affectedPackages": [
+        "@vitest/mocker"
+      ],
+      "versions": [
+        {
+          "package": "@vitest/mocker",
+          "before": "3.2.7",
+          "after": "4.1.12",
+          "removed": false
+        }
+      ],
+      "disposition": "fixed-version-or-removed",
+      "owner": "patchprove maintainers",
+      "remainingException": false,
+      "validation": "Node 22/24 regression, real runner/reporter contracts and complete/production npm audit",
+      "scope": "Development/CI toolchain; not shipped as runtime dependencies. This is not a reason to dismiss maintainer risk.",
+      "reachability": "Affected Vitest mocking/server paths are part of the development toolchain; unauthenticated endpoint exposure is configuration dependent. No exploit or public server exposure was demonstrated. Vitest/mocker upgraded."
+    },
+    {
+      "url": "https://github.com/advisories/GHSA-68fv-2mgg-jv7q",
+      "title": "source-map-js allows event-loop denial of service through indexed source-map section offsets",
+      "severity": "high",
+      "affectedPackages": [
+        "source-map-js"
+      ],
+      "versions": [
+        {
+          "package": "source-map-js",
+          "before": "1.2.1",
+          "after": "1.2.2",
+          "removed": false
+        }
+      ],
+      "disposition": "fixed-version-or-removed",
+      "owner": "patchprove maintainers",
+      "remainingException": false,
+      "validation": "Node 22/24 regression, real runner/reporter contracts and complete/production npm audit",
+      "scope": "Development/CI toolchain; not shipped as runtime dependencies. This is not a reason to dismiss maintainer risk.",
+      "reachability": "Source-map/transpilation is used by tests. Malicious indexed maps can affect event-loop availability; fixed source-map-js selected."
+    },
+    {
+      "url": "https://github.com/advisories/GHSA-5gmw-xhrv-c9v3",
+      "title": "Tinypool: Prototype Pollution gadget in worker options leads to Remote Code Execution",
+      "severity": "critical",
+      "affectedPackages": [
+        "tinypool"
+      ],
+      "versions": [
+        {
+          "package": "tinypool",
+          "before": "1.1.1",
+          "after": null,
+          "removed": true
+        }
+      ],
+      "disposition": "fixed-version-or-removed",
+      "owner": "patchprove maintainers",
+      "remainingException": false,
+      "validation": "Node 22/24 regression, real runner/reporter contracts and complete/production npm audit",
+      "scope": "Development/CI toolchain; not shipped as runtime dependencies. This is not a reason to dismiss maintainer risk.",
+      "reachability": "Vitest worker path is used. Exploitation also requires prototype-pollution prerequisites; no exploit was constructed. Old worker dependency removed by Vitest migration."
+    },
+    {
+      "url": "https://github.com/advisories/GHSA-85c8-ppgw-ccpr",
+      "title": "Tinypool: Prototype Pollution Gadget to RCE in run() options",
+      "severity": "critical",
+      "affectedPackages": [
+        "tinypool"
+      ],
+      "versions": [
+        {
+          "package": "tinypool",
+          "before": "1.1.1",
+          "after": null,
+          "removed": true
+        }
+      ],
+      "disposition": "fixed-version-or-removed",
+      "owner": "patchprove maintainers",
+      "remainingException": false,
+      "validation": "Node 22/24 regression, real runner/reporter contracts and complete/production npm audit",
+      "scope": "Development/CI toolchain; not shipped as runtime dependencies. This is not a reason to dismiss maintainer risk.",
+      "reachability": "Vitest worker path is used. Exploitation also requires prototype-pollution prerequisites; no exploit was constructed. Old worker dependency removed by Vitest migration."
+    },
+    {
+      "url": "https://github.com/advisories/GHSA-698v-4r3x-3vcv",
+      "title": "launch-editor: escapeCmdArgs() omits % escaping on Windows",
+      "severity": "moderate",
+      "affectedPackages": [
+        "vite"
+      ],
+      "versions": [
+        {
+          "package": "vite",
+          "before": "7.3.6",
+          "after": "8.3.5",
+          "removed": false
+        }
+      ],
+      "disposition": "fixed-version-or-removed",
+      "owner": "patchprove maintainers",
+      "remainingException": false,
+      "validation": "Node 22/24 regression, real runner/reporter contracts and complete/production npm audit",
+      "scope": "Development/CI toolchain; not shipped as runtime dependencies. This is not a reason to dismiss maintainer risk.",
+      "reachability": "Requires corresponding editor endpoint/launcher/editor behavior. CI uses vitest run, without a deliberately exposed editor service. Developer watch/server configurations remain relevant; Vite upgraded."
+    },
+    {
+      "url": "https://github.com/advisories/GHSA-r825-w8mm-5pxw",
+      "title": "launch-editor: Editor CLI flag misinterpretation causing arbitrary command execution for some editors",
+      "severity": "moderate",
+      "affectedPackages": [
+        "vite"
+      ],
+      "versions": [
+        {
+          "package": "vite",
+          "before": "7.3.6",
+          "after": "8.3.5",
+          "removed": false
+        }
+      ],
+      "disposition": "fixed-version-or-removed",
+      "owner": "patchprove maintainers",
+      "remainingException": false,
+      "validation": "Node 22/24 regression, real runner/reporter contracts and complete/production npm audit",
+      "scope": "Development/CI toolchain; not shipped as runtime dependencies. This is not a reason to dismiss maintainer risk.",
+      "reachability": "Requires corresponding editor endpoint/launcher/editor behavior. CI uses vitest run, without a deliberately exposed editor service. Developer watch/server configurations remain relevant; Vite upgraded."
+    },
+    {
+      "url": "https://github.com/advisories/GHSA-587h-7wmj-h5pm",
+      "title": "launch-editor: `fs.existsSync()` existence check can be bypassed on Windows",
+      "severity": "high",
+      "affectedPackages": [
+        "vite"
+      ],
+      "versions": [
+        {
+          "package": "vite",
+          "before": "7.3.6",
+          "after": "8.3.5",
+          "removed": false
+        }
+      ],
+      "disposition": "fixed-version-or-removed",
+      "owner": "patchprove maintainers",
+      "remainingException": false,
+      "validation": "Node 22/24 regression, real runner/reporter contracts and complete/production npm audit",
+      "scope": "Development/CI toolchain; not shipped as runtime dependencies. This is not a reason to dismiss maintainer risk.",
+      "reachability": "Requires corresponding editor endpoint/launcher/editor behavior. CI uses vitest run, without a deliberately exposed editor service. Developer watch/server configurations remain relevant; Vite upgraded."
+    },
+    {
+      "url": "https://github.com/advisories/GHSA-9jrq-w75r-8gcw",
+      "title": "Vite: Cross origin script execution through Vite custom middleware",
+      "severity": "low",
+      "affectedPackages": [
+        "vite"
+      ],
+      "versions": [
+        {
+          "package": "vite",
+          "before": "7.3.6",
+          "after": "8.3.5",
+          "removed": false
+        }
+      ],
+      "disposition": "fixed-version-or-removed",
+      "owner": "patchprove maintainers",
+      "remainingException": false,
+      "validation": "Node 22/24 regression, real runner/reporter contracts and complete/production npm audit",
+      "scope": "Development/CI toolchain; not shipped as runtime dependencies. This is not a reason to dismiss maintainer risk.",
+      "reachability": "Corresponding Vite server/middleware/path configuration is a prerequisite. No production listener is supplied by patchprove. Vite upgraded rather than assuming all local paths unreachable."
+    },
+    {
+      "url": "https://github.com/advisories/GHSA-rq7h-c2jc-7f22",
+      "title": "Vite: Files outside `server.fs.allow` could be served when project paths match system paths on non-Windows machine",
+      "severity": "moderate",
+      "affectedPackages": [
+        "vite"
+      ],
+      "versions": [
+        {
+          "package": "vite",
+          "before": "7.3.6",
+          "after": "8.3.5",
+          "removed": false
+        }
+      ],
+      "disposition": "fixed-version-or-removed",
+      "owner": "patchprove maintainers",
+      "remainingException": false,
+      "validation": "Node 22/24 regression, real runner/reporter contracts and complete/production npm audit",
+      "scope": "Development/CI toolchain; not shipped as runtime dependencies. This is not a reason to dismiss maintainer risk.",
+      "reachability": "Corresponding Vite server/middleware/path configuration is a prerequisite. No production listener is supplied by patchprove. Vite upgraded rather than assuming all local paths unreachable."
+    }
+  ]
+}

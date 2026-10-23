@@ -1,0 +1,148 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-10-23T06:18:04.245762+00:00",
+  "candidateCodeCommit": "fbaa4cbe8bd436dc67026d6cbdf5f3d8d5bb4740",
+  "candidateCodeTree": "3f3939c0a7c77b06828874b6466d01ddf6bfcddf",
+  "localCodeCommit": "6df6a2f8a547cb3010f9d08f3e739b3e2e75155b",
+  "runtimeDigest": "22b315219c13ae0c25810318f12dd78a9158974c2f2ec3f7ec5957221f1f008e",
+  "pullRequest": "https://github.com/jecketyuan-ux/patchprove/pull/18",
+  "branch": "codex/patchprove-v2-hardening",
+  "identityRule": "Local committed code tree was verified byte-equal to the remote code commit. Every bound harness records that actual tree and runtime digest. This ledger and the CI self-review archive exclusion are committed afterward; the exact final PR head must independently pass all remote CI jobs.",
+  "checks": {
+    "runtimes": {
+      "status": "passed",
+      "report": "runtimes.json",
+      "sha256": "e654c692ef7d967a7d047e1a0c956525d0db6a8a15832a0f23ce1484d68d93aa"
+    },
+    "production": {
+      "status": "passed",
+      "report": "production.json",
+      "sha256": "0b699c7b02375b2b6a921e04ab37e7c92dd46660a2e6be631a6ce384399898bd"
+    },
+    "package": {
+      "status": "passed",
+      "report": "package.json",
+      "sha256": "ba53dfd251f19fa059c5f9c80790a01cc861f9f02432053f8be6624732b41585"
+    },
+    "gitleaks": {
+      "status": "passed",
+      "report": "gitleaks.json",
+      "sha256": "9b21240582e183d16cd89c14f145016cc06db2bbe9a82e307f890ddee80716b4"
+    },
+    "upstream": {
+      "status": "passed",
+      "report": "upstream.json",
+      "sha256": "a13dc1c3821bc70c0714e84167e5890d724b744d50f3163577f27cc850c68e76"
+    },
+    "resources": {
+      "status": "passed",
+      "report": "resources.json",
+      "sha256": "0acbeeeabdc6d1c6df499d65c13439a3dd2b25fac2be6c6165c191a4efb2d031"
+    },
+    "projects": {
+      "status": "passed",
+      "report": "projects.json",
+      "sha256": "38c7cd2da8e5661340dacf60f86a18fac6a183659e25be2cd514ae98b832dd6b",
+      "denominators": {
+        "projects": 5,
+        "baselineUnknown": 0,
+        "patches": 10,
+        "unknownPatches": 0,
+        "patchesWithAttributedFailures": 5,
+        "observedFailingUnits": 8,
+        "missedFailingUnits": 0,
+        "neutralBlockedDespiteNativeSuccess": 3,
+        "unverifiedFailingUnits": 0,
+        "requestedUnits": 90,
+        "unknownRequestedUnits": 8
+      },
+      "interpretation": "No population recall/speedup claim. Unknown full-suite truth is distinct from eight unknown requested scope instances and three strict policy blocks despite native success."
+    },
+    "cosign": {
+      "status": "passed",
+      "report": "cosign.json",
+      "sha256": "cf86a46f89cac86575450971a7bb548749b6fafc9d934368219dd827d2c46cd8"
+    },
+    "reviewdog": {
+      "status": "passed",
+      "report": "reviewdog.json",
+      "sha256": "26168e4f81eaf3123b4d28d6fa3688252696d7530a1f5cf4448e160da7ec3317"
+    },
+    "unit": {
+      "status": "passed",
+      "report": "unit.json",
+      "sha256": "9f0d597af2a918e7965f39749cce28acbe4820980e101444e2622261aa2da689",
+      "results": [
+        {
+          "node": "v24.19.0",
+          "files": 54,
+          "total": 491,
+          "passed": 488,
+          "failed": 0,
+          "skipped": 3
+        },
+        {
+          "node": "v22.23.4",
+          "files": 54,
+          "total": 491,
+          "passed": 488,
+          "failed": 0,
+          "skipped": 3
+        }
+      ]
+    },
+    "build": {
+      "status": "passed",
+      "command": "npm run build"
+    },
+    "typecheck": {
+      "status": "passed",
+      "command": "npm run typecheck:test"
+    },
+    "schema-drift": {
+      "status": "passed",
+      "command": "npm run check:protocol"
+    }
+  },
+  "remoteCI": {
+    "statusAtCapture": "pending-for-final-head",
+    "lookup": "https://github.com/jecketyuan-ux/patchprove/pull/18/checks",
+    "mergeRule": "Fetch the current head and every completed-success job/check immediately before merge; prior failed runs and cancelled/skipped jobs are not approval."
+  },
+  "notRun": [
+    {
+      "id": "claude-live",
+      "status": "not-run",
+      "reason": "No installed interactive Claude Code host; protocol transport tests are separate"
+    },
+    {
+      "id": "cursor-live",
+      "status": "not-run",
+      "reason": "No installed Cursor host; advisory behavior is not enforcement"
+    },
+    {
+      "id": "github-publisher-full-matrix",
+      "status": "not-run",
+      "reason": "Live same-repository/fork/rerun/cancellation/permission matrix remains experimental; local head/run/attempt and trusted-rendering checks passed"
+    }
+  ],
+  "deferred": [
+    {
+      "id": "ten-projects-fifty-historical-patches",
+      "reason": "Roadmap extension beyond initial five-language corpus; current ten cases are explicitly controlled mutations and neutral controls"
+    },
+    {
+      "id": "native-nx-testmon-arbitrary-versions",
+      "reason": "Normalized caller contracts remain experimental; first tested native producer is Turbo 2.5.0"
+    }
+  ],
+  "publication": {
+    "npm": false,
+    "tag": false,
+    "release": false
+  },
+  "supportConditions": {
+    "windowsGradle": "Gradle 8.12.1/JDK17 non-ASCII paths require explicitly configured UTF-8 JVM file encoding. Default ANSI worker failures are retained as failed infrastructure, not passing negative tests. Final Windows CI revalidates this declared condition.",
+    "selfReview": "Archived validation data is excluded only from self-review impact selection through an explicit CI ignore argument. Complete Git snapshot identities still include archive bytes; source/tests and ordinary verification gates remain enabled."
+  }
+}

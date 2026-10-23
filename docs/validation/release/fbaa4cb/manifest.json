@@ -1,0 +1,777 @@
+{
+  "schemaVersion": 1,
+  "capturedAt": "2026-10-23T06:22:22.971219+00:00",
+  "algorithm": "sha256",
+  "files": [
+    {
+      "path": "README.md",
+      "bytes": 1327,
+      "sha256": "60360f50a31315f9dc7bfc744d591a29e30ef059306933b4fdfc1455b597277c"
+    },
+    {
+      "path": "audit-all.json",
+      "bytes": 505,
+      "sha256": "1380d15eeffbaadd05312de27bf8ba41f2d5d8048adda5a3820b54a5278174f1"
+    },
+    {
+      "path": "audit-production.json",
+      "bytes": 516,
+      "sha256": "42ce8f9de8aee9754313c9da74a1543fd30a0a149397c82816813cd09fb93a12"
+    },
+    {
+      "path": "candidate.json",
+      "bytes": 5648,
+      "sha256": "05705bcc08dee0b9dc9c7b76811720203d98eff8be6859ce1607b4e04dd40d04"
+    },
+    {
+      "path": "ci-history.json",
+      "bytes": 7178,
+      "sha256": "b81b42d44dda3b345c33e8245b50ba926ffb224acd25cd19c9cabac5855dd97b"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.CSVDuplicateHeaderTest.xml",
+      "bytes": 66191,
+      "sha256": "3335a1e9c0bf1486d3ea9d379ef0c07bfb3805aa6e442fced594f3dfb4099edb"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.CSVFileParserTest.xml",
+      "bytes": 9514,
+      "sha256": "0a91c221d4fe5e196cc78f48919445b225d787577b7847bfe0668de99675da9f"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.CSVFormatPredefinedTest.xml",
+      "bytes": 9073,
+      "sha256": "722141ac23e89afe815f14092b0591e76c0ceeb0e6dac5ef45e5f757133e4252"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.CSVFormatTest.xml",
+      "bytes": 19793,
+      "sha256": "e5950c239a2fa5d3bee5f60dd5c0e5511ebe497c592914a78833b628e312c61b"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.CSVParserTest.xml",
+      "bytes": 22682,
+      "sha256": "ef5e02916d8b9b3297d4edcaad539afc6cc3f3c3d4865f67e6e5993cfb7cd274"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.CSVPrinterTest.xml",
+      "bytes": 22054,
+      "sha256": "93c24926ba803b52adf9b5400e05d6d2543eafaee7d53ea89e6b0f089fdb6c30"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.CSVRecordTest.xml",
+      "bytes": 11089,
+      "sha256": "94bdc87f84507661f37d6b5b98f2486242db9eb398f5030d0eff30fc54826611"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.ExtendedBufferedReaderTest.xml",
+      "bytes": 8654,
+      "sha256": "da758615e9c50cdec883638031e5980c2d39554d97254596df321bba1542bc8f"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.LexerTest.xml",
+      "bytes": 11216,
+      "sha256": "3cbe8d1f689f044392962b0ff42926a6df6d11bc62639cf1b4a56a13bb5b4862"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.TokenMatchersTest.xml",
+      "bytes": 8468,
+      "sha256": "520ec5de9551215b1aa8d58671423d0bcd646b649c29c0b45dcbc33c21570c13"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv148Test.xml",
+      "bytes": 8261,
+      "sha256": "47af7004dc5fd6dcee2f3f6106b234103b198c019dfbebfde1896e0a18c5d29b"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv149Test.xml",
+      "bytes": 8257,
+      "sha256": "a206efb48edb9bd16c6d44183f53a83dd96f34f808555367743ff2efcd6596e7"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv150Test.xml",
+      "bytes": 8357,
+      "sha256": "b037c332ce59333d1e8b12e47b76215c1c84f3c481f9869cbaf241e367a0eb9a"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv154Test.xml",
+      "bytes": 8273,
+      "sha256": "8dbdcc8b5a26fc7384d9bcb8e5981b23d71d4eba48f90ce50ce476c35b12c177"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv167Test.xml",
+      "bytes": 8127,
+      "sha256": "03edfc0da6b70a47efe09c6dbeeb646b39d8d803de24f0b9bc76b1e84ee60f13"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv198Test.xml",
+      "bytes": 8122,
+      "sha256": "f5ec472d8d268f186d87e92374562e8ab5f4a7244a50b0d9b2727fc9e3211f63"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv203Test.xml",
+      "bytes": 8798,
+      "sha256": "c7a7d5ae3331ce89dcaacf4214b8641b508231304dbda870c571bbc2fe594dc8"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv206Test.xml",
+      "bytes": 8154,
+      "sha256": "9753e2db58a32cf74d3507c89901e2bafea487b8d77dfb6f5c607fa4fba8eb2f"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv211Test.xml",
+      "bytes": 8134,
+      "sha256": "fb0c1f4424e7d2c5e0dee8c8fa420d04f063608c27d5309fe5c3af0e07d59c56"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv213Test.xml",
+      "bytes": 8120,
+      "sha256": "7bd69613755a412d62654023d937a342d99ac75d37b19e33e93a79f2d1444b7e"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv247Test.xml",
+      "bytes": 8318,
+      "sha256": "d86bb7de77648ab531142f58117408a34d98561156468b92d11d2756e2d7eff9"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv248Test.xml",
+      "bytes": 8131,
+      "sha256": "77a1d968f18e0b79e0ad9d901c9f2b153bb3e51d7075db5da7893dbbf0ad39fa"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv249Test.xml",
+      "bytes": 8128,
+      "sha256": "fe412b5b96fbf08effff77bdf895b1c97351e8afc19b07bdc0f29b78cf71c1b4"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv253Test.xml",
+      "bytes": 8136,
+      "sha256": "7fb553b65c0f6ab2d0b52eab2d06f275ca3571d8211986851bb1ac10048b2ad9"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv263Test.xml",
+      "bytes": 8145,
+      "sha256": "55b5da00492caefde1a838ad16d37f992d0bc5fe728b50afc6e505c87dbedcef"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv264Test.xml",
+      "bytes": 8374,
+      "sha256": "461f1d1b9dc2ad059ac44f5828bbb0f537c74a7677e5f57619b877b733b63724"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv265Test.xml",
+      "bytes": 8291,
+      "sha256": "f72c0485a8dc0d0caebe40ceea4c6fa860f367febb87ed9affb50675bea7beb2"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv271Test.xml",
+      "bytes": 8251,
+      "sha256": "bf81d04d5a3ef53c7ab40d21780368aa1e775fc5465f8c5da038cc5c2649ff6e"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv288Test.xml",
+      "bytes": 9547,
+      "sha256": "4a0fd91b62a98b038f975bc9d061c908eebf21aac7f9a798687a1d96caf32832"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv290Test.xml",
+      "bytes": 8349,
+      "sha256": "e3049ae6b5c50afa2aeb802c8bd5314c64becb83626407ef9f84695c2eb4334f"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv294Test.xml",
+      "bytes": 8536,
+      "sha256": "eb9927be428fb804471f1a3490ddf38162c5531c96e1bee976a87b5badc7f552"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline-junit/TEST-org.apache.commons.csv.issues.JiraCsv93Test.xml",
+      "bytes": 8376,
+      "sha256": "37200528a155550e50ee86b9664d1e02a2c54c2f1a769f9f92d3b3414d26abb7"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-baseline.log",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.CSVDuplicateHeaderTest.xml",
+      "bytes": 66117,
+      "sha256": "5db9b44b08d6cd6ce8068a0b9b858ad3e78e566311c424158ac6b9265a42d0ec"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.CSVFileParserTest.xml",
+      "bytes": 9512,
+      "sha256": "86134741286aab5c4e0ed98f20515fc51ae12d9b0bc51215b00007fd3b86eb84"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.CSVFormatPredefinedTest.xml",
+      "bytes": 9071,
+      "sha256": "ff667727ac4d12bfdb68f4bf5988ac4343675966d8d37f579744daf6620ce5cb"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.CSVFormatTest.xml",
+      "bytes": 26960,
+      "sha256": "dd7f135c6262d6f4e2114332657422349114d2751c6ddfb95cb0d8a57fc6ffe5"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.CSVParserTest.xml",
+      "bytes": 22663,
+      "sha256": "21e5f14a0bfa04b20db65a93d935656572aad686054b36fb4d37cb3ab29cc4fd"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.CSVPrinterTest.xml",
+      "bytes": 22016,
+      "sha256": "b2df6c3b16483541475c4a865c88b65519b8988f6e4b11e9a4ef51465331e94b"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.CSVRecordTest.xml",
+      "bytes": 11078,
+      "sha256": "15fac697cec120093d796060cba6e91b938ed97c8a20dc211968195f6ecf37e7"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.ExtendedBufferedReaderTest.xml",
+      "bytes": 8658,
+      "sha256": "8cff18c23df87f413c5b4746555b47c44f6d139e3d21cc067a77c3ed91749350"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.LexerTest.xml",
+      "bytes": 11213,
+      "sha256": "384839cdd0e384b15d0347daa1308441b5dd1382f920dd1625a8c4c8c2681069"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.TokenMatchersTest.xml",
+      "bytes": 8466,
+      "sha256": "c3c6bad74022573555bb86d2cfca015527f68f4140efe0bfcd82453d505ba734"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv148Test.xml",
+      "bytes": 8257,
+      "sha256": "38518667e29a822df1f39299cdcd6f9b6b30cbd6507df84cbf275101768d5217"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv149Test.xml",
+      "bytes": 8255,
+      "sha256": "6333019887c845d43cafca3a7d5b218955e1e4b20221f4b682b87165be8f1da1"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv150Test.xml",
+      "bytes": 8357,
+      "sha256": "37e4899e3a26aa9eb927dbd160853678ca80f7a8cb0a80db4e1956667525822b"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv154Test.xml",
+      "bytes": 8273,
+      "sha256": "9e5d8aa9316af1edb8cdbbc528e79c42c29b4d97d62ec82a92e52eeb97448ae8"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv167Test.xml",
+      "bytes": 8125,
+      "sha256": "9087906a7dcf43cc0b3ba0e2803ba84c524c80dcf9a3166b236754e2ce48e49a"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv198Test.xml",
+      "bytes": 8122,
+      "sha256": "74c04488c4cc1182f09b1a8151323bd7d7f5359c00c4b1cdc047cdb2231fa7cb"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv203Test.xml",
+      "bytes": 8800,
+      "sha256": "2dd7496f770dbeec9e2f6053fa332ff8b7f7812e1c839c409c27b181493158fd"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv206Test.xml",
+      "bytes": 8154,
+      "sha256": "8faf25299bda3839b1fec916c6561b3c47602e9e47864cff45628be165a308e0"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv211Test.xml",
+      "bytes": 8138,
+      "sha256": "61fda07690ead7c9d9a29f56781b9191295d49e24da13b03b947b5f42565ec53"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv213Test.xml",
+      "bytes": 8122,
+      "sha256": "2378d59e8409960405f2f7409f7d5695dc8c993ba9e61f283ed0c24b4cbe8f8a"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv247Test.xml",
+      "bytes": 8322,
+      "sha256": "76e20972dccd6cd9095bb792cbbaa19c29f4c6d263c0779bf0c426a822921877"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv248Test.xml",
+      "bytes": 8132,
+      "sha256": "d8bac25aee427d6cf30e96345510f1873aaac7ae01b0163c668fd7481efe85b7"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv249Test.xml",
+      "bytes": 8132,
+      "sha256": "694d7fd98ac624277ef6471716ca2cdcdfad268d524df0fa2d2e6f6dc93bbf93"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv253Test.xml",
+      "bytes": 8140,
+      "sha256": "1ea14fb3b0cbc7f9ec3f27e6214716b5a84f0cbaa5fc064008d97750a80c341a"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv263Test.xml",
+      "bytes": 8147,
+      "sha256": "522bc250daacc0c2971daaae4034de940be306bdc76b02f586676e91c6573dc5"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv264Test.xml",
+      "bytes": 8374,
+      "sha256": "7e08e39a0667d19f318dca417a1345ecf7714e287326b88950a8f003d58fea8b"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv265Test.xml",
+      "bytes": 8293,
+      "sha256": "f165e3b3e592e5c40aced190df489e2fce4ec9232caf75934be2cb6d108a0308"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv271Test.xml",
+      "bytes": 8255,
+      "sha256": "4d4d8850eebb7605e217ac6135c7fd9576d277d3bfad4c8765b087935c84ce92"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv288Test.xml",
+      "bytes": 9547,
+      "sha256": "5d3900008d60f59fd0539986c30e8f2a8e1cf30d315f0f566c333893f44bcd0b"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv290Test.xml",
+      "bytes": 8352,
+      "sha256": "60cfff83e670afe029a0e381243b0fd5ced76e36e2fd4eab01f2167b17515a70"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv294Test.xml",
+      "bytes": 8538,
+      "sha256": "0bf8885702de44b44c71e1eb9bade3650189185438031dff3f83dc28aa3e680d"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault-junit/TEST-org.apache.commons.csv.issues.JiraCsv93Test.xml",
+      "bytes": 8377,
+      "sha256": "1d0d12f0635bd89f0fd1da223012a1b6e7b943a9c4637d5bd2a7248d0d9d413e"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault.log",
+      "bytes": 8365,
+      "sha256": "431d755401eb8b2b554254207b9fbc5f13cf787591674258fdb66d2d5a1565c1"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-controlled-fault.patch",
+      "bytes": 478,
+      "sha256": "2e3b5a46becefd62b133340f71db59ab4471636f38682fe82f21d808cb2c591e"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.CSVDuplicateHeaderTest.xml",
+      "bytes": 66137,
+      "sha256": "eef28246f80fd332040b5a1226e0688a4509d9f375736bb847290095dc4d7152"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.CSVFileParserTest.xml",
+      "bytes": 9524,
+      "sha256": "f0352f5b9b516ec4a9c77cb567799a44b765423eff52a7f612deac8f8afcbc8c"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.CSVFormatPredefinedTest.xml",
+      "bytes": 9073,
+      "sha256": "53d07209e16a8685c5f9e617e08b186a9f8a58dff838c58817ae2f268b5b1b5c"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.CSVFormatTest.xml",
+      "bytes": 19805,
+      "sha256": "9759f0f9779744f9de59dc8d55543d4976e16246ca5642c51e0e2f0fed9e2304"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.CSVParserTest.xml",
+      "bytes": 22649,
+      "sha256": "a02aa82f12cf514efaafd57d988c39a2afbb17f452fcd2aae00956bf55b7560d"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.CSVPrinterTest.xml",
+      "bytes": 22014,
+      "sha256": "9a9ac9ee385e53ecf3feb9ce7ba379221a8287bcc47e0b72d248faa2b0a78d6d"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.CSVRecordTest.xml",
+      "bytes": 11085,
+      "sha256": "ceb1e196c89ab5f69f92fea8c56ae6020a38f0cf86468ad62f5458854c3097a3"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.ExtendedBufferedReaderTest.xml",
+      "bytes": 8658,
+      "sha256": "4f597032ee3814058458600ce8138f2122a772e0c410b25f85ecfb561101ec49"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.LexerTest.xml",
+      "bytes": 11223,
+      "sha256": "fed255e3e435e91639c5a83d2f129ec67f13c8aa1d0ca9d81203c68fefbb1a10"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.TokenMatchersTest.xml",
+      "bytes": 8468,
+      "sha256": "25487b1d54b8833ce496b3baf6379ec5b496bd7ec0592e6ee684149d889b43c5"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv148Test.xml",
+      "bytes": 8259,
+      "sha256": "0eee8d803a540df1aa8bd55fee63af55e81c73a9dd2d21a3d489e9ef35579d69"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv149Test.xml",
+      "bytes": 8259,
+      "sha256": "018e14bed8be00e6f15c5c796641e61f2a7d6b29dff06f4fe874e89b454b852e"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv150Test.xml",
+      "bytes": 8359,
+      "sha256": "2a27232a9f09e4966743c824d8c50e76aab7291fa7348f15d066ac8b6935ae9f"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv154Test.xml",
+      "bytes": 8271,
+      "sha256": "8686556b1120d6f36c4baeff7d93f71e80a161d2ee478a9747bd502b7086c152"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv167Test.xml",
+      "bytes": 8125,
+      "sha256": "15a9a8103d03335bad98c7e5412d2f663a6a86c713ff77ebd90fcbc71e340e0c"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv198Test.xml",
+      "bytes": 8122,
+      "sha256": "9947ac8e97d7701cf01eb0d453b06a3c2a8d8263a9bae2442b96c061c53a1b19"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv203Test.xml",
+      "bytes": 8800,
+      "sha256": "379a1b8a080390dbe0a9f2a0b63795a17f23394ce8b29847edb407be7cd49f16"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv206Test.xml",
+      "bytes": 8154,
+      "sha256": "e57aa80c950fc92119e68ea8e87d5fd2b3c36de83f8e48b2c9b89eb74564907e"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv211Test.xml",
+      "bytes": 8138,
+      "sha256": "e8d9158a274ae5ff79705681f6db0e9da60979b5729cb926ec54b0c8bf9e341f"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv213Test.xml",
+      "bytes": 8122,
+      "sha256": "51250ffacfd9615d121524928c909a6460b742580084e2e89c68c034d6ad7613"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv247Test.xml",
+      "bytes": 8322,
+      "sha256": "1586e045851c9af3e8aa315ddc80f6b7d8cdebfad2ac73ead28d572e28b26ad4"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv248Test.xml",
+      "bytes": 8132,
+      "sha256": "3602c1cdae0839a454e00c5a3693deba76b6a92d36a7a90d48bbd830d0e91dd5"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv249Test.xml",
+      "bytes": 8132,
+      "sha256": "fe15e91527a6beb7e864e3edb093941714a9f4d853ed181d44ef91f4837b1412"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv253Test.xml",
+      "bytes": 8136,
+      "sha256": "c494a3a57649f724b61524fe0ea6f223558732ada5ddc5528591be25ffa46346"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv263Test.xml",
+      "bytes": 8143,
+      "sha256": "ae7ddf671c1d1786188292081b46c775f8092834cf4cdd0d7a8bcad3dfdd32bb"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv264Test.xml",
+      "bytes": 8372,
+      "sha256": "e0fa11bd02e16aa3ec66e3e8dfa384ee00c811617709e45df6c4f9580022b605"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv265Test.xml",
+      "bytes": 8291,
+      "sha256": "19a863701a780402de9d9b345e002071316e87facf1ecd19f205005d3e5f1d1a"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv271Test.xml",
+      "bytes": 8251,
+      "sha256": "916f52fac08c95889f9e340749db98fc3c3e307a76140ce60d84bf7913ec7bb5"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv288Test.xml",
+      "bytes": 9549,
+      "sha256": "daacef04ebbe1f2163398097b487caafc6ec392710f6ac40536e33d4fcd4010e"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv290Test.xml",
+      "bytes": 8350,
+      "sha256": "09008fd1eaece4fb8483852e65992f8c0bf8644839743cf88c9c2c4174e07264"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv294Test.xml",
+      "bytes": 8538,
+      "sha256": "1124794d50378e7d20ee8cd7ad886dddb629916d05b441a05e79bfcae1d981d0"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral-junit/TEST-org.apache.commons.csv.issues.JiraCsv93Test.xml",
+      "bytes": 8375,
+      "sha256": "a3d42fa55d0e75d6eb6907c438c0cf3b14fb342b51169615b6d279b674c21ad8"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral.log",
+      "bytes": 1,
+      "sha256": "01ba4719c80b6fe911b091a7c05124b64eeece964e09c058ef8f9805daca546b"
+    },
+    {
+      "path": "corpus-artifacts/commons-csv-neutral.patch",
+      "bytes": 436,
+      "sha256": "601dc9a39162058d14949c1e790c06ecf6b7660d4b190e3c35d1fc3f1f42aecb"
+    },
+    {
+      "path": "corpus-artifacts/glob-baseline.log",
+      "bytes": 1792,
+      "sha256": "9b67cb3c2aa53c310e0da1a810632f926fdb37f95ae2c1e4ffb870459a927967"
+    },
+    {
+      "path": "corpus-artifacts/glob-controlled-fault.log",
+      "bytes": 2642,
+      "sha256": "7a6795481afc587ae952755aaff28f4467209e5e80b8314d3682f3370d487633"
+    },
+    {
+      "path": "corpus-artifacts/glob-controlled-fault.patch",
+      "bytes": 454,
+      "sha256": "e75f19fe18b95ea6e2d541e9c77776a7744bc25baf42c6e2da44c4382de2b967"
+    },
+    {
+      "path": "corpus-artifacts/glob-neutral.log",
+      "bytes": 1730,
+      "sha256": "dadcdcc85d4fbd9471dee04a4b5bb8d916ef8c717acacda5ca6c27c143887917"
+    },
+    {
+      "path": "corpus-artifacts/glob-neutral.patch",
+      "bytes": 246,
+      "sha256": "c2e7768cf2468be2b9a0c1e72368e6e4844e75f48337a2fdc1354a7ca975ab9a"
+    },
+    {
+      "path": "corpus-artifacts/itsdangerous-baseline.log",
+      "bytes": 1175,
+      "sha256": "16836c94e1169e934d0c61dc1b0d4e4dc2ff293b6efe7070aec424fc9dbb9d22"
+    },
+    {
+      "path": "corpus-artifacts/itsdangerous-baseline.xml",
+      "bytes": 56439,
+      "sha256": "c34d8225a471e648915887b4c64ba75eca318cb81461d600c96fe5ffd0d55c64"
+    },
+    {
+      "path": "corpus-artifacts/itsdangerous-controlled-fault.log",
+      "bytes": 148433,
+      "sha256": "4281312297ce5a9ed815664b54956de722e7db91d78b94600c1e372b52b3b5a5"
+    },
+    {
+      "path": "corpus-artifacts/itsdangerous-controlled-fault.patch",
+      "bytes": 484,
+      "sha256": "4a668f11d6a6c579abf1a4c421e2b2392ea788a56085ba101678b537f4f868fb"
+    },
+    {
+      "path": "corpus-artifacts/itsdangerous-controlled-fault.xml",
+      "bytes": 227075,
+      "sha256": "199697390b6430365effe734649315b3402c3176e348cf7d6aa3f06a4503e76b"
+    },
+    {
+      "path": "corpus-artifacts/itsdangerous-neutral.log",
+      "bytes": 1174,
+      "sha256": "ed94c9684c669aa64d4074153f23928596b9d86aec2cd0150f4523ec3f1f8b60"
+    },
+    {
+      "path": "corpus-artifacts/itsdangerous-neutral.patch",
+      "bytes": 378,
+      "sha256": "d47c00a48302abee9c35350fbbb0c986038c4fafa63ea005432f738f39e4d181"
+    },
+    {
+      "path": "corpus-artifacts/itsdangerous-neutral.xml",
+      "bytes": 56439,
+      "sha256": "14aebc61e6561001aa3abcf9b17c933b1c3a04de67a961f64734abc7df692277"
+    },
+    {
+      "path": "corpus-artifacts/pathe-baseline.json",
+      "bytes": 101985,
+      "sha256": "9fdf7361391c2cccaebca9c927ac23819c5e7f76b6fd090b4dad64bc35bc0192"
+    },
+    {
+      "path": "corpus-artifacts/pathe-baseline.log",
+      "bytes": 85,
+      "sha256": "c5027d8182f80f5c8d1de31c8cdded20ba9eed2addc705949307f3c27d40291f"
+    },
+    {
+      "path": "corpus-artifacts/pathe-controlled-fault.json",
+      "bytes": 180372,
+      "sha256": "4b892d37c90fa86e984bc967b7f7241879193ecbbacde0aeee11dbf41fa45918"
+    },
+    {
+      "path": "corpus-artifacts/pathe-controlled-fault.log",
+      "bytes": 93,
+      "sha256": "44196169e8373b1dde4f170d551e514b5fc2e290eeeb8bb372ebc55248d2c9eb"
+    },
+    {
+      "path": "corpus-artifacts/pathe-controlled-fault.patch",
+      "bytes": 368,
+      "sha256": "5b2ae54284b088c9bb9b32cb544b43ffc6fc688eaafbb88616cfbe9af7d9da2d"
+    },
+    {
+      "path": "corpus-artifacts/pathe-neutral.json",
+      "bytes": 102034,
+      "sha256": "f705b20c7e54437fb9eadfce2b1d9b8e34db5ee7901c4c6fe90a6dffa9f55f34"
+    },
+    {
+      "path": "corpus-artifacts/pathe-neutral.log",
+      "bytes": 84,
+      "sha256": "273349f928cea5c7555ccf3ef46f50fe229a49287f7b104bbf40698a06b5d644"
+    },
+    {
+      "path": "corpus-artifacts/pathe-neutral.patch",
+      "bytes": 319,
+      "sha256": "8aca5c9da3c132e42557f241dd0657964937070f3a63adcda2bdb74a6db3db5c"
+    },
+    {
+      "path": "corpus-artifacts/uuid-baseline.log",
+      "bytes": 120338,
+      "sha256": "905ccde7a67adb9bd414822169f24623f6070cf1fdd67a219b94164deeae0b1c"
+    },
+    {
+      "path": "corpus-artifacts/uuid-controlled-fault.log",
+      "bytes": 218948,
+      "sha256": "0805c6e434f8fd6c85ce90bd8423625cffe782da0babd52dabc2b39a8d2baff5"
+    },
+    {
+      "path": "corpus-artifacts/uuid-controlled-fault.patch",
+      "bytes": 330,
+      "sha256": "8ab8f391fd0d618a0aa5b870514c9d0ea0a31568eee2aa5ad80746d92d7891af"
+    },
+    {
+      "path": "corpus-artifacts/uuid-neutral.log",
+      "bytes": 120360,
+      "sha256": "83dcff33967aeffe09f83d8d18f2c38690ad12fdaed582c8eb0a5d1b8a015667"
+    },
+    {
+      "path": "corpus-artifacts/uuid-neutral.patch",
+      "bytes": 209,
+      "sha256": "e7c2c35bf8577d007c93c6bf1fe4280fb0cba4f78f8c45e9a19fb427849302b5"
+    },
+    {
+      "path": "corpus-licenses/commons-csv/LICENSE.txt",
+      "bytes": 11358,
+      "sha256": "cfc7749b96f63bd31c3c42b5c471bf756814053e847c10f3eb003417bc523d30"
+    },
+    {
+      "path": "corpus-licenses/commons-csv/NOTICE.txt",
+      "bytes": 173,
+      "sha256": "c981decfd3e077985edc1e4b2f71c3529604098c9bfc663ac4083ae0d57f9f53"
+    },
+    {
+      "path": "corpus-licenses/glob/LICENSE-APACHE",
+      "bytes": 10847,
+      "sha256": "a60eea817514531668d7e00765731449fe14d059d3249e0bc93b36de45f759f2"
+    },
+    {
+      "path": "corpus-licenses/glob/LICENSE-MIT",
+      "bytes": 1071,
+      "sha256": "6485b8ed310d3f0340bf1ad1f47645069ce4069dcc6bb46c7d5c6faf41de1fdb"
+    },
+    {
+      "path": "corpus-licenses/itsdangerous/LICENSE.txt",
+      "bytes": 1475,
+      "sha256": "63af09891b6be8ad1a4252ed43af0f4efba7fc948e228367bed7f3c5ae0b09d7"
+    },
+    {
+      "path": "corpus-licenses/pathe/LICENSE",
+      "bytes": 3355,
+      "sha256": "52e92576851154bad7737e90cc72818936f43665cb0e3f7428ed8edc8cc5709b"
+    },
+    {
+      "path": "corpus-licenses/uuid/LICENSE",
+      "bytes": 1480,
+      "sha256": "0a8d61ed3cbfd5312326e8126c31ce9c627a283adc99131b56896d29ada04b2d"
+    },
+    {
+      "path": "corpus-local-manifest.json",
+      "bytes": 12119,
+      "sha256": "88cfc5b01810a4833dcf65788882ac85e3bcccb554eb708821b25ed5ee24f894"
+    },
+    {
+      "path": "cosign.json",
+      "bytes": 11764,
+      "sha256": "cf86a46f89cac86575450971a7bb548749b6fafc9d934368219dd827d2c46cd8"
+    },
+    {
+      "path": "gitleaks.json",
+      "bytes": 33321,
+      "sha256": "9b21240582e183d16cd89c14f145016cc06db2bbe9a82e307f890ddee80716b4"
+    },
+    {
+      "path": "node22-vitest.json",
+      "bytes": 162200,
+      "sha256": "58a2b64ff9be3f662b7198c86a71eb4f4a35e8bedd1a5131c8ec7293e1d706a9"
+    },
+    {
+      "path": "node24-vitest.json",
+      "bytes": 162186,
+      "sha256": "0936d438fc38bc81f49119c67080bc36f7e1b97839052e31bb13bd6c84e26502"
+    },
+    {
+      "path": "package.json",
+      "bytes": 9205,
+      "sha256": "ba53dfd251f19fa059c5f9c80790a01cc861f9f02432053f8be6624732b41585"
+    },
+    {
+      "path": "production.json",
+      "bytes": 144909,
+      "sha256": "0b699c7b02375b2b6a921e04ab37e7c92dd46660a2e6be631a6ce384399898bd"
+    },
+    {
+      "path": "projects.json",
+      "bytes": 754439,
+      "sha256": "38c7cd2da8e5661340dacf60f86a18fac6a183659e25be2cd514ae98b832dd6b"
+    },
+    {
+      "path": "resources.json",
+      "bytes": 10206,
+      "sha256": "0acbeeeabdc6d1c6df499d65c13439a3dd2b25fac2be6c6165c191a4efb2d031"
+    },
+    {
+      "path": "reviewdog.json",
+      "bytes": 18869,
+      "sha256": "26168e4f81eaf3123b4d28d6fa3688252696d7530a1f5cf4448e160da7ec3317"
+    },
+    {
+      "path": "run-local-unit.mjs",
+      "bytes": 2004,
+      "sha256": "23542d9c85d149a17dcac3b16832863b5f2a8b4a4f948732c100b45b7c26b0de"
+    },
+    {
+      "path": "runtimes.json",
+      "bytes": 86264,
+      "sha256": "e654c692ef7d967a7d047e1a0c956525d0db6a8a15832a0f23ce1484d68d93aa"
+    },
+    {
+      "path": "unit.json",
+      "bytes": 10962,
+      "sha256": "9f0d597af2a918e7965f39749cce28acbe4820980e101444e2622261aa2da689"
+    },
+    {
+      "path": "upstream.json",
+      "bytes": 18040,
+      "sha256": "a13dc1c3821bc70c0714e84167e5890d724b744d50f3163577f27cc850c68e76"
+    },
+    {
+      "path": "windows-gradle-worker-failure.log",
+      "bytes": 102170,
+      "sha256": "4d12716c04fec7b870e827c0c29b6e836eea015d0366d20e67a369e5eb3aaefa"
+    }
+  ]
+}

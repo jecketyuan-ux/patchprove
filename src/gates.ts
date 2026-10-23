@@ -2,6 +2,7 @@ import { mkdtemp, mkdir, writeFile, rm } from "node:fs/promises";
 import { closeSync, lstatSync, openSync, readSync, readdirSync } from "node:fs";
 import { tmpdir } from "node:os";
 import path from "node:path";
+import { archiveMachineReport, ReportArchiveError } from "./report-archive.js";
 import { createHash } from "node:crypto";
 import { clip, runCommand, type CommandResult } from "./exec.js";
 import type { DiffFile } from "./git.js";
@@ -9,7 +10,10 @@ import { builtinPlugins, type LanguagePlugin } from "./plugins/index.js";
 import type { PluginContext } from "./plugins/types.js";
 import { javaClassFromPath } from "./plugins/java.js";
 import { scanSecrets } from "./secrets.js";
-import type { CheckId, CheckResult, DetectedTools, ExecutionLimits, ExecutionRecord, Finding } from "./types.js";
+import { parseAddedLines } from "./added-lines.js";
+import { cargoTestExecution, goTestExecution, readTestReport, unknownTestExecution } from "./test-results.js";
+import { configuredToolUnits, testExecutionUnits, type TestUnit, type ToolUnit } from "./execution-units.js";
+import type { CheckId, CheckResult, DetectedTools, ExecutionLimits, ExecutionRecord, Finding, TestExecution } from "./types.js";
 
 const GATE_TIMEOUT_MS = 180_000;
 
@@ -41,12 +45,13 @@ function fromProcess(cwd: string, id: CheckId, unit: string, name: string, comma
 function aggregate(id: CheckId, name: string, parts: CheckResult[]): CheckResult {
   if (parts.length === 1) return parts[0]!;
   const failed = parts.filter((p) => p.status === "failed");
-  const skipped = parts.filter((p) => p.status === "skipped");
+  const skipped = parts.filter((p) => p.status === "skipped" && p.records?.some((record) => record.required !== false && record.status !== "not-applicable"));
+  const executed = parts.some((part) => part.status === "passed");
   return {
-    id, name, status: failed.length ? "failed" : skipped.length ? "skipped" : "passed",
-    reason: failed.length || skipped.length ? [...failed, ...skipped].map((p) => p.reason).join("; ") : "ok",
+    id, name, status: failed.length ? "failed" : skipped.length || !executed ? "skipped" : "passed",
+    reason: failed.length || skipped.length ? [...failed, ...skipped].map((p) => p.reason).join("; ") : executed ? "ok" : parts.map((part) => part.reason).join("; "),
     command: parts.map((p) => p.command).filter(Boolean).join(" && ") || null,
-    exitCode: failed[0]?.exitCode ?? (skipped.length ? null : 0),
+    exitCode: failed[0]?.exitCode ?? (skipped.length || !executed ? null : 0),
     durationMs: parts.reduce((sum, p) => sum + (p.durationMs ?? 0), 0),
     detail: clip(parts.map((p) => p.detail).filter(Boolean).join("\n")),
     records: parts.flatMap((p) => p.records ?? []),
@@ -54,38 +59,32 @@ function aggregate(id: CheckId, name: string, parts: CheckResult[]): CheckResult
   };
 }
 
-interface ToolUnit { id: string; configured: boolean; command: string | null; args: string[] }
-
-async function runUnits(cwd: string, id: "typecheck" | "lint", tools: DetectedTools, enabled: boolean,
+async function runUnits(cwd: string, id: "typecheck" | "lint",
   units: ToolUnit[], limits?: ExecutionLimits): Promise<CheckResult> {
-  if (!enabled) return skipped(cwd, id, "disabled", `Disabled by config (gates.${id}: false)`);
   const parts: CheckResult[] = [];
   for (const unit of units) {
-    if (!unit.configured && !unit.command) continue;
     if (!unit.command) {
-      parts.push(skipped(cwd, id, unit.id, `${unit.id} configured but binary not found`));
+      const part = skipped(unit.cwd, id, unit.id.slice(id.length + 1), unit.reason, unit.scope);
+      part.records![0]!.required = unit.required;
+      if (unit.policy?.mode === "not-applicable") part.records![0]!.status = "not-applicable";
+      parts.push(part);
       continue;
     }
-    const result = await runCommand(unit.command, unit.args, { cwd, timeoutMs: GATE_TIMEOUT_MS, ...limits });
-    parts.push(fromProcess(cwd, id, unit.id, `${id} (${unit.id})`, unit.command, unit.args, ["."], result, tools.versions?.[unit.id]));
+    const result = await runCommand(unit.command, unit.args, { cwd: unit.cwd, timeoutMs: GATE_TIMEOUT_MS, ...limits });
+    const part = fromProcess(unit.cwd, id, unit.id.slice(id.length + 1), `${id} (${unit.name})`, unit.command, unit.args, unit.scope, result, unit.toolVersion);
+    part.records![0]!.required = unit.required;
+    parts.push(part);
   }
-  return parts.length ? aggregate(id, id, parts) : skipped(cwd, id, "unconfigured", `No ${id === "lint" ? "linter" : "typechecker"} configured`);
+  if (parts.length) return aggregate(id, id, parts);
+  const empty = skipped(cwd, id, "unconfigured", `No applicable ${id} unit`); empty.records![0]!.required = false; return empty;
 }
 
-export async function runTypecheck(cwd: string, tools: DetectedTools, enabled = true, limits?: ExecutionLimits): Promise<CheckResult> {
-  return runUnits(cwd, "typecheck", tools, enabled, [
-    { id: "tsc", configured: tools.typescript, command: tools.tscBin, args: ["--noEmit"] },
-    { id: "pyright", configured: tools.pyright, command: tools.pyrightBin, args: [] },
-    { id: "mypy", configured: tools.mypy, command: tools.mypyBin,
-      args: tools.mypyBin && /^python(?:\d+(?:\.\d+)*)?(?:\.exe)?$/i.test(path.basename(tools.mypyBin)) ? ["-m", "mypy", "."] : ["."] },
-  ], limits);
+export async function runTypecheck(cwd: string, tools: DetectedTools, enabled = true, limits?: ExecutionLimits, units?: ToolUnit[]): Promise<CheckResult> {
+  return runUnits(cwd, "typecheck", units ?? configuredToolUnits(cwd, "typecheck", tools, enabled), limits);
 }
 
-export async function runLint(cwd: string, tools: DetectedTools, enabled = true, limits?: ExecutionLimits): Promise<CheckResult> {
-  return runUnits(cwd, "lint", tools, enabled, [
-    { id: "eslint", configured: tools.eslint, command: tools.eslintBin, args: ["."] },
-    { id: "ruff", configured: tools.ruff, command: tools.ruffBin, args: ["check", "."] },
-  ], limits);
+export async function runLint(cwd: string, tools: DetectedTools, enabled = true, limits?: ExecutionLimits, units?: ToolUnit[]): Promise<CheckResult> {
+  return runUnits(cwd, "lint", units ?? configuredToolUnits(cwd, "lint", tools, enabled), limits);
 }
 
 /** Summaries are advisory when a runner has no count; explicit zero is never a passing execution. */
@@ -117,10 +116,10 @@ export function collectedTestCount(output: string): number | undefined {
   return undefined;
 }
 
-interface JavaReport { stamp: string; count: number; scope: string[] }
+interface JavaReport { stamp: string; proof: TestExecution }
 
 /** Read only bounded report headers; suite counts come from this invocation's changed files. */
-function javaReports(cwd: string, scope: string[], gradle: boolean): Map<string, JavaReport> {
+function javaReports(cwd: string, scope: string[], gradle: boolean, retainReports = false, prior?: Map<string, JavaReport>): Map<string, JavaReport> {
   const result = new Map<string, JavaReport>();
   const directories = new Map<string, Array<{ file: string; className: string }>>();
   for (const file of scope) {
@@ -150,9 +149,10 @@ function javaReports(cwd: string, scope: string[], gradle: boolean): Map<string,
         const matched = classes.filter(({ className }) => suiteName === className || suiteName.startsWith(`${className}$`) ||
           (!className.includes(".") && (suiteName.endsWith(`.${className}`) || suiteName.includes(`.${className}$`))));
         if (!matched.length) continue;
+        const selected = matched.map((entry) => entry.file);
         result.set(file, { stamp: `${stat.dev}:${stat.ino}:${stat.size}:${stat.mtimeNs}:${stat.ctimeNs}`,
-          count: Number(count), scope: matched.map((entry) => entry.file) });
-      } catch { /* An absent, malformed, symbolic, or unreadable report supplies no execution proof. */ }
+          proof: readTestReport("java-junit", file, cwd, selected, selected, cwd, retainReports && prior?.get(file)?.stamp !== `${stat.dev}:${stat.ino}:${stat.size}:${stat.mtimeNs}:${stat.ctimeNs}`) });
+      } catch (error) { if (error instanceof ReportArchiveError) throw error; /* Unreadable reports supply no execution proof. */ }
       finally { if (fd !== undefined) closeSync(fd); }
     }
   }
@@ -160,44 +160,97 @@ function javaReports(cwd: string, scope: string[], gradle: boolean): Map<string,
 }
 
 export async function runAffectedTests(cwd: string, tools: DetectedTools, mappedTests: string[], enabled = true,
-  plugins: readonly LanguagePlugin[] = builtinPlugins, ctx?: PluginContext, limits?: ExecutionLimits): Promise<CheckResult> {
-  if (!enabled) return skipped(cwd, "tests", "disabled", "Disabled by config (gates.tests: false)", mappedTests);
-  if (!mappedTests.length) return skipped(cwd, "tests", "unmapped", "No mapped tests for this diff", []);
+  plugins: readonly LanguagePlugin[] = builtinPlugins, ctx?: PluginContext, limits?: ExecutionLimits, preparedUnits?: TestUnit[]): Promise<CheckResult> {
+  if (!enabled && !preparedUnits) return skipped(cwd, "tests", "disabled", "Disabled by config (gates.tests: false)", mappedTests);
+  if (!mappedTests.length && !preparedUnits?.length) return skipped(cwd, "tests", enabled ? "unmapped" : "disabled", enabled ? "No mapped tests for this diff" : "Disabled by config (gates.tests: false)", []);
   const parts: CheckResult[] = [];
   const covered = new Set<string>();
   const context = ctx ?? { cwd, existing: new Set(mappedTests) };
-  for (const plugin of plugins) {
-    const scope = mappedTests.filter((test) => plugin.extensions.includes(path.extname(test)));
-    if (!scope.length) continue;
-    for (const test of scope) covered.add(test);
-    const cmd = plugin.testCommand?.(cwd, scope, tools, context);
+  for (const unit of preparedUnits ?? testExecutionUnits(mappedTests, plugins, context)) {
+    const { plugin, sourceFiles, scope } = unit;
+    for (const test of sourceFiles) covered.add(test);
+    const unitTools = unit.tools ?? tools;
+    const cmd = unit.inactiveReason ? null : plugin.testCommand?.(unit.cwd, unit.commandFiles, unitTools, unit.context ?? context);
     if (!cmd) {
-      parts.push(skipped(cwd, "tests", plugin.id,
-        plugin.missingTestRunnerReason?.(tools) ?? `No test runner available for ${plugin.id}`, scope));
+      const part = skipped(unit.cwd, "tests", unit.id.slice(6), unit.inactiveReason ?? plugin.missingTestRunnerReason?.(unitTools) ?? `No test runner available for ${plugin.id}`, scope);
+      part.records![0]!.required = unit.required;
+      if (unit.policy?.mode === "not-applicable") part.records![0]!.status = "not-applicable";
+      parts.push(part);
       continue;
     }
     const args = cmd.args.filter((arg) => arg !== "--passWithNoTests");
     // Go's structured stream distinguishes a successful package build from executed tests.
     if (plugin.id === "go" && args[0] === "test" && !args.includes("-json")) args.splice(1, 0, "-json");
-    const gradle = tools.gradleBin === cmd.command;
-    const previousReports = plugin.id === "java" ? javaReports(cwd, scope, gradle) : undefined;
-    const result = await runCommand(cmd.command, args, { cwd, timeoutMs: GATE_TIMEOUT_MS, ...limits });
-    const freshReports = previousReports ? [...javaReports(cwd, scope, gradle)].filter(([file, report]) =>
+    const gradle = unitTools.gradleBin === cmd.command;
+    const previousReports = plugin.id === "java" ? javaReports(cwd, sourceFiles, gradle) : undefined;
+    const fileFormat = cmd.reportFormat ?? (plugin.id === "python" ? "pytest-junit" : plugin.id === "javascript" ? unitTools.jestBin === cmd.command ? "jest-json" : "vitest-json" : undefined);
+    const reportDir = fileFormat ? await mkdtemp(path.join(tmpdir(), "patchprove-test-report-")) : undefined;
+    const reportPath = reportDir ? path.join(reportDir, fileFormat === "pytest-junit" ? "results.xml" : "results.json") : undefined;
+    if (reportPath) args.push(...(fileFormat === "pytest-junit" ? [`--junitxml=${reportPath}`, "-o", "junit_family=xunit1"] : fileFormat === "jest-json" ? ["--json", "--outputFile", reportPath] : ["--reporter=json", "--outputFile", reportPath]));
+    let result: CommandResult;
+    let proof: TestExecution | undefined;
+    try {
+      result = await runCommand(cmd.command, args, { cwd: unit.cwd, timeoutMs: GATE_TIMEOUT_MS, ...limits });
+      if (reportPath && fileFormat) proof = readTestReport(fileFormat, reportPath, cwd, scope, undefined, unit.cwd);
+      if (plugin.id === "rust") proof = archiveMachineReport({ format: "cargo-harness", raw: result.stdoutBytes ?? Buffer.from(result.stdout), cwd, requestedScope: scope, truncated: result.truncated }, cargoTestExecution(result.stdout, scope, result.truncated));
+      if (plugin.id === "go") {
+        const target = args.find((arg) => arg === "." || arg.startsWith("./"));
+        const listed = await runCommand(cmd.command, ["list", "-json", target ?? "."], { cwd: unit.cwd, timeoutMs: GATE_TIMEOUT_MS, ...limits });
+        try {
+          const pkg = JSON.parse(listed.stdout) as { ImportPath?: string; Dir?: string; TestGoFiles?: string[]; XTestGoFiles?: string[] };
+          const eligible = [...(pkg.TestGoFiles ?? []), ...(pkg.XTestGoFiles ?? [])].map((file) => path.relative(cwd, path.join(pkg.Dir ?? cwd, file)).split(path.sep).join("/"));
+          proof = listed.exitCode === 0 && !listed.truncated && typeof pkg.ImportPath === "string" ? goTestExecution(result.stdout, scope, pkg.ImportPath, result.truncated) : unknownTestExecution("go-json", scope, "go list could not establish package identity");
+          proof.eligibleSourceFiles = eligible.filter((file) => sourceFiles.includes(file));
+          if (sourceFiles.some((file) => !eligible.includes(file))) {
+            proof.unknownScope = scope; proof.reason = "Selected Go test files are excluded by this build configuration";
+          }
+        } catch { proof = unknownTestExecution("go-json", scope, "No usable go list package metadata"); }
+        proof.granularity = "package";
+        proof = archiveMachineReport({ format: "go-json", raw: result.stdoutBytes ?? Buffer.from(result.stdout), cwd, requestedScope: scope, sourceFiles,
+          truncated: result.truncated, goListOutput: listed.stdout, goListRaw: listed.stdoutBytes ?? Buffer.from(listed.stdout), goListExitCode: listed.exitCode, goListTruncated: listed.truncated }, proof);
+      }
+    } finally {
+      if (reportDir) await rm(reportDir, { recursive: true, force: true });
+    }
+    const freshReports = previousReports ? [...javaReports(cwd, sourceFiles, gradle, true, previousReports)].filter(([file, report]) =>
       previousReports.get(file)?.stamp !== report.stamp).map(([, report]) => report) : undefined;
-    const count = freshReports ? freshReports.reduce((sum, report) => sum + report.count, 0) :
-      collectedTestCount(`${result.stdout}\n${result.stderr}`);
-    const part = fromProcess(cwd, "tests", plugin.id, cmd.name, cmd.command, args, scope, result,
-      tools.versions?.[plugin.id === "javascript" ? tools.vitestBin === cmd.command ? "vitest" : "jest" :
-        plugin.id === "python" ? "pytest" : plugin.id === "rust" ? "cargo" : plugin.id === "java" ? tools.gradleBin === cmd.command ? "gradle" : "mvn" : plugin.id], count);
-    if (freshReports && part.status === "passed") {
-      const executed = new Set(freshReports.filter((report) => report.count > 0).flatMap((report) => report.scope));
-      const missing = scope.filter((file) => !executed.has(file));
-      if (missing.length) {
-        part.records![0]!.scope = scope.filter((file) => executed.has(file));
-        const uncollected = skipped(cwd, "tests", "java:uncollected", "Selected Java tests have no fresh execution report", missing);
+    if (freshReports) {
+      const sum = (field: keyof TestExecution["counts"]) => freshReports.reduce((total, report) => total + report.proof.counts[field], 0);
+      const observed = (field: "collectedScope" | "executedScope" | "skippedScope") => scope.filter((file) => freshReports.some((report) => report.proof[field].includes(file)));
+      const allValid = freshReports.length > 0 && freshReports.every((report) => report.proof.reportStatus === "validated");
+      proof = { parserVersion: "1", format: "java-junit", reportStatus: allValid ? "validated" : freshReports.length ? "partial" : "missing", granularity: "file", requestedScope: scope,
+        collectedScope: observed("collectedScope"), executedScope: observed("executedScope"), skippedScope: observed("skippedScope"),
+        unknownScope: scope.filter((file) => !observed("collectedScope").includes(file)),
+        counts: { collected: sum("collected"), executed: sum("executed"), passed: sum("passed"), failed: sum("failed"), skipped: sum("skipped") },
+        javaRuntimeObservations: freshReports.flatMap(report => report.proof.javaRuntimeObservations ?? []),
+        reportRetention: freshReports.some(report => report.proof.reports?.length) ? "retained" : "not-retained",
+        ...(freshReports.some(report => report.proof.reports?.length) ? { reports: freshReports.flatMap(report => report.proof.reports ?? []) } : {}),
+        ...(freshReports.length ? { reportHash: createHash("sha256").update(JSON.stringify(freshReports.map((report) => report.proof.reportHash ?? null).sort())).digest("hex") } : { reason: "No tests execution report was produced for the selected Java scope" }) };
+    }
+    proof ??= unknownTestExecution("unavailable", scope, `No supported result adapter for plugin ${plugin.id}`);
+    proof.sourceFiles = sourceFiles;
+    const count = proof.reportStatus === "validated" || proof.reportStatus === "partial" ? proof.counts.collected : undefined;
+    const persistedArgs = reportPath ? args.map(arg => arg.replace(reportPath, "<test-report>")) : args;
+    const part = fromProcess(unit.cwd, "tests", unit.id.slice(6), cmd.name, cmd.command, persistedArgs, scope, result,
+      unitTools.versions?.[plugin.id === "javascript" ? unitTools.vitestBin === cmd.command ? "vitest" : "jest" :
+        plugin.id === "python" ? "pytest" : plugin.id === "rust" ? "cargo" : plugin.id === "java" ? unitTools.gradleBin === cmd.command ? "gradle" : "mvn" : plugin.id], count);
+    if (reportPath) part.command = [cmd.command, ...persistedArgs].join(" ");
+    part.records![0]!.required = unit.required;
+    if (proof) {
+      const execution = part.records![0]!;
+      execution.testExecution = proof;
+      execution.scope = proof.executedScope.filter((file) => !proof!.unknownScope.includes(file));
+      if (part.status !== "failed" && execution.scope.length === 0) execution.status = "skipped";
+      const missing = scope.filter((file) => !proof!.executedScope.includes(file) || proof!.unknownScope.includes(file));
+      if (part.status !== "failed" && (missing.length > 0 || proof.counts.skipped > 0)) {
+        const unverified = [...new Set([...missing, ...proof.skippedScope])];
+        const uncollected = skipped(cwd, "tests", `${unit.id.slice(6)}:unverified`, proof.reason ?? (proof.counts.collected === 0 ? "Test runner collected zero tests" : "Selected tests were excluded, skipped, or have no execution report"), unverified);
         part.records!.push(...uncollected.records!);
-        part.status = "skipped";
-        part.reason = uncollected.reason;
+        part.status = "skipped"; part.reason = uncollected.reason;
+      }
+      if (proof.counts.failed > 0 && part.status !== "failed") {
+        part.status = "failed"; part.reason = "Machine report contains failed tests";
+        execution.status = "failed";
       }
     }
     // A truncated summary cannot establish whether test collection succeeded.
@@ -215,8 +268,7 @@ export async function runAffectedTests(cwd: string, tools: DetectedTools, mapped
 }
 
 function selectedAddedText(file: DiffFile): string {
-  return file.patch.split("\n").filter((line) => line.startsWith("+") && !line.startsWith("+++"))
-    .map((line) => line.slice(1)).join("\n");
+  return parseAddedLines(file).map((line) => line.text).join("\n");
 }
 
 export async function runSecretScan(cwd: string, tools: DetectedTools, files: DiffFile[],
@@ -225,6 +277,9 @@ export async function runSecretScan(cwd: string, tools: DetectedTools, files: Di
   if (!enabled) return { check: skipped(cwd, "secrets", "disabled", "Disabled by config (gates.secrets: false)"), findings: [] };
   const started = Date.now();
   const scope = files.map((file) => file.path);
+  // Validate every selected patch even when a detector intentionally ignores
+  // that file type. Missing input must not become a successful empty scan.
+  for (const file of files) parseAddedLines(file);
   const findings = scanSecrets(files);
   const status = findings.length ? "failed" : "passed";
   const reason = findings.length ? `${findings.length} potential secret(s)` : "no known key patterns or high-entropy tokens in added lines";

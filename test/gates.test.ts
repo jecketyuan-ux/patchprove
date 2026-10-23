@@ -22,7 +22,8 @@ describe.skipIf(process.platform === "win32")("gate execution accounting", () =>
     const result = await runTypecheck(dir, tools);
     expect(result.status).toBe("passed");
     expect(readFileSync(marker, "utf8")).toBe("tsc\npyright\nmypy\n");
-    expect(result.records?.map((record) => record.id)).toEqual(["typecheck:tsc", "typecheck:pyright", "typecheck:mypy"]);
+    expect(result.records?.map((record) => record.command)).toEqual([tools.tscBin, tools.pyrightBin, tools.mypyBin]);
+    expect(new Set(result.records?.map((record) => record.id)).size).toBe(3);
   });
 
   it("runs Ruff even when ESLint passes and retains missing-tool records", async () => {
@@ -32,19 +33,20 @@ describe.skipIf(process.platform === "win32")("gate execution accounting", () =>
     expect(result.records?.map((record) => record.status)).toEqual(["passed", "failed"]);
     const partial = await runLint(dir, { ...emptyDetectedTools(), eslint: true, eslintBin: fake(dir, "eslint"), ruff: true });
     expect(partial.status).toBe("skipped");
-    expect(partial.records?.find((record) => record.id === "lint:ruff")?.status).toBe("skipped");
+    expect(partial.records?.find((record) => record.reason?.includes("ruff configured"))?.status).toBe("skipped");
   });
 
   it("keeps Python test scope incomplete when only the JS runner is available", async () => {
     const dir = fixture();
-    const result = await runAffectedTests(dir, { ...emptyDetectedTools(), vitest: true, vitestBin: fake(dir, "vitest", "console.log('Tests 1 passed (1)')"), pytest: true }, ["src/a.test.ts", "test_a.py"]);
+    const jsReport = "require('node:fs').writeFileSync(process.argv[process.argv.indexOf('--outputFile')+1],JSON.stringify({testResults:[{name:require('node:path').resolve('src/a.test.ts'),assertionResults:[{status:'passed'}]}]}));";
+    const result = await runAffectedTests(dir, { ...emptyDetectedTools(), vitest: true, vitestBin: fake(dir, "vitest", jsReport), pytest: true }, ["src/a.test.ts", "test_a.py"]);
     expect(result.status).toBe("skipped");
     expect(result.records?.map((record) => [record.status, record.scope])).toEqual([["passed", ["src/a.test.ts"]], ["skipped", ["test_a.py"]]]);
   });
 
   it("leaves zero collection incomplete even when the runner exits successfully", async () => {
     const dir = fixture();
-    const runner = fake(dir, "jest", "if(process.argv.includes('--passWithNoTests'))process.exit(2);console.log('Tests: 0 total');");
+    const runner = fake(dir, "jest", "if(process.argv.includes('--passWithNoTests'))process.exit(2);require('node:fs').writeFileSync(process.argv[process.argv.indexOf('--outputFile')+1],JSON.stringify({testResults:[]}));console.log('Tests: 0 total');");
     const result = await runAffectedTests(dir, { ...emptyDetectedTools(), jest: true, jestBin: runner }, ["a.test.js"]);
     expect(result.status).toBe("skipped");
     expect(result.records?.[0]?.collectedTests).toBe(0);
@@ -91,7 +93,25 @@ describe.skipIf(process.platform === "win32")("gate execution accounting", () =>
     const result = await runAffectedTests(dir, { ...emptyDetectedTools(), maven: true, mavenBin: fake(dir, "mvn") }, ["src/test/java/fixture/ValueTest.java"]);
     expect(result.status).toBe("skipped");
     expect(result.exitCode).toBe(0);
-    expect(result.records?.[0]?.collectedTests).toBe(0);
+    expect(result.records?.[0]?.collectedTests).toBeUndefined();
+    expect(result.records?.[0]?.testExecution?.reportStatus).toBe("missing");
+  });
+
+  it("does not treat skipped Surefire cases as executed tests", async () => {
+    const dir = fixture();
+    const runner = fake(dir, "mvn", `const fs=require('node:fs');fs.mkdirSync('target/surefire-reports',{recursive:true});fs.writeFileSync('target/surefire-reports/TEST-fixture.ValueTest.xml','<testsuite name="fixture.ValueTest" tests="1" skipped="1"><testcase name="disabled"><skipped/></testcase></testsuite>');`);
+    const result = await runAffectedTests(dir, { ...emptyDetectedTools(), maven: true, mavenBin: runner }, ["src/test/java/fixture/ValueTest.java"]);
+    expect(result.status).toBe("skipped");
+    expect(result.records?.filter((item) => item.status === "passed").flatMap((item) => item.scope)).toEqual([]);
+  });
+
+  it("keeps an entirely ignored Cargo unit incomplete", async () => {
+    const dir = fixture();
+    writeFileSync(path.join(dir, "Cargo.toml"), '[package]\nname="fixture"\nversion="0.1.0"\n');
+    const runner = fake(dir, "cargo", "console.log('running 1 test\\ntest tests::disabled ... ignored\\ntest result: ok. 0 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.00s');");
+    const result = await runAffectedTests(dir, { ...emptyDetectedTools(), cargo: true, cargoBin: runner }, ["src/lib.rs"]);
+    expect(result.status).toBe("skipped");
+    expect(result.records?.some((item) => item.status === "passed")).toBe(false);
   });
 
   it("rejects stale Surefire XML even when output claims a positive count", async () => {
@@ -101,13 +121,14 @@ describe.skipIf(process.platform === "win32")("gate execution accounting", () =>
     writeFileSync(path.join(report, "TEST-fixture.ValueTest.xml"), '<testsuite name="fixture.ValueTest" tests="3"></testsuite>');
     const result = await runAffectedTests(dir, { ...emptyDetectedTools(), maven: true, mavenBin: fake(dir, "mvn", "console.log('Tests run: 3')") }, ["src/test/java/fixture/ValueTest.java"]);
     expect(result.status).toBe("skipped");
-    expect(result.records?.[0]?.collectedTests).toBe(0);
+    expect(result.records?.[0]?.collectedTests).toBeUndefined();
+    expect(result.records?.[0]?.testExecution?.reportStatus).toBe("missing");
   });
 
   it.each(["maven", "gradle"])("accepts newly generated %s XML with executed test counts", async (engine) => {
     const dir = fixture();
     const report = engine === "maven" ? "target/surefire-reports" : "build/test-results/test";
-    const runner = fake(dir, engine, `const fs=require('node:fs');fs.mkdirSync(${JSON.stringify(report)},{recursive:true});fs.writeFileSync(${JSON.stringify(report + "/TEST-fixture.ValueTest.xml")},'<testsuite name="fixture.ValueTest" tests="2"></testsuite>');`);
+    const runner = fake(dir, engine, `const fs=require('node:fs');fs.mkdirSync(${JSON.stringify(report)},{recursive:true});fs.writeFileSync(${JSON.stringify(report + "/TEST-fixture.ValueTest.xml")},'<testsuite name="fixture.ValueTest" tests="2"><testcase name="one"/><testcase name="two"/></testsuite>');`);
     const tools = { ...emptyDetectedTools(), ...(engine === "maven" ? { maven: true, mavenBin: runner } : { gradle: true, gradleBin: runner }) };
     const result = await runAffectedTests(dir, tools, ["src/test/java/fixture/ValueTest.java"]);
     expect(result.status).toBe("passed");
@@ -116,7 +137,7 @@ describe.skipIf(process.platform === "win32")("gate execution accounting", () =>
 
   it("leaves a selected Maven module incomplete when only its sibling generates fresh results", async () => {
     const dir = fixture();
-    const runner = fake(dir, "mvn", `const fs=require('node:fs');fs.mkdirSync('api/target/surefire-reports',{recursive:true});fs.writeFileSync('api/target/surefire-reports/TEST-fixture.ValueTest.xml','<testsuite name="fixture.ValueTest" tests="1"></testsuite>');`);
+    const runner = fake(dir, "mvn", `const fs=require('node:fs');fs.mkdirSync('api/target/surefire-reports',{recursive:true});fs.writeFileSync('api/target/surefire-reports/TEST-fixture.ValueTest.xml','<testsuite name="fixture.ValueTest" tests="1"><testcase name="one"/></testsuite>');`);
     const result = await runAffectedTests(dir, { ...emptyDetectedTools(), maven: true, mavenBin: runner }, ["api/src/test/java/fixture/ValueTest.java", "core/src/test/java/fixture/ValueTest.java"]);
     expect(result.status).toBe("skipped");
     expect(result.records?.find((record) => record.status === "passed")?.scope).toEqual(["api/src/test/java/fixture/ValueTest.java"]);
@@ -138,6 +159,29 @@ describe.skipIf(process.platform === "win32")("gate execution accounting", () =>
     expect(failed.status).toBe("failed");
     expect(failed.records?.[0]?.collectedTests).toBe(1);
   }, 25_000);
+
+  it("does not count a selected but excluded Vitest file as executed", async () => {
+    const dir = fixture();
+    writeFileSync(path.join(dir, "vitest.config.mjs"), "export default {test:{globals:true,maxWorkers:1,exclude:['blocked.test.js']}}\n");
+    writeFileSync(path.join(dir, "good.test.js"), "test('good',()=>expect(1).toBe(1));\n");
+    writeFileSync(path.join(dir, "blocked.test.js"), "test('bad',()=>expect(1).toBe(2));\n");
+    const vitest = fileURLToPath(new URL("../node_modules/.bin/vitest", import.meta.url));
+    const result = await runAffectedTests(dir, { ...emptyDetectedTools(), vitest: true, vitestBin: vitest }, ["good.test.js", "blocked.test.js"]);
+    expect(result.status, result.detail).toBe("skipped");
+    expect(result.records?.filter((item) => item.status === "passed").flatMap((item) => item.scope)).toEqual(["good.test.js"]);
+    expect(result.records?.find((item) => item.status === "skipped")?.scope).toContain("blocked.test.js");
+  });
+
+  it("keeps an entirely skipped Vitest file incomplete", async () => {
+    const dir = fixture();
+    writeFileSync(path.join(dir, "vitest.config.mjs"), "export default {test:{globals:true,maxWorkers:1}}\n");
+    writeFileSync(path.join(dir, "all.test.js"), "test.skip('unexecuted assertion',()=>expect(1).toBe(2));\n");
+    const vitest = fileURLToPath(new URL("../node_modules/.bin/vitest", import.meta.url));
+    const result = await runAffectedTests(dir, { ...emptyDetectedTools(), vitest: true, vitestBin: vitest }, ["all.test.js"]);
+    expect(result.status).toBe("skipped");
+    expect(result.records?.some((item) => item.status === "passed")).toBe(false);
+    expect(result.records?.[0]?.testExecution).toMatchObject({ collectedScope: ["all.test.js"], executedScope: [], skippedScope: ["all.test.js"], counts: { collected: 1, executed: 0, skipped: 1 } });
+  });
 });
 
 describe("collection summary parsing", () => {

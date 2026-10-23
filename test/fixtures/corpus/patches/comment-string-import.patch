@@ -1,0 +1,7 @@
+diff --git a/src/value.js b/src/value.js
+index 44439d5..b1bb17f 100644
+--- a/src/value.js
++++ b/src/value.js
+@@ -1 +1 @@
+-export const value = 2;
++export const value = 3;

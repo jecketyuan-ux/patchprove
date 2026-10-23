@@ -1,0 +1,75 @@
+
+running 18 tests
+test test::test_absolute_pattern ... ok
+test test::test_glob_errors ... ok
+test test::test_iteration_errors ... ok
+test test::test_path_join ... ok
+test test::test_pattern_escape ... FAILED
+test test::test_pattern_from_str ... FAILED
+test test::test_pattern_matches ... FAILED
+test test::test_pattern_matches_case_insensitive ... ok
+test test::test_pattern_matches_case_insensitive_range ... ok
+test test::test_matches_path ... FAILED
+test test::test_pattern_matches_require_literal_separator ... ok
+test test::test_pattern_matches_require_literal_leading_dot ... ok
+test test::test_range_pattern ... FAILED
+test test::test_unclosed_bracket_errors ... ok
+test test::test_recursive_wildcards ... FAILED
+test test::test_wildcard_errors ... ok
+test test::test_wildcards ... FAILED
+test test::test_lots_of_files ... ok
+
+failures:
+
+---- test::test_pattern_escape stdout ----
+
+thread 'test::test_pattern_escape' panicked at src/lib.rs:1332:9:
+assertion failed: Pattern::new(&Pattern::escape(s)).unwrap().matches(s)
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+---- test::test_pattern_from_str stdout ----
+
+thread 'test::test_pattern_from_str' panicked at src/lib.rs:1098:9:
+assertion failed: "a*b".parse::<Pattern>().unwrap().matches("a_b")
+
+---- test::test_pattern_matches stdout ----
+
+thread 'test::test_pattern_matches' panicked at src/lib.rs:1313:9:
+assertion failed: txt_pat.matches("hello.txt")
+
+---- test::test_matches_path stdout ----
+
+thread 'test::test_matches_path' panicked at src/lib.rs:1493:9:
+assertion failed: Pattern::new("a/b").unwrap().matches_path(&Path::new("a/b"))
+
+---- test::test_range_pattern stdout ----
+
+thread 'test::test_range_pattern' panicked at src/lib.rs:1264:13:
+assertion failed: pat.matches(&format!("a{}b", i))
+
+---- test::test_recursive_wildcards stdout ----
+
+thread 'test::test_recursive_wildcards' panicked at src/lib.rs:1209:9:
+assertion failed: pat.matches("some/needle.txt")
+
+---- test::test_wildcards stdout ----
+
+thread 'test::test_wildcards' panicked at src/lib.rs:1189:9:
+assertion failed: Pattern::new("a*b").unwrap().matches("a_b")
+
+
+failures:
+    test::test_matches_path
+    test::test_pattern_escape
+    test::test_pattern_from_str
+    test::test_pattern_matches
+    test::test_range_pattern
+    test::test_recursive_wildcards
+    test::test_wildcards
+
+test result: FAILED. 11 passed; 7 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running unittests src/lib.rs (target/debug/deps/glob-7967573658936bea)
+error: test failed, to rerun pass `--lib`

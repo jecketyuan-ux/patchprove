@@ -1,0 +1,29 @@
+{
+  "silentSign": {
+    "requested": {
+      "sign": true
+    },
+    "returnedReceipt": null,
+    "filesWritten": [],
+    "explicitReceiptError": "Signing was required but no signing key was provided"
+  },
+  "staleComment": {
+    "oldHead": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "newHead": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "message": "Updated sticky comment 42",
+    "calls": [
+      {
+        "url": "https://api.github.com/repos/audit/fixture/issues/7/comments?per_page=100&page=1",
+        "method": "GET"
+      },
+      {
+        "url": "https://api.github.com/repos/audit/fixture/issues/comments/42",
+        "method": "PATCH",
+        "body": {
+          "body": "<!-- patchprove-sticky -->\nOld run, head aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n"
+        }
+      }
+    ]
+  },
+  "boundary": "Local API stub; no remote comment sent. Does not establish a GitHub workflow exploit."
+}

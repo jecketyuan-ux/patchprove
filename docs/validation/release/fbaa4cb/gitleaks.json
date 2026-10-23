@@ -1,0 +1,1038 @@
+{
+  "identity": {
+    "sourceCommit": "6df6a2f8a547cb3010f9d08f3e739b3e2e75155b",
+    "sourceTree": "3f3939c0a7c77b06828874b6466d01ddf6bfcddf",
+    "workingTreeDirty": false,
+    "runtimeDigest": "22b315219c13ae0c25810318f12dd78a9158974c2f2ec3f7ec5957221f1f008e",
+    "inputs": [
+      {
+        "path": "dist/accept.js",
+        "sha256": "dd293f82097e2f8b0b925c3ef36fee436a421bb687192b35f45c89459ed0785e"
+      },
+      {
+        "path": "dist/adapters.js",
+        "sha256": "0c9d5ebdcfc9037f5670d77a9b452cdd038f74e01fbd7a642460953069d2b56b"
+      },
+      {
+        "path": "dist/artifacts.js",
+        "sha256": "605715c69bd8f441e1cc1143d67446c1cd5972534db6e06bed0fddb3f0878b5d"
+      },
+      {
+        "path": "dist/baseline.js",
+        "sha256": "bb149bb65fcaf51eb96a2dee77c39397bbd65314d4b27b4c43223d9c4ffc1ab4"
+      },
+      {
+        "path": "dist/cli.js",
+        "sha256": "07cb54278b7d360a9829c002ecdc24a5c55ab089b82f9a637c7c055972d33303"
+      },
+      {
+        "path": "dist/color.js",
+        "sha256": "24118e1a07940a736e75ad9f02f68abd15bf597912c8af3e8f6e7a4d308874a8"
+      },
+      {
+        "path": "dist/config.js",
+        "sha256": "e393096cea4cf64447d77a0ce6e9464f7fb63d4a0bb337d2296db2adc41159c0"
+      },
+      {
+        "path": "dist/coverage.js",
+        "sha256": "dace1e04073cbccf2f43a96eeb514172d94c49686bf6172a9ea6e4015a0e5915"
+      },
+      {
+        "path": "dist/decision.js",
+        "sha256": "441fbe289389f859a07ec6d2b3ecd77a9be200dfd30c6b7769dccf88b66f84bf"
+      },
+      {
+        "path": "dist/detect.js",
+        "sha256": "87f3644991d5295e9e7b1008fa96a80ed0bbec1a51ffeef546d9d730dfc65263"
+      },
+      {
+        "path": "dist/evidence.js",
+        "sha256": "441d15f89dc9b2f3040c64ecec30866dad9158719ff610b699152114ebeed7e0"
+      },
+      {
+        "path": "dist/exec.js",
+        "sha256": "b05bbac6823f4625d2770f0c8b4ea5993749de23e0c5b8bb1bbef1f8a8dfb0d4"
+      },
+      {
+        "path": "dist/execution-units.js",
+        "sha256": "04bd215ebfc3f90186b0d56a8df91854b6943ae590b6e6f737cffcf63623ead6"
+      },
+      {
+        "path": "dist/fingerprint.js",
+        "sha256": "249c311a10fa4cf7020bd1b213575e74dcf6675d62375db9275d96fa5bb23251"
+      },
+      {
+        "path": "dist/gates.js",
+        "sha256": "0f677d17812e01928dcc6decc7c3b279abf558bd47efa6b56b388d5c47272091"
+      },
+      {
+        "path": "dist/generated/evidence.js",
+        "sha256": "e46f613296e2f5b760d98a08df0a42e1ff15053f4f3ddbbf7690856f6ea18219"
+      },
+      {
+        "path": "dist/generated/receipt.js",
+        "sha256": "4204767d5b5af9582521d443bbf60b1ab5e70611440a88d20d4eb69e55905d8e"
+      },
+      {
+        "path": "dist/git.js",
+        "sha256": "0927b076a06f43095bfd557a355c8245d7c70df4f7b53755f8546177805cea61"
+      },
+      {
+        "path": "dist/glob.js",
+        "sha256": "18290d8b8c589154080b12de80762e4976787ac4b3d03dd85d3d9312c2f8989a"
+      },
+      {
+        "path": "dist/graph.js",
+        "sha256": "e3cdca1505e407fde6927ce3698162f0fd305f8c35938d641dc1681b0503762e"
+      },
+      {
+        "path": "dist/hook-worker.js",
+        "sha256": "ae0394a3f546bd224f873cd664533b61b5fe3dddaf21d6d3b35b4a97ec57be41"
+      },
+      {
+        "path": "dist/hook.js",
+        "sha256": "9b33b870a8514d2f68dbaf596b031b62fbe8c58d6fb7a8f1b7d28cd4d26f7f98"
+      },
+      {
+        "path": "dist/index.js",
+        "sha256": "00f909b368a7e8f79afb647e328bfca7f8d38c45e39c6f951e88f2097ee04b32"
+      },
+      {
+        "path": "dist/init-agent.js",
+        "sha256": "dcca6f676e4f599a32b3b3a41c87423e0af94ec01e947ed48e979614dd871d70"
+      },
+      {
+        "path": "dist/input-budget.js",
+        "sha256": "51821e7ce4fa067179c2c4c53039d81a8e63fac6caf2a225ab1950b315542732"
+      },
+      {
+        "path": "dist/mapping.js",
+        "sha256": "acf0cc6c0ce4967fc3f46ba8b4812ce1c8abf2da442a2e559b892f1780097a9b"
+      },
+      {
+        "path": "dist/mcp-tools.js",
+        "sha256": "58e427332e8ba23665768ac47e44ec8ceef442ecb1aaedb1be4b0c8b76ad7922"
+      },
+      {
+        "path": "dist/mcp.js",
+        "sha256": "318c756983ecb04f0c431691569d5d11d356adbdaaa1ff3da9be987518968efc"
+      },
+      {
+        "path": "dist/paths.js",
+        "sha256": "240c6257e44dcb69c60ff5a1ed7a6ace7c9e903c25abd95b210aed9e32b69a1f"
+      },
+      {
+        "path": "dist/pkg.js",
+        "sha256": "f47d7845861818ae119865533b450243bda30e699e2037ce46d00b03ebee526d"
+      },
+      {
+        "path": "dist/plugins/builtin.js",
+        "sha256": "53899248fbe8832ce6768ae3d295be52a0aa946fddfd90443bb3716df97faba7"
+      },
+      {
+        "path": "dist/plugins/context.js",
+        "sha256": "961c64f5e550f0b00867453154b32f5f70d22a7b2cbe44fa164af8e893dfc69b"
+      },
+      {
+        "path": "dist/plugins/go.js",
+        "sha256": "b943c7a72427c0a9b39c73d444ee317ba58398a43a354d2eca2580eb6d751fd6"
+      },
+      {
+        "path": "dist/plugins/index.js",
+        "sha256": "7786fd3643f10d2546a361c318488f17991d8549beb63364939844c403085bca"
+      },
+      {
+        "path": "dist/plugins/java.js",
+        "sha256": "18a17286e8aadd6ca3eba79abd4aba61edf47665833e5fbdc0b1e6c8087f4abe"
+      },
+      {
+        "path": "dist/plugins/js.js",
+        "sha256": "70c7d2e7fdffe8fe542f839ed24ca895f73a3ec0f0d5b94e5fb546ae2a413e0e"
+      },
+      {
+        "path": "dist/plugins/load.js",
+        "sha256": "702f3bb4bc6c0b40b09992ed5ce03a9e31bc1f9dd12c99bc51d4b8050320be85"
+      },
+      {
+        "path": "dist/plugins/python.js",
+        "sha256": "0f3033663a29c68b6f5d1870f361ad8e487bae9b6e449efc4903def566c9034d"
+      },
+      {
+        "path": "dist/plugins/rust.js",
+        "sha256": "9d19a10bbf1515f503ac59790d17787c5dbdc40a1f46cdd2762959b812780961"
+      },
+      {
+        "path": "dist/plugins/types.js",
+        "sha256": "3661f77de6003453ba95ed741ffb4cc1683d26f2c590e5883d07e26d5c98b532"
+      },
+      {
+        "path": "dist/receipt.js",
+        "sha256": "b3c7659779d04bdacae0b06fc9c5a6e4ab497385d3570d33993121ba254fb653"
+      },
+      {
+        "path": "dist/report.js",
+        "sha256": "908fe33149086f7453f64e29b46f91f29ff2c6070279991174dc305b6b03192f"
+      },
+      {
+        "path": "dist/risk.js",
+        "sha256": "7fb6fb0cd7f30d54f2c469ece8588be073cfedd3969a294ebf7d37e2133d65f9"
+      },
+      {
+        "path": "dist/run.js",
+        "sha256": "8b33441716ddd30dac842ddd6950aece76ce7370109048388ffda09ead7a1e45"
+      },
+      {
+        "path": "dist/sarif.js",
+        "sha256": "c0410e6258d3121caeb5d6cd8b37ace5abe47a72c041772f3b133b34bb12d5a5"
+      },
+      {
+        "path": "dist/secrets.js",
+        "sha256": "8034a617292aff24858ed3603a11d9fa9c318510e8b828cb15b8f092c3febec1"
+      },
+      {
+        "path": "dist/snapshot.js",
+        "sha256": "8a76e466cc306908ffc8a76839ccd97a11046081dcf8101c1e668f4905342a41"
+      },
+      {
+        "path": "dist/spec.js",
+        "sha256": "03263f3c025afa878ca1f128cf24abc3ae31b201ad243a4e863fb82791501cf8"
+      },
+      {
+        "path": "dist/test-results.js",
+        "sha256": "00bab8837b3c089b0f9580993f96f29245642fbb31590c59f0b1f3e8d6803e10"
+      },
+      {
+        "path": "dist/types.js",
+        "sha256": "c082345dde23b1358f1028c100a89a83d3e90d3f1d48f1b8fddddcdcf7b7f064"
+      },
+      {
+        "path": "dist/validation.js",
+        "sha256": "e76b9d7be32dfd0e52aebaea790c6a2eefcb773e44e4c00957f9ff591e83d3be"
+      },
+      {
+        "path": "package-lock.json",
+        "sha256": "9a26dc501c1b1ef623b5cdca83a05927aa786978547780ef04dbf146473994fb"
+      },
+      {
+        "path": "package.json",
+        "sha256": "aff0fe700422b687cde1426f56fb4c445fcca9025b6a2fb6d54c4bc27851d589"
+      },
+      {
+        "path": "schema/adapter.schema.json",
+        "sha256": "541fa8af2f1ed4911a667cc1a327630bcb293605e2ab02b90bb2815ccce2c103"
+      },
+      {
+        "path": "schema/evidence.schema.json",
+        "sha256": "5da3d8468802141051f5d6e050edee9a3b97988dc2dbf2a944cde4d4adcb4bf4"
+      },
+      {
+        "path": "schema/receipt.schema.json",
+        "sha256": "29e3894ae3d2d3472cea497d8f28dfdd649922a7358be029e49eca69c6bd6583"
+      },
+      {
+        "path": "schema/spec.schema.json",
+        "sha256": "beb06ddaa11be09d6cea3ce1a7fc39b8d67ffce5e36aa396339a6ba55d23a48f"
+      }
+    ],
+    "script": "scripts/test-gitleaks.mjs",
+    "scriptSha256": "68f9e473b8149b27e1d359b2e59324e57fd92f6b17303a54a9b412028b14165d"
+  },
+  "schemaVersion": 1,
+  "generatedAt": "2026-10-23T06:03:35.180Z",
+  "node": "v24.19.0",
+  "platform": "linux",
+  "tool": {
+    "version": "8.24.3",
+    "path": "/tmp/patchprove-gitleaks-8.24.3/gitleaks",
+    "binarySha256": "e18325d568268b6efb6cd0cc721f8bea5667f4cd1c8d03618ab61987f41269ad"
+  },
+  "cases": [
+    {
+      "id": "staged",
+      "expected": "failed",
+      "status": "passed",
+      "changedFiles": [
+        "tracked.txt"
+      ],
+      "selectedFiles": [
+        "tracked.txt"
+      ],
+      "result": {
+        "check": {
+          "id": "secrets",
+          "name": "secret scan",
+          "status": "failed",
+          "reason": "2 potential secret(s)",
+          "command": "/tmp/patchprove-gitleaks-8.24.3/gitleaks dir <selected-added-lines> --no-banner --redact --exit-code=1",
+          "exitCode": 1,
+          "durationMs": 874,
+          "detail": "",
+          "records": [
+            {
+              "id": "secrets:regex",
+              "checkId": "secrets",
+              "scope": [
+                "tracked.txt"
+              ],
+              "status": "failed",
+              "command": null,
+              "args": [],
+              "cwd": "/tmp/patchprove-gitleaks-accept-VVgxOV",
+              "exitCode": 1,
+              "durationMs": 1,
+              "reason": "2 potential secret(s)",
+              "toolVersion": "builtin-regex-v1",
+              "outputHash": "e6160015fef61b01107ec3f6f12d33459a425d417786f8635a4e847754d71f32"
+            },
+            {
+              "id": "secrets:gitleaks",
+              "checkId": "secrets",
+              "scope": [
+                "tracked.txt"
+              ],
+              "status": "passed",
+              "command": "/tmp/patchprove-gitleaks-8.24.3/gitleaks",
+              "args": [
+                "dir",
+                "<selected-added-lines>",
+                "--no-banner",
+                "--redact",
+                "--exit-code=1"
+              ],
+              "cwd": "/tmp/patchprove-gitleaks-accept-VVgxOV",
+              "exitCode": 0,
+              "durationMs": 873,
+              "reason": "ok",
+              "toolVersion": "8.24.3",
+              "signal": null,
+              "truncated": false,
+              "outputHash": "ec77ff36e6019fc6cea903e63be74edf80f5f54fbb410436163ac769923142c1"
+            }
+          ],
+          "timedOut": false,
+          "truncated": false
+        },
+        "findings": [
+          {
+            "id": "secret-1",
+            "kind": "secret",
+            "risk": "critical",
+            "message": "GitHub personal access token in tracked.txt:1",
+            "path": "tracked.txt",
+            "line": 1
+          },
+          {
+            "id": "secret-2",
+            "kind": "secret",
+            "risk": "critical",
+            "message": "Assigned high-entropy secret in tracked.txt:1",
+            "path": "tracked.txt",
+            "line": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "unstaged",
+      "expected": "failed",
+      "status": "passed",
+      "changedFiles": [
+        "tracked.txt"
+      ],
+      "selectedFiles": [
+        "tracked.txt"
+      ],
+      "result": {
+        "check": {
+          "id": "secrets",
+          "name": "secret scan",
+          "status": "failed",
+          "reason": "2 potential secret(s)",
+          "command": "/tmp/patchprove-gitleaks-8.24.3/gitleaks dir <selected-added-lines> --no-banner --redact --exit-code=1",
+          "exitCode": 1,
+          "durationMs": 986,
+          "detail": "",
+          "records": [
+            {
+              "id": "secrets:regex",
+              "checkId": "secrets",
+              "scope": [
+                "tracked.txt"
+              ],
+              "status": "failed",
+              "command": null,
+              "args": [],
+              "cwd": "/tmp/patchprove-gitleaks-accept-sDqG9J",
+              "exitCode": 1,
+              "durationMs": 0,
+              "reason": "2 potential secret(s)",
+              "toolVersion": "builtin-regex-v1",
+              "outputHash": "e6160015fef61b01107ec3f6f12d33459a425d417786f8635a4e847754d71f32"
+            },
+            {
+              "id": "secrets:gitleaks",
+              "checkId": "secrets",
+              "scope": [
+                "tracked.txt"
+              ],
+              "status": "passed",
+              "command": "/tmp/patchprove-gitleaks-8.24.3/gitleaks",
+              "args": [
+                "dir",
+                "<selected-added-lines>",
+                "--no-banner",
+                "--redact",
+                "--exit-code=1"
+              ],
+              "cwd": "/tmp/patchprove-gitleaks-accept-sDqG9J",
+              "exitCode": 0,
+              "durationMs": 986,
+              "reason": "ok",
+              "toolVersion": "8.24.3",
+              "signal": null,
+              "truncated": false,
+              "outputHash": "e77645182c5ee6a11a8ddceab554ae795f55cc62c95de5c94b05591ed2399f1a"
+            }
+          ],
+          "timedOut": false,
+          "truncated": false
+        },
+        "findings": [
+          {
+            "id": "secret-1",
+            "kind": "secret",
+            "risk": "critical",
+            "message": "GitHub personal access token in tracked.txt:1",
+            "path": "tracked.txt",
+            "line": 1
+          },
+          {
+            "id": "secret-2",
+            "kind": "secret",
+            "risk": "critical",
+            "message": "Assigned high-entropy secret in tracked.txt:1",
+            "path": "tracked.txt",
+            "line": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "mixed",
+      "expected": "failed",
+      "status": "passed",
+      "changedFiles": [
+        "tracked.txt"
+      ],
+      "selectedFiles": [
+        "tracked.txt"
+      ],
+      "result": {
+        "check": {
+          "id": "secrets",
+          "name": "secret scan",
+          "status": "failed",
+          "reason": "2 potential secret(s)",
+          "command": "/tmp/patchprove-gitleaks-8.24.3/gitleaks dir <selected-added-lines> --no-banner --redact --exit-code=1",
+          "exitCode": 1,
+          "durationMs": 855,
+          "detail": "",
+          "records": [
+            {
+              "id": "secrets:regex",
+              "checkId": "secrets",
+              "scope": [
+                "tracked.txt"
+              ],
+              "status": "failed",
+              "command": null,
+              "args": [],
+              "cwd": "/tmp/patchprove-gitleaks-accept-OQpkti",
+              "exitCode": 1,
+              "durationMs": 0,
+              "reason": "2 potential secret(s)",
+              "toolVersion": "builtin-regex-v1",
+              "outputHash": "e6160015fef61b01107ec3f6f12d33459a425d417786f8635a4e847754d71f32"
+            },
+            {
+              "id": "secrets:gitleaks",
+              "checkId": "secrets",
+              "scope": [
+                "tracked.txt"
+              ],
+              "status": "passed",
+              "command": "/tmp/patchprove-gitleaks-8.24.3/gitleaks",
+              "args": [
+                "dir",
+                "<selected-added-lines>",
+                "--no-banner",
+                "--redact",
+                "--exit-code=1"
+              ],
+              "cwd": "/tmp/patchprove-gitleaks-accept-OQpkti",
+              "exitCode": 0,
+              "durationMs": 855,
+              "reason": "ok",
+              "toolVersion": "8.24.3",
+              "signal": null,
+              "truncated": false,
+              "outputHash": "27a796c33d9c4b657d3316aa67304df5f8b26da41ecd5f40c60bf2bc5e8dd4c5"
+            }
+          ],
+          "timedOut": false,
+          "truncated": false
+        },
+        "findings": [
+          {
+            "id": "secret-1",
+            "kind": "secret",
+            "risk": "critical",
+            "message": "GitHub personal access token in tracked.txt:1",
+            "path": "tracked.txt",
+            "line": 1
+          },
+          {
+            "id": "secret-2",
+            "kind": "secret",
+            "risk": "critical",
+            "message": "Assigned high-entropy secret in tracked.txt:1",
+            "path": "tracked.txt",
+            "line": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "untracked",
+      "expected": "failed",
+      "status": "passed",
+      "changedFiles": [
+        "new.txt"
+      ],
+      "selectedFiles": [
+        "new.txt"
+      ],
+      "result": {
+        "check": {
+          "id": "secrets",
+          "name": "secret scan",
+          "status": "failed",
+          "reason": "2 potential secret(s)",
+          "command": "/tmp/patchprove-gitleaks-8.24.3/gitleaks dir <selected-added-lines> --no-banner --redact --exit-code=1",
+          "exitCode": 1,
+          "durationMs": 892,
+          "detail": "",
+          "records": [
+            {
+              "id": "secrets:regex",
+              "checkId": "secrets",
+              "scope": [
+                "new.txt"
+              ],
+              "status": "failed",
+              "command": null,
+              "args": [],
+              "cwd": "/tmp/patchprove-gitleaks-accept-QiSo0G",
+              "exitCode": 1,
+              "durationMs": 1,
+              "reason": "2 potential secret(s)",
+              "toolVersion": "builtin-regex-v1",
+              "outputHash": "ad837d2a085e197ca4c1e6f7b8f70e7765f0f19366929f4ef61420b472ef983c"
+            },
+            {
+              "id": "secrets:gitleaks",
+              "checkId": "secrets",
+              "scope": [
+                "new.txt"
+              ],
+              "status": "passed",
+              "command": "/tmp/patchprove-gitleaks-8.24.3/gitleaks",
+              "args": [
+                "dir",
+                "<selected-added-lines>",
+                "--no-banner",
+                "--redact",
+                "--exit-code=1"
+              ],
+              "cwd": "/tmp/patchprove-gitleaks-accept-QiSo0G",
+              "exitCode": 0,
+              "durationMs": 891,
+              "reason": "ok",
+              "toolVersion": "8.24.3",
+              "signal": null,
+              "truncated": false,
+              "outputHash": "8fcafa82f86fe9e33780dd0d1dd6c43e2299dda583f3d76df2436fe0c293386f"
+            }
+          ],
+          "timedOut": false,
+          "truncated": false
+        },
+        "findings": [
+          {
+            "id": "secret-1",
+            "kind": "secret",
+            "risk": "critical",
+            "message": "GitHub personal access token in new.txt:1",
+            "path": "new.txt",
+            "line": 1
+          },
+          {
+            "id": "secret-2",
+            "kind": "secret",
+            "risk": "critical",
+            "message": "Assigned high-entropy secret in new.txt:1",
+            "path": "new.txt",
+            "line": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "git-ignore",
+      "expected": "passed",
+      "status": "passed",
+      "changedFiles": [],
+      "selectedFiles": [],
+      "result": {
+        "check": {
+          "id": "secrets",
+          "name": "secret scan",
+          "status": "passed",
+          "reason": "ok",
+          "command": "/tmp/patchprove-gitleaks-8.24.3/gitleaks dir <selected-added-lines> --no-banner --redact --exit-code=1",
+          "exitCode": 0,
+          "durationMs": 1008,
+          "detail": "",
+          "records": [
+            {
+              "id": "secrets:regex",
+              "checkId": "secrets",
+              "scope": [],
+              "status": "passed",
+              "command": null,
+              "args": [],
+              "cwd": "/tmp/patchprove-gitleaks-accept-gBOsR1",
+              "exitCode": 0,
+              "durationMs": 0,
+              "reason": "no known key patterns or high-entropy tokens in added lines",
+              "toolVersion": "builtin-regex-v1",
+              "outputHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            },
+            {
+              "id": "secrets:gitleaks",
+              "checkId": "secrets",
+              "scope": [],
+              "status": "passed",
+              "command": "/tmp/patchprove-gitleaks-8.24.3/gitleaks",
+              "args": [
+                "dir",
+                "<selected-added-lines>",
+                "--no-banner",
+                "--redact",
+                "--exit-code=1"
+              ],
+              "cwd": "/tmp/patchprove-gitleaks-accept-gBOsR1",
+              "exitCode": 0,
+              "durationMs": 1008,
+              "reason": "ok",
+              "toolVersion": "8.24.3",
+              "signal": null,
+              "truncated": false,
+              "outputHash": "a35a2a4ec5e5d3f5376e8a2e4d0df598a4883f6829316ee95d29036ad791cbc8"
+            }
+          ],
+          "timedOut": false,
+          "truncated": false
+        },
+        "findings": []
+      }
+    },
+    {
+      "id": "policy-ignore",
+      "expected": "passed",
+      "status": "passed",
+      "changedFiles": [
+        "tracked.txt"
+      ],
+      "selectedFiles": [],
+      "result": {
+        "check": {
+          "id": "secrets",
+          "name": "secret scan",
+          "status": "passed",
+          "reason": "ok",
+          "command": "/tmp/patchprove-gitleaks-8.24.3/gitleaks dir <selected-added-lines> --no-banner --redact --exit-code=1",
+          "exitCode": 0,
+          "durationMs": 937,
+          "detail": "",
+          "records": [
+            {
+              "id": "secrets:regex",
+              "checkId": "secrets",
+              "scope": [],
+              "status": "passed",
+              "command": null,
+              "args": [],
+              "cwd": "/tmp/patchprove-gitleaks-accept-nTdnvM",
+              "exitCode": 0,
+              "durationMs": 0,
+              "reason": "no known key patterns or high-entropy tokens in added lines",
+              "toolVersion": "builtin-regex-v1",
+              "outputHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            },
+            {
+              "id": "secrets:gitleaks",
+              "checkId": "secrets",
+              "scope": [],
+              "status": "passed",
+              "command": "/tmp/patchprove-gitleaks-8.24.3/gitleaks",
+              "args": [
+                "dir",
+                "<selected-added-lines>",
+                "--no-banner",
+                "--redact",
+                "--exit-code=1"
+              ],
+              "cwd": "/tmp/patchprove-gitleaks-accept-nTdnvM",
+              "exitCode": 0,
+              "durationMs": 937,
+              "reason": "ok",
+              "toolVersion": "8.24.3",
+              "signal": null,
+              "truncated": false,
+              "outputHash": "4562b9a36fa831eacd3f93a74f957bfbb961d5b618d6f0d82217c8a9c8d619e7"
+            }
+          ],
+          "timedOut": false,
+          "truncated": false
+        },
+        "findings": []
+      }
+    },
+    {
+      "id": "range",
+      "expected": "failed",
+      "status": "passed",
+      "changedFiles": [
+        "tracked.txt"
+      ],
+      "selectedFiles": [
+        "tracked.txt"
+      ],
+      "result": {
+        "check": {
+          "id": "secrets",
+          "name": "secret scan",
+          "status": "failed",
+          "reason": "2 potential secret(s)",
+          "command": "/tmp/patchprove-gitleaks-8.24.3/gitleaks dir <selected-added-lines> --no-banner --redact --exit-code=1",
+          "exitCode": 1,
+          "durationMs": 875,
+          "detail": "",
+          "records": [
+            {
+              "id": "secrets:regex",
+              "checkId": "secrets",
+              "scope": [
+                "tracked.txt"
+              ],
+              "status": "failed",
+              "command": null,
+              "args": [],
+              "cwd": "/tmp/patchprove-gitleaks-accept-DVmbqK",
+              "exitCode": 1,
+              "durationMs": 0,
+              "reason": "2 potential secret(s)",
+              "toolVersion": "builtin-regex-v1",
+              "outputHash": "e6160015fef61b01107ec3f6f12d33459a425d417786f8635a4e847754d71f32"
+            },
+            {
+              "id": "secrets:gitleaks",
+              "checkId": "secrets",
+              "scope": [
+                "tracked.txt"
+              ],
+              "status": "passed",
+              "command": "/tmp/patchprove-gitleaks-8.24.3/gitleaks",
+              "args": [
+                "dir",
+                "<selected-added-lines>",
+                "--no-banner",
+                "--redact",
+                "--exit-code=1"
+              ],
+              "cwd": "/tmp/patchprove-gitleaks-accept-DVmbqK",
+              "exitCode": 0,
+              "durationMs": 875,
+              "reason": "ok",
+              "toolVersion": "8.24.3",
+              "signal": null,
+              "truncated": false,
+              "outputHash": "440bc7e9bdb55d7b9f099080ff00627cc06512ff55a6a5127b5c2bd02f09ce14"
+            }
+          ],
+          "timedOut": false,
+          "truncated": false
+        },
+        "findings": [
+          {
+            "id": "secret-1",
+            "kind": "secret",
+            "risk": "critical",
+            "message": "GitHub personal access token in tracked.txt:1",
+            "path": "tracked.txt",
+            "line": 1
+          },
+          {
+            "id": "secret-2",
+            "kind": "secret",
+            "risk": "critical",
+            "message": "Assigned high-entropy secret in tracked.txt:1",
+            "path": "tracked.txt",
+            "line": 1
+          }
+        ]
+      }
+    },
+    {
+      "id": "backend-failure",
+      "expected": "failed",
+      "status": "passed",
+      "changedFiles": [
+        "tracked.txt"
+      ],
+      "selectedFiles": [
+        "tracked.txt"
+      ],
+      "result": {
+        "check": {
+          "id": "secrets",
+          "name": "secret scan",
+          "status": "failed",
+          "reason": "gitleaks failed to scan selected added lines",
+          "command": "/tmp/patchprove-gitleaks-accept-QNSAyg/missing-binary dir <selected-added-lines> --no-banner --redact --exit-code=1",
+          "exitCode": 127,
+          "durationMs": 3,
+          "detail": "",
+          "records": [
+            {
+              "id": "secrets:regex",
+              "checkId": "secrets",
+              "scope": [
+                "tracked.txt"
+              ],
+              "status": "passed",
+              "command": null,
+              "args": [],
+              "cwd": "/tmp/patchprove-gitleaks-accept-QNSAyg",
+              "exitCode": 0,
+              "durationMs": 0,
+              "reason": "no known key patterns or high-entropy tokens in added lines",
+              "toolVersion": "builtin-regex-v1",
+              "outputHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            },
+            {
+              "id": "secrets:gitleaks",
+              "checkId": "secrets",
+              "scope": [
+                "tracked.txt"
+              ],
+              "status": "failed",
+              "command": "/tmp/patchprove-gitleaks-accept-QNSAyg/missing-binary",
+              "args": [
+                "dir",
+                "<selected-added-lines>",
+                "--no-banner",
+                "--redact",
+                "--exit-code=1"
+              ],
+              "cwd": "/tmp/patchprove-gitleaks-accept-QNSAyg",
+              "exitCode": 127,
+              "durationMs": 3,
+              "reason": "gitleaks failed to scan selected added lines",
+              "toolVersion": "8.24.3",
+              "signal": null,
+              "truncated": false,
+              "outputHash": "622b3cc1e7da3444f3cf2909fa0305900ff1863260585aea37a995690e08c6cd"
+            }
+          ],
+          "timedOut": false,
+          "truncated": false
+        },
+        "findings": []
+      }
+    },
+    {
+      "id": "no-backend",
+      "expected": "passed",
+      "status": "passed",
+      "changedFiles": [
+        "tracked.txt"
+      ],
+      "selectedFiles": [
+        "tracked.txt"
+      ],
+      "result": {
+        "check": {
+          "id": "secrets",
+          "name": "secret scan (regex)",
+          "status": "passed",
+          "reason": "no known key patterns or high-entropy tokens in added lines",
+          "command": null,
+          "exitCode": 0,
+          "durationMs": 1,
+          "records": [
+            {
+              "id": "secrets:regex",
+              "checkId": "secrets",
+              "scope": [
+                "tracked.txt"
+              ],
+              "status": "passed",
+              "command": null,
+              "args": [],
+              "cwd": "/tmp/patchprove-gitleaks-accept-Ht8WAv",
+              "exitCode": 0,
+              "durationMs": 1,
+              "reason": "no known key patterns or high-entropy tokens in added lines",
+              "toolVersion": "builtin-regex-v1",
+              "outputHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+            }
+          ]
+        },
+        "findings": []
+      }
+    },
+    {
+      "id": "production-discovery",
+      "expected": "failed",
+      "status": "passed",
+      "changedFiles": [
+        "tracked.txt"
+      ],
+      "selectedFiles": [
+        "tracked.txt"
+      ],
+      "result": {
+        "check": {
+          "id": "secrets",
+          "name": "secret scan",
+          "status": "failed",
+          "reason": "2 potential secret(s)",
+          "command": "/tmp/patchprove-gitleaks-8.24.3/gitleaks dir <selected-added-lines> --no-banner --redact --exit-code=1",
+          "exitCode": 1,
+          "durationMs": 688,
+          "detail": "",
+          "records": [
+            {
+              "id": "secrets:regex",
+              "checkId": "secrets",
+              "scope": [
+                "tracked.txt"
+              ],
+              "status": "failed",
+              "command": null,
+              "args": [],
+              "cwd": "/tmp/patchprove-gitleaks-accept-J7LjQ1",
+              "exitCode": 1,
+              "durationMs": 0,
+              "reason": "2 potential secret(s)",
+              "toolVersion": "builtin-regex-v1",
+              "outputHash": "e6160015fef61b01107ec3f6f12d33459a425d417786f8635a4e847754d71f32"
+            },
+            {
+              "id": "secrets:gitleaks",
+              "checkId": "secrets",
+              "scope": [
+                "tracked.txt"
+              ],
+              "status": "passed",
+              "command": "/tmp/patchprove-gitleaks-8.24.3/gitleaks",
+              "args": [
+                "dir",
+                "<selected-added-lines>",
+                "--no-banner",
+                "--redact",
+                "--exit-code=1"
+              ],
+              "cwd": "/tmp/patchprove-gitleaks-accept-J7LjQ1",
+              "exitCode": 0,
+              "durationMs": 688,
+              "reason": "ok",
+              "toolVersion": "8.24.3",
+              "signal": null,
+              "truncated": false,
+              "outputHash": "7df4c852e9e310c852a08f082f8e872a9694cb7c38970a576b28e270e6bb457a"
+            }
+          ],
+          "timedOut": false,
+          "truncated": false
+        },
+        "findings": [
+          {
+            "id": "secret-1",
+            "kind": "secret",
+            "risk": "critical",
+            "message": "GitHub personal access token in tracked.txt:1",
+            "path": "tracked.txt",
+            "line": 1
+          },
+          {
+            "id": "secret-2",
+            "kind": "secret",
+            "risk": "critical",
+            "message": "Assigned high-entropy secret in tracked.txt:1",
+            "path": "tracked.txt",
+            "line": 1
+          }
+        ]
+      },
+      "discovery": {
+        "verification": {
+          "status": "failed",
+          "strict": true,
+          "reasons": [
+            {
+              "code": "check-failed",
+              "message": "secret scan failed",
+              "checkId": "secrets"
+            },
+            {
+              "code": "execution-failed",
+              "message": "Execution secrets:regex did not succeed",
+              "checkId": "secrets",
+              "scope": [
+                "tracked.txt"
+              ]
+            },
+            {
+              "code": "open-verification-gap",
+              "message": "Changed resource has no configured dependency mapping: tracked.txt",
+              "scope": [
+                "tracked.txt"
+              ]
+            },
+            {
+              "code": "open-verification-gap",
+              "message": "Affected-test gate not run: no mapped tests for this diff",
+              "scope": [
+                "tracked.txt"
+              ]
+            }
+          ]
+        },
+        "tools": [
+          {
+            "name": "gitleaks",
+            "version": "8.24.3",
+            "path": "/tmp/patchprove-gitleaks-8.24.3/gitleaks"
+          }
+        ]
+      }
+    }
+  ],
+  "limitations": [
+    "Synthetic public test values and fixed engine version; not a secret-detector recall benchmark.",
+    "Ignore cases cover Git ignore and patchprove path policy, not arbitrary upstream gitleaksignore fingerprint semantics."
+  ]
+}

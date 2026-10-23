@@ -1,0 +1,13 @@
+diff --git a/src/lib.rs b/src/lib.rs
+index fef8090..680cf99 100644
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -749,7 +749,7 @@ impl Pattern {
+     /// assert!(Pattern::new("d*g").unwrap().matches("doog"));
+     /// ```
+     pub fn matches(&self, str: &str) -> bool {
+-        self.matches_with(str, MatchOptions::new())
++        !self.matches_with(str, MatchOptions::new())
+     }
+ 
+     /// Return if the given `Path`, when converted to a `str`, matches this

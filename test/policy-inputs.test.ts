@@ -9,22 +9,27 @@ import { hashCanonical } from "../src/receipt.js";
 
 vi.mock("node:fs", async (importOriginal) => {
   const original = await importOriginal<typeof import("node:fs")>();
-  return { ...original, readFileSync: vi.fn(original.readFileSync) };
+  return { ...original, openSync: vi.fn(original.openSync), closeSync: vi.fn(original.closeSync) };
 });
 const originalFs = await vi.importActual<typeof import("node:fs")>("node:fs");
 
 /** Change the file immediately after its original bytes are returned by the OS. */
 function replaceAfterRead(target: string, replacement: string): void {
-  vi.mocked(fs.readFileSync).mockImplementation(((file: fs.PathOrFileDescriptor,
-    options?: { encoding?: BufferEncoding | null; flag?: string } | BufferEncoding | null) => {
-    const value = originalFs.readFileSync(file, options);
-    if (String(file) === target) originalFs.writeFileSync(target, replacement);
-    return value;
-  }) as typeof fs.readFileSync);
+  const reads = new Set<number>();
+  vi.mocked(fs.openSync).mockImplementation((file, flags, mode) => {
+    const fd = originalFs.openSync(file, flags, mode);
+    if (String(file) === target) reads.add(fd);
+    return fd;
+  });
+  vi.mocked(fs.closeSync).mockImplementation((fd) => {
+    originalFs.closeSync(fd);
+    if (reads.delete(fd)) originalFs.writeFileSync(target, replacement);
+  });
 }
 
 afterEach(() => {
-  vi.mocked(fs.readFileSync).mockImplementation(originalFs.readFileSync);
+  vi.mocked(fs.openSync).mockImplementation(originalFs.openSync);
+  vi.mocked(fs.closeSync).mockImplementation(originalFs.closeSync);
   vi.clearAllMocks();
 });
 
@@ -41,7 +46,7 @@ describe("parsed input identities", () => {
     expect(resolved.sourceHash).toBe(hashCanonical(original));
     expect(resolved.sourceHash).not.toBe(hashCanonical(replacement));
     expect(originalFs.readFileSync(file, "utf8")).toBe(replacement);
-    expect(vi.mocked(fs.readFileSync).mock.calls.filter(([name]) => String(name) === file)).toHaveLength(1);
+    expect(vi.mocked(fs.openSync).mock.calls.filter(([name]) => String(name) === file)).toHaveLength(1);
   });
 
   it("binds baseline identity to the original JSON text, including formatting", () => {
@@ -59,6 +64,6 @@ describe("parsed input identities", () => {
     expect(loaded.identity).toEqual({ path: file, hash: hashCanonical(original) });
     expect(loaded.identity.hash).not.toBe(hashCanonical(replacement));
     expect(originalFs.readFileSync(file, "utf8")).toBe(replacement);
-    expect(vi.mocked(fs.readFileSync).mock.calls.filter(([name]) => String(name) === file)).toHaveLength(1);
+    expect(vi.mocked(fs.openSync).mock.calls.filter(([name]) => String(name) === file)).toHaveLength(1);
   });
 });

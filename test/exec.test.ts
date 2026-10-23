@@ -14,6 +14,7 @@ describe("bounded command execution", () => {
     const result = await runCommand(process.execPath, ["-e", "process.stdout.write('a'.repeat(100000));process.stderr.write('b'.repeat(100000))"], { cwd: fixture(), maxOutputBytes: 1024 });
     expect(result.exitCode).toBe(0);
     expect(Buffer.byteLength(result.stdout) + Buffer.byteLength(result.stderr)).toBe(1024);
+    expect(result.stdoutBytes!.length + result.stderrBytes!.length).toBe(1024);
     expect(result.truncated).toBe(true);
     expect(result.stdoutHash).toBe(createHash("sha256").update("a".repeat(100000)).digest("hex"));
     expect(result.stderrHash).toBe(createHash("sha256").update("b".repeat(100000)).digest("hex"));
@@ -23,7 +24,19 @@ describe("bounded command execution", () => {
   it("keeps a truncated UTF-8 character inside the byte limit", async () => {
     const result = await runCommand(process.execPath, ["-e", "process.stdout.write('💥')"], { cwd: fixture(), maxOutputBytes: 1 });
     expect(Buffer.byteLength(result.stdout)).toBeLessThanOrEqual(1);
+    expect(result.stdoutBytes).toEqual(Buffer.from([0xf0]));
     expect(result.truncated).toBe(true);
+  });
+
+  it("retains exact output bytes when human-readable decoding replaces invalid UTF-8", async () => {
+    const original = Buffer.from([0xff, 0x0a, 0xc3, 0xa9, 0x41, 0x42]);
+    const result = await runCommand(process.execPath, ["-e", `process.stdout.write(Buffer.from(${JSON.stringify([...original])}));process.stderr.write(Buffer.from([0xfe,0x43]));`], { cwd: fixture(), maxOutputBytes: 32 });
+    expect(result.exitCode).toBe(0);
+    expect(result.truncated).toBe(false);
+    expect(result.stdoutBytes).toEqual(original);
+    expect(result.stderrBytes).toEqual(Buffer.from([0xfe, 0x43]));
+    expect(result.stdoutHash).toBe(createHash("sha256").update(result.stdoutBytes!).digest("hex"));
+    expect(Buffer.from(result.stdout)).not.toEqual(original);
   });
 
   it("hard stops an uncooperative process and its child", async () => {

@@ -1,0 +1,210 @@
+{
+  "schemaVersion": 1,
+  "projects": [
+    {
+      "id": "pathe",
+      "engine": "node",
+      "cwd": "/absolute/path/checkouts/pathe",
+      "url": "https://github.com/unjs/pathe",
+      "commit": "614844ba1f7f34f051959f3d1a953c54eaeaf3b2",
+      "license": "MIT",
+      "licenseFiles": [
+        "LICENSE"
+      ],
+      "module": null,
+      "env": {},
+      "setup": "Explicit local checkout; dependencies installed separately with documented versions. No source is vendored. pnpm 10.3.0 frozen lockfile, install scripts disabled; Vitest 3.0.5",
+      "full": {
+        "command": "./node_modules/.bin/vitest",
+        "args": [
+          "run",
+          "--coverage.enabled=false",
+          "--reporter=json",
+          "--outputFile={report}"
+        ]
+      },
+      "patches": [
+        {
+          "id": "neutral",
+          "kind": "neutral",
+          "file": "src/_internal.ts",
+          "attribution": "仅添加语言注释，行为不变；用于观察正常变更的额外选择和不完整状态"
+        },
+        {
+          "id": "controlled-fault",
+          "kind": "mutation",
+          "file": "src/_internal.ts",
+          "before": ".replace(_DRIVE_LETTER_START_RE, (r) => r.toUpperCase())",
+          "after": ".replace(_DRIVE_LETTER_START_RE, (r) => r.toLowerCase())",
+          "attribution": "改变 Windows 盘符规范化的大小写，影响路径公开行为"
+        }
+      ]
+    },
+    {
+      "id": "itsdangerous",
+      "engine": "python",
+      "cwd": "/absolute/path/checkouts/itsdangerous",
+      "url": "https://github.com/pallets/itsdangerous",
+      "commit": "096c8d42545d3b68ea21a4f890fb2b2d8979c0bd",
+      "license": "BSD-3-Clause",
+      "licenseFiles": [
+        "LICENSE.txt"
+      ],
+      "module": null,
+      "env": {
+        "PYTHONPATH": "/absolute/path/checkouts/itsdangerous/src"
+      },
+      "setup": "Explicit local checkout; dependencies installed separately with documented versions. No source is vendored. pytest 8.3.5; freezegun 1.5.1; python-dateutil 3.0.0; six 1.17.0",
+      "full": {
+        "command": "python3",
+        "args": [
+          "-m",
+          "pytest",
+          "--junitxml={report}",
+          "-o",
+          "junit_family=xunit1"
+        ]
+      },
+      "patches": [
+        {
+          "id": "neutral",
+          "kind": "neutral",
+          "file": "src/itsdangerous/serializer.py",
+          "attribution": "仅添加语言注释，行为不变；用于观察正常变更的额外选择和不完整状态"
+        },
+        {
+          "id": "controlled-fault",
+          "kind": "mutation",
+          "file": "src/itsdangerous/serializer.py",
+          "before": "return self.load_payload(signer.unsign(s))",
+          "after": "return None",
+          "attribution": "丢弃反序列化结果，已签名对象无法恢复"
+        }
+      ]
+    },
+    {
+      "id": "uuid",
+      "engine": "go",
+      "cwd": "/absolute/path/checkouts/uuid",
+      "url": "https://github.com/google/uuid",
+      "commit": "0f11ee6918f41a04c201eceeadf612a377bc7fbc",
+      "license": "BSD-3-Clause",
+      "licenseFiles": [
+        "LICENSE"
+      ],
+      "module": "github.com/google/uuid",
+      "env": {},
+      "setup": "Explicit local checkout; dependencies installed separately with documented versions. No source is vendored. Go 1.23.6",
+      "full": {
+        "command": "go",
+        "args": [
+          "test",
+          "-count=1",
+          "-json",
+          "./..."
+        ]
+      },
+      "patches": [
+        {
+          "id": "neutral",
+          "kind": "neutral",
+          "file": "uuid.go",
+          "attribution": "仅添加语言注释，行为不变；用于观察正常变更的额外选择和不完整状态"
+        },
+        {
+          "id": "controlled-fault",
+          "kind": "mutation",
+          "file": "uuid.go",
+          "before": "return Version(uuid[6] >> 4)",
+          "after": "return Version(uuid[6] >> 5)",
+          "attribution": "错误读取 UUID 版本位，现有版本断言应失败"
+        }
+      ]
+    },
+    {
+      "id": "glob",
+      "engine": "cargo",
+      "cwd": "/absolute/path/checkouts/glob",
+      "url": "https://github.com/rust-lang/glob",
+      "commit": "58d0748ead23616834871fe42dce475102f8d895",
+      "license": "MIT OR Apache-2.0",
+      "licenseFiles": [
+        "LICENSE-MIT",
+        "LICENSE-APACHE"
+      ],
+      "module": null,
+      "env": {},
+      "setup": "Explicit local checkout; dependencies installed separately with documented versions. No source is vendored. Rust 1.85.0, upstream Cargo manifest",
+      "full": {
+        "command": "cargo",
+        "args": [
+          "test"
+        ]
+      },
+      "patches": [
+        {
+          "id": "neutral",
+          "kind": "neutral",
+          "file": "src/lib.rs",
+          "attribution": "仅添加语言注释，行为不变；用于观察正常变更的额外选择和不完整状态"
+        },
+        {
+          "id": "controlled-fault",
+          "kind": "mutation",
+          "file": "src/lib.rs",
+          "before": "self.matches_with(str, MatchOptions::new())",
+          "after": "!self.matches_with(str, MatchOptions::new())",
+          "attribution": "反转公开 glob 匹配结果，crate 级断言应失败"
+        }
+      ]
+    },
+    {
+      "id": "commons-csv",
+      "engine": "maven",
+      "cwd": "/absolute/path/checkouts/commons-csv",
+      "url": "https://github.com/apache/commons-csv",
+      "commit": "67f0d6b30465d817a341b2e9cd31660a646e980c",
+      "license": "Apache-2.0",
+      "licenseFiles": [
+        "LICENSE.txt",
+        "NOTICE.txt"
+      ],
+      "module": null,
+      "env": {},
+      "setup": "Explicit local checkout; dependencies installed separately with documented versions. No source is vendored. Maven 3.9.9, JDK 17.0.13+11, existing system CA truststore",
+      "full": {
+        "command": "mvn",
+        "args": [
+          "-B",
+          "-q",
+          "-Dcheckstyle.skip",
+          "-Drat.skip=true",
+          "-Dspotbugs.skip=true",
+          "-Dpmd.skip=true",
+          "-Djacoco.skip=true",
+          "test"
+        ]
+      },
+      "patches": [
+        {
+          "id": "neutral",
+          "kind": "neutral",
+          "file": "src/main/java/org/apache/commons/csv/CSVFormat.java",
+          "attribution": "仅添加语言注释，行为不变；用于观察正常变更的额外选择和不完整状态"
+        },
+        {
+          "id": "controlled-fault",
+          "kind": "mutation",
+          "file": "src/main/java/org/apache/commons/csv/CSVFormat.java",
+          "before": "return delimiter.charAt(0);",
+          "after": "return '!';",
+          "attribution": "错误返回 CSV 分隔符，格式 getter 断言应失败"
+        }
+      ],
+      "inputLimits": {
+        "maxFileBytes": 67108864,
+        "maxTotalBytes": 536870912
+      }
+    }
+  ]
+}

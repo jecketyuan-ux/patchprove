@@ -1,0 +1,46 @@
+
+running 18 tests
+test test::test_glob_errors ... ok
+test test::test_iteration_errors ... ok
+test test::test_matches_path ... ok
+test test::test_path_join ... ok
+test test::test_pattern_from_str ... ok
+test test::test_pattern_escape ... ok
+test test::test_absolute_pattern ... ok
+test test::test_pattern_matches ... ok
+test test::test_pattern_matches_case_insensitive ... ok
+test test::test_pattern_matches_case_insensitive_range ... ok
+test test::test_pattern_matches_require_literal_leading_dot ... ok
+test test::test_pattern_matches_require_literal_separator ... ok
+test test::test_recursive_wildcards ... ok
+test test::test_range_pattern ... ok
+test test::test_unclosed_bracket_errors ... ok
+test test::test_wildcard_errors ... ok
+test test::test_wildcards ... ok
+test test::test_lots_of_files ... ok
+
+test result: ok. 18 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+
+running 1 test
+test main ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 7 tests
+test src/lib.rs - MatchOptions::new (line 1070) ... ignored
+test src/lib.rs - (line 42) - compile ... ok
+test src/lib.rs - glob (line 145) ... ignored
+test src/lib.rs - (line 27) - compile ... ok
+test src/lib.rs - glob (line 129) - compile ... ok
+test src/lib.rs - Pattern::matches (line 744) ... ok
+test src/lib.rs - glob (line 153) ... ok
+
+test result: ok. 5 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 0.26s
+
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running unittests src/lib.rs (target/debug/deps/glob-7967573658936bea)
+     Running tests/glob-std.rs (target/debug/deps/glob_std-259a6290487bf821)
+   Doc-tests glob

@@ -1,5 +1,8 @@
 import { existsSync, readFileSync } from "node:fs";
+import { spawnSync } from "node:child_process";
 import path from "node:path";
+import { readBoundedFile, parseBoundedJson, assertInputActive } from "./input-budget.js";
+import { childEnvironment } from "./exec.js";
 import { isOpenGap } from "./accept.js";
 import { riskRank } from "./risk.js";
 import { gapFingerprint, findingFingerprint } from "./fingerprint.js";
@@ -63,10 +66,40 @@ function compareItems(current: BaselineItemRef[], baseline: BaselineItemRef[], a
   return { added, updated, resolved: baseline.filter((_, i) => !consumed.has(i)) };
 }
 
+function snapshotCommit(evidence: Evidence): string | null {
+  const commit = evidence.snapshot?.mode === "range" ? evidence.snapshot.head : evidence.snapshot?.currentHead;
+  return typeof commit === "string" && /^(?:[a-f0-9]{40}|[a-f0-9]{64})$/i.test(commit) ? commit : null;
+}
+
+/** An explicit name alone must never turn unrelated repositories into one baseline source. */
+function baselineIsAncestor(current: Evidence, baseline: Evidence): boolean {
+  const previousCommit = snapshotCommit(baseline);
+  const currentCommit = snapshotCommit(current);
+  if (!previousCommit || !currentCommit) return false;
+  assertInputActive();
+  const result = spawnSync("git", ["--no-optional-locks", "--no-replace-objects", "-c", "core.fsmonitor=false", "merge-base", "--is-ancestor", previousCommit, currentCommit], {
+    cwd: current.repo.root, encoding: "utf8", env: childEnvironment(), timeout: 5_000, maxBuffer: 4 * 1024,
+    stdio: ["ignore", "pipe", "pipe"], windowsHide: true,
+  });
+  assertInputActive();
+  return result.status === 0 && !result.error;
+}
+
 function compatibility(current: Evidence, baseline: Evidence) {
   const reasons: string[] = [];
-  if (current.repo.root !== baseline.repo.root) reasons.push("Repository roots differ");
+  const currentId = current.repo.repositoryId;
+  const previousId = baseline.repo.repositoryId;
+  if (currentId !== undefined || previousId !== undefined) {
+    if (!currentId || !previousId) {
+      reasons.push("Both baseline and current evidence require explicit repository identity; regenerate the historical baseline");
+    } else if (currentId !== previousId) {
+      reasons.push("Repository identities differ");
+    } else if (!baselineIsAncestor(current, baseline)) {
+      reasons.push("Baseline commit is not a verifiable ancestor in the current repository history");
+    }
+  } else if (current.repo.root !== baseline.repo.root) reasons.push("Repository roots differ");
   if (!current.snapshot) reasons.push("Current evidence lacks snapshot provenance");
+  else if (!current.snapshot.consistent) reasons.push("Current snapshot was inconsistent");
   if (!baseline.snapshot) reasons.push("Baseline lacks snapshot provenance");
   else if (!baseline.snapshot.consistent) reasons.push("Baseline snapshot was inconsistent");
   else if (current.snapshot && (current.snapshot.algorithm !== baseline.snapshot.algorithm ||
@@ -135,8 +168,8 @@ export function loadBaselineInput(filePath: string): { evidence: Evidence; ident
   let raw: unknown;
   let text: string;
   try {
-    text = readFileSync(resolved, "utf8");
-    raw = JSON.parse(text);
+    text = readBoundedFile(resolved).toString("utf8");
+    raw = parseBoundedJson(text, resolved);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(`Cannot read baseline evidence JSON at ${resolved}: ${message}`);

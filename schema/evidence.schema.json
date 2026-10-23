@@ -23,7 +23,7 @@
     "schemaVersion": {
       "type": "string",
       "pattern": "^(1|2)\\.[0-9]+\\.[0-9]+$",
-      "description": "Evidence semver: protocol 2 emits 2.0.0; explicit protocol 1 compatibility emits 1.3.0. Readers accept known-major additive fields."
+      "description": "Evidence semver: protocol 2 emits 2.1.0; protocol 1 compatibility emits 1.3.0. Readers retain historical formats without inventing missing facts."
     },
     "generatedAt": {
       "type": "string",
@@ -46,6 +46,11 @@
         },
         "root": {
           "type": "string"
+        },
+        "repositoryId": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 256
         }
       }
     },
@@ -142,7 +147,7 @@
               "graph"
             ]
           },
-          "description": "Other strategies that also produced at least one source\u2192test mapping on this run."
+          "description": "Other strategies that also produced at least one source→test mapping on this run."
         },
         "mappingEvidence": {
           "type": "array",
@@ -273,6 +278,123 @@
       "type": "array",
       "items": {
         "$ref": "#/definitions/mappingEvidence"
+      }
+    },
+    "environment": {
+      "$ref": "#/definitions/environment"
+    },
+    "projectScopes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "path": {
+            "type": "string"
+          },
+          "applicable": {
+            "type": "boolean"
+          },
+          "reason": {
+            "type": "string"
+          }
+        },
+        "required": [
+          "path",
+          "applicable",
+          "reason"
+        ]
+      }
+    },
+    "resolutionProvenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "parserVersion",
+        "inputHash",
+        "configurations",
+        "resolutions"
+      ],
+      "properties": {
+        "parserVersion": {
+          "const": "2"
+        },
+        "inputHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "configurations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "hash"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        },
+        "resolutions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "from",
+              "specifier",
+              "kind",
+              "targets"
+            ],
+            "properties": {
+              "from": {
+                "type": "string"
+              },
+              "specifier": {
+                "type": "string"
+              },
+              "kind": {
+                "enum": [
+                  "builtin",
+                  "external",
+                  "internal-resolved",
+                  "internal-unresolved"
+                ]
+              },
+              "targets": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "reportArchive": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "manifestPath",
+        "manifestHash"
+      ],
+      "properties": {
+        "manifestPath": {
+          "type": "string"
+        },
+        "manifestHash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        }
       }
     }
   },
@@ -994,6 +1116,12 @@
             "version",
             "inputHash"
           ]
+        },
+        "testExecution": {
+          "$ref": "#/definitions/testExecution"
+        },
+        "required": {
+          "type": "boolean"
         }
       },
       "required": [
@@ -1037,6 +1165,47 @@
         },
         "unitId": {
           "type": "string"
+        },
+        "sourceFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "granularity": {
+          "enum": [
+            "file",
+            "package",
+            "crate",
+            "repository"
+          ]
+        },
+        "policy": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "mode": {
+              "enum": [
+                "required",
+                "optional",
+                "not-applicable"
+              ]
+            },
+            "reason": {
+              "type": "string",
+              "minLength": 1
+            },
+            "expiresAt": {
+              "type": "string"
+            },
+            "project": {
+              "type": "string"
+            }
+          },
+          "required": [
+            "mode",
+            "project"
+          ]
         }
       },
       "required": [
@@ -1303,6 +1472,45 @@
         "hash": {
           "type": "string",
           "pattern": "^(sha256:)?[0-9a-f]{64}$"
+        },
+        "projects": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string",
+                "minLength": 1
+              },
+              "gates": {
+                "type": "object",
+                "additionalProperties": false,
+                "properties": {
+                  "typecheck": {
+                    "$ref": "#/definitions/projectGatePolicy"
+                  },
+                  "lint": {
+                    "$ref": "#/definitions/projectGatePolicy"
+                  },
+                  "tests": {
+                    "$ref": "#/definitions/projectGatePolicy"
+                  },
+                  "secrets": {
+                    "$ref": "#/definitions/projectGatePolicy"
+                  }
+                }
+              }
+            },
+            "required": [
+              "path",
+              "gates"
+            ]
+          }
+        },
+        "pluginSetHash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
         }
       },
       "required": [
@@ -1364,6 +1572,779 @@
         "test",
         "via",
         "precision"
+      ]
+    },
+    "testExecution": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "parserVersion": {
+          "const": "1"
+        },
+        "format": {
+          "enum": [
+            "vitest-json",
+            "jest-json",
+            "pytest-junit",
+            "java-junit",
+            "go-json",
+            "cargo-harness",
+            "unavailable"
+          ]
+        },
+        "granularity": {
+          "enum": [
+            "file",
+            "package",
+            "crate"
+          ]
+        },
+        "requestedScope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "collectedScope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "executedScope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "skippedScope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "unknownScope": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "counts": {
+          "type": "object",
+          "additionalProperties": false,
+          "properties": {
+            "collected": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "executed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "passed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "failed": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "skipped": {
+              "type": "integer",
+              "minimum": 0
+            }
+          },
+          "required": [
+            "collected",
+            "executed",
+            "passed",
+            "failed",
+            "skipped"
+          ]
+        },
+        "reportHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "reportPath": {
+          "type": "string"
+        },
+        "reason": {
+          "type": "string"
+        },
+        "sourceFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "eligibleSourceFiles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "reportStatus": {
+          "enum": [
+            "validated",
+            "partial",
+            "missing",
+            "invalid",
+            "truncated"
+          ]
+        },
+        "reportRetention": {
+          "enum": [
+            "retained",
+            "not-retained"
+          ]
+        },
+        "reports": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/reportArtifact"
+          }
+        },
+        "javaRuntimeObservations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/javaTestRuntimeObservation"
+          }
+        }
+      },
+      "required": [
+        "parserVersion",
+        "format",
+        "granularity",
+        "requestedScope",
+        "collectedScope",
+        "executedScope",
+        "skippedScope",
+        "unknownScope",
+        "counts",
+        "reportStatus"
+      ]
+    },
+    "inputLimits": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "maxFileBytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxTotalBytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxFiles": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxJsonBytes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxJsonDepth": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxJsonNodes": {
+          "type": "integer",
+          "minimum": 1
+        },
+        "maxGraphEdges": {
+          "type": "integer",
+          "minimum": 1
+        }
+      },
+      "required": [
+        "maxFileBytes",
+        "maxTotalBytes",
+        "maxFiles",
+        "maxJsonBytes",
+        "maxJsonDepth",
+        "maxJsonNodes",
+        "maxGraphEdges"
+      ]
+    },
+    "environment": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "platform": {
+          "type": "string"
+        },
+        "arch": {
+          "type": "string"
+        },
+        "nodeVersion": {
+          "type": "string"
+        },
+        "gitVersion": {
+          "type": "string"
+        },
+        "hermetic": {
+          "const": false
+        },
+        "inputLimits": {
+          "$ref": "#/definitions/inputLimits"
+        },
+        "tools": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "name": {
+                "type": "string"
+              },
+              "version": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "path": {
+                "type": "string"
+              }
+            },
+            "required": [
+              "name",
+              "version",
+              "path"
+            ]
+          }
+        },
+        "dependencyLocks": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            },
+            "required": [
+              "path",
+              "hash"
+            ]
+          }
+        },
+        "configurations": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "hash"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        },
+        "javaToolOptionsFileEncoding": {
+          "type": "string",
+          "enum": [
+            "UTF-8",
+            "UTF8",
+            "UTF-16",
+            "US-ASCII",
+            "ISO-8859-1",
+            "windows-1252"
+          ]
+        },
+        "plugins": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/pluginProvenance"
+          }
+        },
+        "reportRetention": {
+          "enum": [
+            "requested",
+            "not-requested"
+          ]
+        },
+        "parser": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "engine",
+            "version"
+          ],
+          "properties": {
+            "engine": {
+              "const": "typescript"
+            },
+            "version": {
+              "type": "string"
+            }
+          }
+        },
+        "javaRuntimes": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/javaRuntime"
+          }
+        }
+      },
+      "required": [
+        "platform",
+        "arch",
+        "nodeVersion",
+        "gitVersion",
+        "hermetic",
+        "inputLimits",
+        "tools",
+        "dependencyLocks"
+      ]
+    },
+    "projectGatePolicy": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "mode": {
+          "enum": [
+            "required",
+            "optional",
+            "not-applicable"
+          ]
+        },
+        "reason": {
+          "type": "string",
+          "minLength": 1
+        },
+        "expiresAt": {
+          "type": "string"
+        }
+      },
+      "required": [
+        "mode"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "mode": {
+                "const": "not-applicable"
+              }
+            }
+          },
+          "then": {
+            "required": [
+              "reason"
+            ]
+          }
+        }
+      ]
+    },
+    "reportArtifact": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "hash",
+        "bytes",
+        "format",
+        "contextPath",
+        "contextHash"
+      ],
+      "properties": {
+        "path": {
+          "type": "string"
+        },
+        "hash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        },
+        "bytes": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "format": {
+          "enum": [
+            "vitest-json",
+            "jest-json",
+            "pytest-junit",
+            "java-junit",
+            "go-json",
+            "cargo-harness",
+            "unavailable"
+          ]
+        },
+        "contextPath": {
+          "type": "string"
+        },
+        "contextHash": {
+          "type": "string",
+          "pattern": "^sha256:[a-f0-9]{64}$"
+        }
+      }
+    },
+    "pluginProvenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "source",
+        "entry",
+        "entryHash",
+        "order",
+        "inputs",
+        "dependencyCoverage",
+        "unknownDependencies"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "minLength": 1
+        },
+        "source": {
+          "enum": [
+            "builtin",
+            "auto",
+            "environment",
+            "configuration"
+          ]
+        },
+        "entry": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "entryHash": {
+          "anyOf": [
+            {
+              "type": "string",
+              "pattern": "^[a-f0-9]{64}$"
+            },
+            {
+              "type": "null"
+            }
+          ]
+        },
+        "order": {
+          "type": "integer",
+          "minimum": 0
+        },
+        "effective": {
+          "type": "boolean"
+        },
+        "capabilities": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "contractVersion",
+            "testedRunners",
+            "granularity",
+            "reportFormats",
+            "unknownResult"
+          ],
+          "properties": {
+            "contractVersion": {
+              "const": 1
+            },
+            "testedRunners": {
+              "type": "array",
+              "items": {
+                "type": "string"
+              }
+            },
+            "granularity": {
+              "enum": [
+                "file",
+                "package",
+                "crate"
+              ]
+            },
+            "reportFormats": {
+              "type": "array",
+              "items": {
+                "enum": [
+                  "vitest-json",
+                  "jest-json",
+                  "pytest-junit",
+                  "java-junit",
+                  "go-json",
+                  "cargo-harness",
+                  "unavailable"
+                ]
+              }
+            },
+            "unknownResult": {
+              "const": "incomplete"
+            }
+          }
+        },
+        "inputs": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "path",
+              "hash"
+            ],
+            "properties": {
+              "path": {
+                "type": "string"
+              },
+              "hash": {
+                "type": "string",
+                "pattern": "^[a-f0-9]{64}$"
+              }
+            }
+          }
+        },
+        "dependencyCoverage": {
+          "enum": [
+            "static",
+            "unknown"
+          ]
+        },
+        "unknownDependencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "javaRuntime": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runner",
+        "runnerPath",
+        "javaVersion",
+        "javaHome",
+        "vendor",
+        "fileEncoding",
+        "nativeEncoding",
+        "source"
+      ],
+      "properties": {
+        "runner": {
+          "enum": [
+            "maven",
+            "gradle"
+          ]
+        },
+        "runnerPath": {
+          "type": "string"
+        },
+        "source": {
+          "enum": [
+            "runner-version",
+            "runner-settings"
+          ]
+        },
+        "javaVersion": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "javaHome": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "vendor": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "fileEncoding": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "nativeEncoding": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "role": {
+          "enum": [
+            "launcher",
+            "daemon",
+            "test"
+          ]
+        },
+        "project": {
+          "type": "string"
+        }
+      }
+    },
+    "javaTestRuntimeObservation": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "role": {
+          "const": "test"
+        },
+        "source": {
+          "const": "junit-properties"
+        },
+        "status": {
+          "enum": [
+            "observed",
+            "unknown"
+          ]
+        },
+        "reportHash": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "suite": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 1024,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$"
+        },
+        "scope": {
+          "type": "array",
+          "uniqueItems": true,
+          "items": {
+            "type": "string"
+          }
+        },
+        "javaVersion": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 120,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$"
+        },
+        "javaHome": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 4096,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$"
+        },
+        "vendor": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 256,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$"
+        },
+        "fileEncoding": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$"
+        },
+        "nativeEncoding": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "minLength": 1,
+          "maxLength": 64,
+          "pattern": "^[^\\u0000-\\u001f\\u007f]*$"
+        },
+        "reason": {
+          "enum": [
+            "missing-properties",
+            "conflicting-properties",
+            "invalid-properties",
+            "missing-suite-identity",
+            "unattributed-scope"
+          ]
+        }
+      },
+      "required": [
+        "role",
+        "source",
+        "status",
+        "reportHash",
+        "suite",
+        "scope",
+        "javaVersion",
+        "javaHome",
+        "vendor",
+        "fileEncoding",
+        "nativeEncoding"
+      ],
+      "allOf": [
+        {
+          "if": {
+            "properties": {
+              "status": {
+                "const": "observed"
+              }
+            }
+          },
+          "then": {
+            "properties": {
+              "suite": {
+                "type": "string"
+              },
+              "javaVersion": {
+                "type": "string"
+              },
+              "javaHome": {
+                "type": "string"
+              },
+              "vendor": {
+                "type": "string"
+              },
+              "fileEncoding": {
+                "type": "string"
+              },
+              "nativeEncoding": {
+                "type": "string"
+              },
+              "scope": {
+                "minItems": 1
+              }
+            },
+            "not": {
+              "required": [
+                "reason"
+              ]
+            }
+          },
+          "else": {
+            "required": [
+              "reason"
+            ]
+          }
+        }
       ]
     }
   },

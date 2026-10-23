@@ -1,0 +1,134 @@
+{
+  "schemaVersion": "2.0.0",
+  "generatedAt": "2026-10-22T17:26:41.951Z",
+  "toolVersion": "2.0.0",
+  "repo": {
+    "cwd": "/tmp",
+    "root": "/tmp"
+  },
+  "range": {
+    "mode": "working-tree",
+    "base": "HEAD",
+    "head": null
+  },
+  "impact": {
+    "changedFiles": [],
+    "mappedTests": [],
+    "unmappedSources": [],
+    "languages": [],
+    "mappingStrategy": "naming"
+  },
+  "checks": [
+    {
+      "id": "tests",
+      "name": "tests",
+      "status": "passed",
+      "records": [
+        {
+          "id": "tests:javascript",
+          "checkId": "tests",
+          "scope": [
+            "src/a.test.ts"
+          ],
+          "status": "failed",
+          "command": "vitest",
+          "args": [
+            "run",
+            "src/a.test.ts"
+          ],
+          "cwd": "/tmp",
+          "exitCode": 1,
+          "durationMs": 1,
+          "collectedTests": 1
+        }
+      ]
+    }
+  ],
+  "gaps": [],
+  "findings": [],
+  "summary": {
+    "risk": "none",
+    "checksPassed": 1,
+    "checksFailed": 0,
+    "checksSkipped": 0,
+    "gapCount": 0,
+    "acceptedGapCount": 0,
+    "findingCount": 0
+  },
+  "contract": {
+    "loaded": false,
+    "passed": true,
+    "source": null,
+    "format": null,
+    "clauses": []
+  },
+  "baselineComparison": null,
+  "snapshot": {
+    "algorithm": "sha256",
+    "version": 1,
+    "mode": "working-tree",
+    "base": "HEAD",
+    "head": null,
+    "mergeBase": null,
+    "currentHead": null,
+    "tree": null,
+    "contentHash": "sha256:abababababababababababababababababababababababababababababababab",
+    "patchHash": "sha256:abababababababababababababababababababababababababababababababab",
+    "dirty": false,
+    "consistent": true
+  },
+  "effectivePolicy": {
+    "protocol": 2,
+    "strict": true,
+    "failOn": null,
+    "failOnNewGaps": null,
+    "gates": {
+      "typecheck": true,
+      "lint": true,
+      "tests": true,
+      "secrets": true
+    },
+    "ignorePaths": [],
+    "acceptGaps": [],
+    "plugins": [],
+    "config": null,
+    "spec": null,
+    "baseline": null,
+    "hash": "sha256:abababababababababababababababababababababababababababababababab"
+  },
+  "verificationPlan": [
+    {
+      "id": "plan:tests",
+      "checkId": "tests",
+      "scope": [
+        "src/a.test.ts"
+      ],
+      "required": true,
+      "reason": "changed test"
+    }
+  ],
+  "executionRecords": [
+    {
+      "id": "tests:javascript",
+      "checkId": "tests",
+      "scope": [
+        "src/a.test.ts"
+      ],
+      "status": "passed",
+      "command": "vitest",
+      "args": [
+        "run",
+        "src/a.test.ts"
+      ],
+      "cwd": "/tmp",
+      "exitCode": 0,
+      "durationMs": 1,
+      "collectedTests": 1
+    }
+  ],
+  "verification": {
+    "status": "passed",
+    "strict": true,
+    "reasons": []
+  }
+}

@@ -64,7 +64,7 @@ describe("verification through directory aliases", () => {
       config: path.join(alias, "custom.yml"), spec: path.join(alias, "custom-spec.yml"), baseline: path.join(alias, "baseline.json") });
     expect(evidence.snapshot?.consistent).toBe(true);
     expect(evidence.effectivePolicy?.gates.tests).toBe(false);
-    expect(evidence.effectivePolicy?.config).toEqual({ path: path.join(root, "custom.yml"), hash: hashCanonical(targetConfig) });
+    expect(evidence.effectivePolicy?.config).toEqual({ path: "custom.yml", hash: hashCanonical(targetConfig) });
     expect(evidence.effectivePolicy?.spec?.hash).toBe(hashCanonical(targetSpec));
     expect(evidence.effectivePolicy?.baseline?.hash).toBe(hashCanonical(targetBaseline));
     expect(git(root, "rev-parse", "HEAD")).toBe(base);

@@ -1,5 +1,8 @@
 # Roadmap
 
+Current follow-up: [R01–R10 stabilization and release gates](docs/upgrades/2.0-stabilization.md), continuing [U01–U11](docs/upgrades/2x-hardening.md). Implemented code, measured results and external not-run gates are tracked separately.
+
+
 The working tree implements the 2.0 upgrade; publishing and external validation remain separate activities. The dated [2026-10-22 review](docs/reviews/2026-10-22/03-upgrade-roadmap.md) is an immutable historical assessment, not a current feature-status list.
 
 ## Implemented in this checkout
@@ -19,6 +22,7 @@ Implementation and fixture coverage do not establish complete language semantics
 2. Execute and retain results from the declared Node/OS CI matrix; resolve failures before declaring those platforms validated.
 3. Exercise actual supported host versions, including cancellation, re-entry, and advisory/blocking responses.
 4. Review tarball contents, migration guidance, dependency state, and release references before a separate authorized publish/tag operation.
+5. Pass `check:acceptance` against the exact clean candidate, actual tarball, current-head CI and all live Claude/Cursor, same/fork GitHub and Windows cases. Failed/incomplete/not-run cases block stable release; experimental labeling does not waive this gate for current external features.
 
 ## Further work
 

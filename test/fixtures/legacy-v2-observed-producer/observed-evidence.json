@@ -1,0 +1,525 @@
+{
+  "schemaVersion": "2.0.0",
+  "generatedAt": "2026-10-23T09:38:19.922Z",
+  "toolVersion": "2.0.0",
+  "repo": {
+    "cwd": "/tmp/patchprove-legacy-observed-project-IFsmHb",
+    "root": "/tmp/patchprove-legacy-observed-project-IFsmHb"
+  },
+  "range": {
+    "mode": "working-tree",
+    "base": "0825047dceb5485fb937ef17bedc3ebca02970a4",
+    "head": null
+  },
+  "impact": {
+    "changedFiles": [
+      {
+        "path": "value.js",
+        "status": "modified",
+        "additions": 1,
+        "deletions": 1,
+        "highRisk": false,
+        "riskKind": null
+      }
+    ],
+    "mappedTests": [
+      {
+        "source": "value.js",
+        "tests": [
+          "value.test.js"
+        ],
+        "via": "graph",
+        "origins": [
+          "naming",
+          "graph"
+        ]
+      }
+    ],
+    "unmappedSources": [],
+    "languages": [
+      "javascript"
+    ],
+    "mappingStrategy": "graph",
+    "mappingFallbacks": [
+      "naming"
+    ],
+    "mappingEvidence": [
+      {
+        "source": "value.js",
+        "test": "value.test.js",
+        "via": "naming",
+        "precision": "heuristic",
+        "origin": "filename",
+        "freshness": "current",
+        "inputHash": "c7c27f2ae8139b28150913aedb43a1ac90ec2e22f7c88393f80ba742bc792f71"
+      },
+      {
+        "source": "value.js",
+        "test": "value.test.js",
+        "via": "graph",
+        "precision": "structural",
+        "origin": "import-graph",
+        "freshness": "current",
+        "inputHash": "05dc5c99f3ad235270e5687b7dfd7b896628b7f414f5b4dcd858e55b48283c45"
+      }
+    ],
+    "mappingDiagnostics": [
+      {
+        "code": "mapping-unresolved-import",
+        "message": "Import \"vitest\" in value.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+        "severity": "warning",
+        "files": [
+          "value.test.js"
+        ]
+      }
+    ]
+  },
+  "checks": [
+    {
+      "id": "typecheck",
+      "name": "typecheck",
+      "status": "skipped",
+      "reason": "Disabled by config (gates.typecheck: false)",
+      "command": null,
+      "exitCode": null,
+      "durationMs": 0,
+      "records": [
+        {
+          "id": "typecheck:disabled",
+          "checkId": "typecheck",
+          "scope": [
+            "."
+          ],
+          "status": "skipped",
+          "command": null,
+          "args": [],
+          "cwd": "/tmp/patchprove-legacy-observed-project-IFsmHb",
+          "exitCode": null,
+          "durationMs": 0,
+          "reason": "Disabled by config (gates.typecheck: false)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "lint",
+      "name": "lint",
+      "status": "skipped",
+      "reason": "Disabled by config (gates.lint: false)",
+      "command": null,
+      "exitCode": null,
+      "durationMs": 0,
+      "records": [
+        {
+          "id": "lint:disabled",
+          "checkId": "lint",
+          "scope": [
+            "."
+          ],
+          "status": "skipped",
+          "command": null,
+          "args": [],
+          "cwd": "/tmp/patchprove-legacy-observed-project-IFsmHb",
+          "exitCode": null,
+          "durationMs": 0,
+          "reason": "Disabled by config (gates.lint: false)",
+          "required": false
+        }
+      ]
+    },
+    {
+      "id": "tests",
+      "name": "affected tests (vitest)",
+      "status": "passed",
+      "reason": "ok",
+      "command": "/tmp/patchprove-legacy-observed-project-IFsmHb/node_modules/.bin/vitest run value.test.js --reporter=json --outputFile /tmp/patchprove-test-report-Y9ya4C/results.json",
+      "exitCode": 0,
+      "durationMs": 472,
+      "detail": "JSON report written to /tmp/patchprove-test-report-Y9ya4C/results.json",
+      "timedOut": false,
+      "truncated": false,
+      "records": [
+        {
+          "id": "tests:javascript",
+          "checkId": "tests",
+          "scope": [
+            "value.test.js"
+          ],
+          "status": "passed",
+          "command": "/tmp/patchprove-legacy-observed-project-IFsmHb/node_modules/.bin/vitest",
+          "args": [
+            "run",
+            "value.test.js",
+            "--reporter=json",
+            "--outputFile",
+            "/tmp/patchprove-test-report-Y9ya4C/results.json"
+          ],
+          "cwd": "/tmp/patchprove-legacy-observed-project-IFsmHb",
+          "exitCode": 0,
+          "durationMs": 472,
+          "reason": "ok",
+          "toolVersion": "vitest/4.1.12",
+          "collectedTests": 1,
+          "signal": null,
+          "truncated": false,
+          "outputHash": "8412ae36a866397494d2ef2daa276c426665e9fdac5ad127c8232d946c9ada62",
+          "required": true,
+          "testExecution": {
+            "parserVersion": "1",
+            "format": "vitest-json",
+            "reportStatus": "validated",
+            "granularity": "file",
+            "requestedScope": [
+              "value.test.js"
+            ],
+            "collectedScope": [
+              "value.test.js"
+            ],
+            "executedScope": [
+              "value.test.js"
+            ],
+            "skippedScope": [],
+            "unknownScope": [],
+            "counts": {
+              "collected": 1,
+              "executed": 1,
+              "passed": 1,
+              "failed": 0,
+              "skipped": 0
+            },
+            "reportHash": "975b12045a024de4427e698fa7c1b98cdec6fe86713b74dcd06dfdbfc22e55ff",
+            "reportPath": "/tmp/patchprove-test-report-Y9ya4C/results.json",
+            "sourceFiles": [
+              "value.test.js"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "id": "secrets",
+      "name": "secret scan (regex)",
+      "status": "passed",
+      "reason": "no known key patterns or high-entropy tokens in added lines",
+      "command": null,
+      "exitCode": 0,
+      "durationMs": 1,
+      "records": [
+        {
+          "id": "secrets:regex",
+          "checkId": "secrets",
+          "scope": [
+            "value.js"
+          ],
+          "status": "passed",
+          "command": null,
+          "args": [],
+          "cwd": "/tmp/patchprove-legacy-observed-project-IFsmHb",
+          "exitCode": 0,
+          "durationMs": 1,
+          "reason": "no known key patterns or high-entropy tokens in added lines",
+          "toolVersion": "builtin-regex-v1",
+          "outputHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        }
+      ]
+    }
+  ],
+  "gaps": [],
+  "findings": [],
+  "summary": {
+    "risk": "none",
+    "checksPassed": 2,
+    "checksFailed": 0,
+    "checksSkipped": 2,
+    "gapCount": 0,
+    "acceptedGapCount": 0,
+    "findingCount": 0
+  },
+  "contract": {
+    "loaded": false,
+    "passed": true,
+    "source": null,
+    "format": null,
+    "clauses": []
+  },
+  "baselineComparison": null,
+  "mappingEvidence": [
+    {
+      "source": "value.js",
+      "test": "value.test.js",
+      "via": "naming",
+      "precision": "heuristic",
+      "origin": "filename",
+      "freshness": "current",
+      "inputHash": "c7c27f2ae8139b28150913aedb43a1ac90ec2e22f7c88393f80ba742bc792f71"
+    },
+    {
+      "source": "value.js",
+      "test": "value.test.js",
+      "via": "graph",
+      "precision": "structural",
+      "origin": "import-graph",
+      "freshness": "current",
+      "inputHash": "05dc5c99f3ad235270e5687b7dfd7b896628b7f414f5b4dcd858e55b48283c45"
+    }
+  ],
+  "diagnostics": [
+    {
+      "code": "mapping-unresolved-import",
+      "message": "Import \"vitest\" in value.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+      "severity": "warning",
+      "files": [
+        "value.test.js"
+      ]
+    }
+  ],
+  "snapshot": {
+    "algorithm": "sha256",
+    "version": 1,
+    "mode": "working-tree",
+    "base": "0825047dceb5485fb937ef17bedc3ebca02970a4",
+    "head": null,
+    "mergeBase": null,
+    "currentHead": "0825047dceb5485fb937ef17bedc3ebca02970a4",
+    "tree": "55a629f379658c09bbf03b48c3a5af59c465f7f5",
+    "contentHash": "e0b1bc800869a6ce55ed2eb8c67f596f06d06583ab6a6043ea245bd333b8e348",
+    "patchHash": "cb7406b444556e1e3b29806a20be6d33f06b48915fc058538f608301d55d0aad",
+    "dirty": true,
+    "consistent": true,
+    "excludedPaths": []
+  },
+  "executionRecords": [
+    {
+      "id": "typecheck:disabled",
+      "checkId": "typecheck",
+      "scope": [
+        "."
+      ],
+      "status": "skipped",
+      "command": null,
+      "args": [],
+      "cwd": "/tmp/patchprove-legacy-observed-project-IFsmHb",
+      "exitCode": null,
+      "durationMs": 0,
+      "reason": "Disabled by config (gates.typecheck: false)",
+      "required": false
+    },
+    {
+      "id": "lint:disabled",
+      "checkId": "lint",
+      "scope": [
+        "."
+      ],
+      "status": "skipped",
+      "command": null,
+      "args": [],
+      "cwd": "/tmp/patchprove-legacy-observed-project-IFsmHb",
+      "exitCode": null,
+      "durationMs": 0,
+      "reason": "Disabled by config (gates.lint: false)",
+      "required": false
+    },
+    {
+      "id": "tests:javascript",
+      "checkId": "tests",
+      "scope": [
+        "value.test.js"
+      ],
+      "status": "passed",
+      "command": "/tmp/patchprove-legacy-observed-project-IFsmHb/node_modules/.bin/vitest",
+      "args": [
+        "run",
+        "value.test.js",
+        "--reporter=json",
+        "--outputFile",
+        "/tmp/patchprove-test-report-Y9ya4C/results.json"
+      ],
+      "cwd": "/tmp/patchprove-legacy-observed-project-IFsmHb",
+      "exitCode": 0,
+      "durationMs": 472,
+      "reason": "ok",
+      "toolVersion": "vitest/4.1.12",
+      "collectedTests": 1,
+      "signal": null,
+      "truncated": false,
+      "outputHash": "8412ae36a866397494d2ef2daa276c426665e9fdac5ad127c8232d946c9ada62",
+      "required": true,
+      "testExecution": {
+        "parserVersion": "1",
+        "format": "vitest-json",
+        "reportStatus": "validated",
+        "granularity": "file",
+        "requestedScope": [
+          "value.test.js"
+        ],
+        "collectedScope": [
+          "value.test.js"
+        ],
+        "executedScope": [
+          "value.test.js"
+        ],
+        "skippedScope": [],
+        "unknownScope": [],
+        "counts": {
+          "collected": 1,
+          "executed": 1,
+          "passed": 1,
+          "failed": 0,
+          "skipped": 0
+        },
+        "reportHash": "975b12045a024de4427e698fa7c1b98cdec6fe86713b74dcd06dfdbfc22e55ff",
+        "reportPath": "/tmp/patchprove-test-report-Y9ya4C/results.json",
+        "sourceFiles": [
+          "value.test.js"
+        ]
+      }
+    },
+    {
+      "id": "secrets:regex",
+      "checkId": "secrets",
+      "scope": [
+        "value.js"
+      ],
+      "status": "passed",
+      "command": null,
+      "args": [],
+      "cwd": "/tmp/patchprove-legacy-observed-project-IFsmHb",
+      "exitCode": 0,
+      "durationMs": 1,
+      "reason": "no known key patterns or high-entropy tokens in added lines",
+      "toolVersion": "builtin-regex-v1",
+      "outputHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+    }
+  ],
+  "verificationPlan": [
+    {
+      "id": "plan:typecheck:disabled",
+      "unitId": "typecheck:disabled",
+      "checkId": "typecheck",
+      "scope": [
+        "."
+      ],
+      "required": false,
+      "reason": "Disabled by config (gates.typecheck: false)",
+      "granularity": "repository"
+    },
+    {
+      "id": "plan:lint:disabled",
+      "unitId": "lint:disabled",
+      "checkId": "lint",
+      "scope": [
+        "."
+      ],
+      "required": false,
+      "reason": "Disabled by config (gates.lint: false)",
+      "granularity": "repository"
+    },
+    {
+      "id": "plan:tests:javascript",
+      "unitId": "tests:javascript",
+      "checkId": "tests",
+      "scope": [
+        "value.test.js"
+      ],
+      "sourceFiles": [
+        "value.test.js"
+      ],
+      "granularity": "file",
+      "required": true,
+      "reason": "Selected javascript file unit"
+    },
+    {
+      "id": "plan:secrets",
+      "checkId": "secrets",
+      "scope": [
+        "value.js"
+      ],
+      "required": true,
+      "reason": "All selected added lines must be scanned"
+    }
+  ],
+  "effectivePolicy": {
+    "protocol": 2,
+    "strict": true,
+    "failOn": null,
+    "failOnNewGaps": null,
+    "gates": {
+      "typecheck": false,
+      "lint": false,
+      "tests": true,
+      "secrets": true
+    },
+    "ignorePaths": [],
+    "acceptGaps": [],
+    "plugins": [],
+    "config": null,
+    "spec": null,
+    "baseline": null,
+    "hash": "sha256:371d139629f53f2817ae90e409b59de1ddcab968818195c67f42f12bc850841f"
+  },
+  "environment": {
+    "platform": "linux",
+    "arch": "x64",
+    "nodeVersion": "v24.19.0",
+    "gitVersion": "git version 2.52.0",
+    "tools": [
+      {
+        "name": "vitest",
+        "version": "vitest/4.1.12",
+        "path": "/workspace/patchprove/node_modules/vitest/vitest.mjs"
+      }
+    ],
+    "dependencyLocks": [],
+    "inputLimits": {
+      "maxFileBytes": 33554432,
+      "maxTotalBytes": 268435456,
+      "maxFiles": 50000,
+      "maxJsonBytes": 8388608,
+      "maxJsonDepth": 64,
+      "maxJsonNodes": 200000,
+      "maxGraphEdges": 500000
+    },
+    "hermetic": false,
+    "configurations": [
+      {
+        "path": "package.json",
+        "hash": "1ba77461404519a7f43625e6971bf942d881bf7543d295583264e639894c2444"
+      },
+      {
+        "path": "vitest.config.mjs",
+        "hash": "4e4ff2549db2ee3b5c2084475d94ad51edce47633e256cefcdd1d3d0a7fb64da"
+      }
+    ]
+  },
+  "resolutionProvenance": {
+    "parserVersion": "2",
+    "inputHash": "05dc5c99f3ad235270e5687b7dfd7b896628b7f414f5b4dcd858e55b48283c45",
+    "configurations": [
+      {
+        "path": "package.json",
+        "hash": "1ba77461404519a7f43625e6971bf942d881bf7543d295583264e639894c2444"
+      }
+    ],
+    "resolutions": [
+      {
+        "from": "value.test.js",
+        "specifier": "./value.js",
+        "kind": "internal-resolved",
+        "targets": [
+          "value.js"
+        ]
+      },
+      {
+        "from": "value.test.js",
+        "specifier": "vitest",
+        "kind": "external",
+        "targets": []
+      }
+    ]
+  },
+  "verification": {
+    "status": "passed",
+    "strict": true,
+    "reasons": []
+  }
+}

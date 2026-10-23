@@ -9,8 +9,9 @@ import {
 } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 import path from "node:path";
+import { readJsonInput } from "./input-budget.js";
 import { writeJsonAtomic } from "./artifacts.js";
-import { evaluateVerification } from "./decision.js";
+import { evaluateVerification, hasUnprovenTestSuccess } from "./decision.js";
 import { validateEvidence, validateReceipt } from "./validation.js";
 import type {
   CheckDigest,
@@ -88,10 +89,19 @@ export function canonicalEvidence(evidence: Evidence): unknown {
   const { generatedAt: _generatedAt, receipt: _receipt, ...rest } = evidence;
   if (evidence.schemaVersion.startsWith("2.")) {
     const locations = evidence.executionRecords?.map((record) => record.cwd).filter(Boolean) ?? [];
-    const portable = (value: string): string => locations.reduce((text, cwd) => text.replaceAll(cwd, "<snapshot>"), value);
+    const reports = evidence.executionRecords?.flatMap((record) => record.testExecution?.reportPath ? [record.testExecution.reportPath] : []) ?? [];
+    const portable = (value: string): string => locations.reduce((text, cwd) => text.replaceAll(cwd, "<snapshot>"), reports.reduce((text, report) => text.replaceAll(report, "<test-report>"), value));
     const stableRecord = (record: NonNullable<Evidence["executionRecords"]>[number]) => {
       const { durationMs: _duration, outputHash: _output, cwd: _cwd, ...stable } = record;
-      return { ...stable, command: stable.command ? portable(stable.command) : null, args: stable.args.map(portable) };
+      const facts = stable.testExecution ? { ...stable.testExecution } : undefined;
+      if (facts) {
+        delete facts.reportHash;
+        if (facts.reportPath) facts.reportPath = "<test-report>";
+        if (facts.reason) facts.reason = portable(facts.reason);
+      }
+      return { ...stable, command: stable.command ? portable(stable.command) : null, args: stable.args.map(portable),
+        ...(stable.reason ? { reason: portable(stable.reason) } : {}),
+        ...(facts ? { testExecution: facts } : {}) };
     };
     const { excludedPaths: _outputs, ...snapshot } = evidence.snapshot ?? {};
     return sortKeys({
@@ -303,7 +313,7 @@ export function readReceiptFile(filePath: string): EvidenceReceipt {
   const resolved = path.resolve(filePath);
   let raw: unknown;
   try {
-    raw = JSON.parse(readFileSync(resolved, "utf8"));
+    raw = readJsonInput(resolved);
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
     throw new Error(`Cannot read receipt JSON at ${resolved}: ${message}`);
@@ -378,14 +388,19 @@ export function verifyReceipt(
   const fingerprint = receipt.signature?.publicKey ? publicKeyFingerprint(receipt.signature.publicKey) : null;
   const trust: NonNullable<VerifyReceiptResult["trust"]> = trustedKeys.length === 0 ? "unconfigured" : signature === "verified" && fingerprint && trustedKeys.includes(fingerprint) ? "trusted" : "untrusted";
   const signatureRequired = policy.requireSignature || trustedKeys.length > 0;
-  const legacyAllowed = modern || policy.allowLegacy !== false;
+  const legacyScope = modern && hasUnprovenTestSuccess(evidence);
+  const legacyAllowed = modern ? !legacyScope || policy.allowLegacy === true : policy.allowLegacy !== false;
   const ok = protocolMatches && hashMatches && payloadMatches && signature !== "mismatch" && (!signatureRequired || signature === "verified") && trust !== "untrusted" && legacyAllowed;
   const parts = [
     hashMatches ? "hash matches" : `hash mismatch (receipt ${receipt.contentHash}, computed ${computedHash})`,
   ];
   if (!protocolMatches) parts.push("evidence and receipt protocol versions do not match");
-  if (modern) parts.push(payloadMatches ? "authenticated payload matches" : "receipt payload mismatch");
-  else parts.push("legacy evidence-only receipt; metadata is not authenticated");
+  if (modern) {
+    parts.push(payloadMatches ? "authenticated payload matches" : "receipt payload mismatch");
+    if (legacyScope) parts.push("legacy test scope has no observed result facts; completion remains unproven");
+  } else {
+    parts.push("legacy evidence-only receipt; metadata is not authenticated");
+  }
   if (signature === "verified") parts.push(`${receipt.signature?.alg} signature verified`);
   else if (signature === "mismatch") parts.push(`${receipt.signature?.alg} signature mismatch`);
   else if (signature === "skipped") parts.push(`${receipt.signature?.alg} signature not verified (no key)`);
@@ -402,7 +417,7 @@ export function verifyReceipt(
     message: parts.join("; "),
     payloadMatches,
     trust,
-    legacy: !modern,
+    legacy: !modern || legacyScope,
   };
 }
 

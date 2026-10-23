@@ -17,6 +17,23 @@ function project(contents: Record<string, string>) {
 }
 
 describe("conservative verification selection", () => {
+  it("falls back when a repository resolution configuration cannot be parsed", () => {
+    const p = project({ "tsconfig.json": "{broken", "src/value.ts": "export const value=1;", "src/value.test.ts": "import './value';", "test/indirect.test.ts": "import '@/unknown';" });
+    expect(buildImpact([changed("src/value.ts")], p.existing, { graph: p.graph }).mappedTests[0]?.tests).toContain("test/indirect.test.ts");
+  });
+  it.each([{ extends: "./missing.json" }, { extends: "./tsconfig.json" }, { compilerOptions: { paths: { "@/*": "src/*" } } }])("does not silently ignore unresolved or malformed alias configuration %j", (config) => {
+    const p = project({ "tsconfig.json": JSON.stringify(config), "src/value.ts": "export const value=1;", "src/value.test.ts": "import './value';", "test/indirect.test.ts": "import '@/unknown';" });
+    expect(buildImpact([changed("src/value.ts")], p.existing, { graph: p.graph }).mappedTests[0]?.tests).toContain("test/indirect.test.ts");
+  });
+  it("does not expand declared external dependencies under baseUrl to the whole repository", () => {
+    const p = project({
+      "package.json": JSON.stringify({ devDependencies: { vitest: "4.1.12" } }),
+      "tsconfig.json": JSON.stringify({ compilerOptions: { baseUrl: "." } }),
+      "src/value.ts": "export const value = 2;", "src/value.test.ts": "import './value'; import 'vitest';",
+      "tests/unrelated.test.ts": "import 'vitest'; import 'node:fs';",
+    });
+    expect(buildImpact([changed("src/value.ts")], p.existing, { graph: p.graph }).mappedTests[0]?.tests).toEqual(["src/value.test.ts"]);
+  });
   const contents = {
     "src/hash.ts": "export const hash = () => 1;",
     "src/session.ts": 'import { hash } from "./hash"; export const session = hash;',
@@ -24,6 +41,29 @@ describe("conservative verification selection", () => {
     "tests/session.test.ts": 'import { session } from "../src/session";',
     "tests/other.test.ts": "export {};",
   };
+
+  it("includes tests importing package imports aliases as well as nearby tests", () => {
+    const { existing, graph, ctx } = project({
+      "package.json": JSON.stringify({ imports: { "#value": "./src/value.js" } }),
+      "src/value.js": "export const value = 2;",
+      "src/value.test.js": "import './value.js';",
+      "test/dependent.test.js": "import { value } from '#value';",
+    });
+    const impact = buildImpact([changed("src/value.js")], existing, { graph, pluginContext: ctx });
+    expect(impact.mappedTests[0]?.tests).toEqual(["src/value.test.js", "test/dependent.test.js"]);
+  });
+
+  it("falls back for an unresolved internal alias while keeping external imports scoped", () => {
+    const unresolved = project({
+      "src/value.js": "export const value = 2;", "src/value.test.js": "import './value.js';",
+      "test/unknown.test.js": "import '#missing';", "test/unrelated.test.js": "import 'vitest'; import 'node:fs';",
+    });
+    const impact = buildImpact([changed("src/value.js")], unresolved.existing, { graph: unresolved.graph, pluginContext: unresolved.ctx });
+    expect(impact.mappedTests[0]?.tests).toContain("test/unknown.test.js");
+    expect(impact.mappingDiagnostics).toEqual(expect.arrayContaining([expect.objectContaining({ code: "mapping-unresolved-internal-import" })]));
+    const normal = project({ "src/value.js": "import 'node:fs'; import 'external-library';", "src/value.test.js": "import './value.js';", "test/unrelated.test.js": "import 'vitest';" });
+    expect(buildImpact([changed("src/value.js")], normal.existing, { graph: normal.graph }).mappedTests[0]?.tests).toEqual(["src/value.test.js"]);
+  });
 
   it.each([
     { title: "unrelated", map: { "unrelated.ts": { s: { "0": 1 } } } },
@@ -158,10 +198,10 @@ describe("dynamic dependency uncertainty", () => {
     expect(impact.unmappedReasons?.["config.yaml"]).toMatch(/configuration/);
   });
 
-  it("keeps test-only edits scoped to the changed test", () => {
+  it("keeps possible test consumers when a changed test has dynamic dependencies", () => {
     const { existing, graph } = project({ "test/dynamic.test.js": "await import(moduleName);", "test/other.test.js": "export {};" });
     const impact = buildImpact([changed("test/dynamic.test.js")], existing, { graph });
-    expect(impact.mappedTests[0]?.tests).toEqual(["test/dynamic.test.js"]);
-    expect(impact.mappingEvidence?.some((edge) => edge.origin === "dynamic-fallback")).toBe(false);
+    expect(impact.mappedTests[0]?.tests).toEqual(["test/dynamic.test.js", "test/other.test.js"]);
+    expect(impact.mappingEvidence?.some((edge) => edge.origin === "dynamic-fallback")).toBe(true);
   });
 });

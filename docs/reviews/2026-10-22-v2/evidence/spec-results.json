@@ -1,0 +1,2033 @@
+{
+  "kind": "observational-spec-audit-probes",
+  "recordedAt": "2026-10-22T17:34:34.215Z",
+  "repoRoot": "/workspace/patchprove",
+  "commit": "6fa50972f424ee0b6c8e2b1a8506b7ee3f804f0d",
+  "tree": "a617c4a025c3ec598d451092b9c5c3035698995e",
+  "node": "v24.19.0",
+  "platform": "linux",
+  "temporaryRoot": "/tmp/patchprove-v2-spec-review-IfhUtB",
+  "note": "A reproduced defect is not product acceptance success. Baseline and negative controls verify the experiment; fixed code should stop reproducing the defect.",
+  "scenarios": [
+    {
+      "id": "selected-scope-not-executed",
+      "specification": "03-upgrade-roadmap.md:20,64,126",
+      "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/excluded-selected-test",
+      "baselineFull": {
+        "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "args": [
+          "/workspace/patchprove/node_modules/vitest/vitest.mjs",
+          "run",
+          "--config",
+          "/tmp/patchprove-v2-spec-review-IfhUtB/all.config.mjs"
+        ],
+        "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/excluded-selected-test",
+        "exitCode": 0,
+        "signal": null,
+        "output": "\n RUN  v3.2.7 /tmp/patchprove-v2-spec-review-IfhUtB/excluded-selected-test\n\n ✓ test/blocked.test.js (1 test) 2ms\n ✓ test/good.test.js (1 test) 2ms\n\n Test Files  2 passed (2)\n      Tests  2 passed (2)\n   Start at  17:34:24\n   Duration  372ms (transform 20ms, setup 0ms, collect 15ms, tests 4ms, environment 0ms, prepare 105ms)\n\n"
+      },
+      "evidence": {
+        "schemaVersion": "2.0.0",
+        "generatedAt": "2026-10-22T17:34:25.715Z",
+        "toolVersion": "2.0.0",
+        "repo": {
+          "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/excluded-selected-test",
+          "root": "/tmp/patchprove-v2-spec-review-IfhUtB/excluded-selected-test"
+        },
+        "range": {
+          "mode": "working-tree",
+          "base": "7169bf1b58b070b349c24b24514d096371288b6f",
+          "head": null
+        },
+        "impact": {
+          "changedFiles": [
+            {
+              "path": "test/blocked.test.js",
+              "status": "modified",
+              "additions": 1,
+              "deletions": 1,
+              "highRisk": false,
+              "riskKind": null
+            },
+            {
+              "path": "test/good.test.js",
+              "status": "modified",
+              "additions": 1,
+              "deletions": 1,
+              "highRisk": false,
+              "riskKind": null
+            }
+          ],
+          "mappedTests": [
+            {
+              "source": "test/blocked.test.js",
+              "tests": [
+                "test/blocked.test.js"
+              ],
+              "via": "naming"
+            },
+            {
+              "source": "test/good.test.js",
+              "tests": [
+                "test/good.test.js"
+              ],
+              "via": "naming"
+            }
+          ],
+          "unmappedSources": [],
+          "languages": [
+            "javascript"
+          ],
+          "mappingStrategy": "naming",
+          "mappingEvidence": [
+            {
+              "source": "test/blocked.test.js",
+              "test": "test/blocked.test.js",
+              "via": "naming",
+              "precision": "structural",
+              "origin": "changed-test",
+              "freshness": "current"
+            },
+            {
+              "source": "test/good.test.js",
+              "test": "test/good.test.js",
+              "via": "naming",
+              "precision": "structural",
+              "origin": "changed-test",
+              "freshness": "current"
+            }
+          ],
+          "mappingDiagnostics": [
+            {
+              "code": "mapping-unresolved-import",
+              "message": "Import \"vitest\" in test/blocked.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+              "severity": "warning",
+              "files": [
+                "test/blocked.test.js"
+              ]
+            },
+            {
+              "code": "mapping-unresolved-import",
+              "message": "Import \"vitest\" in test/good.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+              "severity": "warning",
+              "files": [
+                "test/good.test.js"
+              ]
+            }
+          ]
+        },
+        "checks": [
+          {
+            "id": "typecheck",
+            "name": "typecheck",
+            "status": "skipped",
+            "reason": "No typechecker configured",
+            "command": null,
+            "exitCode": null,
+            "durationMs": 0,
+            "records": [
+              {
+                "id": "typecheck:unconfigured",
+                "checkId": "typecheck",
+                "scope": [
+                  "."
+                ],
+                "status": "skipped",
+                "command": null,
+                "args": [],
+                "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/excluded-selected-test",
+                "exitCode": null,
+                "durationMs": 0,
+                "reason": "No typechecker configured"
+              }
+            ]
+          },
+          {
+            "id": "lint",
+            "name": "lint",
+            "status": "skipped",
+            "reason": "No linter configured",
+            "command": null,
+            "exitCode": null,
+            "durationMs": 0,
+            "records": [
+              {
+                "id": "lint:unconfigured",
+                "checkId": "lint",
+                "scope": [
+                  "."
+                ],
+                "status": "skipped",
+                "command": null,
+                "args": [],
+                "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/excluded-selected-test",
+                "exitCode": null,
+                "durationMs": 0,
+                "reason": "No linter configured"
+              }
+            ]
+          },
+          {
+            "id": "tests",
+            "name": "affected tests (vitest)",
+            "status": "passed",
+            "reason": "ok",
+            "command": "/tmp/patchprove-v2-spec-review-IfhUtB/excluded-selected-test/node_modules/.bin/vitest run test/blocked.test.js test/good.test.js",
+            "exitCode": 0,
+            "durationMs": 629,
+            "detail": "RUN  v3.2.7 /tmp/patchprove-v2-spec-review-IfhUtB/excluded-selected-test\n\n ✓ test/good.test.js (1 test) 2ms\n\n Test Files  1 passed (1)\n      Tests  1 passed (1)\n   Start at  17:34:25\n   Duration  223ms (transform 20ms, setup 0ms, collect 11ms, tests 2ms, environment 0ms, prepare 64ms)",
+            "timedOut": false,
+            "truncated": false,
+            "records": [
+              {
+                "id": "tests:javascript",
+                "checkId": "tests",
+                "scope": [
+                  "test/blocked.test.js",
+                  "test/good.test.js"
+                ],
+                "status": "passed",
+                "command": "/tmp/patchprove-v2-spec-review-IfhUtB/excluded-selected-test/node_modules/.bin/vitest",
+                "args": [
+                  "run",
+                  "test/blocked.test.js",
+                  "test/good.test.js"
+                ],
+                "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/excluded-selected-test",
+                "exitCode": 0,
+                "durationMs": 629,
+                "reason": "ok",
+                "toolVersion": "vitest/3.2.7",
+                "collectedTests": 1,
+                "signal": null,
+                "truncated": false,
+                "outputHash": "0af9a6f5d92b846e2284b1d48a14d1140e73052308b5da79bc90f924911c13f9"
+              }
+            ]
+          },
+          {
+            "id": "secrets",
+            "name": "secret scan (regex)",
+            "status": "passed",
+            "reason": "no known key patterns or high-entropy tokens in added lines",
+            "command": null,
+            "exitCode": 0,
+            "durationMs": 1,
+            "records": [
+              {
+                "id": "secrets:regex",
+                "checkId": "secrets",
+                "scope": [
+                  "test/blocked.test.js",
+                  "test/good.test.js"
+                ],
+                "status": "passed",
+                "command": null,
+                "args": [],
+                "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/excluded-selected-test",
+                "exitCode": 0,
+                "durationMs": 1,
+                "reason": "no known key patterns or high-entropy tokens in added lines",
+                "toolVersion": "builtin-regex-v1",
+                "outputHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+              }
+            ]
+          }
+        ],
+        "gaps": [],
+        "findings": [],
+        "summary": {
+          "risk": "none",
+          "checksPassed": 2,
+          "checksFailed": 0,
+          "checksSkipped": 2,
+          "gapCount": 0,
+          "acceptedGapCount": 0,
+          "findingCount": 0
+        },
+        "contract": {
+          "loaded": false,
+          "passed": true,
+          "source": null,
+          "format": null,
+          "clauses": []
+        },
+        "baselineComparison": null,
+        "mappingEvidence": [
+          {
+            "source": "test/blocked.test.js",
+            "test": "test/blocked.test.js",
+            "via": "naming",
+            "precision": "structural",
+            "origin": "changed-test",
+            "freshness": "current"
+          },
+          {
+            "source": "test/good.test.js",
+            "test": "test/good.test.js",
+            "via": "naming",
+            "precision": "structural",
+            "origin": "changed-test",
+            "freshness": "current"
+          }
+        ],
+        "diagnostics": [
+          {
+            "code": "mapping-unresolved-import",
+            "message": "Import \"vitest\" in test/blocked.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+            "severity": "warning",
+            "files": [
+              "test/blocked.test.js"
+            ]
+          },
+          {
+            "code": "mapping-unresolved-import",
+            "message": "Import \"vitest\" in test/good.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+            "severity": "warning",
+            "files": [
+              "test/good.test.js"
+            ]
+          }
+        ],
+        "snapshot": {
+          "algorithm": "sha256",
+          "version": 1,
+          "mode": "working-tree",
+          "base": "7169bf1b58b070b349c24b24514d096371288b6f",
+          "head": null,
+          "mergeBase": null,
+          "currentHead": "7169bf1b58b070b349c24b24514d096371288b6f",
+          "tree": "56304a3785121898747b684fc9aaa3815eac9103",
+          "contentHash": "02afb86dc16d4575568733ec1a03339ef71d8f0c8162c1ca0c8000997f3c9625",
+          "patchHash": "0f2f1c5389fefdb2a0ae05ed1907272c9bf44b17b668556430f33777dffc9649",
+          "dirty": true,
+          "consistent": true,
+          "excludedPaths": [
+            ".reports/evidence.json",
+            ".reports/evidence.json.patchprove-lock",
+            ".reports/evidence.json.manifest.json",
+            ".reports/evidence.json.manifest.json.patchprove-lock"
+          ]
+        },
+        "executionRecords": [
+          {
+            "id": "typecheck:unconfigured",
+            "checkId": "typecheck",
+            "scope": [
+              "."
+            ],
+            "status": "skipped",
+            "command": null,
+            "args": [],
+            "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/excluded-selected-test",
+            "exitCode": null,
+            "durationMs": 0,
+            "reason": "No typechecker configured"
+          },
+          {
+            "id": "lint:unconfigured",
+            "checkId": "lint",
+            "scope": [
+              "."
+            ],
+            "status": "skipped",
+            "command": null,
+            "args": [],
+            "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/excluded-selected-test",
+            "exitCode": null,
+            "durationMs": 0,
+            "reason": "No linter configured"
+          },
+          {
+            "id": "tests:javascript",
+            "checkId": "tests",
+            "scope": [
+              "test/blocked.test.js",
+              "test/good.test.js"
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-v2-spec-review-IfhUtB/excluded-selected-test/node_modules/.bin/vitest",
+            "args": [
+              "run",
+              "test/blocked.test.js",
+              "test/good.test.js"
+            ],
+            "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/excluded-selected-test",
+            "exitCode": 0,
+            "durationMs": 629,
+            "reason": "ok",
+            "toolVersion": "vitest/3.2.7",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "0af9a6f5d92b846e2284b1d48a14d1140e73052308b5da79bc90f924911c13f9"
+          },
+          {
+            "id": "secrets:regex",
+            "checkId": "secrets",
+            "scope": [
+              "test/blocked.test.js",
+              "test/good.test.js"
+            ],
+            "status": "passed",
+            "command": null,
+            "args": [],
+            "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/excluded-selected-test",
+            "exitCode": 0,
+            "durationMs": 1,
+            "reason": "no known key patterns or high-entropy tokens in added lines",
+            "toolVersion": "builtin-regex-v1",
+            "outputHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        ],
+        "verificationPlan": [
+          {
+            "id": "plan:tests",
+            "checkId": "tests",
+            "scope": [
+              "test/blocked.test.js",
+              "test/good.test.js"
+            ],
+            "required": true,
+            "reason": "Changed tests and conservative dependency selection"
+          },
+          {
+            "id": "plan:secrets",
+            "checkId": "secrets",
+            "scope": [
+              "test/blocked.test.js",
+              "test/good.test.js"
+            ],
+            "required": true,
+            "reason": "All selected added lines must be scanned"
+          }
+        ],
+        "effectivePolicy": {
+          "protocol": 2,
+          "strict": true,
+          "failOn": null,
+          "failOnNewGaps": null,
+          "gates": {
+            "typecheck": true,
+            "lint": true,
+            "tests": true,
+            "secrets": true
+          },
+          "ignorePaths": [],
+          "acceptGaps": [],
+          "plugins": [],
+          "config": null,
+          "spec": null,
+          "baseline": null,
+          "hash": "sha256:2f4f78c7d2ed6885f5c751aa60096e8f673c9ab7575fab3457e9e2a87d750886"
+        },
+        "verification": {
+          "status": "passed",
+          "strict": true,
+          "reasons": []
+        }
+      },
+      "fullWithoutExclusion": {
+        "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "args": [
+          "/workspace/patchprove/node_modules/vitest/vitest.mjs",
+          "run",
+          "--config",
+          "/tmp/patchprove-v2-spec-review-IfhUtB/all.config.mjs"
+        ],
+        "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/excluded-selected-test",
+        "exitCode": 1,
+        "signal": null,
+        "output": "\n RUN  v3.2.7 /tmp/patchprove-v2-spec-review-IfhUtB/excluded-selected-test\n\n ✓ test/good.test.js (1 test) 2ms\n ❯ test/blocked.test.js (1 test | 1 failed) 7ms\n   × blocked changed 6ms\n     → expected 2 to be 1 // Object.is equality\n\n Test Files  1 failed | 1 passed (2)\n      Tests  1 failed | 1 passed (2)\n   Start at  17:34:26\n   Duration  428ms (transform 17ms, setup 0ms, collect 16ms, tests 9ms, environment 0ms, prepare 116ms)\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  test/blocked.test.js > blocked changed\nAssertionError: expected 2 to be 1 // Object.is equality\n\n- Expected\n+ Received\n\n- 1\n+ 2\n\n ❯ test/blocked.test.js:1:74\n      1| import {test,expect} from \"vitest\"; test(\"blocked changed\",()=>expect(…\n       |                                                                          ^\n      2| \n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n"
+      },
+      "observedDefect": true,
+      "controlsPassed": true
+    },
+    {
+      "id": "unresolved-package-import",
+      "specification": "03-upgrade-roadmap.md:125",
+      "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/package-import-alias",
+      "baselineFull": {
+        "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "args": [
+          "/workspace/patchprove/node_modules/vitest/vitest.mjs",
+          "run"
+        ],
+        "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/package-import-alias",
+        "exitCode": 0,
+        "signal": null,
+        "output": "\n RUN  v3.2.7 /tmp/patchprove-v2-spec-review-IfhUtB/package-import-alias\n\n ✓ test/dependent.test.js (1 test) 2ms\n ✓ src/value.test.js (1 test) 2ms\n\n Test Files  2 passed (2)\n      Tests  2 passed (2)\n   Start at  17:34:26\n   Duration  403ms (transform 28ms, setup 0ms, collect 31ms, tests 4ms, environment 0ms, prepare 116ms)\n\n"
+      },
+      "evidence": {
+        "schemaVersion": "2.0.0",
+        "generatedAt": "2026-10-22T17:34:28.430Z",
+        "toolVersion": "2.0.0",
+        "repo": {
+          "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/package-import-alias",
+          "root": "/tmp/patchprove-v2-spec-review-IfhUtB/package-import-alias"
+        },
+        "range": {
+          "mode": "working-tree",
+          "base": "843b5413775440cd22afc7f64c2518e0b176ab94",
+          "head": null
+        },
+        "impact": {
+          "changedFiles": [
+            {
+              "path": "src/value.js",
+              "status": "modified",
+              "additions": 1,
+              "deletions": 1,
+              "highRisk": false,
+              "riskKind": null
+            }
+          ],
+          "mappedTests": [
+            {
+              "source": "src/value.js",
+              "tests": [
+                "src/value.test.js"
+              ],
+              "via": "graph",
+              "origins": [
+                "naming",
+                "graph"
+              ]
+            }
+          ],
+          "unmappedSources": [],
+          "languages": [
+            "javascript"
+          ],
+          "mappingStrategy": "graph",
+          "mappingFallbacks": [
+            "naming"
+          ],
+          "mappingEvidence": [
+            {
+              "source": "src/value.js",
+              "test": "src/value.test.js",
+              "via": "naming",
+              "precision": "heuristic",
+              "origin": "filename",
+              "freshness": "current",
+              "inputHash": "22477fdfc7186e3e005c314c9451c32ad691a1ca988b188f42afc84a2b75c2bb"
+            },
+            {
+              "source": "src/value.js",
+              "test": "src/value.test.js",
+              "via": "graph",
+              "precision": "structural",
+              "origin": "import-graph",
+              "freshness": "current",
+              "inputHash": "e7c97cde57b3acb65d20a4866e4b7db9c2c172b71cb471b1372ca37a8e2eb367"
+            }
+          ],
+          "mappingDiagnostics": [
+            {
+              "code": "mapping-unresolved-import",
+              "message": "Import \"vitest\" in src/value.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+              "severity": "warning",
+              "files": [
+                "src/value.test.js"
+              ]
+            },
+            {
+              "code": "mapping-unresolved-import",
+              "message": "Import \"#value\" in test/dependent.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+              "severity": "warning",
+              "files": [
+                "test/dependent.test.js"
+              ]
+            },
+            {
+              "code": "mapping-unresolved-import",
+              "message": "Import \"vitest\" in test/dependent.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+              "severity": "warning",
+              "files": [
+                "test/dependent.test.js"
+              ]
+            }
+          ]
+        },
+        "checks": [
+          {
+            "id": "typecheck",
+            "name": "typecheck",
+            "status": "skipped",
+            "reason": "No typechecker configured",
+            "command": null,
+            "exitCode": null,
+            "durationMs": 0,
+            "records": [
+              {
+                "id": "typecheck:unconfigured",
+                "checkId": "typecheck",
+                "scope": [
+                  "."
+                ],
+                "status": "skipped",
+                "command": null,
+                "args": [],
+                "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/package-import-alias",
+                "exitCode": null,
+                "durationMs": 0,
+                "reason": "No typechecker configured"
+              }
+            ]
+          },
+          {
+            "id": "lint",
+            "name": "lint",
+            "status": "skipped",
+            "reason": "No linter configured",
+            "command": null,
+            "exitCode": null,
+            "durationMs": 0,
+            "records": [
+              {
+                "id": "lint:unconfigured",
+                "checkId": "lint",
+                "scope": [
+                  "."
+                ],
+                "status": "skipped",
+                "command": null,
+                "args": [],
+                "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/package-import-alias",
+                "exitCode": null,
+                "durationMs": 0,
+                "reason": "No linter configured"
+              }
+            ]
+          },
+          {
+            "id": "tests",
+            "name": "affected tests (vitest)",
+            "status": "passed",
+            "reason": "ok",
+            "command": "/tmp/patchprove-v2-spec-review-IfhUtB/package-import-alias/node_modules/.bin/vitest run src/value.test.js",
+            "exitCode": 0,
+            "durationMs": 589,
+            "detail": "RUN  v3.2.7 /tmp/patchprove-v2-spec-review-IfhUtB/package-import-alias\n\n ✓ src/value.test.js (1 test) 3ms\n\n Test Files  1 passed (1)\n      Tests  1 passed (1)\n   Start at  17:34:28\n   Duration  200ms (transform 25ms, setup 0ms, collect 21ms, tests 3ms, environment 0ms, prepare 60ms)",
+            "timedOut": false,
+            "truncated": false,
+            "records": [
+              {
+                "id": "tests:javascript",
+                "checkId": "tests",
+                "scope": [
+                  "src/value.test.js"
+                ],
+                "status": "passed",
+                "command": "/tmp/patchprove-v2-spec-review-IfhUtB/package-import-alias/node_modules/.bin/vitest",
+                "args": [
+                  "run",
+                  "src/value.test.js"
+                ],
+                "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/package-import-alias",
+                "exitCode": 0,
+                "durationMs": 589,
+                "reason": "ok",
+                "toolVersion": "vitest/3.2.7",
+                "collectedTests": 1,
+                "signal": null,
+                "truncated": false,
+                "outputHash": "bc71df2134da6b173a22f2da6c5e7945449f3db1c608ed7fc9f47cfd3cdbd2b2"
+              }
+            ]
+          },
+          {
+            "id": "secrets",
+            "name": "secret scan (regex)",
+            "status": "passed",
+            "reason": "no known key patterns or high-entropy tokens in added lines",
+            "command": null,
+            "exitCode": 0,
+            "durationMs": 0,
+            "records": [
+              {
+                "id": "secrets:regex",
+                "checkId": "secrets",
+                "scope": [
+                  "src/value.js"
+                ],
+                "status": "passed",
+                "command": null,
+                "args": [],
+                "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/package-import-alias",
+                "exitCode": 0,
+                "durationMs": 0,
+                "reason": "no known key patterns or high-entropy tokens in added lines",
+                "toolVersion": "builtin-regex-v1",
+                "outputHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+              }
+            ]
+          }
+        ],
+        "gaps": [],
+        "findings": [],
+        "summary": {
+          "risk": "none",
+          "checksPassed": 2,
+          "checksFailed": 0,
+          "checksSkipped": 2,
+          "gapCount": 0,
+          "acceptedGapCount": 0,
+          "findingCount": 0
+        },
+        "contract": {
+          "loaded": false,
+          "passed": true,
+          "source": null,
+          "format": null,
+          "clauses": []
+        },
+        "baselineComparison": null,
+        "mappingEvidence": [
+          {
+            "source": "src/value.js",
+            "test": "src/value.test.js",
+            "via": "naming",
+            "precision": "heuristic",
+            "origin": "filename",
+            "freshness": "current",
+            "inputHash": "22477fdfc7186e3e005c314c9451c32ad691a1ca988b188f42afc84a2b75c2bb"
+          },
+          {
+            "source": "src/value.js",
+            "test": "src/value.test.js",
+            "via": "graph",
+            "precision": "structural",
+            "origin": "import-graph",
+            "freshness": "current",
+            "inputHash": "e7c97cde57b3acb65d20a4866e4b7db9c2c172b71cb471b1372ca37a8e2eb367"
+          }
+        ],
+        "diagnostics": [
+          {
+            "code": "mapping-unresolved-import",
+            "message": "Import \"vitest\" in src/value.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+            "severity": "warning",
+            "files": [
+              "src/value.test.js"
+            ]
+          },
+          {
+            "code": "mapping-unresolved-import",
+            "message": "Import \"#value\" in test/dependent.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+            "severity": "warning",
+            "files": [
+              "test/dependent.test.js"
+            ]
+          },
+          {
+            "code": "mapping-unresolved-import",
+            "message": "Import \"vitest\" in test/dependent.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+            "severity": "warning",
+            "files": [
+              "test/dependent.test.js"
+            ]
+          }
+        ],
+        "snapshot": {
+          "algorithm": "sha256",
+          "version": 1,
+          "mode": "working-tree",
+          "base": "843b5413775440cd22afc7f64c2518e0b176ab94",
+          "head": null,
+          "mergeBase": null,
+          "currentHead": "843b5413775440cd22afc7f64c2518e0b176ab94",
+          "tree": "ddb5574f4a0b882046e335e70537847dad871df5",
+          "contentHash": "cf089731b95cccdab3b663751c18e9384a71338729d114d129f69ef5a158051a",
+          "patchHash": "416c731775e3de4dd099d539263cd61dbca67ce74ce2236ddf0bdd29cfe7c0bf",
+          "dirty": true,
+          "consistent": true,
+          "excludedPaths": [
+            ".reports/evidence.json",
+            ".reports/evidence.json.patchprove-lock",
+            ".reports/evidence.json.manifest.json",
+            ".reports/evidence.json.manifest.json.patchprove-lock"
+          ]
+        },
+        "executionRecords": [
+          {
+            "id": "typecheck:unconfigured",
+            "checkId": "typecheck",
+            "scope": [
+              "."
+            ],
+            "status": "skipped",
+            "command": null,
+            "args": [],
+            "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/package-import-alias",
+            "exitCode": null,
+            "durationMs": 0,
+            "reason": "No typechecker configured"
+          },
+          {
+            "id": "lint:unconfigured",
+            "checkId": "lint",
+            "scope": [
+              "."
+            ],
+            "status": "skipped",
+            "command": null,
+            "args": [],
+            "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/package-import-alias",
+            "exitCode": null,
+            "durationMs": 0,
+            "reason": "No linter configured"
+          },
+          {
+            "id": "tests:javascript",
+            "checkId": "tests",
+            "scope": [
+              "src/value.test.js"
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-v2-spec-review-IfhUtB/package-import-alias/node_modules/.bin/vitest",
+            "args": [
+              "run",
+              "src/value.test.js"
+            ],
+            "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/package-import-alias",
+            "exitCode": 0,
+            "durationMs": 589,
+            "reason": "ok",
+            "toolVersion": "vitest/3.2.7",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "bc71df2134da6b173a22f2da6c5e7945449f3db1c608ed7fc9f47cfd3cdbd2b2"
+          },
+          {
+            "id": "secrets:regex",
+            "checkId": "secrets",
+            "scope": [
+              "src/value.js"
+            ],
+            "status": "passed",
+            "command": null,
+            "args": [],
+            "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/package-import-alias",
+            "exitCode": 0,
+            "durationMs": 0,
+            "reason": "no known key patterns or high-entropy tokens in added lines",
+            "toolVersion": "builtin-regex-v1",
+            "outputHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        ],
+        "verificationPlan": [
+          {
+            "id": "plan:tests",
+            "checkId": "tests",
+            "scope": [
+              "src/value.test.js"
+            ],
+            "required": true,
+            "reason": "Changed tests and conservative dependency selection"
+          },
+          {
+            "id": "plan:secrets",
+            "checkId": "secrets",
+            "scope": [
+              "src/value.js"
+            ],
+            "required": true,
+            "reason": "All selected added lines must be scanned"
+          }
+        ],
+        "effectivePolicy": {
+          "protocol": 2,
+          "strict": true,
+          "failOn": null,
+          "failOnNewGaps": null,
+          "gates": {
+            "typecheck": true,
+            "lint": true,
+            "tests": true,
+            "secrets": true
+          },
+          "ignorePaths": [],
+          "acceptGaps": [],
+          "plugins": [],
+          "config": null,
+          "spec": null,
+          "baseline": null,
+          "hash": "sha256:2f4f78c7d2ed6885f5c751aa60096e8f673c9ab7575fab3457e9e2a87d750886"
+        },
+        "verification": {
+          "status": "passed",
+          "strict": true,
+          "reasons": []
+        }
+      },
+      "changedFull": {
+        "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "args": [
+          "/workspace/patchprove/node_modules/vitest/vitest.mjs",
+          "run"
+        ],
+        "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/package-import-alias",
+        "exitCode": 1,
+        "signal": null,
+        "output": "\n RUN  v3.2.7 /tmp/patchprove-v2-spec-review-IfhUtB/package-import-alias\n\n ✓ src/value.test.js (1 test) 2ms\n ❯ test/dependent.test.js (1 test | 1 failed) 7ms\n   × stable value 6ms\n     → expected 2 to be 1 // Object.is equality\n\n Test Files  1 failed | 1 passed (2)\n      Tests  1 failed | 1 passed (2)\n   Start at  17:34:28\n   Duration  398ms (transform 23ms, setup 0ms, collect 26ms, tests 9ms, environment 0ms, prepare 109ms)\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  test/dependent.test.js > stable value\nAssertionError: expected 2 to be 1 // Object.is equality\n\n- Expected\n+ Received\n\n- 1\n+ 2\n\n ❯ test/dependent.test.js:1:112\n      1| import {test,expect} from \"vitest\"; import {value} from \"#value\"; test…\n       |                                                                                                                ^\n      2| \n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n"
+      },
+      "observedDefect": true,
+      "controlsPassed": true
+    },
+    {
+      "id": "relative-import-negative-control",
+      "specification": "03-upgrade-roadmap.md:125",
+      "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/relative-import-control",
+      "baselineFull": {
+        "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "args": [
+          "/workspace/patchprove/node_modules/vitest/vitest.mjs",
+          "run"
+        ],
+        "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/relative-import-control",
+        "exitCode": 0,
+        "signal": null,
+        "output": "\n RUN  v3.2.7 /tmp/patchprove-v2-spec-review-IfhUtB/relative-import-control\n\n ✓ test/dependent.test.js (1 test) 2ms\n ✓ src/value.test.js (1 test) 2ms\n\n Test Files  2 passed (2)\n      Tests  2 passed (2)\n   Start at  17:34:29\n   Duration  422ms (transform 30ms, setup 0ms, collect 32ms, tests 4ms, environment 0ms, prepare 126ms)\n\n"
+      },
+      "evidence": {
+        "schemaVersion": "2.0.0",
+        "generatedAt": "2026-10-22T17:34:31.180Z",
+        "toolVersion": "2.0.0",
+        "repo": {
+          "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/relative-import-control",
+          "root": "/tmp/patchprove-v2-spec-review-IfhUtB/relative-import-control"
+        },
+        "range": {
+          "mode": "working-tree",
+          "base": "1912cae1aeb41ac885f40aae11abe8d8b962148d",
+          "head": null
+        },
+        "impact": {
+          "changedFiles": [
+            {
+              "path": "src/value.js",
+              "status": "modified",
+              "additions": 1,
+              "deletions": 1,
+              "highRisk": false,
+              "riskKind": null
+            }
+          ],
+          "mappedTests": [
+            {
+              "source": "src/value.js",
+              "tests": [
+                "src/value.test.js",
+                "test/dependent.test.js"
+              ],
+              "via": "graph",
+              "origins": [
+                "naming",
+                "graph"
+              ]
+            }
+          ],
+          "unmappedSources": [],
+          "languages": [
+            "javascript"
+          ],
+          "mappingStrategy": "graph",
+          "mappingFallbacks": [
+            "naming"
+          ],
+          "mappingEvidence": [
+            {
+              "source": "src/value.js",
+              "test": "src/value.test.js",
+              "via": "naming",
+              "precision": "heuristic",
+              "origin": "filename",
+              "freshness": "current",
+              "inputHash": "22477fdfc7186e3e005c314c9451c32ad691a1ca988b188f42afc84a2b75c2bb"
+            },
+            {
+              "source": "src/value.js",
+              "test": "src/value.test.js",
+              "via": "graph",
+              "precision": "structural",
+              "origin": "import-graph",
+              "freshness": "current",
+              "inputHash": "7317dd67b0e9558be0e9f66d8a3832ce4bc26fd3b83af7d2ce638d538bfecd41"
+            },
+            {
+              "source": "src/value.js",
+              "test": "test/dependent.test.js",
+              "via": "graph",
+              "precision": "structural",
+              "origin": "import-graph",
+              "freshness": "current",
+              "inputHash": "7317dd67b0e9558be0e9f66d8a3832ce4bc26fd3b83af7d2ce638d538bfecd41"
+            }
+          ],
+          "mappingDiagnostics": [
+            {
+              "code": "mapping-unresolved-import",
+              "message": "Import \"vitest\" in src/value.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+              "severity": "warning",
+              "files": [
+                "src/value.test.js"
+              ]
+            },
+            {
+              "code": "mapping-unresolved-import",
+              "message": "Import \"vitest\" in test/dependent.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+              "severity": "warning",
+              "files": [
+                "test/dependent.test.js"
+              ]
+            }
+          ]
+        },
+        "checks": [
+          {
+            "id": "typecheck",
+            "name": "typecheck",
+            "status": "skipped",
+            "reason": "No typechecker configured",
+            "command": null,
+            "exitCode": null,
+            "durationMs": 0,
+            "records": [
+              {
+                "id": "typecheck:unconfigured",
+                "checkId": "typecheck",
+                "scope": [
+                  "."
+                ],
+                "status": "skipped",
+                "command": null,
+                "args": [],
+                "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/relative-import-control",
+                "exitCode": null,
+                "durationMs": 0,
+                "reason": "No typechecker configured"
+              }
+            ]
+          },
+          {
+            "id": "lint",
+            "name": "lint",
+            "status": "skipped",
+            "reason": "No linter configured",
+            "command": null,
+            "exitCode": null,
+            "durationMs": 0,
+            "records": [
+              {
+                "id": "lint:unconfigured",
+                "checkId": "lint",
+                "scope": [
+                  "."
+                ],
+                "status": "skipped",
+                "command": null,
+                "args": [],
+                "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/relative-import-control",
+                "exitCode": null,
+                "durationMs": 0,
+                "reason": "No linter configured"
+              }
+            ]
+          },
+          {
+            "id": "tests",
+            "name": "affected tests (vitest)",
+            "status": "failed",
+            "reason": "exit 1",
+            "command": "/tmp/patchprove-v2-spec-review-IfhUtB/relative-import-control/node_modules/.bin/vitest run src/value.test.js test/dependent.test.js",
+            "exitCode": 1,
+            "durationMs": 792,
+            "detail": "RUN  v3.2.7 /tmp/patchprove-v2-spec-review-IfhUtB/relative-import-control\n\n ✓ src/value.test.js (1 test) 3ms\n ❯ test/dependent.test.js (1 test | 1 failed) 8ms\n   × stable value 7ms\n     → expected 2 to be 1 // Object.is equality\n\n Test Files  1 failed | 1 passed (2)\n      Tests  1 failed | 1 passed (2)\n   Start at  17:34:30\n   Duration  416ms (transform 26ms, setup 0ms, collect 28ms, tests 11ms, environment 0ms, prepare 126ms)\n\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  test/dependent.test.js > stable value\nAssertionError: expected 2 to be 1 // Object.is equality\n\n- Expected\n+ Received\n\n- 1\n+ 2\n\n ❯ test/dependent.test.js:1:112\n      1| import {test,expect} from \"vitest\"; import {value} from \"../src/value.…\n       |                                                                                                                ^\n      2| \n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯",
+            "timedOut": false,
+            "truncated": false,
+            "records": [
+              {
+                "id": "tests:javascript",
+                "checkId": "tests",
+                "scope": [
+                  "src/value.test.js",
+                  "test/dependent.test.js"
+                ],
+                "status": "failed",
+                "command": "/tmp/patchprove-v2-spec-review-IfhUtB/relative-import-control/node_modules/.bin/vitest",
+                "args": [
+                  "run",
+                  "src/value.test.js",
+                  "test/dependent.test.js"
+                ],
+                "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/relative-import-control",
+                "exitCode": 1,
+                "durationMs": 792,
+                "reason": "exit 1",
+                "toolVersion": "vitest/3.2.7",
+                "collectedTests": 2,
+                "signal": null,
+                "truncated": false,
+                "outputHash": "05ad18eb5607ff5270de84f3a7ee439ceda8e48058a49b64e8d3007b6115b60b"
+              }
+            ]
+          },
+          {
+            "id": "secrets",
+            "name": "secret scan (regex)",
+            "status": "passed",
+            "reason": "no known key patterns or high-entropy tokens in added lines",
+            "command": null,
+            "exitCode": 0,
+            "durationMs": 0,
+            "records": [
+              {
+                "id": "secrets:regex",
+                "checkId": "secrets",
+                "scope": [
+                  "src/value.js"
+                ],
+                "status": "passed",
+                "command": null,
+                "args": [],
+                "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/relative-import-control",
+                "exitCode": 0,
+                "durationMs": 0,
+                "reason": "no known key patterns or high-entropy tokens in added lines",
+                "toolVersion": "builtin-regex-v1",
+                "outputHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+              }
+            ]
+          }
+        ],
+        "gaps": [],
+        "findings": [
+          {
+            "id": "check-failed-1",
+            "kind": "check-failed",
+            "risk": "high",
+            "message": "affected tests (vitest) failed: exit 1",
+            "fingerprint": "sha256:b3ee4d63512b8b06a7e93ec004d203abb112240f8193280f5ef04d681397ac06"
+          }
+        ],
+        "summary": {
+          "risk": "high",
+          "checksPassed": 1,
+          "checksFailed": 1,
+          "checksSkipped": 2,
+          "gapCount": 0,
+          "acceptedGapCount": 0,
+          "findingCount": 1
+        },
+        "contract": {
+          "loaded": false,
+          "passed": true,
+          "source": null,
+          "format": null,
+          "clauses": []
+        },
+        "baselineComparison": null,
+        "mappingEvidence": [
+          {
+            "source": "src/value.js",
+            "test": "src/value.test.js",
+            "via": "naming",
+            "precision": "heuristic",
+            "origin": "filename",
+            "freshness": "current",
+            "inputHash": "22477fdfc7186e3e005c314c9451c32ad691a1ca988b188f42afc84a2b75c2bb"
+          },
+          {
+            "source": "src/value.js",
+            "test": "src/value.test.js",
+            "via": "graph",
+            "precision": "structural",
+            "origin": "import-graph",
+            "freshness": "current",
+            "inputHash": "7317dd67b0e9558be0e9f66d8a3832ce4bc26fd3b83af7d2ce638d538bfecd41"
+          },
+          {
+            "source": "src/value.js",
+            "test": "test/dependent.test.js",
+            "via": "graph",
+            "precision": "structural",
+            "origin": "import-graph",
+            "freshness": "current",
+            "inputHash": "7317dd67b0e9558be0e9f66d8a3832ce4bc26fd3b83af7d2ce638d538bfecd41"
+          }
+        ],
+        "diagnostics": [
+          {
+            "code": "mapping-unresolved-import",
+            "message": "Import \"vitest\" in src/value.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+            "severity": "warning",
+            "files": [
+              "src/value.test.js"
+            ]
+          },
+          {
+            "code": "mapping-unresolved-import",
+            "message": "Import \"vitest\" in test/dependent.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+            "severity": "warning",
+            "files": [
+              "test/dependent.test.js"
+            ]
+          }
+        ],
+        "snapshot": {
+          "algorithm": "sha256",
+          "version": 1,
+          "mode": "working-tree",
+          "base": "1912cae1aeb41ac885f40aae11abe8d8b962148d",
+          "head": null,
+          "mergeBase": null,
+          "currentHead": "1912cae1aeb41ac885f40aae11abe8d8b962148d",
+          "tree": "fe2c4f99912b957abe6e9768ca72c49f8f8da119",
+          "contentHash": "9e780ca700cf159768e08d878a9344d4563c50e425c94e994248ea3044a43bcd",
+          "patchHash": "73229611d69f71e44abc695ad2bd42c350e1761074cd2a51e6759af942d6760a",
+          "dirty": true,
+          "consistent": true,
+          "excludedPaths": [
+            ".reports/evidence.json",
+            ".reports/evidence.json.patchprove-lock",
+            ".reports/evidence.json.manifest.json",
+            ".reports/evidence.json.manifest.json.patchprove-lock"
+          ]
+        },
+        "executionRecords": [
+          {
+            "id": "typecheck:unconfigured",
+            "checkId": "typecheck",
+            "scope": [
+              "."
+            ],
+            "status": "skipped",
+            "command": null,
+            "args": [],
+            "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/relative-import-control",
+            "exitCode": null,
+            "durationMs": 0,
+            "reason": "No typechecker configured"
+          },
+          {
+            "id": "lint:unconfigured",
+            "checkId": "lint",
+            "scope": [
+              "."
+            ],
+            "status": "skipped",
+            "command": null,
+            "args": [],
+            "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/relative-import-control",
+            "exitCode": null,
+            "durationMs": 0,
+            "reason": "No linter configured"
+          },
+          {
+            "id": "tests:javascript",
+            "checkId": "tests",
+            "scope": [
+              "src/value.test.js",
+              "test/dependent.test.js"
+            ],
+            "status": "failed",
+            "command": "/tmp/patchprove-v2-spec-review-IfhUtB/relative-import-control/node_modules/.bin/vitest",
+            "args": [
+              "run",
+              "src/value.test.js",
+              "test/dependent.test.js"
+            ],
+            "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/relative-import-control",
+            "exitCode": 1,
+            "durationMs": 792,
+            "reason": "exit 1",
+            "toolVersion": "vitest/3.2.7",
+            "collectedTests": 2,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "05ad18eb5607ff5270de84f3a7ee439ceda8e48058a49b64e8d3007b6115b60b"
+          },
+          {
+            "id": "secrets:regex",
+            "checkId": "secrets",
+            "scope": [
+              "src/value.js"
+            ],
+            "status": "passed",
+            "command": null,
+            "args": [],
+            "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/relative-import-control",
+            "exitCode": 0,
+            "durationMs": 0,
+            "reason": "no known key patterns or high-entropy tokens in added lines",
+            "toolVersion": "builtin-regex-v1",
+            "outputHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        ],
+        "verificationPlan": [
+          {
+            "id": "plan:tests",
+            "checkId": "tests",
+            "scope": [
+              "src/value.test.js",
+              "test/dependent.test.js"
+            ],
+            "required": true,
+            "reason": "Changed tests and conservative dependency selection"
+          },
+          {
+            "id": "plan:secrets",
+            "checkId": "secrets",
+            "scope": [
+              "src/value.js"
+            ],
+            "required": true,
+            "reason": "All selected added lines must be scanned"
+          }
+        ],
+        "effectivePolicy": {
+          "protocol": 2,
+          "strict": true,
+          "failOn": null,
+          "failOnNewGaps": null,
+          "gates": {
+            "typecheck": true,
+            "lint": true,
+            "tests": true,
+            "secrets": true
+          },
+          "ignorePaths": [],
+          "acceptGaps": [],
+          "plugins": [],
+          "config": null,
+          "spec": null,
+          "baseline": null,
+          "hash": "sha256:2f4f78c7d2ed6885f5c751aa60096e8f673c9ab7575fab3457e9e2a87d750886"
+        },
+        "verification": {
+          "status": "failed",
+          "strict": true,
+          "reasons": [
+            {
+              "code": "check-failed",
+              "message": "affected tests (vitest) failed",
+              "checkId": "tests"
+            },
+            {
+              "code": "execution-failed",
+              "message": "Execution tests:javascript did not succeed",
+              "checkId": "tests",
+              "scope": [
+                "src/value.test.js",
+                "test/dependent.test.js"
+              ]
+            },
+            {
+              "code": "planned-scope-unverified",
+              "message": "Planned tests scope has no successful execution",
+              "checkId": "tests",
+              "scope": [
+                "src/value.test.js",
+                "test/dependent.test.js"
+              ]
+            }
+          ]
+        }
+      },
+      "changedFull": {
+        "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "args": [
+          "/workspace/patchprove/node_modules/vitest/vitest.mjs",
+          "run"
+        ],
+        "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/relative-import-control",
+        "exitCode": 1,
+        "signal": null,
+        "output": "\n RUN  v3.2.7 /tmp/patchprove-v2-spec-review-IfhUtB/relative-import-control\n\n ❯ test/dependent.test.js (1 test | 1 failed) 10ms\n   × stable value 9ms\n     → expected 2 to be 1 // Object.is equality\n ✓ src/value.test.js (1 test) 2ms\n\n Test Files  1 failed | 1 passed (2)\n      Tests  1 failed | 1 passed (2)\n   Start at  17:34:31\n   Duration  448ms (transform 26ms, setup 0ms, collect 41ms, tests 12ms, environment 0ms, prepare 129ms)\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  test/dependent.test.js > stable value\nAssertionError: expected 2 to be 1 // Object.is equality\n\n- Expected\n+ Received\n\n- 1\n+ 2\n\n ❯ test/dependent.test.js:1:112\n      1| import {test,expect} from \"vitest\"; import {value} from \"../src/value.…\n       |                                                                                                                ^\n      2| \n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n"
+      },
+      "controlsPassed": true
+    },
+    {
+      "id": "all-skipped-variant",
+      "specification": "03-upgrade-roadmap.md:64,126",
+      "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/all-tests-skipped",
+      "baselineFull": {
+        "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "args": [
+          "/workspace/patchprove/node_modules/vitest/vitest.mjs",
+          "run"
+        ],
+        "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/all-tests-skipped",
+        "exitCode": 0,
+        "signal": null,
+        "output": "\n RUN  v3.2.7 /tmp/patchprove-v2-spec-review-IfhUtB/all-tests-skipped\n\n ✓ skipped.test.js (1 test) 2ms\n\n Test Files  1 passed (1)\n      Tests  1 passed (1)\n   Start at  17:34:32\n   Duration  222ms (transform 19ms, setup 0ms, collect 11ms, tests 2ms, environment 0ms, prepare 61ms)\n\n"
+      },
+      "evidence": {
+        "schemaVersion": "2.0.0",
+        "generatedAt": "2026-10-22T17:34:33.652Z",
+        "toolVersion": "2.0.0",
+        "repo": {
+          "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/all-tests-skipped",
+          "root": "/tmp/patchprove-v2-spec-review-IfhUtB/all-tests-skipped"
+        },
+        "range": {
+          "mode": "working-tree",
+          "base": "519367829135679cfa7c5e44db6804607294aa66",
+          "head": null
+        },
+        "impact": {
+          "changedFiles": [
+            {
+              "path": "skipped.test.js",
+              "status": "modified",
+              "additions": 1,
+              "deletions": 1,
+              "highRisk": false,
+              "riskKind": null
+            }
+          ],
+          "mappedTests": [
+            {
+              "source": "skipped.test.js",
+              "tests": [
+                "skipped.test.js"
+              ],
+              "via": "naming"
+            }
+          ],
+          "unmappedSources": [],
+          "languages": [
+            "javascript"
+          ],
+          "mappingStrategy": "naming",
+          "mappingEvidence": [
+            {
+              "source": "skipped.test.js",
+              "test": "skipped.test.js",
+              "via": "naming",
+              "precision": "structural",
+              "origin": "changed-test",
+              "freshness": "current"
+            }
+          ],
+          "mappingDiagnostics": [
+            {
+              "code": "mapping-unresolved-import",
+              "message": "Import \"vitest\" in skipped.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+              "severity": "warning",
+              "files": [
+                "skipped.test.js"
+              ]
+            }
+          ]
+        },
+        "checks": [
+          {
+            "id": "typecheck",
+            "name": "typecheck",
+            "status": "skipped",
+            "reason": "No typechecker configured",
+            "command": null,
+            "exitCode": null,
+            "durationMs": 0,
+            "records": [
+              {
+                "id": "typecheck:unconfigured",
+                "checkId": "typecheck",
+                "scope": [
+                  "."
+                ],
+                "status": "skipped",
+                "command": null,
+                "args": [],
+                "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/all-tests-skipped",
+                "exitCode": null,
+                "durationMs": 0,
+                "reason": "No typechecker configured"
+              }
+            ]
+          },
+          {
+            "id": "lint",
+            "name": "lint",
+            "status": "skipped",
+            "reason": "No linter configured",
+            "command": null,
+            "exitCode": null,
+            "durationMs": 0,
+            "records": [
+              {
+                "id": "lint:unconfigured",
+                "checkId": "lint",
+                "scope": [
+                  "."
+                ],
+                "status": "skipped",
+                "command": null,
+                "args": [],
+                "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/all-tests-skipped",
+                "exitCode": null,
+                "durationMs": 0,
+                "reason": "No linter configured"
+              }
+            ]
+          },
+          {
+            "id": "tests",
+            "name": "affected tests (vitest)",
+            "status": "passed",
+            "reason": "ok",
+            "command": "/tmp/patchprove-v2-spec-review-IfhUtB/all-tests-skipped/node_modules/.bin/vitest run skipped.test.js",
+            "exitCode": 0,
+            "durationMs": 590,
+            "detail": "RUN  v3.2.7 /tmp/patchprove-v2-spec-review-IfhUtB/all-tests-skipped\n\n ↓ skipped.test.js (1 test | 1 skipped)\n\n Test Files  1 skipped (1)\n      Tests  1 skipped (1)\n   Start at  17:34:33\n   Duration  207ms (transform 18ms, setup 0ms, collect 13ms, tests 0ms, environment 0ms, prepare 63ms)",
+            "timedOut": false,
+            "truncated": false,
+            "records": [
+              {
+                "id": "tests:javascript",
+                "checkId": "tests",
+                "scope": [
+                  "skipped.test.js"
+                ],
+                "status": "passed",
+                "command": "/tmp/patchprove-v2-spec-review-IfhUtB/all-tests-skipped/node_modules/.bin/vitest",
+                "args": [
+                  "run",
+                  "skipped.test.js"
+                ],
+                "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/all-tests-skipped",
+                "exitCode": 0,
+                "durationMs": 590,
+                "reason": "ok",
+                "toolVersion": "vitest/3.2.7",
+                "collectedTests": 1,
+                "signal": null,
+                "truncated": false,
+                "outputHash": "944e6d0105dbbab9d93053273b09e04fe8d850badb339935e11308ae56c611be"
+              }
+            ]
+          },
+          {
+            "id": "secrets",
+            "name": "secret scan (regex)",
+            "status": "passed",
+            "reason": "no known key patterns or high-entropy tokens in added lines",
+            "command": null,
+            "exitCode": 0,
+            "durationMs": 0,
+            "records": [
+              {
+                "id": "secrets:regex",
+                "checkId": "secrets",
+                "scope": [
+                  "skipped.test.js"
+                ],
+                "status": "passed",
+                "command": null,
+                "args": [],
+                "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/all-tests-skipped",
+                "exitCode": 0,
+                "durationMs": 0,
+                "reason": "no known key patterns or high-entropy tokens in added lines",
+                "toolVersion": "builtin-regex-v1",
+                "outputHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+              }
+            ]
+          }
+        ],
+        "gaps": [],
+        "findings": [],
+        "summary": {
+          "risk": "none",
+          "checksPassed": 2,
+          "checksFailed": 0,
+          "checksSkipped": 2,
+          "gapCount": 0,
+          "acceptedGapCount": 0,
+          "findingCount": 0
+        },
+        "contract": {
+          "loaded": false,
+          "passed": true,
+          "source": null,
+          "format": null,
+          "clauses": []
+        },
+        "baselineComparison": null,
+        "mappingEvidence": [
+          {
+            "source": "skipped.test.js",
+            "test": "skipped.test.js",
+            "via": "naming",
+            "precision": "structural",
+            "origin": "changed-test",
+            "freshness": "current"
+          }
+        ],
+        "diagnostics": [
+          {
+            "code": "mapping-unresolved-import",
+            "message": "Import \"vitest\" in skipped.test.js was not resolved to repository files; dependency mapping is incomplete for this import",
+            "severity": "warning",
+            "files": [
+              "skipped.test.js"
+            ]
+          }
+        ],
+        "snapshot": {
+          "algorithm": "sha256",
+          "version": 1,
+          "mode": "working-tree",
+          "base": "519367829135679cfa7c5e44db6804607294aa66",
+          "head": null,
+          "mergeBase": null,
+          "currentHead": "519367829135679cfa7c5e44db6804607294aa66",
+          "tree": "b7b64a6c333ca14183ad23adaa5b4a48214739c2",
+          "contentHash": "40301897d739a6f82b05d75119da1b4e39a7f6f554580596e08ba4f90c295b5f",
+          "patchHash": "a9658136bd49bc085f0b7bacd03a29e299c1205c60c62db3b4c02e6d489d3ffc",
+          "dirty": true,
+          "consistent": true,
+          "excludedPaths": [
+            ".reports/evidence.json",
+            ".reports/evidence.json.patchprove-lock",
+            ".reports/evidence.json.manifest.json",
+            ".reports/evidence.json.manifest.json.patchprove-lock"
+          ]
+        },
+        "executionRecords": [
+          {
+            "id": "typecheck:unconfigured",
+            "checkId": "typecheck",
+            "scope": [
+              "."
+            ],
+            "status": "skipped",
+            "command": null,
+            "args": [],
+            "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/all-tests-skipped",
+            "exitCode": null,
+            "durationMs": 0,
+            "reason": "No typechecker configured"
+          },
+          {
+            "id": "lint:unconfigured",
+            "checkId": "lint",
+            "scope": [
+              "."
+            ],
+            "status": "skipped",
+            "command": null,
+            "args": [],
+            "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/all-tests-skipped",
+            "exitCode": null,
+            "durationMs": 0,
+            "reason": "No linter configured"
+          },
+          {
+            "id": "tests:javascript",
+            "checkId": "tests",
+            "scope": [
+              "skipped.test.js"
+            ],
+            "status": "passed",
+            "command": "/tmp/patchprove-v2-spec-review-IfhUtB/all-tests-skipped/node_modules/.bin/vitest",
+            "args": [
+              "run",
+              "skipped.test.js"
+            ],
+            "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/all-tests-skipped",
+            "exitCode": 0,
+            "durationMs": 590,
+            "reason": "ok",
+            "toolVersion": "vitest/3.2.7",
+            "collectedTests": 1,
+            "signal": null,
+            "truncated": false,
+            "outputHash": "944e6d0105dbbab9d93053273b09e04fe8d850badb339935e11308ae56c611be"
+          },
+          {
+            "id": "secrets:regex",
+            "checkId": "secrets",
+            "scope": [
+              "skipped.test.js"
+            ],
+            "status": "passed",
+            "command": null,
+            "args": [],
+            "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/all-tests-skipped",
+            "exitCode": 0,
+            "durationMs": 0,
+            "reason": "no known key patterns or high-entropy tokens in added lines",
+            "toolVersion": "builtin-regex-v1",
+            "outputHash": "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+          }
+        ],
+        "verificationPlan": [
+          {
+            "id": "plan:tests",
+            "checkId": "tests",
+            "scope": [
+              "skipped.test.js"
+            ],
+            "required": true,
+            "reason": "Changed tests and conservative dependency selection"
+          },
+          {
+            "id": "plan:secrets",
+            "checkId": "secrets",
+            "scope": [
+              "skipped.test.js"
+            ],
+            "required": true,
+            "reason": "All selected added lines must be scanned"
+          }
+        ],
+        "effectivePolicy": {
+          "protocol": 2,
+          "strict": true,
+          "failOn": null,
+          "failOnNewGaps": null,
+          "gates": {
+            "typecheck": true,
+            "lint": true,
+            "tests": true,
+            "secrets": true
+          },
+          "ignorePaths": [],
+          "acceptGaps": [],
+          "plugins": [],
+          "config": null,
+          "spec": null,
+          "baseline": null,
+          "hash": "sha256:2f4f78c7d2ed6885f5c751aa60096e8f673c9ab7575fab3457e9e2a87d750886"
+        },
+        "verification": {
+          "status": "passed",
+          "strict": true,
+          "reasons": []
+        }
+      },
+      "enabledFailureControl": {
+        "command": "/opt/codex/runtimes/codex-primary-runtime/dependencies/node/bin/node",
+        "args": [
+          "/workspace/patchprove/node_modules/vitest/vitest.mjs",
+          "run"
+        ],
+        "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/all-tests-skipped",
+        "exitCode": 1,
+        "signal": null,
+        "output": "\n RUN  v3.2.7 /tmp/patchprove-v2-spec-review-IfhUtB/all-tests-skipped\n\n ❯ skipped.test.js (1 test | 1 failed) 5ms\n   × never executed 4ms\n     → not executed\n\n Test Files  1 failed (1)\n      Tests  1 failed (1)\n   Start at  17:34:33\n   Duration  203ms (transform 21ms, setup 0ms, collect 11ms, tests 5ms, environment 0ms, prepare 62ms)\n\n\n⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯\n\n FAIL  skipped.test.js > never executed\nError: not executed\n ❯ skipped.test.js:1:63\n      1| import {test} from \"vitest\"; test(\"never executed\",()=>{throw new Erro…\n       |                                                               ^\n      2| \n\n⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯\n\n"
+      },
+      "observedDefect": true,
+      "controlsPassed": true
+    },
+    {
+      "id": "adapter-input-validation",
+      "specification": "03-upgrade-roadmap.md:23,27; docs/ecosystem.md:30,40",
+      "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/adapter-reader",
+      "unknownStatusWithZero": {
+        "input": {
+          "schemaVersion": "1",
+          "adapter": "nx",
+          "adapterVersion": "20.0.0",
+          "snapshotHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "inputHash": "0ddc0cd546738d34697ee76ca898ec2cf2e9ce9234084c7351880757da0e21d2",
+          "data": {
+            "mode": "run",
+            "tasks": [
+              {
+                "id": "app:test",
+                "target": {
+                  "target": "test"
+                },
+                "scope": [
+                  "test/a.test.js"
+                ],
+                "status": "unknown-new-upstream-state",
+                "exitCode": 0,
+                "collectedTests": 1
+              }
+            ]
+          }
+        },
+        "result": {
+          "records": [
+            {
+              "id": "nx:app:test",
+              "checkId": "tests",
+              "scope": [
+                "test/a.test.js"
+              ],
+              "status": "imported",
+              "command": null,
+              "args": [],
+              "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/adapter-reader",
+              "exitCode": 0,
+              "durationMs": 0,
+              "collectedTests": 1,
+              "reason": "nx exported task executed; external evidence is not a local execution",
+              "provenance": {
+                "adapter": "nx",
+                "version": "20.0.0",
+                "inputHash": "0ddc0cd546738d34697ee76ca898ec2cf2e9ce9234084c7351880757da0e21d2",
+                "snapshotHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            }
+          ],
+          "tasks": [
+            {
+              "id": "app:test",
+              "adapter": "nx",
+              "state": "executed",
+              "scope": [
+                "test/a.test.js"
+              ],
+              "inputHash": "0ddc0cd546738d34697ee76ca898ec2cf2e9ce9234084c7351880757da0e21d2",
+              "snapshotHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          ],
+          "mappingEvidence": [],
+          "diagnostics": []
+        }
+      },
+      "invalidCount": {
+        "input": {
+          "schemaVersion": "1",
+          "adapter": "nx",
+          "adapterVersion": "20.0.0",
+          "snapshotHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "inputHash": "7e7dc1e5c0ba7eb0a85e6905db83d1dd3b4b6bd8d784bd9968964b94abdb2e50",
+          "data": {
+            "mode": "run",
+            "tasks": [
+              {
+                "id": "app:test",
+                "target": {
+                  "target": "test"
+                },
+                "scope": [
+                  "test/a.test.js"
+                ],
+                "status": "success",
+                "exitCode": 0,
+                "collectedTests": "0"
+              }
+            ]
+          }
+        },
+        "result": {
+          "records": [
+            {
+              "id": "nx:app:test",
+              "checkId": "tests",
+              "scope": [
+                "test/a.test.js"
+              ],
+              "status": "imported",
+              "command": null,
+              "args": [],
+              "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/adapter-reader",
+              "exitCode": 0,
+              "durationMs": 0,
+              "reason": "nx exported task executed; external evidence is not a local execution",
+              "provenance": {
+                "adapter": "nx",
+                "version": "20.0.0",
+                "inputHash": "7e7dc1e5c0ba7eb0a85e6905db83d1dd3b4b6bd8d784bd9968964b94abdb2e50",
+                "snapshotHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            }
+          ],
+          "tasks": [
+            {
+              "id": "app:test",
+              "adapter": "nx",
+              "state": "executed",
+              "scope": [
+                "test/a.test.js"
+              ],
+              "inputHash": "7e7dc1e5c0ba7eb0a85e6905db83d1dd3b4b6bd8d784bd9968964b94abdb2e50",
+              "snapshotHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          ],
+          "mappingEvidence": [],
+          "diagnostics": []
+        }
+      },
+      "unknownWithoutExitControl": {
+        "input": {
+          "schemaVersion": "1",
+          "adapter": "nx",
+          "adapterVersion": "20.0.0",
+          "snapshotHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "inputHash": "303e7e7fd67cea3cc08aeaea7e64843d267893b455403d51d0eada1dea7684b6",
+          "data": {
+            "mode": "run",
+            "tasks": [
+              {
+                "id": "app:test",
+                "target": {
+                  "target": "test"
+                },
+                "scope": [
+                  "test/a.test.js"
+                ],
+                "status": "unknown-new-upstream-state",
+                "collectedTests": 1
+              }
+            ]
+          }
+        },
+        "result": {
+          "records": [],
+          "tasks": [],
+          "mappingEvidence": [],
+          "diagnostics": [
+            {
+              "code": "adapter-invalid",
+              "severity": "error",
+              "message": "nx unknown-without-exit-control.json: Unknown task status: unknown-new-upstream-state"
+            }
+          ]
+        }
+      },
+      "explicitZeroControl": {
+        "input": {
+          "schemaVersion": "1",
+          "adapter": "nx",
+          "adapterVersion": "20.0.0",
+          "snapshotHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "inputHash": "1c3796eafb6e99d265f04747cf692f846426f5fa37bf2083bbae7bd9a8ec24c2",
+          "data": {
+            "mode": "run",
+            "tasks": [
+              {
+                "id": "app:test",
+                "target": {
+                  "target": "test"
+                },
+                "scope": [
+                  "test/a.test.js"
+                ],
+                "status": "success",
+                "exitCode": 0,
+                "collectedTests": 0
+              }
+            ]
+          }
+        },
+        "result": {
+          "records": [
+            {
+              "id": "nx:app:test",
+              "checkId": "tests",
+              "scope": [
+                "test/a.test.js"
+              ],
+              "status": "imported",
+              "command": null,
+              "args": [],
+              "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/adapter-reader",
+              "exitCode": 0,
+              "durationMs": 0,
+              "collectedTests": 0,
+              "reason": "nx exported task executed; external evidence is not a local execution",
+              "provenance": {
+                "adapter": "nx",
+                "version": "20.0.0",
+                "inputHash": "1c3796eafb6e99d265f04747cf692f846426f5fa37bf2083bbae7bd9a8ec24c2",
+                "snapshotHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            }
+          ],
+          "tasks": [
+            {
+              "id": "app:test",
+              "adapter": "nx",
+              "state": "executed",
+              "scope": [
+                "test/a.test.js"
+              ],
+              "inputHash": "1c3796eafb6e99d265f04747cf692f846426f5fa37bf2083bbae7bd9a8ec24c2",
+              "snapshotHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          ],
+          "mappingEvidence": [],
+          "diagnostics": []
+        }
+      },
+      "validControl": {
+        "input": {
+          "schemaVersion": "1",
+          "adapter": "nx",
+          "adapterVersion": "20.0.0",
+          "snapshotHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "inputHash": "12a52a95cc7f0f2842b586b06963753c32cc9525618e908232802fea6d059756",
+          "data": {
+            "mode": "run",
+            "tasks": [
+              {
+                "id": "app:test",
+                "target": {
+                  "target": "test"
+                },
+                "scope": [
+                  "test/a.test.js"
+                ],
+                "status": "success",
+                "exitCode": 0,
+                "collectedTests": 1
+              }
+            ]
+          }
+        },
+        "result": {
+          "records": [
+            {
+              "id": "nx:app:test",
+              "checkId": "tests",
+              "scope": [
+                "test/a.test.js"
+              ],
+              "status": "imported",
+              "command": null,
+              "args": [],
+              "cwd": "/tmp/patchprove-v2-spec-review-IfhUtB/adapter-reader",
+              "exitCode": 0,
+              "durationMs": 0,
+              "collectedTests": 1,
+              "reason": "nx exported task executed; external evidence is not a local execution",
+              "provenance": {
+                "adapter": "nx",
+                "version": "20.0.0",
+                "inputHash": "12a52a95cc7f0f2842b586b06963753c32cc9525618e908232802fea6d059756",
+                "snapshotHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+              }
+            }
+          ],
+          "tasks": [
+            {
+              "id": "app:test",
+              "adapter": "nx",
+              "state": "executed",
+              "scope": [
+                "test/a.test.js"
+              ],
+              "inputHash": "12a52a95cc7f0f2842b586b06963753c32cc9525618e908232802fea6d059756",
+              "snapshotHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+            }
+          ],
+          "mappingEvidence": [],
+          "diagnostics": []
+        }
+      },
+      "observedDefect": true,
+      "controlsPassed": true,
+      "boundary": "This probes the public adapter reader. It does not claim that a complete analyze run can bypass its local gates using these inputs."
+    }
+  ]
+}

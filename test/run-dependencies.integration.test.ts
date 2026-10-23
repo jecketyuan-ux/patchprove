@@ -65,6 +65,12 @@ describe.skipIf(process.platform === "win32")("range dependency reuse", () => {
     expect(evidence.snapshot?.consistent).toBe(true);
     expect(evidence.verification?.status, JSON.stringify(evidence.verification)).toBe("passed");
     expect(evidence.executionRecords?.find((record) => record.checkId === "tests")).toMatchObject({ status: "passed", collectedTests: 1 });
+    const testCommand = evidence.checks.find(check => check.id === "tests")!.command;
+    const testArgs = evidence.executionRecords!.find(record => record.checkId === "tests")!.args;
+    expect(testCommand).toContain("<test-report>");
+    expect(testCommand).not.toContain("patchprove-test-report-");
+    expect(testArgs).toContain("<test-report>");
+    expect(testArgs.join(" ")).not.toContain("patchprove-test-report-");
     expect(evidence.diagnostics?.some((diagnostic) => diagnostic.code === "dependencies-reused")).toBe(true);
     const repeated = await analyze({ ...project, json: true, format: "json", out: "evidence.json", disableGate: ["lint", "typecheck"] });
     expect(hashEvidence(repeated)).toBe(hashEvidence(evidence));

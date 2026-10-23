@@ -1,6 +1,6 @@
 /* This file is generated. Do not edit directly.
  * Source: schema/receipt.schema.json
- * Schema SHA-256: 72b874cf96a365fde03bdb661f8a0f2a6bbb4d9967c683cd1c418760b4ad41dc
+ * Schema SHA-256: f80e36efe01bc652d0055410078e372b4f925bdd868809fed041339faa5d9ea3
  * Compiler: json-schema-to-typescript 16.0.0
  * Regenerate with: npm run generate:protocol
  */
@@ -56,6 +56,11 @@ export type ReceiptWire = {
   verification?: Verification;
   effectivePolicy?: EffectivePolicy;
 };
+export type ProjectGatePolicy = {
+  mode: "required" | "optional" | "not-applicable";
+  reason?: string;
+  expiresAt?: string;
+};
 
 export interface Verification {
   status: "passed" | "failed" | "incomplete";
@@ -110,6 +115,16 @@ export interface EffectivePolicy {
     hash: string;
   };
   hash: string;
+  projects?: {
+    path: string;
+    gates: {
+      typecheck?: ProjectGatePolicy;
+      lint?: ProjectGatePolicy;
+      tests?: ProjectGatePolicy;
+      secrets?: ProjectGatePolicy;
+    };
+  }[];
+  pluginSetHash?: string;
 }
 
 /** Required fields derived from the protocol-2 conditional in the JSON schema. */

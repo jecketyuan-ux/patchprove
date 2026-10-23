@@ -1,0 +1,10 @@
+diff --git a/src/itsdangerous/serializer.py b/src/itsdangerous/serializer.py
+index 5ddf387..081e503 100644
+--- a/src/itsdangerous/serializer.py
++++ b/src/itsdangerous/serializer.py
+@@ -404,3 +404,5 @@ class Serializer(t.Generic[_TSerialized]):
+         .. versionadded:: 0.15
+         """
+         return self.loads_unsafe(f.read(), salt=salt)
++
++# corpus neutral source change

@@ -1,5 +1,6 @@
 #!/usr/bin/env node
 import assert from "node:assert/strict";
+import { validationIdentity } from "./validation-identity.mjs";
 import { createHash } from "node:crypto";
 import { cp, mkdir, mkdtemp, readFile, rm, writeFile } from "node:fs/promises";
 import os from "node:os";
@@ -17,7 +18,7 @@ const manifestText = await readFile(manifestPath, "utf8");
 const manifest = JSON.parse(manifestText);
 assert.equal(manifest.schemaVersion, 1);
 const sha = (bytes) => createHash("sha256").update(bytes).digest("hex");
-const report = { schemaVersion: 1, generatedAt: new Date().toISOString(), corpusKind: manifest.corpusKind, manifestHash: sha(manifestText), environment: { node: process.version, platform: process.platform, architecture: process.arch, network: false }, cases: [], limitations: ["The bundled corpus contains three seeded local patches; it is not a real-world 50-patch benchmark.", "Misses are full-suite failing test files absent from selection. Extra selections are selected test files that passed, not evidence that selection was unnecessary.", "Dynamic imports and resource dependencies can remain unmapped. Missing outcomes are unknown; no accuracy percentage is reported.", "Durations include local process and tool caches and are not speedup measurements. A fixture's network:false declaration is not enforced as a network sandbox for external code."] };
+const report = { identity: validationIdentity(import.meta.url), schemaVersion: 1, generatedAt: new Date().toISOString(), corpusKind: manifest.corpusKind, manifestHash: sha(manifestText), environment: { node: process.version, platform: process.platform, architecture: process.arch, network: false }, cases: [], limitations: ["The bundled corpus contains fixed seeded local patches; it is not a real-world 50-patch benchmark.", "Misses are full-suite failing test files absent from selection. Extra selections are selected test files that passed, not evidence that selection was unnecessary.", "Dynamic imports and resource dependencies can remain unmapped. Missing outcomes are unknown; no accuracy percentage is reported.", "Durations include local process and tool caches and are not speedup measurements. A fixture's network:false declaration is not enforced as a network sandbox for external code."] };
 let failures = 0;
 const commit = manifest.commit;
 const commitEnv = commit ? { GIT_AUTHOR_NAME: commit.authorName, GIT_AUTHOR_EMAIL: commit.authorEmail, GIT_COMMITTER_NAME: commit.authorName, GIT_COMMITTER_EMAIL: commit.authorEmail, GIT_AUTHOR_DATE: commit.date, GIT_COMMITTER_DATE: commit.date } : {};
@@ -72,8 +73,8 @@ for (const item of manifest.cases) {
     const unknown = [...new Set([...full.outcomes, ...selected.outcomes].filter((outcome) => outcome.status === "unknown").map((outcome) => outcome.test))];
     report.cases.push({ id: item.id, repositoryCommit: item.repository.baseCommit, patchHash: item.patchHash, license: item.license, environment: item.environment, baseline, selected, full, selectedTests: selectedPaths, misses, extra, unknown, unmappedSources: impact.unmappedSources, mappingEvidence: impact.mappingEvidence ?? [], diagnostics: impact.mappingDiagnostics ?? [] });
     console.log(`${item.id}: selected=${selected.status} full=${full.status} misses=${misses.length} extra=${extra.length} unknown=${unknown.length}`);
-    // Measured misses belong in the report. Infrastructure failures fail the harness.
-    if (unknown.length) failures++;
+    // Preserve measurements, while explicit regression cases must retain known failing tests.
+    if (unknown.length || item.requireNoMisses === true && misses.length) failures++;
   } catch (error) { failures++; report.cases.push({ id: item.id, error: String(error) }); console.error(`${item.id}: ${error}`); }
   finally { await rm(dir, { recursive: true, force: true }); }
 }

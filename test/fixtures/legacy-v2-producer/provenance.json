@@ -1,0 +1,8 @@
+{
+  "sourceCommit": "6fa50972f424ee0b6c8e2b1a8506b7ee3f804f0d",
+  "node": "v24.19.0",
+  "runner": "vitest@4.1.12",
+  "fixture": "public passing one-case Vitest project; old producer has no machine-result fields",
+  "signingKey": "hmac:public-legacy-v2-fixture-key",
+  "generatedAt": "2026-10-23T05:42:47.895Z"
+}

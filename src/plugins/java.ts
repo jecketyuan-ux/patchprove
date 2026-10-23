@@ -280,6 +280,7 @@ function mavenModuleList(tests: string[], projects: readonly JavaSubproject[]): 
 
 export const javaPlugin: LanguagePlugin = {
   id: "java",
+  capabilities: { contractVersion: 1, testedRunners: ["maven@3.9.9", "gradle@8.12.1", "junit@5"], granularity: "file", reportFormats: ["java-junit"], unknownResult: "incomplete" },
   languages: ["java"],
   extensions: [".java"],
   isTestFile: isJavaTestFile,

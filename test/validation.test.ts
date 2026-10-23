@@ -34,6 +34,30 @@ describe("versioned runtime readers", () => {
     expect(() => validateEvidence({ ...evidence(), schemaVersion: "2.0.0" }, "strict.json")).toThrow(/snapshot|verificationPlan|executionRecords|effectivePolicy|verification/);
   });
 
+  it("rejects conflicting execution copies instead of hiding a nested failure", () => {
+    const execution = { id: "tests:javascript", checkId: "tests", scope: ["src/a.test.ts"], status: "passed", command: "vitest", args: [], cwd: "/tmp", exitCode: 0, durationMs: 1 };
+    const input = { ...evidence(), checks: [{ id: "tests", name: "tests", status: "passed", records: [{ ...execution, status: "failed", exitCode: 1 }] }],
+      executionRecords: [execution], summary: { ...evidence().summary, checksPassed: 1 } };
+    expect(() => validateEvidence(input, "conflict.json")).toThrow(/conflict.json.*\/checks\/0\/records\/0/);
+  });
+
+  it("rejects repeated nested identities and successful records without successful exits", () => {
+    const execution = { id: "tests:javascript", checkId: "tests", scope: ["src/a.test.ts"], status: "passed", command: "vitest", args: [], cwd: "/tmp", exitCode: 0, durationMs: 1 };
+    const input = { ...evidence(), checks: [{ id: "tests", name: "tests", status: "passed", records: [execution, execution] }], summary: { ...evidence().summary, checksPassed: 1 } };
+    expect(() => validateEvidence(input)).toThrow(/duplicate identity/);
+    expect(() => validateEvidence({ ...evidence(), executionRecords: [{ ...execution, exitCode: null }] })).toThrow(/executionRecords\/0\/exitCode/);
+  });
+
+  it("rejects a stored passed decision with an unverified mandatory plan", () => {
+    const hash = "a".repeat(64);
+    const input = { ...evidence(), schemaVersion: "2.0.0",
+      snapshot: { algorithm: "sha256", version: 1, mode: "working-tree", base: "HEAD", head: null, mergeBase: null, currentHead: null, tree: null, contentHash: hash, patchHash: hash, dirty: false, consistent: true },
+      effectivePolicy: { protocol: 2, strict: true, failOn: null, failOnNewGaps: null, gates: { typecheck: false, lint: false, tests: true, secrets: false }, ignorePaths: [], acceptGaps: [], plugins: [], config: null, spec: null, baseline: null, hash },
+      verificationPlan: [{ id: "tests", checkId: "tests", scope: ["unexecuted.test.js"], required: true, reason: "required" }], executionRecords: [],
+      verification: { status: "passed", strict: true, reasons: [] } };
+    expect(() => validateEvidence(input, "stale.json")).toThrow(/verification\/status/);
+  });
+
   it("does not normalize missing required fields in recent compatibility packs", () => {
     expect(() => validateEvidence({ ...evidence(), schemaVersion: "1.3.0", contract: undefined }, "recent.json")).toThrow(/contract/);
   });

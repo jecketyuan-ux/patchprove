@@ -1,5 +1,8 @@
 # 2.0 发布前验收清单
 
+本次复审后的实现与验收以 [U01–U11 实施记录](upgrades/2x-hardening.md) 和候选账本为准。下表保留上一轮本地验收历史；新候选必须绑定自己的源码身份、CI 和产物。Claude/Cursor 与 fork publisher 尚无本次真实宿主记录，保持实验性，不能勾成已验。
+
+
 当前交付为 2.0 升级 PR。提交、合并和正式发布分别记录：只有该 PR 当前 head 的远程必需 CI 检查通过后才合并；本轮不创建 release/tag，不执行 `npm publish`。代码能力及 F01–F21 对照见 [实施记录](upgrade-implementation.md)，发布操作见 [PUBLISH](../PUBLISH.md)。
 
 以下“已验”只适用于链接报告中的环境和实现。候选提交有影响行为的修改时，重跑相应检查；不能把旧提交的绿色结果移到新提交。

@@ -1,0 +1,13 @@
+diff --git a/uuid.go b/uuid.go
+index 5232b48..f1d6a88 100644
+--- a/uuid.go
++++ b/uuid.go
+@@ -284,7 +284,7 @@ func (uuid UUID) Variant() Variant {
+ 
+ // Version returns the version of uuid.
+ func (uuid UUID) Version() Version {
+-	return Version(uuid[6] >> 4)
++	return Version(uuid[6] >> 5)
+ }
+ 
+ func (v Version) String() string {

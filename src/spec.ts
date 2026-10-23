@@ -1,6 +1,7 @@
 import { existsSync, readFileSync } from "node:fs";
 import { createHash } from "node:crypto";
 import path from "node:path";
+import { readBoundedFile } from "./input-budget.js";
 import { parse as parseYaml } from "yaml";
 import { isOpenGap } from "./accept.js";
 import { matchAnyGlob } from "./glob.js";
@@ -173,7 +174,7 @@ export function findSpecPath(root: string, explicit?: string): { path: string; f
 export function loadContract(root: string, explicit?: string): PatchproveContract | null {
   const found = findSpecPath(root, explicit);
   if (!found) return null;
-  const text = readFileSync(found.path, "utf8");
+  const text = readBoundedFile(found.path).toString("utf8");
   const identify = (file: string, content: string) => ({ path: file, hash: `sha256:${createHash("sha256").update(JSON.stringify(content)).digest("hex")}` });
   const primary = identify(found.path, text);
   if (found.format === "yaml") {
@@ -190,7 +191,7 @@ export function loadContract(root: string, explicit?: string): PatchproveContrac
     if (!existsSync(linked)) {
       throw new Error(`${found.path}: linked spec not found: ${linked}`);
     }
-    const linkedText = readFileSync(linked, "utf8");
+    const linkedText = readBoundedFile(linked).toString("utf8");
     return { ...parseContractText(linkedText, linked), sourcePath: found.path, format: "markdown", inputPaths: [found.path, linked], inputIdentities: [primary, identify(linked, linkedText)] };
   }
   return { ...parseContractText(extracted.yaml, found.path), sourcePath: found.path, format: "markdown", inputIdentities: [primary] };
