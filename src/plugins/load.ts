@@ -107,14 +107,14 @@ export async function resolveLanguagePluginSession(root: string, options?: Resol
   const builtinEntry = fileURLToPath(new URL("./builtin.js", import.meta.url));
   // Source consumers use the shipped worker for actual analysis. Direct source
   // loader tests retain source identity without inventing a compiled pathname.
-  const builtinSource = existsSync(builtinEntry) ? builtinEntry : builtinEntry.replace(/\.js$/, ".ts");
+  const builtinSource = realpathSync.native(existsSync(builtinEntry) ? builtinEntry : builtinEntry.replace(/\.js$/, ".ts"));
   // The installed verifier's own bytes are not repository-controlled input and
   // must not consume a caller's deliberately small repository-file budget.
   const builtinSnapshot = withInputBudget({}, () => capturePluginInputs(builtinSource));
   snapshots.push({ ...builtinSnapshot, changed: () => withInputBudget({}, () => builtinSnapshot.changed()) });
   const provenance: PluginLoadProvenance[] = builtinPlugins.map((plugin, order) => ({
     id: plugin.id, source: "builtin", entry: builtinSource,
-    entryHash: builtinSnapshot.inputs.find((input) => input.path === realpathSync.native(builtinSource))?.hash ?? null,
+    entryHash: builtinSnapshot.inputs.find((input) => input.path === builtinSource)?.hash ?? null,
     order, effective: true, ...(plugin.capabilities ? { capabilities: plugin.capabilities } : {}), inputs: builtinSnapshot.inputs,
     dependencyCoverage: builtinSnapshot.unknownDependencies.length ? "unknown" : "static", unknownDependencies: builtinSnapshot.unknownDependencies,
   }));
